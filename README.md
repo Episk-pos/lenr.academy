@@ -167,31 +167,28 @@ This is an open science project. Data tables are publicly available from the Mar
 
 ## Analytics
 
-This project uses **Umami Analytics** - a privacy-friendly, self-hosted analytics solution that is GDPR compliant and doesn't use cookies.
+This project uses **Umami Analytics** - a privacy-friendly analytics solution that is GDPR compliant and doesn't use cookies.
 
-### Setting Up Umami (One-Time Setup)
+### Setting Up Umami Cloud (Recommended)
 
-1. **Deploy Umami to Railway (Free)**
-   - Visit: https://railway.app/template/umami
-   - Click "Deploy Now"
-   - Sign in with GitHub
-   - Wait for deployment to complete (~2 minutes)
+1. **Create a Free Umami Cloud Account**
+   - Visit: https://cloud.umami.is
+   - Sign up for a free account (includes 100k events/month)
 
-2. **Get Your Analytics Credentials**
-   - Once deployed, Railway will give you a URL (e.g., `https://your-app.railway.app`)
-   - Open the URL and log in (default: admin/umami)
+2. **Add Your Website**
    - Go to Settings → Websites → Add Website
-   - Enter "lenr.academy" as the domain
+   - Enter your domain (e.g., "lenr.academy")
    - Copy the **Website ID** (a UUID string)
+   - Copy the tracking script URL (e.g., `https://cloud.umami.is/script.js`)
 
 3. **Update the Analytics Script**
    - Open `index.html` in the project
-   - Replace `YOUR-UMAMI-URL` with your Railway URL (e.g., `https://your-app.railway.app`)
+   - Replace `YOUR-UMAMI-URL` with `https://cloud.umami.is`
    - Replace `YOUR-WEBSITE-ID` with the Website ID from step 2
    - Save and deploy
 
 4. **View Your Analytics**
-   - Go to your Umami dashboard: `https://your-app.railway.app`
+   - Go to your Umami Cloud dashboard: https://cloud.umami.is
    - See real-time visitors, pageviews, referrers, devices, and countries
 
 ### What Gets Tracked

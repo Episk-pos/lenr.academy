@@ -596,6 +596,9 @@ export default function FissionQuery() {
                         setPinnedNuclide(false)
                         setHighlightedNuclide(null)
                       } else {
+                        // Unpin element when selecting nuclide
+                        setPinnedElement(false)
+                        setHighlightedElement(null)
                         setPinnedNuclide(true)
                         setHighlightedNuclide(nuclideId)
                       }
@@ -637,6 +640,9 @@ export default function FissionQuery() {
                         setPinnedElement(false)
                         setHighlightedElement(null)
                       } else {
+                        // Unpin nuclide when selecting element
+                        setPinnedNuclide(false)
+                        setHighlightedNuclide(null)
                         setPinnedElement(true)
                         setHighlightedElement(elementId)
                       }

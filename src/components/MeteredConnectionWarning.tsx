@@ -9,7 +9,7 @@ interface MeteredConnectionWarningProps {
 export default function MeteredConnectionWarning({ onConfirm, onCancel, databaseSizeMB }: MeteredConnectionWarningProps) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50">
-      <div className="card p-6 max-w-md w-full border-2 border-orange-300 dark:border-orange-700">
+      <div className="card p-6 max-w-md w-full border-2 border-orange-300 dark:border-orange-700" data-testid="metered-warning">
         <div className="flex items-start gap-4 mb-4">
           <div className="p-3 bg-orange-100 dark:bg-orange-900/30 rounded-lg">
             <AlertTriangle className="w-6 h-6 text-orange-600 dark:text-orange-400" />

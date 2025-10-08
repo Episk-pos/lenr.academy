@@ -12,7 +12,7 @@ export default function DatabaseLoadingCard({ downloadProgress }: DatabaseLoadin
 
   return (
     <div className="flex flex-col items-center justify-center min-h-[400px] p-8">
-      <div className="card p-8 max-w-md w-full">
+      <div className="card p-8 max-w-md w-full" data-testid="database-loading">
         <div className="flex flex-col items-center text-center">
           <Loader className="w-12 h-12 animate-spin text-blue-500 mb-4" />
 

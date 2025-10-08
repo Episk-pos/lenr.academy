@@ -166,7 +166,7 @@ export default function PeriodicTable({ availableElements, selectedElement, onEl
     const cellData = elementsByPosition[key]
 
     if (!cellData) {
-      return <div key={key} className="w-10 h-10 sm:w-11 sm:h-11 md:w-12 md:h-12" />
+      return <div key={key} className="aspect-square" />
     }
 
     const isSelected = selectedElement === cellData.symbol
@@ -178,8 +178,8 @@ export default function PeriodicTable({ availableElements, selectedElement, onEl
         onClick={() => isAvailable && onElementClick(cellData.symbol)}
         disabled={!isAvailable}
         className={`
-          w-10 h-10 sm:w-11 sm:h-11 md:w-12 md:h-12
-          flex flex-col items-center justify-center text-xs font-medium rounded border
+          aspect-square
+          flex flex-col items-center justify-center font-medium rounded border
           transition-all duration-150
           ${isSelected
             ? 'bg-blue-500 text-white border-blue-600 ring-2 ring-blue-400 shadow-md'
@@ -190,35 +190,33 @@ export default function PeriodicTable({ availableElements, selectedElement, onEl
         `}
         title={isAvailable ? `${cellData.symbol} (Z=${cellData.Z})` : `${cellData.symbol} - Not available`}
       >
-        <div className="text-[10px] sm:text-xs leading-none">{cellData.Z}</div>
-        <div className="font-bold text-xs sm:text-sm leading-none">{cellData.symbol}</div>
+        <div className="text-[9px] leading-none">{cellData.Z}</div>
+        <div className="font-bold text-xs leading-none">{cellData.symbol}</div>
       </button>
     )
   }
 
   return (
-    <div className="card p-6 overflow-x-auto">
-      <div className="flex justify-center">
-        <div className="origin-top scale-[0.65] sm:scale-[0.75] lg:scale-[0.85] xl:scale-100">
-          {/* Main periodic table grid (periods 1-7) */}
-          <div className="grid gap-1 mb-2" style={{ gridTemplateColumns: 'repeat(18, minmax(2.5rem, 3rem))' }}>
-            {[1, 2, 3, 4, 5, 6, 7].map(period => (
-              Array.from({ length: 18 }, (_, i) => {
-                const group = i + 1
-                return renderCell(period, group)
-              })
-            ))}
-          </div>
+    <div className="card p-3 sm:p-6 overflow-x-auto">
+      <div className="inline-block min-w-full">
+        {/* Main periodic table grid (periods 1-7) */}
+        <div className="grid gap-0.5 sm:gap-1 mb-1 sm:mb-2" style={{ gridTemplateColumns: 'repeat(18, minmax(1.75rem, 3rem))' }}>
+          {[1, 2, 3, 4, 5, 6, 7].map(period => (
+            Array.from({ length: 18 }, (_, i) => {
+              const group = i + 1
+              return renderCell(period, group)
+            })
+          ))}
+        </div>
 
-          {/* Lanthanides (period 8) */}
-          <div className="grid gap-1 ml-24 sm:ml-32 md:ml-36 mb-2" style={{ gridTemplateColumns: 'repeat(15, minmax(2.5rem, 3rem))' }}>
-            {Array.from({ length: 15 }, (_, i) => renderCell(8, i + 4))}
-          </div>
+        {/* Lanthanides (period 8) */}
+        <div className="grid gap-0.5 sm:gap-1 mb-1 sm:mb-2" style={{ gridTemplateColumns: 'repeat(15, minmax(1.75rem, 3rem))', marginLeft: 'calc(3 * minmax(1.75rem, 3rem) + 1.5rem)' }}>
+          {Array.from({ length: 15 }, (_, i) => renderCell(8, i + 4))}
+        </div>
 
-          {/* Actinides (period 9) */}
-          <div className="grid gap-1 ml-24 sm:ml-32 md:ml-36" style={{ gridTemplateColumns: 'repeat(15, minmax(2.5rem, 3rem))' }}>
-            {Array.from({ length: 15 }, (_, i) => renderCell(9, i + 4))}
-          </div>
+        {/* Actinides (period 9) */}
+        <div className="grid gap-0.5 sm:gap-1" style={{ gridTemplateColumns: 'repeat(15, minmax(1.75rem, 3rem))', marginLeft: 'calc(3 * minmax(1.75rem, 3rem) + 1.5rem)' }}>
+          {Array.from({ length: 15 }, (_, i) => renderCell(9, i + 4))}
         </div>
       </div>
     </div>

@@ -52,7 +52,7 @@ export default function Layout({ children }: LayoutProps) {
               <Atom className="w-6 h-6 text-primary-600" />
               <span className="text-lg font-bold dark:text-white">Nanosoft</span>
             </div>
-            <button onClick={() => setSidebarOpen(false)} className="dark:text-gray-300">
+            <button onClick={() => setSidebarOpen(false)} className="dark:text-gray-300" aria-label="Close menu">
               <X className="w-6 h-6" />
             </button>
           </div>
@@ -159,6 +159,7 @@ export default function Layout({ children }: LayoutProps) {
           <button
             onClick={() => setSidebarOpen(true)}
             className="-m-2.5 p-2.5 text-gray-700 dark:text-gray-300"
+            aria-label="Open menu"
           >
             <Menu className="h-6 w-6" />
           </button>
