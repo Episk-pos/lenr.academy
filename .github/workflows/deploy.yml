@@ -1,0 +1,52 @@
+name: Deploy to Production
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  deploy:
+    name: Deploy to AWS S3 + CloudFront
+    runs-on: ubuntu-latest
+
+    # Only deploy non-prerelease releases
+    if: github.event.release.prerelease == false
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.release.tag_name }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build production bundle
+        run: npm run build
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Sync to S3
+        run: aws s3 sync ./dist s3://lenr.academy --delete
+
+      - name: Invalidate CloudFront cache
+        run: aws cloudfront create-invalidation --distribution-id ET0385Q49O8YX --paths "/*"
+
+      - name: Add deployment summary
+        run: |
+          echo "## Deployment Successful :rocket:" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Release:** ${{ github.event.release.tag_name }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Site:** https://lenr.academy" >> $GITHUB_STEP_SUMMARY
+          echo "**Deployed at:** $(date -u +'%Y-%m-%d %H:%M:%S UTC')" >> $GITHUB_STEP_SUMMARY
