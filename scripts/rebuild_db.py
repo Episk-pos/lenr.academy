@@ -11,18 +11,6 @@ DB_PATH = 'public/parkhomov.db'
 
 # Table definitions with their CSV sources
 TABLES = {
-    'Fusion': {
-        'csv': 'src/data/fusion.csv',
-        'schema': '''
-            CREATE TABLE Fusion (
-                id INTEGER PRIMARY KEY,
-                E1 TEXT, A1 INTEGER, nBorF1 TEXT, Z1 INTEGER, aBorF1 TEXT,
-                E2 TEXT, A2 INTEGER, nBorF2 TEXT, Z2 INTEGER, aBorF2 TEXT,
-                E TEXT, A INTEGER, nBorF TEXT, Z INTEGER, aBorF TEXT,
-                MeV REAL
-            )
-        '''
-    },
     'FusionAll': {
         'csv': 'src/data/fusion_all.csv',
         'schema': '''
@@ -37,18 +25,6 @@ TABLES = {
             )
         '''
     },
-    'Fission': {
-        'csv': 'src/data/fission.csv',
-        'schema': '''
-            CREATE TABLE Fission (
-                id INTEGER PRIMARY KEY,
-                E TEXT, A INTEGER, nBorF TEXT, Z INTEGER, aBorF TEXT,
-                E1 TEXT, A1 INTEGER, nBorF1 TEXT, Z1 INTEGER, aBorF1 TEXT,
-                E2 TEXT, A2 INTEGER, nBorF2 TEXT, Z2 INTEGER, aBorF2 TEXT,
-                MeV REAL
-            )
-        '''
-    },
     'FissionAll': {
         'csv': 'src/data/fission_all.csv',
         'schema': '''
@@ -58,19 +34,6 @@ TABLES = {
                 E TEXT, A INTEGER, nBorF TEXT, Z INTEGER, aBorF TEXT,
                 E1 TEXT, A1 INTEGER, nBorF1 TEXT, Z1 INTEGER, aBorF1 TEXT,
                 E2 TEXT, A2 INTEGER, nBorF2 TEXT, Z2 INTEGER, aBorF2 TEXT,
-                MeV REAL
-            )
-        '''
-    },
-    'TwoToTwo': {
-        'csv': 'src/data/twotwo.csv',
-        'schema': '''
-            CREATE TABLE TwoToTwo (
-                id INTEGER PRIMARY KEY,
-                E1 TEXT, A1 INTEGER, nBorF1 TEXT, Z1 INTEGER, aBorF1 TEXT,
-                E2 TEXT, A2 INTEGER, nBorF2 TEXT, Z2 INTEGER, aBorF2 TEXT,
-                E3 TEXT, A3 INTEGER, nBorF3 TEXT, Z3 INTEGER, aBorF3 TEXT,
-                E4 TEXT, A4 INTEGER, nBorF4 TEXT, Z4 INTEGER, aBorF4 TEXT,
                 MeV REAL
             )
         '''
@@ -90,20 +53,6 @@ TABLES = {
             )
         '''
     },
-    'Nuclides': {
-        'csv': 'src/data/nuclides.csv',
-        'schema': '''
-            CREATE TABLE Nuclides (
-                id INTEGER PRIMARY KEY,
-                A INTEGER, Z INTEGER, nBorF TEXT, aBorF TEXT,
-                E TEXT, AMU REAL, BE REAL, BEN REAL, SUS TEXT,
-                LHL TEXT, RDM TEXT, DEMeV REAL,
-                pcaNCrust REAL, ppmNCrust REAL, ppmNSolar REAL,
-                SP TEXT, MD TEXT, EQ TEXT, RCPT TEXT,
-                Inova_MHz REAL
-            )
-        '''
-    },
     'NuclidesPlus': {
         'csv': 'src/data/nuclides_plus.csv',
         'schema': '''
@@ -115,19 +64,6 @@ TABLES = {
                 pcaNCrust REAL, ppmNCrust REAL, ppmNSolar REAL,
                 SP TEXT, MD TEXT, EQ TEXT, RCPT TEXT,
                 Inova_MHz REAL, MagGR REAL
-            )
-        '''
-    },
-    'ElementProperties': {
-        'csv': 'src/data/element_properties.csv',
-        'schema': '''
-            CREATE TABLE ElementProperties (
-                Z INTEGER PRIMARY KEY,
-                E TEXT, EName TEXT, P INTEGER, G INTEGER,
-                AWeight REAL, ARadius REAL, MolarVolume REAL,
-                Melting REAL, Boiling REAL, Negativity REAL,
-                Affinity REAL, Valence TEXT, MaxIonNum INTEGER, MaxIonization REAL,
-                STPDensity REAL, ElectConduct REAL, ThermConduct REAL, SpecHeat REAL
             )
         '''
     },
@@ -216,44 +152,29 @@ def create_indexes(conn):
 
     print("\nCreating indexes...")
 
-    # Fusion tables - index on input elements and output element
-    cursor.execute("CREATE INDEX idx_fusion_e1 ON Fusion(E1)")
-    cursor.execute("CREATE INDEX idx_fusion_e2 ON Fusion(E2)")
-    cursor.execute("CREATE INDEX idx_fusion_e ON Fusion(E)")
-
+    # FusionAll table - index on input elements and output element
     cursor.execute("CREATE INDEX idx_fusionall_e1 ON FusionAll(E1)")
     cursor.execute("CREATE INDEX idx_fusionall_e2 ON FusionAll(E2)")
     cursor.execute("CREATE INDEX idx_fusionall_e ON FusionAll(E)")
     cursor.execute("CREATE INDEX idx_fusionall_neutrino ON FusionAll(neutrino)")
 
-    # Fission tables - index on input element and output elements
-    cursor.execute("CREATE INDEX idx_fission_e ON Fission(E)")
-    cursor.execute("CREATE INDEX idx_fission_e1 ON Fission(E1)")
-    cursor.execute("CREATE INDEX idx_fission_e2 ON Fission(E2)")
-
+    # FissionAll table - index on input element and output elements
     cursor.execute("CREATE INDEX idx_fissionall_e ON FissionAll(E)")
     cursor.execute("CREATE INDEX idx_fissionall_e1 ON FissionAll(E1)")
     cursor.execute("CREATE INDEX idx_fissionall_e2 ON FissionAll(E2)")
     cursor.execute("CREATE INDEX idx_fissionall_neutrino ON FissionAll(neutrino)")
 
-    # TwoToTwo tables - index on all elements
-    cursor.execute("CREATE INDEX idx_twotwo_e1 ON TwoToTwo(E1)")
-    cursor.execute("CREATE INDEX idx_twotwo_e2 ON TwoToTwo(E2)")
-    cursor.execute("CREATE INDEX idx_twotwo_e3 ON TwoToTwo(E3)")
-    cursor.execute("CREATE INDEX idx_twotwo_e4 ON TwoToTwo(E4)")
-
+    # TwoToTwoAll table - index on all elements
     cursor.execute("CREATE INDEX idx_twotwoall_e1 ON TwoToTwoAll(E1)")
     cursor.execute("CREATE INDEX idx_twotwoall_e2 ON TwoToTwoAll(E2)")
     cursor.execute("CREATE INDEX idx_twotwoall_e3 ON TwoToTwoAll(E3)")
     cursor.execute("CREATE INDEX idx_twotwoall_e4 ON TwoToTwoAll(E4)")
     cursor.execute("CREATE INDEX idx_twotwoall_neutrino ON TwoToTwoAll(neutrino)")
 
-    # Nuclides - index on element symbol
-    cursor.execute("CREATE INDEX idx_nuclides_e ON Nuclides(E)")
+    # NuclidesPlus - index on element symbol
     cursor.execute("CREATE INDEX idx_nuclidesplus_e ON NuclidesPlus(E)")
 
-    # ElementProperties - already has primary key on Z
-    cursor.execute("CREATE INDEX idx_elementproperties_e ON ElementProperties(E)")
+    # ElementPropertiesPlus - already has primary key on Z
     cursor.execute("CREATE INDEX idx_elementpropertiesplus_e ON ElementPropertiesPlus(E)")
 
     conn.commit()

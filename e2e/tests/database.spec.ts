@@ -84,6 +84,11 @@ test.describe('Database Loading and Caching', () => {
   });
 
   test('should detect metered connections', async ({ page, context }) => {
+    // Fetch expected database size from metadata
+    const metadata = await page.request.get('/parkhomov.db.meta.json');
+    const metadataJson = await metadata.json();
+    const expectedSizeMB = Math.round(metadataJson.size / (1024 * 1024));
+
     // This test simulates metered connection by injecting navigator.connection
     await context.addInitScript(() => {
       Object.defineProperty(navigator, 'connection', {
@@ -111,8 +116,8 @@ test.describe('Database Loading and Caching', () => {
     const meteredWarning = page.locator('[data-testid="metered-warning"]');
     await expect(meteredWarning).toBeVisible({ timeout: 5000 });
 
-    // Should show warning message (207MB or 207 MB)
-    await expect(page.getByText(/207\s?MB/i)).toBeVisible();
+    // Should show warning message with actual database size from metadata
+    await expect(page.getByText(new RegExp(`${expectedSizeMB}\\s?MB`, 'i'))).toBeVisible();
 
     // Click proceed
     await page.getByRole('button', { name: /download anyway/i }).click();

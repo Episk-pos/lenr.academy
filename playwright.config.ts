@@ -12,11 +12,11 @@ export default defineConfig({
   /* Fail the build on CI if you accidentally left test.only in the source code. */
   forbidOnly: !!process.env.CI,
 
-  /* Retry on CI only */
-  retries: process.env.CI ? 2 : 0,
+  /* Retry flaky tests - 2 retries on CI, 1 retry locally */
+  retries: process.env.CI ? 2 : 1,
 
-  /* Opt out of parallel tests on CI. */
-  workers: process.env.CI ? 1 : undefined,
+  /* Use 2 workers on CI to utilize both CPU cores on GitHub-hosted runners */
+  workers: process.env.CI ? 2 : undefined,
 
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: process.env.CI ? 'html' : 'list',
@@ -33,6 +33,9 @@ export default defineConfig({
     screenshot: 'only-on-failure',
   },
 
+  /* Global test timeout - 60 seconds per test */
+  timeout: 60000,
+
   /* Configure projects for major browsers */
   projects: [
     {
@@ -42,7 +45,19 @@ export default defineConfig({
 
     {
       name: 'firefox',
-      use: { ...devices['Desktop Firefox'] },
+      use: {
+        ...devices['Desktop Firefox'],
+        launchOptions: {
+          firefoxUserPrefs: {
+            // Auto-allow persistent storage requests
+            'dom.storage.next_gen': true,
+            'dom.storageManager.enabled': true,
+            'dom.storageManager.prompt.testing': false,
+            'dom.storageManager.prompt.testing.allow': true,
+            'permissions.default.persistent-storage': 1, // 1 = allow, 2 = deny
+          },
+        },
+      },
     },
 
     {

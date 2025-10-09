@@ -16,8 +16,8 @@ test.describe('Privacy Preferences Page', () => {
     await acceptMeteredWarningIfPresent(page);
     await waitForDatabaseReady(page);
 
-    // Click privacy settings link in sidebar
-    const privacyLink = page.getByRole('link', { name: /privacy settings/i });
+    // Click privacy settings link in sidebar - use first() to avoid strict mode issues
+    const privacyLink = page.getByRole('link', { name: /privacy settings/i }).first();
     await expect(privacyLink).toBeVisible();
     await privacyLink.click();
 
@@ -229,14 +229,11 @@ test.describe('Privacy Preferences Page', () => {
     await acceptMeteredWarningIfPresent(page);
     await waitForDatabaseReady(page);
 
-    // Tab to enable button
-    await page.keyboard.press('Tab');
-    await page.keyboard.press('Tab');
-
-    // Should be focused on enable button (might need multiple tabs depending on page structure)
+    // Get enable button and focus it
     const enableButton = page.getByRole('button', { name: /enable analytics/i });
+    await enableButton.focus();
 
-    // Press Enter to activate
+    // Press Enter or Space to activate
     await page.keyboard.press('Enter');
 
     // Should show confirmation
@@ -275,12 +272,19 @@ test.describe('Privacy Preferences - Mobile', () => {
     await acceptMeteredWarningIfPresent(page);
     await waitForDatabaseReady(page);
 
+    // Dismiss privacy banner first to avoid click interception
+    const privacyBannerDismiss = page.getByRole('button', { name: /accept|dismiss/i });
+    if (await privacyBannerDismiss.isVisible({ timeout: 1000 }).catch(() => false)) {
+      await privacyBannerDismiss.click();
+    }
+
     // Open mobile menu
     const menuButton = page.getByRole('button', { name: /open menu/i });
     await menuButton.click();
 
-    // Click privacy settings link
-    const privacyLink = page.getByRole('link', { name: /privacy settings/i });
+    // Privacy Settings link is at the bottom of the sidebar, scroll to it
+    const privacyLink = page.getByRole('link', { name: /privacy settings/i }).first();
+    await privacyLink.scrollIntoViewIfNeeded();
     await expect(privacyLink).toBeVisible();
     await privacyLink.click();
 

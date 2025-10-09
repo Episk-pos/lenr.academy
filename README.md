@@ -4,6 +4,8 @@ A modern React SPA reimplementation of the [Nanosoft Package](https://nanosoft.c
 
 **🌐 Live Application**: [lenr.academy](https://lenr.academy)
 
+**💬 Community**: [GitHub Discussions](https://github.com/Episk-pos/lenr.academy/discussions) - Ask questions, share ideas, and discuss LENR research
+
 ## About
 
 This application provides interactive tools for querying and analyzing nuclear reaction databases originally compiled by Dr. Alexander Parkhomov. The Parkhomov tables contain:
@@ -162,6 +164,7 @@ This is an open science project. Data tables are publicly available from the Mar
 ### Repository
 
 - **GitHub**: [Episk-pos/lenr.academy](https://github.com/Episk-pos/lenr.academy)
+- **Discussions**: [Join the conversation](https://github.com/Episk-pos/lenr.academy/discussions)
 - **Bug Reports**: [Submit an issue](https://github.com/Episk-pos/lenr.academy/issues)
 - **Feature Requests**: [Request a feature](https://github.com/Episk-pos/lenr.academy/issues/new?labels=enhancement)
 

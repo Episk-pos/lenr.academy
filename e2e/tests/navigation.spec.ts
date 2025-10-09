@@ -16,19 +16,22 @@ test.describe('Navigation and Routing', () => {
 
   test('should navigate to all main routes', async ({ page }) => {
     const routes = [
-      { path: '/', name: 'Home', heading: /The Nanosoft Package/i },
-      { path: '/fusion', name: 'Fusion', heading: /Fusion Reactions/i },
-      { path: '/fission', name: 'Fission', heading: /Fission Reactions/i },
-      { path: '/twotwo', name: 'Two-to-Two', heading: /Two-to-Two Reactions/i },
-      { path: '/element-data', name: 'Element Data', heading: /Element Data/i },
-      { path: '/tables', name: 'Tables in Detail', heading: /Tables in Detail/i },
-      { path: '/all-tables', name: 'All Tables', heading: /All Tables/i },
-      { path: '/cascades', name: 'Cascades', heading: /Cascade Simulations/i },
-      { path: '/privacy', name: 'Privacy', heading: /Privacy Settings/i }
+      { path: '/', name: 'Home', heading: /The Nanosoft Package/i, needsDb: false },
+      { path: '/fusion', name: 'Fusion', heading: /Fusion Reactions/i, needsDb: true },
+      { path: '/fission', name: 'Fission', heading: /Fission Reactions/i, needsDb: true },
+      { path: '/twotwo', name: 'Two-to-Two', heading: /Two-to-Two Reactions/i, needsDb: true },
+      { path: '/element-data', name: 'Element Data', heading: /Element Data/i, needsDb: true },
+      { path: '/tables', name: 'Tables in Detail', heading: /Tables in Detail/i, needsDb: true },
+      { path: '/all-tables', name: 'All Tables', heading: /All Tables/i, needsDb: true },
+      { path: '/cascades', name: 'Cascades', heading: /Cascade Simulations/i, needsDb: false },
+      { path: '/privacy', name: 'Privacy', heading: /Privacy Settings/i, needsDb: false }
     ];
 
     for (const route of routes) {
       await page.goto(route.path);
+      if (route.needsDb) {
+        await waitForDatabaseReady(page);
+      }
       await expect(page.getByRole('heading', { name: route.heading })).toBeVisible({ timeout: 10000 });
       // Check URL contains the path (some pages add query params automatically)
       await expect(page).toHaveURL(new RegExp(route.path));
@@ -41,16 +44,19 @@ test.describe('Navigation and Routing', () => {
 
     // Click Fusion link
     await navigateToPage(page, 'Fusion');
+    await waitForDatabaseReady(page);
     await expect(page).toHaveURL(/\/fusion/);
     await expect(page.getByRole('heading', { name: /Fusion Reactions/i })).toBeVisible();
 
     // Click Fission link
     await navigateToPage(page, 'Fission');
+    await waitForDatabaseReady(page);
     await expect(page).toHaveURL(/\/fission/);
     await expect(page.getByRole('heading', { name: /Fission Reactions/i })).toBeVisible();
 
     // Click Element Data link
     await navigateToPage(page, 'Element Data');
+    await waitForDatabaseReady(page);
     await expect(page).toHaveURL(/\/element-data/);
     await expect(page.getByRole('heading', { name: /Element Data/i })).toBeVisible();
   });
@@ -58,26 +64,32 @@ test.describe('Navigation and Routing', () => {
   test('should support browser back/forward navigation', async ({ page }) => {
     // Navigate through pages
     await page.goto('/fusion');
+    await waitForDatabaseReady(page);
     await expect(page).toHaveURL(/\/fusion/);
 
     await page.goto('/fission');
+    await waitForDatabaseReady(page);
     await expect(page).toHaveURL(/\/fission/);
 
     await page.goto('/element-data');
+    await waitForDatabaseReady(page);
     await expect(page).toHaveURL(/\/element-data/);
 
     // Go back
     await page.goBack();
+    await waitForDatabaseReady(page);
     await expect(page).toHaveURL(/\/fission/);
     await expect(page.getByRole('heading', { name: /Fission Reactions/i })).toBeVisible();
 
     // Go back again
     await page.goBack();
+    await waitForDatabaseReady(page);
     await expect(page).toHaveURL(/\/fusion/);
     await expect(page.getByRole('heading', { name: /Fusion Reactions/i })).toBeVisible();
 
     // Go forward
     await page.goForward();
+    await waitForDatabaseReady(page);
     await expect(page).toHaveURL(/\/fission/);
     await expect(page.getByRole('heading', { name: /Fission Reactions/i })).toBeVisible();
   });
@@ -85,11 +97,13 @@ test.describe('Navigation and Routing', () => {
   test('should handle direct URL navigation', async ({ page }) => {
     // Navigate directly to a specific page
     await page.goto('/twotwo');
+    await waitForDatabaseReady(page);
     await expect(page.getByRole('heading', { name: /Two-to-Two Reactions/i })).toBeVisible();
     await expect(page).toHaveURL(/\/twotwo/);
 
     // Navigate to another page directly
     await page.goto('/all-tables');
+    await waitForDatabaseReady(page);
     await expect(page.getByRole('heading', { name: /All Tables/i })).toBeVisible();
     await expect(page).toHaveURL(/\/all-tables/);
   });

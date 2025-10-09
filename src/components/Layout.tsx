@@ -5,6 +5,7 @@ import { useState } from 'react'
 import { useTheme } from '../contexts/ThemeContext'
 import DatabaseUpdateBanner from './DatabaseUpdateBanner'
 import PrivacyBanner from './PrivacyBanner'
+import { getVersionInfo, getVersionTooltip, getGitHubReleaseUrl } from '../utils/version'
 
 interface LayoutProps {
   children: ReactNode
@@ -35,6 +36,7 @@ export default function Layout({ children }: LayoutProps) {
     return saved ? JSON.parse(saved) : false
   })
   const { theme, toggleTheme } = useTheme()
+  const versionInfo = getVersionInfo()
 
   // Save sidebar collapse state to localStorage
   useEffect(() => {
@@ -80,11 +82,25 @@ export default function Layout({ children }: LayoutProps) {
             <Link
               to="/privacy"
               onClick={() => setSidebarOpen(false)}
-              className="flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+              className="flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors mb-3"
             >
               <Shield className="w-4 h-4" />
               <span>Privacy Settings</span>
             </Link>
+            <div className="text-xs text-gray-500 dark:text-gray-400 px-3">
+              <p>Based on work by Dr. Alexander Parkhomov</p>
+              <p className="mt-1">Martin Fleischmann Memorial Project</p>
+              <a
+                href={getGitHubReleaseUrl(versionInfo)}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-2 inline-block text-gray-400 dark:text-gray-500 hover:text-primary-600 dark:hover:text-primary-400 transition-colors cursor-pointer"
+                title={getVersionTooltip(versionInfo)}
+                data-testid="app-version"
+              >
+                {versionInfo.displayVersion}
+              </a>
+            </div>
           </div>
         </div>
       </div>
@@ -164,6 +180,16 @@ export default function Layout({ children }: LayoutProps) {
               <div className="text-xs text-gray-500 dark:text-gray-400">
                 <p>Based on work by Dr. Alexander Parkhomov</p>
                 <p className="mt-1">Martin Fleischmann Memorial Project</p>
+                <a
+                  href={getGitHubReleaseUrl(versionInfo)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mt-2 inline-block text-gray-400 dark:text-gray-500 hover:text-primary-600 dark:hover:text-primary-400 transition-colors cursor-pointer"
+                  title={getVersionTooltip(versionInfo)}
+                  data-testid="app-version"
+                >
+                  {versionInfo.displayVersion}
+                </a>
               </div>
             )}
           </div>

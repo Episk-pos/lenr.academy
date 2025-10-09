@@ -155,11 +155,8 @@ test.describe('Privacy Banner', () => {
     if (isVisible) {
       await acceptButton.click();
 
-      // Banner should disappear
-      await page.waitForTimeout(500);
-
-      const banner = page.getByText(/analytics|privacy|consent/i);
-      await expect(banner).not.toBeVisible();
+      // Banner (and accept button) should disappear
+      await expect(acceptButton).not.toBeVisible({ timeout: 2000 });
     }
   });
 

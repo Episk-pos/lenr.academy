@@ -175,6 +175,14 @@ export default function Home() {
             View on GitHub
           </a>
           <a
+            href="https://github.com/Episk-pos/lenr.academy/discussions"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors font-medium"
+          >
+            Join Discussions
+          </a>
+          <a
             href="https://github.com/Episk-pos/lenr.academy/issues"
             target="_blank"
             rel="noopener noreferrer"

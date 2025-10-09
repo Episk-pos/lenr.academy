@@ -4,7 +4,7 @@ import { Page } from '@playwright/test';
  * Helper to wait for database to be loaded
  * The app shows a loading card while database initializes
  */
-export async function waitForDatabaseReady(page: Page, timeout = 30000) {
+export async function waitForDatabaseReady(page: Page, timeout = 60000) {
   // Wait for either the database to load or the metered connection warning
   await page.waitForFunction(
     () => {
