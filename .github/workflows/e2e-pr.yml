@@ -12,6 +12,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          lfs: true
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -24,13 +26,6 @@ jobs:
 
       - name: Install Playwright browsers
         run: npx playwright install --with-deps chromium
-
-      - name: Create test database
-        run: |
-          # For CI, we need a minimal database file or mock
-          # Since the 207MB database is too large for CI, we'll let tests handle it
-          # The tests should work with the actual download or use mocked data
-          echo "Database will be downloaded during test execution"
 
       - name: Run Playwright tests (Chromium only for PRs)
         run: npx playwright test --project=chromium
