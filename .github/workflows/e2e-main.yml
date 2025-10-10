@@ -18,8 +18,20 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          lfs: true
+          lfs: false  # Don't download LFS files yet
           fetch-depth: 0  # Fetch all history and tags for version detection
+
+      - name: Cache LFS objects
+        id: lfs-cache
+        uses: actions/cache@v4
+        with:
+          path: .git/lfs
+          key: lfs-${{ hashFiles('.gitattributes') }}-${{ hashFiles('public/parkhomov.db') }}
+          restore-keys: |
+            lfs-${{ hashFiles('.gitattributes') }}-
+
+      - name: Fetch LFS files
+        run: git lfs pull
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -30,8 +42,20 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Cache Playwright browsers
+        id: playwright-cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+
       - name: Install Playwright browsers
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
         run: npx playwright install --with-deps ${{ matrix.browser }}
+
+      - name: Install Playwright browser dependencies
+        if: steps.playwright-cache.outputs.cache-hit == 'true'
+        run: npx playwright install-deps ${{ matrix.browser }}
 
       - name: Run Playwright tests
         run: npx playwright test --project=${{ matrix.browser }}
