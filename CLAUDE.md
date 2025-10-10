@@ -28,6 +28,13 @@ npm run preview      # Preview production build locally
 # Code Quality
 npm run lint         # ESLint check
 
+# Database Management
+npm run db:download                      # Download latest database from S3 to ./public
+bash scripts/download-db.sh v1.2.3       # Download specific version
+npm run db:upload                        # Upload database (uses version from .db.meta.json)
+npm run db:upload --version=v1.2.3       # Upload database with specific version
+npm run db:index                         # Regenerate S3 bucket index.html and versions.json
+
 # Deployment (AWS S3 + CloudFront)
 npm run deploy       # Deploy to S3 and invalidate CloudFront cache
 npm run deploy:s3    # Sync ./dist to s3://lenr.academy
@@ -207,6 +214,80 @@ public/
 └── sql-wasm.wasm          # sql.js WebAssembly binary
 ```
 
+## Database Storage & Versioning
+
+The SQLite database is **not stored in Git** due to its 154MB size. Instead, it's stored in a dedicated S3 bucket with explicit versioning:
+
+### S3 Storage Structure
+
+```
+s3://db.lenr.academy/
+  ├── index.html                    # Human-readable version directory
+  ├── versions.json                 # Machine-readable version index
+  ├── v1.0.0/
+  │   ├── parkhomov.db
+  │   └── parkhomov.db.meta.json
+  ├── latest/                       # Always points to current version
+  │   ├── parkhomov.db
+  │   └── parkhomov.db.meta.json
+  └── [more versions...]
+```
+
+### Updating the Database
+
+When making changes to the database:
+
+1. **Prepare the new version**:
+   - Place updated `parkhomov.db` in `public/` directory
+   - Ensure it's tested locally
+
+2. **Upload to S3**:
+   ```bash
+   npm run db:upload --version=v1.2.3
+   ```
+   This will:
+   - Calculate MD5 checksum
+   - Upload to `s3://db.lenr.academy/v1.2.3/`
+   - Update `latest/` symlink
+   - Regenerate `index.html` and `versions.json`
+
+3. **Update metadata in Git**:
+   - The upload script creates `public/parkhomov.db.meta.json`
+   - Commit this metadata file to Git for version tracking
+
+4. **Deploy to production/staging**:
+   - Production: `npm run deploy` (copies from `dist/`)
+   - The database is already served from S3
+
+### CI/CD Database Access
+
+GitHub Actions workflows download the database from S3 during test runs:
+- Uses `s3://db.lenr.academy/latest/` for current version
+- No Git LFS bandwidth consumption
+- Fast downloads from S3
+
+### Local Development Setup
+
+The database is **automatically downloaded** during `npm install` via a postinstall script. If you need to:
+
+- **Re-download the latest version**:
+  ```bash
+  npm run db:download
+  ```
+
+- **Download a specific version**:
+  ```bash
+  bash scripts/download-db.sh v1.2.3
+  ```
+
+This places `parkhomov.db` and `parkhomov.db.meta.json` in the `public/` directory.
+
+### Version Browser
+
+The S3 bucket is configured for static website hosting. View all available versions at:
+- **Human-readable**: https://db.lenr.academy/index.html
+- **API**: https://db.lenr.academy/versions.json
+
 ## Git Workflow
 
-The `.gitignore` excludes `*.db` files but keeps `!*.db.meta.json` for version tracking. The 154MB database file is served from S3 in production and must be manually placed in `/public` for local development.
+The `.gitignore` excludes `*.db` files but keeps `!*.db.meta.json` for version tracking. The 154MB database file is never committed to Git - it's stored in S3 with explicit versioning.

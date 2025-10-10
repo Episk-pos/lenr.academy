@@ -81,9 +81,18 @@ The application uses a **154MB SQLite database** (`parkhomov.db`) containing all
 - **Format**: SQLite 3.x
 - **Size**: 154 MB (uncompressed)
 - **Tables**: NuclidesPlus, ElementPropertiesPlus, FusionReactions, FissionReactions, TwoToTwoReactions
+- **Hosted**: [db.lenr.academy](https://db.lenr.academy/) - versioned storage with S3
 - **Download**: Available in [GitHub release assets](https://github.com/Episk-pos/lenr.academy/releases/latest) for offline use or external analysis
 
 The database runs entirely client-side in your browser using [sql.js](https://sql.js.org/) (SQLite compiled to WebAssembly). It's automatically cached in IndexedDB for faster subsequent loads.
+
+### Database Versions
+
+All database versions are available at **[db.lenr.academy](https://db.lenr.academy/)** with:
+- Human-readable version browser
+- API access at [versions.json](https://db.lenr.academy/versions.json)
+- Direct downloads of any version
+- MD5 checksums for verification
 
 ## Data Sources
 

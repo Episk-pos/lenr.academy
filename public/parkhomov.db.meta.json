@@ -1,6 +1,7 @@
 {
   "version": "1.2.0",
+  "checksum": "e1847170483ddc85c4ff6075dd7b87a5",
   "size": 161054720,
-  "lastModified": "2025-10-09T00:00:00Z",
-  "changelog": "Removed redundant tables: Fusion, Fission, TwoToTwo (non-All versions) and ElementProperties, Nuclides (non-Plus versions) - reduced size from 207MB to 154MB"
+  "s3_path": "s3://db.lenr.academy/1.2.0/parkhomov.db",
+  "updated": "2025-10-10T13:34:47Z"
 }

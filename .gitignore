@@ -12,7 +12,8 @@ dist
 dist-ssr
 *.local
 
-# Database metadata (keep this)
+# Database files (stored in S3, not in Git)
+*.db
 !*.db.meta.json
 
 # Editor directories and files
