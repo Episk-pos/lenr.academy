@@ -171,12 +171,38 @@ export function DatabaseProvider({ children }: { children: ReactNode }) {
   const clearCache = async () => {
     try {
       console.log('🗑️ Clearing database cache...');
-      await clearAllCache();
-      console.log('✅ Cache cleared, reloading...');
+
+      // Close sql.js database if open
+      if (db) {
+        try {
+          db.close();
+          console.log('✅ Closed sql.js database');
+        } catch (err) {
+          console.warn('Failed to close sql.js database:', err);
+        }
+      }
+
+      // Set the database to null to release references
+      setDb(null);
+
+      // Wait a tick to ensure all references are released
+      await new Promise(resolve => setTimeout(resolve, 100));
+
+      // Try to clear IndexedDB cache (with timeout protection)
+      try {
+        await clearAllCache();
+        console.log('✅ Cache cleared, reloading...');
+      } catch (err) {
+        console.warn('Failed to clear cache, but reloading anyway:', err);
+      }
+
+      // Force reload with cache bypass (hard reload)
       window.location.reload();
     } catch (err) {
-      console.error('Failed to clear cache:', err);
-      throw err;
+      console.error('Unexpected error in clearCache:', err);
+      // Even if everything fails, still reload - the app will try to recover
+      console.log('⚠️ Reloading anyway to attempt recovery...');
+      window.location.reload();
     }
   };
 

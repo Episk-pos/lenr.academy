@@ -1,13 +1,12 @@
 import { useState } from 'react';
 import { AlertCircle, RefreshCw } from 'lucide-react';
-import { useDatabase } from '../contexts/DatabaseContext';
+import { clearAllCache } from '../services/dbCache';
 
 interface DatabaseErrorCardProps {
   error: Error;
 }
 
 export default function DatabaseErrorCard({ error }: DatabaseErrorCardProps) {
-  const { clearDatabaseCache } = useDatabase();
   const [isClearing, setIsClearing] = useState(false);
 
   // Check if this is a database corruption error
@@ -20,11 +19,15 @@ export default function DatabaseErrorCard({ error }: DatabaseErrorCardProps) {
 
     setIsClearing(true);
     try {
-      await clearDatabaseCache();
+      console.log('🗑️ DatabaseErrorCard: Starting cache clear...');
+      await clearAllCache();
+      console.log('✅ DatabaseErrorCard: Cache cleared, reloading...');
+      window.location.reload();
     } catch (err) {
-      console.error('Failed to clear cache:', err);
-      alert('Failed to clear cache. Please try clearing your browser data manually.');
-      setIsClearing(false);
+      console.error('❌ DatabaseErrorCard: Failed to clear cache:', err);
+      // Reload anyway to attempt recovery
+      console.log('⚠️ DatabaseErrorCard: Reloading anyway...');
+      window.location.reload();
     }
   };
 

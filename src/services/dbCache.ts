@@ -180,22 +180,42 @@ export async function getAllCachedVersions(): Promise<CachedDatabase[]> {
  * Clear all cached databases
  */
 export async function clearAllCache(): Promise<void> {
-  try {
-    const db = await openDB();
-    const transaction = db.transaction(STORE_NAME, 'readwrite');
-    const store = transaction.objectStore(STORE_NAME);
+  return new Promise<void>((resolve) => {
+    console.log('🗑️ Attempting to delete IndexedDB database:', DB_NAME);
 
-    await new Promise<void>((resolve, reject) => {
-      const request = store.clear();
-      request.onsuccess = () => resolve();
-      request.onerror = () => reject(request.error);
-    });
+    // Aggressive timeout - resolve quickly to allow page reload
+    const timeout = setTimeout(() => {
+      console.warn('⚠️ Delete operation timed out after 2s, proceeding with reload');
+      resolve();
+    }, 2000); // 2 second timeout (reduced from 5)
 
-    console.log('🗑️ Cleared all database cache');
-  } catch (error) {
-    console.error('Failed to clear cache:', error);
-    throw error;
-  }
+    try {
+      // Delete the entire IndexedDB database directly
+      const request = indexedDB.deleteDatabase(DB_NAME);
+
+      request.onsuccess = () => {
+        clearTimeout(timeout);
+        console.log('✅ Successfully deleted IndexedDB database');
+        resolve();
+      };
+
+      request.onerror = () => {
+        clearTimeout(timeout);
+        console.error('❌ Failed to delete IndexedDB:', request.error);
+        // Don't reject - we'll reload anyway and try to recover
+        resolve();
+      };
+
+      request.onblocked = () => {
+        console.warn('⚠️ Delete blocked by open connections');
+        // Let timeout handle this - we'll reload anyway
+      };
+    } catch (err) {
+      clearTimeout(timeout);
+      console.error('❌ Exception during IndexedDB deletion:', err);
+      resolve();
+    }
+  });
 }
 
 /**
