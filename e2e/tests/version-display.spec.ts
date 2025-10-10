@@ -33,8 +33,12 @@ test.describe('Version Display', () => {
 
     const versionText = await versionElement.textContent();
 
-    // Should match semver-like pattern (v0.1.0, v0.1.0-alpha.0, or v0.1.0-alpha.0+4.g72f289d)
-    expect(versionText).toMatch(/^v\d+\.\d+\.\d+/);
+    // Should match one of these patterns:
+    // - Semver: v0.1.0, v0.1.0-alpha.0
+    // - Dev build: v0.1.0-alpha.0+4.g72f289d, v0.1.0-alpha.0 (modified)
+    // - Commit SHA: 9abc6cf (fallback when git tags aren't available)
+    // - Unknown: 'unknown' (fallback when git isn't available)
+    expect(versionText).toMatch(/^(v\d+\.\d+\.\d+[\w.\-+()]*|[a-f0-9]{7,40}|unknown)/);
   });
 
   test('should have tooltip with version details', async ({ page }) => {
