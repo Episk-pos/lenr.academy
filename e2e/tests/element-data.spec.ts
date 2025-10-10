@@ -213,15 +213,18 @@ test.describe('Element Data Page', () => {
 
     // Navigate to Cu
     await page.goto('/element-data?Z=29');
+    await waitForDatabaseReady(page);
     await expect(page.getByText(/Copper/i)).toBeVisible();
 
     // Go back
     await page.goBack();
+    await page.waitForLoadState('networkidle');
     await expect(page).toHaveURL(/Z=26/);
     await expect(page.getByText(/Iron/i)).toBeVisible();
 
     // Go forward
     await page.goForward();
+    await page.waitForLoadState('networkidle');
     await expect(page).toHaveURL(/Z=29/);
     await expect(page.getByText(/Copper/i)).toBeVisible();
   });

@@ -58,6 +58,9 @@ test.describe('Database Loading and Caching', () => {
     await acceptMeteredWarningIfPresent(page);
     await waitForDatabaseReady(page);
 
+    // Wait a bit for IndexedDB write to complete
+    await page.waitForTimeout(1000);
+
     // Check that IndexedDB contains the cached database
     const hasCache = await page.evaluate(async () => {
       const dbs = await window.indexedDB.databases();

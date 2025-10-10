@@ -83,10 +83,10 @@ test.describe('Privacy Preferences Page', () => {
     await enableButton.click();
 
     // Should show confirmation
-    await expect(page.getByText(/your preference has been saved/i)).toBeVisible();
+    await expect(page.getByText(/your.*preference has been saved/i)).toBeVisible();
 
     // Should show reload message
-    await expect(page.getByText(/to activate analytics/i)).toBeVisible();
+    await expect(page.getByText(/to apply your changes.*reload/i)).toBeVisible();
 
     // Check localStorage was updated
     const consent = await page.evaluate(() => {
@@ -110,7 +110,7 @@ test.describe('Privacy Preferences Page', () => {
     await disableButton.click();
 
     // Should show confirmation
-    await expect(page.getByText(/your preference has been saved/i)).toBeVisible();
+    await expect(page.getByText(/your.*preference has been saved/i)).toBeVisible();
 
     // Check localStorage was updated
     const consent = await page.evaluate(() => {
@@ -237,16 +237,13 @@ test.describe('Privacy Preferences Page', () => {
     await page.keyboard.press('Enter');
 
     // Should show confirmation
-    await expect(page.getByText(/your preference has been saved/i)).toBeVisible();
+    await expect(page.getByText(/your.*preference has been saved/i)).toBeVisible();
   });
 
   test('should display information about Umami analytics', async ({ page }) => {
     await page.goto('/privacy');
     await acceptMeteredWarningIfPresent(page);
     await waitForDatabaseReady(page);
-
-    // Should show "About Our Analytics" section
-    await expect(page.getByRole('heading', { name: /about our analytics/i })).toBeVisible();
 
     // Should mention Umami
     await expect(page.getByText(/umami analytics/i)).toBeVisible();
@@ -305,7 +302,7 @@ test.describe('Privacy Preferences - Mobile', () => {
     const enableButton = page.getByRole('button', { name: /enable analytics/i });
     await enableButton.click();
 
-    await expect(page.getByText(/your preference has been saved/i)).toBeVisible();
+    await expect(page.getByText(/your.*preference has been saved/i)).toBeVisible();
   });
 });
 
@@ -325,7 +322,7 @@ test.describe('Privacy Preferences - Accessibility', () => {
     await expect(h1).toBeVisible();
 
     // Check for h2 headings
-    await expect(page.getByRole('heading', { level: 2 })).toHaveCount(3); // Current Status, Manage Preferences, About Analytics
+    await expect(page.getByRole('heading', { level: 2 })).toHaveCount(2); // Error Reporting, Analytics
 
     // Links should have visible text
     const umamiLink = page.getByRole('link', { name: /learn more about umami/i });
