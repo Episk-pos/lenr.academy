@@ -700,3 +700,20 @@ export function getPrimaryDecayMode(db: Database, Z: number, A: number): DecayDa
     halfLifeUnits: row[5] as string | null,
   };
 }
+
+/**
+ * Get element symbol by atomic number
+ */
+export function getElementSymbolByZ(db: Database, Z: number): string | null {
+  const sql = `
+    SELECT E
+    FROM ElementPropertiesPlus
+    WHERE Z = ?
+    LIMIT 1
+  `;
+  const results = db.exec(sql, [Z]);
+  if (results.length === 0 || results[0].values.length === 0) {
+    return null;
+  }
+  return results[0].values[0][0] as string;
+}

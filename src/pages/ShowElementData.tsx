@@ -16,6 +16,7 @@ export default function ShowElementData() {
   const [isotopes, setIsotopes] = useState<Nuclide[]>([])
   const [selectedNuclide, setSelectedNuclide] = useState<Nuclide | null>(null)
   const [atomicRadii, setAtomicRadii] = useState<AtomicRadiiData | null>(null)
+  const [requestedMissingNuclide, setRequestedMissingNuclide] = useState<{ E: string; A: number } | null>(null)
 
   // Get all elements from database (memoized to prevent recreating on every render)
   const allElements: Element[] = useMemo(() => {
@@ -95,17 +96,22 @@ export default function ShowElementData() {
           const validIsotope = elementIsotopes.find(iso => iso.A === massNumber)
           if (validIsotope) {
             setSelectedNuclide(validIsotope)
+            setRequestedMissingNuclide(null)
           } else {
             setSelectedNuclide(null)
+            // Track the requested but missing nuclide
+            setRequestedMissingNuclide({ E: currentElement.E, A: massNumber })
           }
         } else {
           setSelectedNuclide(null) // Reset nuclide selection when element changes
+          setRequestedMissingNuclide(null)
         }
       }
     } else {
       setIsotopes([])
       setSelectedNuclide(null)
       setAtomicRadii(null)
+      setRequestedMissingNuclide(null)
     }
   }, [db, selectedElement, allElements, searchParams])
 
@@ -372,6 +378,22 @@ export default function ShowElementData() {
               {selectedNuclide && (
                 <div className="mt-4">
                   <NuclideDetailsCard nuclide={selectedNuclide} />
+                </div>
+              )}
+
+              {/* Missing nuclide message */}
+              {!selectedNuclide && requestedMissingNuclide && (
+                <div className="mt-4 p-6 bg-amber-50 dark:bg-amber-900/20 border-2 border-amber-200 dark:border-amber-800 rounded-lg">
+                  <h3 className="text-lg font-semibold text-amber-900 dark:text-amber-200 mb-2">
+                    Nuclide Not Available
+                  </h3>
+                  <p className="text-sm text-amber-800 dark:text-amber-300 mb-4">
+                    The nuclide <strong>{requestedMissingNuclide.E}-{requestedMissingNuclide.A}</strong> is not available in the database.
+                    This isotope may be extremely short-lived or outside the range of documented nuclides.
+                  </p>
+                  <p className="text-sm text-amber-800 dark:text-amber-300">
+                    Available nuclides for {element?.EName} are shown above. Select one to view its detailed properties.
+                  </p>
                 </div>
               )}
             </div>
