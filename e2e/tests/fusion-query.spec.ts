@@ -413,8 +413,8 @@ test.describe('Fusion Query Page', () => {
   });
 
   test('should restore pinned element from URL on page load', async ({ page }) => {
-    // Navigate with pinE parameter (using C which appears in default H+C,O results)
-    await page.goto('/fusion?pinE=C');
+    // Navigate with pinE parameter - He+He fusion produces Li (Lithium) as output
+    await page.goto('/fusion?e1=He&e2=He&pinE=Li');
     await waitForDatabaseReady(page);
 
     // Wait for results to load
@@ -423,20 +423,29 @@ test.describe('Fusion Query Page', () => {
       { timeout: 10000 }
     );
 
-    // Find the Carbon element card
-    const elementCards = page.locator('text=Elements Appearing in Results').locator('..').locator('div[class*="cursor-pointer"]');
-    const carbonCard = elementCards.filter({ hasText: /^C\s/ }).first();
+    // Wait for "Elements Appearing in Results" section to be visible
+    await page.locator('text=Elements Appearing in Results').waitFor({ state: 'visible', timeout: 10000 });
 
-    // Verify Carbon is pinned (has ring-2 ring-blue-400 class)
-    await expect(carbonCard).toHaveClass(/ring-2.*ring-blue-400/);
+    // Scroll section into view
+    await page.locator('text=Elements Appearing in Results').scrollIntoViewIfNeeded();
+
+    // Wait for URL initialization
+    await page.waitForTimeout(1000);
+
+    // Find the Lithium element card
+    const liCard = page.getByText('Lithium').locator('..').first();
+
+    // Verify Lithium is pinned (has ring-2 ring-blue-400 class)
+    await expect(liCard).toBeVisible();
+    await expect(liCard).toHaveClass(/ring-2.*ring-blue-400/);
 
     // Verify element details card is visible
-    await expect(page.getByText(/Carbon/i)).toBeVisible();
+    await expect(page.getByText(/Atomic Number.*3/).first()).toBeVisible();
   });
 
   test('should restore pinned nuclide from URL on page load', async ({ page }) => {
-    // Navigate with pinN parameter (using O-16 which appears in default H+C,O results)
-    await page.goto('/fusion?pinN=O-16');
+    // Navigate with pinN parameter - He+He fusion produces Li-6 as output
+    await page.goto('/fusion?e1=He&e2=He&pinN=Li-6');
     await waitForDatabaseReady(page);
 
     // Wait for results to load
@@ -445,20 +454,29 @@ test.describe('Fusion Query Page', () => {
       { timeout: 10000 }
     );
 
-    // Find the O-16 nuclide card
-    const nuclideCards = page.locator('text=Nuclides Appearing in Results').locator('..').locator('div[class*="cursor-pointer"]');
-    const o16Card = nuclideCards.filter({ hasText: 'O-16' }).first();
+    // Wait for "Nuclides Appearing in Results" section to be visible
+    await page.locator('text=Nuclides Appearing in Results').waitFor({ state: 'visible', timeout: 10000 });
 
-    // Verify O-16 is pinned (has ring-2 ring-blue-400 class)
-    await expect(o16Card).toHaveClass(/ring-2.*ring-blue-400/);
+    // Scroll section into view
+    await page.locator('text=Nuclides Appearing in Results').scrollIntoViewIfNeeded();
 
-    // Verify nuclide details card is visible
-    await expect(page.getByText(/Mass Number.*16/)).toBeVisible();
+    // Wait for URL initialization
+    await page.waitForTimeout(1000);
+
+    // Find the Li-6 nuclide card
+    const li6Card = page.locator('div.cursor-pointer:has-text("Li-6")').first();
+
+    // Verify Li-6 is pinned (has ring-2 ring-blue-400 class)
+    await expect(li6Card).toBeVisible();
+    await expect(li6Card).toHaveClass(/ring-2.*ring-blue-400/);
+
+    // Verify nuclide details card is visible - use first() to handle multiple matches
+    await expect(page.getByText(/Mass Number.*6/).first()).toBeVisible();
   });
 
   test('should restore both pinned element and nuclide from URL', async ({ page }) => {
-    // Navigate with both pinE and pinN parameters (using O and O-16 from default results)
-    await page.goto('/fusion?pinE=O&pinN=O-16');
+    // Navigate with both pinE and pinN parameters - He+He fusion produces Li-6
+    await page.goto('/fusion?e1=He&e2=He&pinE=Li&pinN=Li-6');
     await waitForDatabaseReady(page);
 
     // Wait for results to load
@@ -467,25 +485,35 @@ test.describe('Fusion Query Page', () => {
       { timeout: 10000 }
     );
 
-    // Find both cards
-    const elementCards = page.locator('text=Elements Appearing in Results').locator('..').locator('div[class*="cursor-pointer"]');
-    const oxygenCard = elementCards.filter({ hasText: /^O\s/ }).first();
+    // Wait for sections to be visible
+    await page.locator('text=Elements Appearing in Results').waitFor({ state: 'visible', timeout: 10000 });
+    await page.locator('text=Nuclides Appearing in Results').waitFor({ state: 'visible', timeout: 10000 });
 
-    const nuclideCards = page.locator('text=Nuclides Appearing in Results').locator('..').locator('div[class*="cursor-pointer"]');
-    const o16Card = nuclideCards.filter({ hasText: 'O-16' }).first();
+    // Scroll sections into view
+    await page.locator('text=Elements Appearing in Results').scrollIntoViewIfNeeded();
+    await page.locator('text=Nuclides Appearing in Results').scrollIntoViewIfNeeded();
+
+    // Wait for URL initialization
+    await page.waitForTimeout(1000);
+
+    // Find both cards
+    const liCard = page.getByText('Lithium').locator('..').first();
+    const li6Card = page.locator('div.cursor-pointer:has-text("Li-6")').first();
 
     // Verify both are pinned
-    await expect(oxygenCard).toHaveClass(/ring-2.*ring-blue-400/);
-    await expect(o16Card).toHaveClass(/ring-2.*ring-blue-400/);
+    await expect(liCard).toBeVisible();
+    await expect(liCard).toHaveClass(/ring-2.*ring-blue-400/);
+    await expect(li6Card).toBeVisible();
+    await expect(li6Card).toHaveClass(/ring-2.*ring-blue-400/);
 
     // Verify both detail cards are visible
-    await expect(page.getByText(/Oxygen/i)).toBeVisible();
-    await expect(page.getByText(/Mass Number.*16/)).toBeVisible();
+    await expect(page.getByText(/Atomic Number.*3/).first()).toBeVisible();
+    await expect(page.getByText(/Mass Number.*6/).first()).toBeVisible();
   });
 
   test('should remove pinE from URL when element is unpinned', async ({ page }) => {
-    // Navigate with pinE parameter (using C from default results)
-    await page.goto('/fusion?pinE=C');
+    // Navigate with pinE parameter - He+He fusion produces Li as output
+    await page.goto('/fusion?e1=He&e2=He&pinE=Li');
     await waitForDatabaseReady(page);
 
     // Wait for results to load
@@ -494,18 +522,27 @@ test.describe('Fusion Query Page', () => {
       { timeout: 10000 }
     );
 
-    // Find the Carbon element card
-    const elementCards = page.locator('text=Elements Appearing in Results').locator('..').locator('div[class*="cursor-pointer"]');
-    const carbonCard = elementCards.filter({ hasText: /^C\s/ }).first();
+    // Wait for "Elements Appearing in Results" section to be visible
+    await page.locator('text=Elements Appearing in Results').waitFor({ state: 'visible', timeout: 10000 });
+
+    // Scroll section into view
+    await page.locator('text=Elements Appearing in Results').scrollIntoViewIfNeeded();
+
+    // Wait for URL initialization
+    await page.waitForTimeout(1000);
+
+    // Find the Lithium element card
+    const liCard = page.getByText('Lithium').locator('..').first();
 
     // Verify it's pinned
-    await expect(carbonCard).toHaveClass(/ring-2.*ring-blue-400/);
+    await expect(liCard).toBeVisible();
+    await expect(liCard).toHaveClass(/ring-2.*ring-blue-400/);
 
     // Click to unpin
-    await carbonCard.click();
+    await liCard.click();
 
     // Verify it's no longer pinned
-    await expect(carbonCard).not.toHaveClass(/ring-2.*ring-blue-400/);
+    await expect(liCard).not.toHaveClass(/ring-2.*ring-blue-400/);
 
     // URL should not contain pinE parameter
     await page.waitForTimeout(500); // Wait for URL update
@@ -530,6 +567,39 @@ test.describe('Fusion Query Page', () => {
 
     // No detail cards should be visible (except the placeholder "Click on a nuclide or element")
     await expect(page.getByText(/Click on a nuclide or element above to see detailed properties/i)).toBeVisible();
+  });
+
+  test('should unpin nuclide when pinning a different element', async ({ page }) => {
+    // Wait for default query results to load (H + C,O)
+    await page.waitForFunction(
+      () => document.querySelector('table') !== null,
+      { timeout: 10000 }
+    );
+
+    // Pin a nuclide (e.g., C-13 from default H+C,O results)
+    const nuclideCards = page.locator('text=Nuclides Appearing in Results').locator('..').locator('div[class*="cursor-pointer"]');
+    const c13Card = nuclideCards.filter({ hasText: 'C-13' }).first();
+    await c13Card.click();
+
+    // Verify C-13 is pinned
+    await expect(c13Card).toHaveClass(/ring-2.*ring-blue-400/);
+
+    // Now pin a DIFFERENT element (e.g., Oxygen)
+    const elementCards = page.locator('text=Elements Appearing in Results').locator('..').locator('div[class*="cursor-pointer"]');
+    const oxygenCard = elementCards.filter({ hasText: 'Oxygen' }).first();
+    await oxygenCard.click();
+
+    // Verify Oxygen is pinned
+    await expect(oxygenCard).toHaveClass(/ring-2.*ring-blue-400/);
+
+    // Verify C-13 is NO LONGER pinned (regression check)
+    await expect(c13Card).not.toHaveClass(/ring-2.*ring-blue-400/);
+
+    // URL should only contain pinE=O, not pinN=C-13
+    await page.waitForTimeout(500);
+    const url = page.url();
+    expect(url).toContain('pinE=O');
+    expect(url).not.toContain('pinN=C-13');
   });
 });
 

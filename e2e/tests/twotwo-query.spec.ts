@@ -185,34 +185,59 @@ test.describe('Two-to-Two Query Page', () => {
     // Wait for default query results to load
     await page.waitForFunction(
       () => document.querySelector('table') !== null,
-      { timeout: 10000 }
+      { timeout: 15000 }
     );
 
-    // Click an element card from "Elements Appearing in Results"
-    const elementCard = page.locator('text=Elements Appearing in Results').locator('..').locator('div[class*="cursor-pointer"]').first();
-    await elementCard.click();
+    // Wait for sections to populate
+    await page.locator('text=Elements Appearing in Results').waitFor({ state: 'visible', timeout: 10000 });
+    await page.locator('text=Nuclides Appearing in Results').waitFor({ state: 'visible', timeout: 10000 });
 
-    // Verify element is pinned (has ring-2 ring-blue-400 class)
-    await expect(elementCard).toHaveClass(/ring-2.*ring-blue-400/);
+    // Wait for cards to appear
+    await page.locator('div.cursor-pointer:has(div.font-bold)').first().waitFor({ state: 'visible', timeout: 10000 });
 
-    // Click a nuclide card from "Nuclides Appearing in Results"
-    const nuclideCard = page.locator('text=Nuclides Appearing in Results').locator('..').locator('div[class*="cursor-pointer"]').first();
-    await nuclideCard.click();
+    // Get the first element that appears (e.g., Carbon from default query)
+    const elementCards = page.locator('text=Elements Appearing in Results').locator('..').locator('div[class*="cursor-pointer"]');
+    const firstElementSymbol = await elementCards.first().locator('div.font-bold').first().textContent();
+    const firstElementCard = page.getByText(new RegExp(`^${firstElementSymbol}$`)).locator('..').filter({ has: page.locator('div.font-bold') }).first();
+
+    // Click the first element
+    await firstElementCard.click();
+
+    // Verify element is pinned
+    await expect(firstElementCard).toHaveClass(/ring-2.*ring-blue-400/);
+
+    // Now find a nuclide that belongs to this element
+    const nuclideCards = page.locator('text=Nuclides Appearing in Results').locator('..').locator('div[class*="cursor-pointer"]');
+    const nuclideCount = await nuclideCards.count();
+
+    // Find a nuclide of the same element
+    let matchingNuclideCard = null;
+    for (let i = 0; i < nuclideCount; i++) {
+      const card = nuclideCards.nth(i);
+      const nuclideText = await card.locator('span.font-semibold').first().textContent();
+      if (nuclideText?.startsWith(`${firstElementSymbol}-`)) {
+        matchingNuclideCard = card;
+        break;
+      }
+    }
+
+    // Click the nuclide
+    await matchingNuclideCard!.click();
 
     // Verify nuclide is now pinned
-    await expect(nuclideCard).toHaveClass(/ring-2.*ring-blue-400/);
+    await expect(matchingNuclideCard!).toHaveClass(/ring-2.*ring-blue-400/);
 
-    // Verify element is STILL pinned (both can be pinned simultaneously)
-    await expect(elementCard).toHaveClass(/ring-2.*ring-blue-400/);
+    // Verify element is STILL pinned (both can be pinned simultaneously when nuclide belongs to element)
+    await expect(firstElementCard).toHaveClass(/ring-2.*ring-blue-400/);
 
     // Click element again to unpin it
-    await elementCard.click();
+    await firstElementCard.click();
 
     // Verify element is no longer pinned
-    await expect(elementCard).not.toHaveClass(/ring-2.*ring-blue-400/);
+    await expect(firstElementCard).not.toHaveClass(/ring-2.*ring-blue-400/);
 
     // Verify nuclide is STILL pinned
-    await expect(nuclideCard).toHaveClass(/ring-2.*ring-blue-400/);
+    await expect(matchingNuclideCard!).toHaveClass(/ring-2.*ring-blue-400/);
   });
 
   test('should persist pinned element in URL with pinE parameter', async ({ page }) => {
@@ -262,8 +287,9 @@ test.describe('Two-to-Two Query Page', () => {
   });
 
   test('should restore pinned element from URL on page load', async ({ page }) => {
-    // Navigate with pinE parameter (He appears in default H+Ni,Li,Al,B,N results)
-    await page.goto('/twotwo?pinE=He');
+    // Navigate with pinE parameter - query B+Ni→C reactions (works with default E3='C' filter)
+    // B+Ni produces Fe as E4, so we can pin Fe
+    await page.goto('/twotwo?e1=B&e2=Ni&pinE=Fe');
     await waitForDatabaseReady(page);
 
     // Wait for results to load
@@ -272,20 +298,32 @@ test.describe('Two-to-Two Query Page', () => {
       { timeout: 15000 }
     );
 
-    // Find the Helium element card
-    const elementCards = page.locator('text=Elements Appearing in Results').locator('..').locator('div[class*="cursor-pointer"]');
-    const heCard = elementCards.filter({ hasText: /^He\s/ }).first();
+    // Wait for "Elements Appearing in Results" section to be visible
+    await page.locator('text=Elements Appearing in Results').waitFor({ state: 'visible', timeout: 10000 });
 
-    // Verify Helium is pinned
-    await expect(heCard).toHaveClass(/ring-2.*ring-blue-400/);
+    // Scroll section into view
+    await page.locator('text=Elements Appearing in Results').scrollIntoViewIfNeeded();
+
+    // Wait for element cards to populate
+    await page.locator('div.cursor-pointer:has(div.font-bold)').first().waitFor({ state: 'visible', timeout: 10000 });
+
+    // Wait longer for URL initialization in two-to-two (large dataset)
+    await page.waitForTimeout(2000);
+
+    // Find the Iron element card
+    const feCard = page.getByText('Iron').locator('..').first();
+
+    // Verify Iron is pinned
+    await expect(feCard).toBeVisible();
+    await expect(feCard).toHaveClass(/ring-2.*ring-blue-400/);
 
     // Verify element details card is visible
-    await expect(page.getByText(/Helium/i)).toBeVisible();
+    await expect(page.getByText(/Atomic Number.*26/).first()).toBeVisible();
   });
 
   test('should restore both pinned element and nuclide from URL', async ({ page }) => {
-    // Navigate with both pinE and pinN parameters (using He and He-4 from default results)
-    await page.goto('/twotwo?pinE=He&pinN=He-4');
+    // Navigate with both pinE and pinN parameters - B+Ni→C+Fe produces Fe-58 as output
+    await page.goto('/twotwo?e1=B&e2=Ni&pinE=Fe&pinN=Fe-58');
     await waitForDatabaseReady(page);
 
     // Wait for results to load
@@ -294,16 +332,29 @@ test.describe('Two-to-Two Query Page', () => {
       { timeout: 15000 }
     );
 
-    // Find both cards
-    const elementCards = page.locator('text=Elements Appearing in Results').locator('..').locator('div[class*="cursor-pointer"]');
-    const heCard = elementCards.filter({ hasText: /^He\s/ }).first();
+    // Wait for sections to be visible
+    await page.locator('text=Elements Appearing in Results').waitFor({ state: 'visible', timeout: 10000 });
+    await page.locator('text=Nuclides Appearing in Results').waitFor({ state: 'visible', timeout: 10000 });
 
-    const nuclideCards = page.locator('text=Nuclides Appearing in Results').locator('..').locator('div[class*="cursor-pointer"]');
-    const he4Card = nuclideCards.filter({ hasText: 'He-4' }).first();
+    // Scroll sections into view
+    await page.locator('text=Elements Appearing in Results').scrollIntoViewIfNeeded();
+    await page.locator('text=Nuclides Appearing in Results').scrollIntoViewIfNeeded();
+
+    // Wait for cards to populate
+    await page.locator('div.cursor-pointer:has(div.font-bold)').first().waitFor({ state: 'visible', timeout: 10000 });
+
+    // Wait longer for URL initialization in two-to-two (large dataset)
+    await page.waitForTimeout(2000);
+
+    // Find both cards
+    const feCard = page.getByText('Iron').locator('..').first();
+    const fe58Card = page.locator('div.cursor-pointer:has-text("Fe-58")').first();
 
     // Verify both are pinned
-    await expect(heCard).toHaveClass(/ring-2.*ring-blue-400/);
-    await expect(he4Card).toHaveClass(/ring-2.*ring-blue-400/);
+    await expect(feCard).toBeVisible();
+    await expect(feCard).toHaveClass(/ring-2.*ring-blue-400/);
+    await expect(fe58Card).toBeVisible();
+    await expect(fe58Card).toHaveClass(/ring-2.*ring-blue-400/);
   });
 
   test('should ignore invalid pinE/pinN parameters', async ({ page }) => {
@@ -320,6 +371,55 @@ test.describe('Two-to-Two Query Page', () => {
     // No cards should be pinned
     const pinnedCards = page.locator('div[class*="ring-2 ring-blue-400"]');
     await expect(pinnedCards).toHaveCount(0);
+  });
+
+  test('should unpin nuclide when pinning a different element', async ({ page }) => {
+    // Wait for default query results to load (H+Ni,Li,Al,B,N+C)
+    await page.waitForFunction(
+      () => document.querySelector('table') !== null,
+      { timeout: 15000 }
+    );
+
+    // Pin the first nuclide that appears in results
+    const nuclideCards = page.locator('text=Nuclides Appearing in Results').locator('..').locator('div[class*="cursor-pointer"]');
+    const firstNuclideCard = nuclideCards.first();
+    await firstNuclideCard.click();
+
+    // Verify nuclide is pinned
+    await expect(firstNuclideCard).toHaveClass(/ring-2.*ring-blue-400/);
+
+    // Get the nuclide identifier for later verification
+    const nuclideText = await firstNuclideCard.locator('span.font-semibold').first().textContent();
+    const [nuclideElement] = nuclideText!.split('-');
+
+    // Now pin a DIFFERENT element (not the nuclide's parent element)
+    const elementCards = page.locator('text=Elements Appearing in Results').locator('..').locator('div[class*="cursor-pointer"]');
+
+    // Find an element that's NOT the nuclide's parent element
+    let differentElementCard = null;
+    const elementCount = await elementCards.count();
+    for (let i = 0; i < elementCount; i++) {
+      const card = elementCards.nth(i);
+      const elementSymbol = await card.locator('div.font-bold').first().textContent();
+      if (elementSymbol !== nuclideElement) {
+        differentElementCard = card;
+        break;
+      }
+    }
+
+    // Click the different element
+    await differentElementCard!.click();
+
+    // Verify different element is pinned
+    await expect(differentElementCard!).toHaveClass(/ring-2.*ring-blue-400/);
+
+    // Verify first nuclide is NO LONGER pinned (regression check)
+    await expect(firstNuclideCard).not.toHaveClass(/ring-2.*ring-blue-400/);
+
+    // URL should not contain the pinned nuclide anymore
+    await page.waitForTimeout(500);
+    const url = page.url();
+    expect(url).not.toContain(`pinN=${nuclideText}`);
   });
 });
 

@@ -244,7 +244,7 @@ test.describe('Fission Query Page', () => {
   });
 
   test('should restore pinned element from URL on page load', async ({ page }) => {
-    // Navigate with pinE parameter (Ca appears in default Zr fission results)
+    // Navigate with pinE parameter - default Zr query produces Ca in fission results
     await page.goto('/fission?pinE=Ca');
     await waitForDatabaseReady(page);
 
@@ -254,19 +254,30 @@ test.describe('Fission Query Page', () => {
       { timeout: 10000 }
     );
 
-    // Find the Calcium element card
-    const elementCards = page.locator('text=Elements Appearing in Results').locator('..').locator('div[class*="cursor-pointer"]');
-    const caCard = elementCards.filter({ hasText: /^Ca\s/ }).first();
+    // Wait for "Elements Appearing in Results" section to be visible
+    await page.locator('text=Elements Appearing in Results').waitFor({ state: 'visible', timeout: 10000 });
 
-    // Verify Calcium is pinned
+    // Scroll section into view
+    await page.locator('text=Elements Appearing in Results').scrollIntoViewIfNeeded();
+
+    // Wait a moment for URL initialization to process
+    await page.waitForTimeout(1000);
+
+    // Find the Calcium element card by looking for the "Calcium" element name text
+    // This will be in an element card with class cursor-pointer
+    // Use .first() because "Calcium" also appears in the ElementDetailsCard heading
+    const caCard = page.getByText('Calcium').locator('..').first();
+
+    // Verify Calcium card exists and is pinned
+    await expect(caCard).toBeVisible();
     await expect(caCard).toHaveClass(/ring-2.*ring-blue-400/);
 
     // Verify element details card is visible
-    await expect(page.getByText(/Calcium/i)).toBeVisible();
+    await expect(page.getByText(/Atomic Number.*20/).first()).toBeVisible();
   });
 
   test('should restore both pinned element and nuclide from URL', async ({ page }) => {
-    // Navigate with both pinE and pinN parameters (using Ca and Ca-48 from default Zr results)
+    // Navigate with both pinE and pinN parameters - default Zr query produces Ca-48
     await page.goto('/fission?pinE=Ca&pinN=Ca-48');
     await waitForDatabaseReady(page);
 
@@ -276,15 +287,26 @@ test.describe('Fission Query Page', () => {
       { timeout: 10000 }
     );
 
-    // Find both cards
-    const elementCards = page.locator('text=Elements Appearing in Results').locator('..').locator('div[class*="cursor-pointer"]');
-    const caCard = elementCards.filter({ hasText: /^Ca\s/ }).first();
+    // Wait for sections to be visible
+    await page.locator('text=Elements Appearing in Results').waitFor({ state: 'visible', timeout: 10000 });
+    await page.locator('text=Nuclides Appearing in Results').waitFor({ state: 'visible', timeout: 10000 });
 
-    const nuclideCards = page.locator('text=Nuclides Appearing in Results').locator('..').locator('div[class*="cursor-pointer"]');
-    const ca48Card = nuclideCards.filter({ hasText: 'Ca-48' }).first();
+    // Scroll sections into view
+    await page.locator('text=Elements Appearing in Results').scrollIntoViewIfNeeded();
+    await page.locator('text=Nuclides Appearing in Results').scrollIntoViewIfNeeded();
+
+    // Wait for URL initialization
+    await page.waitForTimeout(1000);
+
+    // Find both cards using element/nuclide names
+    const caCard = page.getByText('Calcium').locator('..').first();
+    // For nuclide cards, need to go up to the cursor-pointer div (not just immediate parent)
+    const ca48Card = page.locator('div.cursor-pointer:has-text("Ca-48")').first();
 
     // Verify both are pinned
+    await expect(caCard).toBeVisible();
     await expect(caCard).toHaveClass(/ring-2.*ring-blue-400/);
+    await expect(ca48Card).toBeVisible();
     await expect(ca48Card).toHaveClass(/ring-2.*ring-blue-400/);
   });
 
@@ -302,6 +324,39 @@ test.describe('Fission Query Page', () => {
     // No cards should be pinned
     const pinnedCards = page.locator('div[class*="ring-2 ring-blue-400"]');
     await expect(pinnedCards).toHaveCount(0);
+  });
+
+  test('should unpin nuclide when pinning a different element', async ({ page }) => {
+    // Wait for default query results to load (Zr fission)
+    await page.waitForFunction(
+      () => document.querySelector('table') !== null,
+      { timeout: 10000 }
+    );
+
+    // Pin a nuclide (e.g., Ca-48)
+    const nuclideCards = page.locator('text=Nuclides Appearing in Results').locator('..').locator('div[class*="cursor-pointer"]');
+    const ca48Card = nuclideCards.filter({ hasText: 'Ca-48' }).first();
+    await ca48Card.click();
+
+    // Verify Ca-48 is pinned
+    await expect(ca48Card).toHaveClass(/ring-2.*ring-blue-400/);
+
+    // Now pin a DIFFERENT element (e.g., Cr - Chromium)
+    const elementCards = page.locator('text=Elements Appearing in Results').locator('..').locator('div[class*="cursor-pointer"]');
+    const crCard = elementCards.filter({ hasText: 'Chromium' }).first();
+    await crCard.click();
+
+    // Verify Chromium is pinned
+    await expect(crCard).toHaveClass(/ring-2.*ring-blue-400/);
+
+    // Verify Ca-48 is NO LONGER pinned (regression check)
+    await expect(ca48Card).not.toHaveClass(/ring-2.*ring-blue-400/);
+
+    // URL should only contain pinE=Cr, not pinN=Ca-48
+    await page.waitForTimeout(500);
+    const url = page.url();
+    expect(url).toContain('pinE=Cr');
+    expect(url).not.toContain('pinN=Ca-48');
   });
 
   test('should have clickable links to element-data page for nuclides in results table', async ({ page }) => {
