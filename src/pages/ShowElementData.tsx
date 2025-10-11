@@ -1,10 +1,10 @@
 import { useState, useEffect, useMemo } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { useDatabase } from '../contexts/DatabaseContext'
-import type { Element, Nuclide } from '../types'
+import type { Element, Nuclide, AtomicRadiiData } from '../types'
 import PeriodicTable from '../components/PeriodicTable'
 import NuclideDetailsCard from '../components/NuclideDetailsCard'
-import { getNuclidesByElement } from '../services/queryService'
+import { getNuclidesByElement, getAtomicRadii } from '../services/queryService'
 import DatabaseLoadingCard from '../components/DatabaseLoadingCard'
 import DatabaseErrorCard from '../components/DatabaseErrorCard'
 
@@ -15,6 +15,7 @@ export default function ShowElementData() {
   const [selectedElement, setSelectedElement] = useState<string | null>(null)
   const [isotopes, setIsotopes] = useState<Nuclide[]>([])
   const [selectedNuclide, setSelectedNuclide] = useState<Nuclide | null>(null)
+  const [atomicRadii, setAtomicRadii] = useState<AtomicRadiiData | null>(null)
 
   // Get all elements from database (memoized to prevent recreating on every render)
   const allElements: Element[] = useMemo(() => {
@@ -75,13 +76,17 @@ export default function ShowElementData() {
     }
   }, [db, allElements, searchParams, setSearchParams])
 
-  // Fetch isotopes when element changes and check for isotope in URL
+  // Fetch isotopes and atomic radii when element changes and check for isotope in URL
   useEffect(() => {
     if (db && selectedElement) {
       const currentElement = allElements.find(el => el.E === selectedElement)
       if (currentElement) {
         const elementIsotopes = getNuclidesByElement(db, currentElement.Z)
         setIsotopes(elementIsotopes)
+
+        // Fetch atomic radii data
+        const radiiData = getAtomicRadii(db, currentElement.Z)
+        setAtomicRadii(radiiData)
 
         // Check if there's an A (mass number) param in URL
         const aParam = searchParams.get('A')
@@ -100,6 +105,7 @@ export default function ShowElementData() {
     } else {
       setIsotopes([])
       setSelectedNuclide(null)
+      setAtomicRadii(null)
     }
   }, [db, selectedElement, allElements, searchParams])
 
@@ -173,12 +179,6 @@ export default function ShowElementData() {
               <div>
                 <h3 className="font-semibold text-gray-900 dark:text-white mb-3 text-sm uppercase tracking-wide">Atomic Properties</h3>
                 <dl className="space-y-2 text-sm">
-                  {element.ARadius !== null && element.ARadius !== undefined && (
-                    <div className="flex justify-between">
-                      <dt className="text-gray-600 dark:text-gray-400">Atomic Radius:</dt>
-                      <dd className="font-medium text-gray-900 dark:text-gray-100">{element.ARadius} pm</dd>
-                    </div>
-                  )}
                   {element.Valence !== null && element.Valence !== undefined && (
                     <div className="flex justify-between">
                       <dt className="text-gray-600 dark:text-gray-400">Valence:</dt>
@@ -220,7 +220,7 @@ export default function ShowElementData() {
             </div>
           </div>
 
-          <div className="grid md:grid-cols-2 gap-6">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             <div className="card p-6">
               <h3 className="font-semibold text-gray-900 dark:text-white mb-3 text-sm uppercase tracking-wide">Thermal Properties</h3>
               <dl className="space-y-2 text-sm">
@@ -280,6 +280,42 @@ export default function ShowElementData() {
                 )}
               </dl>
             </div>
+
+            {atomicRadii && (
+              <div className="card p-6">
+                <h3 className="font-semibold text-gray-900 dark:text-white mb-3 text-sm uppercase tracking-wide">Atomic Radii</h3>
+                <dl className="space-y-2 text-sm">
+                  {atomicRadii.empirical !== null && (
+                    <div className="flex justify-between">
+                      <dt className="text-gray-600 dark:text-gray-400">Empirical:</dt>
+                      <dd className="font-medium text-gray-900 dark:text-gray-100">{atomicRadii.empirical} pm</dd>
+                    </div>
+                  )}
+                  {atomicRadii.calculated !== null && (
+                    <div className="flex justify-between">
+                      <dt className="text-gray-600 dark:text-gray-400">Calculated:</dt>
+                      <dd className="font-medium text-gray-900 dark:text-gray-100">{atomicRadii.calculated} pm</dd>
+                    </div>
+                  )}
+                  {atomicRadii.vanDerWaals !== null && (
+                    <div className="flex justify-between">
+                      <dt className="text-gray-600 dark:text-gray-400">Van der Waals:</dt>
+                      <dd className="font-medium text-gray-900 dark:text-gray-100">{atomicRadii.vanDerWaals} pm</dd>
+                    </div>
+                  )}
+                  {atomicRadii.covalent !== null && (
+                    <div className="flex justify-between">
+                      <dt className="text-gray-600 dark:text-gray-400">Covalent:</dt>
+                      <dd className="font-medium text-gray-900 dark:text-gray-100">{atomicRadii.covalent} pm</dd>
+                    </div>
+                  )}
+                </dl>
+                <div className="mt-3 p-2 bg-gray-50 dark:bg-gray-800 rounded text-xs text-gray-600 dark:text-gray-400">
+                  <strong>Empirical:</strong> Measured • <strong>Calculated:</strong> Theoretical<br />
+                  <strong>Van der Waals:</strong> Non-bonded • <strong>Covalent:</strong> Bonded atoms
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Nuclides Section */}

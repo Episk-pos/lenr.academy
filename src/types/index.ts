@@ -39,6 +39,13 @@ export interface Element {
   MagType?: string;      // Magnetic type (e.g., 'Ferromagnetic')
 }
 
+export interface AtomicRadiiData {
+  empirical: number | null;     // Experimentally measured radius (pm)
+  calculated: number | null;    // Theoretically calculated radius (pm)
+  vanDerWaals: number | null;   // Van der Waals radius (pm)
+  covalent: number | null;      // Covalent bond radius (pm)
+}
+
 export interface FusionReaction {
   id: number;
   E1: string;       // Input element 1 symbol

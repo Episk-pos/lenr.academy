@@ -131,6 +131,48 @@ test.describe('Element Data Page', () => {
     await expect(electronegativity).toBeVisible();
   });
 
+  test('should display atomic radii data', async ({ page }) => {
+    // Navigate to Gold (has all 4 radius types)
+    await page.goto('/element-data?Z=79');
+    await waitForDatabaseReady(page);
+
+    // Should show "Atomic Radii" heading
+    await expect(page.getByText(/Atomic Radii \(pm\)/i)).toBeVisible();
+
+    // Should show all 4 radius types with actual values (Gold has all 4)
+    // Check for the grid containing radii data
+    const radiiGrid = page.locator('div:has-text("Empirical:")').first();
+    await expect(radiiGrid).toBeVisible();
+
+    // Verify the data grid contains the radius labels and values
+    await expect(page.locator('dt:has-text("Empirical:")')).toBeVisible();
+    await expect(page.locator('dt:has-text("Calculated:")')).toBeVisible();
+    await expect(page.locator('dt:has-text("Van der Waals:")')).toBeVisible();
+    await expect(page.locator('dt:has-text("Covalent:")')).toBeVisible();
+
+    // Should show explanatory help text
+    await expect(page.getByText(/Measured.*Theoretical/i)).toBeVisible();
+  });
+
+  test('should handle partial atomic radii data', async ({ page }) => {
+    // Navigate to Carbon (has 3 out of 4 radius types)
+    await page.goto('/element-data?Z=6');
+    await waitForDatabaseReady(page);
+
+    // Should show "Atomic Radii (pm)" heading
+    await expect(page.getByText(/Atomic Radii \(pm\)/i)).toBeVisible();
+
+    // Carbon should have 3 types of radii displayed
+    // Just verify that the Atomic Radii section contains the key labels
+    const atomicRadiiSection = page.locator('text=Atomic Radii (pm)').locator('..').locator('..');
+    await expect(atomicRadiiSection).toContainText('Empirical:');
+    await expect(atomicRadiiSection).toContainText('Calculated:');
+    await expect(atomicRadiiSection).toContainText('Van der Waals:');
+
+    // Should show the explanatory help text
+    await expect(page.getByText(/Measured.*Theoretical/i)).toBeVisible();
+  });
+
   test('should update URL when selecting element', async ({ page }) => {
     // Start at base page
     await page.goto('/element-data');

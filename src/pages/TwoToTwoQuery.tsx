@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react'
 import { Download, Info, Loader2, Eye, EyeOff } from 'lucide-react'
 import { useSearchParams } from 'react-router-dom'
-import type { TwoToTwoReaction, QueryFilter, Element, Nuclide } from '../types'
+import type { TwoToTwoReaction, QueryFilter, Element, Nuclide, AtomicRadiiData } from '../types'
 import { useDatabase } from '../contexts/DatabaseContext'
-import { queryTwoToTwo, getAllElements, getElementBySymbol, getNuclideBySymbol } from '../services/queryService'
+import { queryTwoToTwo, getAllElements, getElementBySymbol, getNuclideBySymbol, getAtomicRadii } from '../services/queryService'
 import PeriodicTableSelector from '../components/PeriodicTableSelector'
 import ElementDetailsCard from '../components/ElementDetailsCard'
 import NuclideDetailsCard from '../components/NuclideDetailsCard'
@@ -101,6 +101,7 @@ export default function TwoToTwoQuery() {
   const [pinnedElement, setPinnedElement] = useState(false)
   const [selectedElementDetails, setSelectedElementDetails] = useState<Element | null>(null)
   const [selectedNuclideDetails, setSelectedNuclideDetails] = useState<Nuclide | null>(null)
+  const [selectedElementRadii, setSelectedElementRadii] = useState<AtomicRadiiData | null>(null)
 
   // Load elements when database is ready
   useEffect(() => {
@@ -121,30 +122,34 @@ export default function TwoToTwoQuery() {
     if (!db) {
       setSelectedElementDetails(null)
       setSelectedNuclideDetails(null)
+      setSelectedElementRadii(null)
       return
     }
 
-    // Check if element is pinned
+    // Fetch element details if pinned
     if (pinnedElement && highlightedElement) {
       const elementDetails = getElementBySymbol(db, highlightedElement)
       setSelectedElementDetails(elementDetails)
-      setSelectedNuclideDetails(null)
-      return
+      if (elementDetails) {
+        const radiiData = getAtomicRadii(db, elementDetails.Z)
+        setSelectedElementRadii(radiiData)
+      } else {
+        setSelectedElementRadii(null)
+      }
+    } else {
+      setSelectedElementDetails(null)
+      setSelectedElementRadii(null)
     }
 
-    // Check if nuclide is pinned - fetch nuclide details from NuclidesPlus
+    // Fetch nuclide details if pinned
     if (pinnedNuclide && highlightedNuclide) {
       const [elementSymbol, massStr] = highlightedNuclide.split('-')
       const massNumber = parseInt(massStr)
       const nuclideDetails = getNuclideBySymbol(db, elementSymbol, massNumber)
       setSelectedNuclideDetails(nuclideDetails)
-      setSelectedElementDetails(null)
-      return
+    } else {
+      setSelectedNuclideDetails(null)
     }
-
-    // Nothing pinned
-    setSelectedElementDetails(null)
-    setSelectedNuclideDetails(null)
   }, [db, pinnedElement, highlightedElement, pinnedNuclide, highlightedNuclide])
 
   // Update URL when filters change
@@ -649,9 +654,6 @@ export default function TwoToTwoQuery() {
                       setPinnedNuclide(false)
                       setHighlightedNuclide(null)
                     } else {
-                      // Unpin element when selecting nuclide
-                      setPinnedElement(false)
-                      setHighlightedElement(null)
                       setPinnedNuclide(true)
                       setHighlightedNuclide(nuclideId)
                     }
@@ -693,9 +695,6 @@ export default function TwoToTwoQuery() {
                       setPinnedElement(false)
                       setHighlightedElement(null)
                     } else {
-                      // Unpin nuclide when selecting element
-                      setPinnedNuclide(false)
-                      setHighlightedNuclide(null)
                       setPinnedElement(true)
                       setHighlightedElement(elementId)
                     }
@@ -711,32 +710,38 @@ export default function TwoToTwoQuery() {
           </div>
 
           {/* Details Section */}
-          <div className="card p-6">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-              Details
-            </h3>
-            {selectedNuclideDetails ? (
-              <NuclideDetailsCard
-                nuclide={selectedNuclideDetails}
-                onClose={() => {
-                  setPinnedNuclide(false)
-                  setHighlightedNuclide(null)
-                }}
-              />
-            ) : selectedElementDetails ? (
-              <ElementDetailsCard
-                element={selectedElementDetails}
-                onClose={() => {
-                  setPinnedElement(false)
-                  setHighlightedElement(null)
-                }}
-              />
-            ) : (
+          {(selectedElementDetails || selectedNuclideDetails) ? (
+            <div className="space-y-6">
+              {selectedElementDetails && (
+                <ElementDetailsCard
+                  element={selectedElementDetails}
+                  atomicRadii={selectedElementRadii}
+                  onClose={() => {
+                    setPinnedElement(false)
+                    setHighlightedElement(null)
+                  }}
+                />
+              )}
+              {selectedNuclideDetails && (
+                <NuclideDetailsCard
+                  nuclide={selectedNuclideDetails}
+                  onClose={() => {
+                    setPinnedNuclide(false)
+                    setHighlightedNuclide(null)
+                  }}
+                />
+              )}
+            </div>
+          ) : (
+            <div className="card p-6">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+                Details
+              </h3>
               <div className="text-center py-8 text-gray-500 dark:text-gray-400">
                 <p className="text-sm">Click on a nuclide or element above to see detailed properties</p>
               </div>
-            )}
-          </div>
+            </div>
+          )}
         </div>
       )}
     </div>

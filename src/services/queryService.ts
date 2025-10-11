@@ -7,6 +7,7 @@ import type {
   TwoToTwoReaction,
   Nuclide,
   Element,
+  AtomicRadiiData,
 } from '../types';
 
 /**
@@ -595,4 +596,29 @@ export function getNuclidesByElement(db: Database, atomicNumber: number): Nuclid
   }
 
   return nuclides;
+}
+
+/**
+ * Get atomic radii data for a specific element by atomic number
+ */
+export function getAtomicRadii(db: Database, Z: number): AtomicRadiiData | null {
+  const sql = `
+    SELECT AtRadEmpirical, AtRadCalculated, AtRadVanDerWaals, AtRadCovalent
+    FROM AtomicRadii
+    WHERE Z = ?
+  `;
+  const results = db.exec(sql, [Z]);
+
+  if (results.length === 0 || results[0].values.length === 0) {
+    return null;
+  }
+
+  const [empirical, calculated, vanDerWaals, covalent] = results[0].values[0];
+
+  return {
+    empirical: empirical as number | null,
+    calculated: calculated as number | null,
+    vanDerWaals: vanDerWaals as number | null,
+    covalent: covalent as number | null,
+  };
 }

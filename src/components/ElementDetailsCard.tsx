@@ -1,12 +1,13 @@
 import { X } from 'lucide-react'
-import type { Element } from '../types'
+import type { Element, AtomicRadiiData } from '../types'
 
 interface ElementDetailsCardProps {
   element: Element | null
+  atomicRadii?: AtomicRadiiData | null
   onClose?: () => void
 }
 
-export default function ElementDetailsCard({ element, onClose }: ElementDetailsCardProps) {
+export default function ElementDetailsCard({ element, atomicRadii, onClose }: ElementDetailsCardProps) {
   if (!element) return null
 
   return (
@@ -65,12 +66,6 @@ export default function ElementDetailsCard({ element, onClose }: ElementDetailsC
             Atomic Properties
           </h3>
           <dl className="space-y-2 text-sm">
-            {typeof element.ARadius === 'number' && (
-              <div className="flex justify-between">
-                <dt className="text-gray-600 dark:text-gray-400">Atomic Radius:</dt>
-                <dd className="font-medium text-gray-900 dark:text-gray-100">{element.ARadius} pm</dd>
-              </div>
-            )}
             {typeof element.Valence === 'number' && (
               <div className="flex justify-between">
                 <dt className="text-gray-600 dark:text-gray-400">Valence:</dt>
@@ -117,7 +112,7 @@ export default function ElementDetailsCard({ element, onClose }: ElementDetailsC
         </div>
       </div>
 
-      <div className="grid md:grid-cols-2 gap-6">
+      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
         <div>
           <h3 className="font-semibold text-gray-900 dark:text-white mb-3 text-sm uppercase tracking-wide">
             Thermal Properties
@@ -195,6 +190,44 @@ export default function ElementDetailsCard({ element, onClose }: ElementDetailsC
             )}
           </dl>
         </div>
+
+        {atomicRadii && (
+          <div>
+            <h3 className="font-semibold text-gray-900 dark:text-white mb-3 text-sm uppercase tracking-wide">
+              Atomic Radii
+            </h3>
+            <dl className="space-y-2 text-sm">
+              {atomicRadii.empirical !== null && (
+                <div className="flex justify-between">
+                  <dt className="text-gray-600 dark:text-gray-400">Empirical:</dt>
+                  <dd className="font-medium text-gray-900 dark:text-gray-100">{atomicRadii.empirical} pm</dd>
+                </div>
+              )}
+              {atomicRadii.calculated !== null && (
+                <div className="flex justify-between">
+                  <dt className="text-gray-600 dark:text-gray-400">Calculated:</dt>
+                  <dd className="font-medium text-gray-900 dark:text-gray-100">{atomicRadii.calculated} pm</dd>
+                </div>
+              )}
+              {atomicRadii.vanDerWaals !== null && (
+                <div className="flex justify-between">
+                  <dt className="text-gray-600 dark:text-gray-400">Van der Waals:</dt>
+                  <dd className="font-medium text-gray-900 dark:text-gray-100">{atomicRadii.vanDerWaals} pm</dd>
+                </div>
+              )}
+              {atomicRadii.covalent !== null && (
+                <div className="flex justify-between">
+                  <dt className="text-gray-600 dark:text-gray-400">Covalent:</dt>
+                  <dd className="font-medium text-gray-900 dark:text-gray-100">{atomicRadii.covalent} pm</dd>
+                </div>
+              )}
+            </dl>
+            <div className="mt-3 p-2 bg-gray-50 dark:bg-gray-800 rounded text-xs text-gray-600 dark:text-gray-400">
+              <strong>Empirical:</strong> Measured • <strong>Calculated:</strong> Theoretical<br />
+              <strong>Van der Waals:</strong> Non-bonded • <strong>Covalent:</strong> Bonded atoms
+            </div>
+          </div>
+        )}
       </div>
     </div>
   )
