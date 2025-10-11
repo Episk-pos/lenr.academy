@@ -313,3 +313,16 @@ The S3 bucket is configured for static website hosting. View all available versi
 ## Git Workflow
 
 The `.gitignore` excludes `*.db` files but keeps `!*.db.meta.json` for version tracking. The 161MB database file is never committed to Git - it's stored in S3 with explicit versioning.
+
+## GitHub Issues and Pull Requests
+
+When asked to work with GitHub issues or pull requests, **prefer using the GitHub CLI (`gh`)** via the Bash tool rather than web scraping or API calls. The `gh` CLI provides structured output and is already installed in the development environment.
+
+Common commands:
+```bash
+gh issue view 123              # View issue details
+gh issue list --state open     # List open issues
+gh pr view 456                 # View PR details
+gh pr create --title "..." --body "..."  # Create PR
+gh pr checks                   # View PR status checks
+```
