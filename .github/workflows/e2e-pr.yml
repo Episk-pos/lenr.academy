@@ -27,14 +27,38 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Download database from S3
+      - name: Download database metadata from S3
         run: |
-          aws s3 cp s3://db.lenr.academy/latest/parkhomov.db public/parkhomov.db
+          mkdir -p public
           aws s3 cp s3://db.lenr.academy/latest/parkhomov.db.meta.json public/parkhomov.db.meta.json
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_DEFAULT_REGION: us-east-1
+
+      - name: Get database version for cache key
+        id: db-version
+        run: echo "version=$(jq -r '.version' public/parkhomov.db.meta.json)" >> $GITHUB_OUTPUT
+
+      - name: Cache database
+        uses: actions/cache@v4
+        id: db-cache
+        with:
+          path: public/parkhomov.db
+          key: parkhomov-db-${{ steps.db-version.outputs.version }}
+
+      - name: Download database from S3 (if not cached)
+        if: steps.db-cache.outputs.cache-hit != 'true'
+        run: aws s3 cp s3://db.lenr.academy/latest/parkhomov.db public/parkhomov.db
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: us-east-1
+
+      - name: Disable man-db triggers (speeds up apt by ~100s)
+        run: |
+          sudo rm -f /var/lib/man-db/auto-update
+          sudo apt-get remove -y --purge man-db 2>/dev/null || true
 
       - name: Get installed Playwright version
         id: playwright-version
@@ -46,6 +70,12 @@ jobs:
         with:
           path: ~/.cache/ms-playwright
           key: playwright-${{ runner.os }}-chromium-${{ steps.playwright-version.outputs.version }}
+
+      - name: Cache APT packages
+        uses: awalsh128/cache-apt-pkgs-action@latest
+        with:
+          packages: fonts-liberation fonts-noto-color-emoji fonts-freefont-ttf fonts-ipafont-gothic fonts-tlwg-loma-otf fonts-unifont fonts-wqy-zenhei xfonts-cyrillic xfonts-scalable
+          version: 1.0
 
       - name: Install Playwright browsers
         if: steps.playwright-cache.outputs.cache-hit != 'true'
