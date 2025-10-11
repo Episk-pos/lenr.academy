@@ -3,7 +3,7 @@ import { Download, Info, Loader2, Eye, EyeOff, Radiation } from 'lucide-react'
 import { useSearchParams } from 'react-router-dom'
 import type { TwoToTwoReaction, QueryFilter, Element, Nuclide, AtomicRadiiData } from '../types'
 import { useDatabase } from '../contexts/DatabaseContext'
-import { queryTwoToTwo, getAllElements, getElementBySymbol, getNuclideBySymbol, getAtomicRadii, isRadioactive } from '../services/queryService'
+import { queryTwoToTwo, getAllElements, getElementBySymbol, getNuclideBySymbol, getAtomicRadii } from '../services/queryService'
 import PeriodicTableSelector from '../components/PeriodicTableSelector'
 import ElementDetailsCard from '../components/ElementDetailsCard'
 import NuclideDetailsCard from '../components/NuclideDetailsCard'
@@ -83,6 +83,7 @@ export default function TwoToTwoQuery() {
   const [selectedOutputElement4, setSelectedOutputElement4] = useState<string[]>(getInitialOutputElement4())
   const [resultElements, setResultElements] = useState<Element[]>([])
   const [nuclides, setNuclides] = useState<Nuclide[]>([])
+  const [radioactiveNuclides, setRadioactiveNuclides] = useState<Set<string>>(new Set())
   const [executionTime, setExecutionTime] = useState<number>(0)
   const [totalCount, setTotalCount] = useState(0)
   const [isQuerying, setIsQuerying] = useState(false)
@@ -282,6 +283,7 @@ export default function TwoToTwoQuery() {
       setResults(result.reactions)
       setResultElements(result.elements)
       setNuclides(result.nuclides)
+      setRadioactiveNuclides(result.radioactiveNuclides)
       setExecutionTime(result.executionTime)
       setTotalCount(result.totalCount)
       setShowResults(true)
@@ -581,11 +583,11 @@ export default function TwoToTwoQuery() {
                     const elementMatch = !activeElement || reactionContainsElement(reaction, activeElement)
                     const isDesaturated = (activeNuclide && !nuclideMatch) || (activeElement && !elementMatch)
 
-                    // Check radioactivity for each isotope
-                    const isE1Radioactive = db && isRadioactive(db, reaction.Z1, reaction.A1)
-                    const isE2Radioactive = db && isRadioactive(db, reaction.Z2, reaction.A2)
-                    const isE3Radioactive = db && isRadioactive(db, reaction.Z3, reaction.A3)
-                    const isE4Radioactive = db && isRadioactive(db, reaction.Z4, reaction.A4)
+                    // Check radioactivity for each isotope (O(1) Set lookup instead of SQL query)
+                    const isE1Radioactive = radioactiveNuclides.has(`${reaction.Z1}-${reaction.A1}`)
+                    const isE2Radioactive = radioactiveNuclides.has(`${reaction.Z2}-${reaction.A2}`)
+                    const isE3Radioactive = radioactiveNuclides.has(`${reaction.Z3}-${reaction.A3}`)
+                    const isE4Radioactive = radioactiveNuclides.has(`${reaction.Z4}-${reaction.A4}`)
 
                     return (
                     <tr key={idx} className={isDesaturated ? 'opacity-30 grayscale' : 'transition-all duration-200'}>
@@ -714,7 +716,7 @@ export default function TwoToTwoQuery() {
                 const isActive = highlightedNuclide === nuclideId
                 const isPinned = pinnedNuclide && highlightedNuclide === nuclideId
                 const isDesaturated = highlightedNuclide && highlightedNuclide !== nuclideId
-                const nuclideIsRadioactive = db && isRadioactive(db, nuc.Z, nuc.A)
+                const nuclideIsRadioactive = radioactiveNuclides.has(`${nuc.Z}-${nuc.A}`)
 
                 return (
                 <div

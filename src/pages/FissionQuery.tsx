@@ -3,7 +3,7 @@ import { Download, Info, Loader, Eye, EyeOff, Radiation } from 'lucide-react'
 import { useSearchParams } from 'react-router-dom'
 import type { FissionReaction, QueryFilter, Element, Nuclide, AtomicRadiiData } from '../types'
 import { useDatabase } from '../contexts/DatabaseContext'
-import { queryFission, getAllElements, getElementBySymbol, getNuclideBySymbol, getAtomicRadii, isRadioactive } from '../services/queryService'
+import { queryFission, getAllElements, getElementBySymbol, getNuclideBySymbol, getAtomicRadii } from '../services/queryService'
 import PeriodicTableSelector from '../components/PeriodicTableSelector'
 import ElementDetailsCard from '../components/ElementDetailsCard'
 import NuclideDetailsCard from '../components/NuclideDetailsCard'
@@ -76,6 +76,7 @@ export default function FissionQuery() {
   const [selectedOutputElement2, setSelectedOutputElement2] = useState<string[]>(getInitialOutputElement2())
   const [elements, setElements] = useState<Element[]>([])
   const [nuclides, setNuclides] = useState<Nuclide[]>([])
+  const [radioactiveNuclides, setRadioactiveNuclides] = useState<Set<string>>(new Set())
   const [queryTime, setQueryTime] = useState<number>(0)
   const [totalCount, setTotalCount] = useState(0)
   const [isQuerying, setIsQuerying] = useState(false)
@@ -255,6 +256,7 @@ export default function FissionQuery() {
       setResults(result.reactions)
       setElements(result.elements)
       setNuclides(result.nuclides)
+      setRadioactiveNuclides(result.radioactiveNuclides)
       setQueryTime(result.executionTime)
       setTotalCount(result.totalCount)
       setShowResults(true)
@@ -538,10 +540,10 @@ export default function FissionQuery() {
                     const elementMatch = !activeElement || reactionContainsElement(reaction, activeElement)
                     const isDesaturated = (activeNuclide && !nuclideMatch) || (activeElement && !elementMatch)
 
-                    // Check radioactivity for each isotope
-                    const isInputRadioactive = db && isRadioactive(db, reaction.Z, reaction.A)
-                    const isOutput1Radioactive = db && isRadioactive(db, reaction.Z1, reaction.A1)
-                    const isOutput2Radioactive = db && isRadioactive(db, reaction.Z2, reaction.A2)
+                    // Check radioactivity for each isotope (O(1) Set lookup instead of SQL query)
+                    const isInputRadioactive = radioactiveNuclides.has(`${reaction.Z}-${reaction.A}`)
+                    const isOutput1Radioactive = radioactiveNuclides.has(`${reaction.Z1}-${reaction.A1}`)
+                    const isOutput2Radioactive = radioactiveNuclides.has(`${reaction.Z2}-${reaction.A2}`)
 
                     return (
                     <tr key={idx} className={isDesaturated ? 'opacity-30 grayscale' : 'transition-all duration-200'}>
@@ -651,7 +653,7 @@ export default function FissionQuery() {
                   const isActive = highlightedNuclide === nuclideId
                   const isPinned = pinnedNuclide && highlightedNuclide === nuclideId
                   const isDesaturated = highlightedNuclide && highlightedNuclide !== nuclideId
-                  const nuclideIsRadioactive = db && isRadioactive(db, nuc.Z, nuc.A)
+                  const nuclideIsRadioactive = radioactiveNuclides.has(`${nuc.Z}-${nuc.A}`)
 
                   return (
                   <div

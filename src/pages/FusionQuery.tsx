@@ -3,7 +3,7 @@ import { Download, Info, Loader2, Eye, EyeOff, Radiation } from 'lucide-react'
 import { useSearchParams } from 'react-router-dom'
 import type { FusionReaction, QueryFilter, Nuclide, Element, AtomicRadiiData } from '../types'
 import { useDatabase } from '../contexts/DatabaseContext'
-import { queryFusion, getAllElements, getElementBySymbol, getNuclideBySymbol, getAtomicRadii, isRadioactive } from '../services/queryService'
+import { queryFusion, getAllElements, getElementBySymbol, getNuclideBySymbol, getAtomicRadii } from '../services/queryService'
 import PeriodicTableSelector from '../components/PeriodicTableSelector'
 import ElementDetailsCard from '../components/ElementDetailsCard'
 import NuclideDetailsCard from '../components/NuclideDetailsCard'
@@ -72,6 +72,7 @@ export default function FusionQuery() {
   const [results, setResults] = useState<FusionReaction[]>([])
   const [nuclides, setNuclides] = useState<Nuclide[]>([])
   const [resultElements, setResultElements] = useState<Element[]>([])
+  const [radioactiveNuclides, setRadioactiveNuclides] = useState<Set<string>>(new Set())
   const [showResults, setShowResults] = useState(false)
   const [selectedElement1, setSelectedElement1] = useState<string[]>(getInitialElement1())
   const [selectedElement2, setSelectedElement2] = useState<string[]>(getInitialElement2())
@@ -264,6 +265,7 @@ export default function FusionQuery() {
       setResults(result.reactions)
       setNuclides(result.nuclides)
       setResultElements(result.elements)
+      setRadioactiveNuclides(result.radioactiveNuclides)
       setExecutionTime(result.executionTime)
       setTotalCount(result.totalCount)
       setShowResults(true)
@@ -553,10 +555,10 @@ export default function FusionQuery() {
                     const elementMatch = !activeElement || reactionContainsElement(reaction, activeElement)
                     const isDesaturated = (activeNuclide && !nuclideMatch) || (activeElement && !elementMatch)
 
-                    // Check radioactivity for each isotope
-                    const isE1Radioactive = db && isRadioactive(db, reaction.Z1, reaction.A1)
-                    const isE2Radioactive = db && isRadioactive(db, reaction.Z2, reaction.A2)
-                    const isOutputRadioactive = db && isRadioactive(db, reaction.Z, reaction.A)
+                    // Check radioactivity for each isotope (O(1) Set lookup instead of SQL query)
+                    const isE1Radioactive = radioactiveNuclides.has(`${reaction.Z1}-${reaction.A1}`)
+                    const isE2Radioactive = radioactiveNuclides.has(`${reaction.Z2}-${reaction.A2}`)
+                    const isOutputRadioactive = radioactiveNuclides.has(`${reaction.Z}-${reaction.A}`)
 
                     return (
                     <tr key={idx} className={isDesaturated ? 'opacity-30 grayscale' : 'transition-all duration-200'}>
@@ -663,7 +665,7 @@ export default function FusionQuery() {
                 const isActive = highlightedNuclide === nuclideId
                 const isPinned = pinnedNuclide && highlightedNuclide === nuclideId
                 const isDesaturated = highlightedNuclide && highlightedNuclide !== nuclideId
-                const nuclideIsRadioactive = db && isRadioactive(db, nuc.Z, nuc.A)
+                const nuclideIsRadioactive = radioactiveNuclides.has(`${nuc.Z}-${nuc.A}`)
 
                 return (
                 <div

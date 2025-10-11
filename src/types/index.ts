@@ -153,6 +153,7 @@ export interface QueryResult<T = Reaction> {
   reactions: T[];
   nuclides: Nuclide[];
   elements: Element[];
+  radioactiveNuclides: Set<string>;  // Set of "Z-A" format (e.g., "26-56") for O(1) lookup
   executionTime: number;
   rowCount: number;
   totalCount: number;  // Total matching rows without limit

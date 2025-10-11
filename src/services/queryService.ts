@@ -160,6 +160,35 @@ function buildOrderClause(filter: QueryFilter): string {
 }
 
 /**
+ * Get Set of radioactive nuclides from a list of nuclides
+ * Returns Set of "Z-A" format (e.g., "26-56") for O(1) lookup
+ * Single batch SQL query instead of individual queries per nuclide
+ */
+function getRadioactiveNuclides(db: Database, nuclides: Nuclide[]): Set<string> {
+  if (nuclides.length === 0) return new Set();
+
+  // Build WHERE clause for all nuclides
+  const conditions = nuclides.map(n => `(Z = ${n.Z} AND A = ${n.A})`).join(' OR ');
+
+  const sql = `
+    SELECT DISTINCT Z, A
+    FROM RadioNuclides
+    WHERE ${conditions}
+  `;
+
+  const results = db.exec(sql);
+  const radioactive = new Set<string>();
+
+  if (results.length > 0) {
+    results[0].values.forEach((row: any[]) => {
+      radioactive.add(`${row[0]}-${row[1]}`);
+    });
+  }
+
+  return radioactive;
+}
+
+/**
  * Query Fusion reactions
  */
 export function queryFusion(db: Database, filter: QueryFilter): QueryResult<FusionReaction> {
@@ -202,12 +231,16 @@ export function queryFusion(db: Database, filter: QueryFilter): QueryResult<Fusi
   const nuclides = getUniqueNuclides(db, reactions, 'fusion');
   const elements = getUniqueElements(db, reactions, 'fusion');
 
+  // Get radioactive nuclides in a single batch query
+  const radioactiveNuclides = getRadioactiveNuclides(db, nuclides);
+
   const executionTime = performance.now() - startTime;
 
   return {
     reactions,
     nuclides,
     elements,
+    radioactiveNuclides,
     executionTime,
     rowCount: reactions.length,
     totalCount,
@@ -256,12 +289,16 @@ export function queryFission(db: Database, filter: QueryFilter): QueryResult<Fis
   const nuclides = getUniqueNuclides(db, reactions, 'fission');
   const elements = getUniqueElements(db, reactions, 'fission');
 
+  // Get radioactive nuclides in a single batch query
+  const radioactiveNuclides = getRadioactiveNuclides(db, nuclides);
+
   const executionTime = performance.now() - startTime;
 
   return {
     reactions,
     nuclides,
     elements,
+    radioactiveNuclides,
     executionTime,
     rowCount: reactions.length,
     totalCount,
@@ -310,12 +347,16 @@ export function queryTwoToTwo(db: Database, filter: QueryFilter): QueryResult<Tw
   const nuclides = getUniqueNuclides(db, reactions, 'twotwo');
   const elements = getUniqueElements(db, reactions, 'twotwo');
 
+  // Get radioactive nuclides in a single batch query
+  const radioactiveNuclides = getRadioactiveNuclides(db, nuclides);
+
   const executionTime = performance.now() - startTime;
 
   return {
     reactions,
     nuclides,
     elements,
+    radioactiveNuclides,
     executionTime,
     rowCount: reactions.length,
     totalCount,
