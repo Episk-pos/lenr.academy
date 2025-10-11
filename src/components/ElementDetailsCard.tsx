@@ -1,4 +1,5 @@
 import { X } from 'lucide-react'
+import { Link } from 'react-router-dom'
 import type { Element, AtomicRadiiData } from '../types'
 
 interface ElementDetailsCardProps {
@@ -14,8 +15,13 @@ export default function ElementDetailsCard({ element, atomicRadii, onClose }: El
     <div className="card p-6 animate-fade-in">
       <div className="flex items-start justify-between mb-4">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-1">
-            {element.EName} ({element.E})
+          <h2 className="text-2xl font-bold mb-1">
+            <Link
+              to={`/element-data?Z=${element.Z}`}
+              className="text-gray-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 hover:underline transition-colors"
+            >
+              {element.EName} ({element.E})
+            </Link>
           </h2>
           <p className="text-sm text-gray-500 dark:text-gray-400">
             Atomic Number: {element.Z}

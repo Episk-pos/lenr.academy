@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Download, Info, Loader2, Eye, EyeOff, Radiation } from 'lucide-react'
-import { useSearchParams } from 'react-router-dom'
+import { useSearchParams, Link } from 'react-router-dom'
 import type { TwoToTwoReaction, QueryFilter, Element, Nuclide, AtomicRadiiData } from '../types'
 import { useDatabase } from '../contexts/DatabaseContext'
 import { queryTwoToTwo, getAllElements, getElementBySymbol, getNuclideBySymbol, getAtomicRadii } from '../services/queryService'
@@ -593,7 +593,12 @@ export default function TwoToTwoQuery() {
                     <tr key={idx} className={isDesaturated ? 'opacity-30 grayscale' : 'transition-all duration-200'}>
                       <td className="bg-blue-50 dark:bg-blue-900/30 text-center">
                         <div className="flex items-center justify-center gap-1">
-                          <span className="font-semibold text-base">{reaction.E1}-{reaction.A1}</span>
+                          <Link
+                            to={`/element-data?Z=${reaction.Z1}&A=${reaction.A1}`}
+                            className="font-semibold text-base hover:underline text-blue-600 dark:text-blue-400"
+                          >
+                            {reaction.E1}-{reaction.A1}
+                          </Link>
                           {isE1Radioactive && (
                             <Radiation className="w-3 h-3 text-amber-600 dark:text-amber-400" title="Radioactive" />
                           )}
@@ -602,7 +607,12 @@ export default function TwoToTwoQuery() {
                       </td>
                       <td className="bg-blue-50 dark:bg-blue-900/30 text-center">
                         <div className="flex items-center justify-center gap-1">
-                          <span className="font-semibold text-base">{reaction.E2}-{reaction.A2}</span>
+                          <Link
+                            to={`/element-data?Z=${reaction.Z2}&A=${reaction.A2}`}
+                            className="font-semibold text-base hover:underline text-blue-600 dark:text-blue-400"
+                          >
+                            {reaction.E2}-{reaction.A2}
+                          </Link>
                           {isE2Radioactive && (
                             <Radiation className="w-3 h-3 text-amber-600 dark:text-amber-400" title="Radioactive" />
                           )}
@@ -611,7 +621,12 @@ export default function TwoToTwoQuery() {
                       </td>
                       <td className="bg-green-50 dark:bg-green-900/30 text-center">
                         <div className="flex items-center justify-center gap-1">
-                          <span className="font-semibold text-base">{reaction.E3}-{reaction.A3}</span>
+                          <Link
+                            to={`/element-data?Z=${reaction.Z3}&A=${reaction.A3}`}
+                            className="font-semibold text-base hover:underline text-blue-600 dark:text-blue-400"
+                          >
+                            {reaction.E3}-{reaction.A3}
+                          </Link>
                           {isE3Radioactive && (
                             <Radiation className="w-3 h-3 text-amber-600 dark:text-amber-400" title="Radioactive" />
                           )}
@@ -620,7 +635,12 @@ export default function TwoToTwoQuery() {
                       </td>
                       <td className="bg-green-50 dark:bg-green-900/30 text-center">
                         <div className="flex items-center justify-center gap-1">
-                          <span className="font-semibold text-base">{reaction.E4}-{reaction.A4}</span>
+                          <Link
+                            to={`/element-data?Z=${reaction.Z4}&A=${reaction.A4}`}
+                            className="font-semibold text-base hover:underline text-blue-600 dark:text-blue-400"
+                          >
+                            {reaction.E4}-{reaction.A4}
+                          </Link>
                           {isE4Radioactive && (
                             <Radiation className="w-3 h-3 text-amber-600 dark:text-amber-400" title="Radioactive" />
                           )}

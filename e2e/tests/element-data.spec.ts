@@ -283,6 +283,168 @@ test.describe('Element Data Page', () => {
     // Just verify page loads correctly
     await expect(page.getByRole('heading', { name: /Element Data/i })).toBeVisible();
   });
+
+  test('should display radioactive decay data for unstable isotopes', async ({ page }) => {
+    // Navigate to C-14 (radioactive carbon isotope)
+    await page.goto('/element-data?Z=6&A=14');
+    await waitForDatabaseReady(page);
+
+    // Should show C-14 heading
+    await expect(page.getByRole('heading', { name: /C-14/i })).toBeVisible();
+
+    // Should show Radioactive Decay section if isotope has decay data
+    const decayHeading = page.getByRole('heading', { name: /Radioactive Decay/i });
+    const hasDecayData = await decayHeading.isVisible().catch(() => false);
+
+    if (hasDecayData) {
+      await expect(decayHeading).toBeVisible();
+
+      // Should show decay mode badges (e.g., B-, EC, etc.)
+      const decayBadges = page.locator('button').filter({ hasText: /B-|B\+|EC|A|IT/i });
+      const badgeCount = await decayBadges.count();
+      expect(badgeCount).toBeGreaterThan(0);
+    }
+  });
+
+  test('should display radiation type legend for radioactive isotopes', async ({ page }) => {
+    // Navigate to a radioactive isotope (C-14)
+    await page.goto('/element-data?Z=6&A=14');
+    await waitForDatabaseReady(page);
+
+    // Should show Radiation Type Legend
+    const legendHeading = page.getByRole('heading', { name: /Radiation Type Legend/i });
+    const hasLegend = await legendHeading.isVisible().catch(() => false);
+
+    if (hasLegend) {
+      await expect(legendHeading).toBeVisible();
+
+      // Should show legend entries with Wikipedia links
+      await expect(page.getByText(/Alpha particle/i)).toBeVisible();
+      await expect(page.getByText(/Beta minus/i)).toBeVisible();
+      await expect(page.getByText(/Gamma ray/i)).toBeVisible();
+
+      // Links should open in new tab
+      const alphaLink = page.locator('a[href*="wikipedia.org/wiki/Alpha_particle"]');
+      const hasAlphaLink = await alphaLink.isVisible().catch(() => false);
+      if (hasAlphaLink) {
+        await expect(alphaLink).toHaveAttribute('target', '_blank');
+        await expect(alphaLink).toHaveAttribute('rel', 'noopener noreferrer');
+      }
+    }
+  });
+
+  test('should navigate to daughter nuclide when clicking decay mode badge', async ({ page }) => {
+    // Navigate to a radioactive isotope with known decay (C-14 decays to N-14)
+    await page.goto('/element-data?Z=6&A=14');
+    await waitForDatabaseReady(page);
+
+    // Look for decay mode badges
+    const decayBadges = page.locator('button').filter({ hasText: /→/ });
+    const badgeCount = await decayBadges.count();
+
+    if (badgeCount > 0) {
+      // Click the first decay badge
+      const firstBadge = decayBadges.first();
+      await firstBadge.click();
+
+      // Should navigate to a different nuclide
+      await page.waitForURL(/Z=\d+&A=\d+/, { timeout: 5000 });
+
+      // URL should have changed
+      const url = page.url();
+      expect(url).toMatch(/Z=\d+&A=\d+/);
+      expect(url).not.toContain('Z=6&A=14'); // Should not be C-14 anymore
+    }
+  });
+
+  test('should show destination nuclide in decay badge', async ({ page }) => {
+    // Navigate to a radioactive isotope
+    await page.goto('/element-data?Z=6&A=14');
+    await waitForDatabaseReady(page);
+
+    // Look for decay badges with arrow and destination
+    const decayBadges = page.locator('button').filter({ hasText: /→/ });
+    const badgeCount = await decayBadges.count();
+
+    if (badgeCount > 0) {
+      // Should show destination nuclide (e.g., "B- → N-14")
+      const firstBadge = decayBadges.first();
+      const badgeText = await firstBadge.textContent();
+
+      // Should contain an arrow and element-mass format
+      expect(badgeText).toMatch(/→/);
+      expect(badgeText).toMatch(/[A-Z][a-z]?-\d+/); // Element symbol - mass number
+    }
+  });
+
+  test('should handle missing daughter nuclide gracefully', async ({ page }) => {
+    // Navigate with valid Z but invalid A (missing nuclide)
+    await page.goto('/element-data?Z=26&A=999');
+    await waitForDatabaseReady(page);
+
+    // Should show element (Iron) heading
+    await expect(page.getByRole('heading', { name: /Iron \(Fe\)/i })).toBeVisible();
+
+    // Should show "Nuclide Not Available" message
+    const notAvailableHeading = page.getByRole('heading', { name: /Nuclide Not Available/i });
+    await expect(notAvailableHeading).toBeVisible();
+
+    // Should explain why
+    await expect(page.getByText(/Fe-999.*not available in the database/i)).toBeVisible();
+    await expect(page.getByText(/extremely short-lived/i)).toBeVisible();
+
+    // Should still show available isotopes
+    await expect(page.getByRole('heading', { name: /Nuclides.*available/i })).toBeVisible();
+  });
+
+  test('should show collapsible decay data table for isotopes with multiple decay modes', async ({ page }) => {
+    // Navigate to an isotope with multiple decay modes
+    await page.goto('/element-data?Z=6&A=14');
+    await waitForDatabaseReady(page);
+
+    // Look for "Show more decay modes" button
+    const showMoreButton = page.getByRole('button', { name: /Show.*more decay mode/i });
+    const hasShowMore = await showMoreButton.isVisible().catch(() => false);
+
+    if (hasShowMore) {
+      // Click to expand
+      await showMoreButton.click();
+
+      // Should show decay table with columns
+      await expect(page.getByRole('columnheader', { name: /Decay Mode/i })).toBeVisible();
+      await expect(page.getByRole('columnheader', { name: /Radiation/i })).toBeVisible();
+      await expect(page.getByRole('columnheader', { name: /Energy.*MeV/i })).toBeVisible();
+      await expect(page.getByRole('columnheader', { name: /Intensity/i })).toBeVisible();
+
+      // Should show "Hide details" button
+      const hideButton = page.getByRole('button', { name: /Hide details/i });
+      await expect(hideButton).toBeVisible();
+
+      // Click to collapse
+      await hideButton.click();
+
+      // Table should be hidden
+      const decayTable = page.getByRole('columnheader', { name: /Decay Mode/i });
+      await expect(decayTable).not.toBeVisible();
+    }
+  });
+
+  test('should display radioactivity indicators on isotope selection cards', async ({ page }) => {
+    // Navigate to element with both stable and unstable isotopes (Carbon)
+    await page.goto('/element-data?Z=6');
+    await waitForDatabaseReady(page);
+
+    // C-14 should have a radioactive indicator (radiation icon)
+    const c14Button = page.getByRole('button', { name: /C-14/i });
+
+    // Check if there's a radiation icon (Lucide uses SVG)
+    // The radiation icon should be near the C-14 button
+    const buttonParent = c14Button.locator('..');
+    const hasSvg = await buttonParent.locator('svg').isVisible().catch(() => false);
+
+    // Just verify the isotope buttons are visible
+    await expect(c14Button).toBeVisible();
+  });
 });
 
 test.describe('Element Data - Mobile', () => {

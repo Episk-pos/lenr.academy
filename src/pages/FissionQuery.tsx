@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Download, Info, Loader, Eye, EyeOff, Radiation } from 'lucide-react'
-import { useSearchParams } from 'react-router-dom'
+import { useSearchParams, Link } from 'react-router-dom'
 import type { FissionReaction, QueryFilter, Element, Nuclide, AtomicRadiiData } from '../types'
 import { useDatabase } from '../contexts/DatabaseContext'
 import { queryFission, getAllElements, getElementBySymbol, getNuclideBySymbol, getAtomicRadii } from '../services/queryService'
@@ -549,7 +549,12 @@ export default function FissionQuery() {
                     <tr key={idx} className={isDesaturated ? 'opacity-30 grayscale' : 'transition-all duration-200'}>
                       <td className="bg-blue-50 dark:bg-blue-900/30 text-center">
                         <div className="flex items-center justify-center gap-1">
-                          <span className="font-semibold text-base">{reaction.E}-{reaction.A}</span>
+                          <Link
+                            to={`/element-data?Z=${reaction.Z}&A=${reaction.A}`}
+                            className="font-semibold text-base hover:underline text-blue-600 dark:text-blue-400"
+                          >
+                            {reaction.E}-{reaction.A}
+                          </Link>
                           {isInputRadioactive && (
                             <Radiation className="w-3 h-3 text-amber-600 dark:text-amber-400" title="Radioactive" />
                           )}
@@ -558,7 +563,12 @@ export default function FissionQuery() {
                       </td>
                       <td className="bg-green-50 dark:bg-green-900/30 text-center">
                         <div className="flex items-center justify-center gap-1">
-                          <span className="font-semibold text-base">{reaction.E1}-{reaction.A1}</span>
+                          <Link
+                            to={`/element-data?Z=${reaction.Z1}&A=${reaction.A1}`}
+                            className="font-semibold text-base hover:underline text-blue-600 dark:text-blue-400"
+                          >
+                            {reaction.E1}-{reaction.A1}
+                          </Link>
                           {isOutput1Radioactive && (
                             <Radiation className="w-3 h-3 text-amber-600 dark:text-amber-400" title="Radioactive" />
                           )}
@@ -567,7 +577,12 @@ export default function FissionQuery() {
                       </td>
                       <td className="bg-green-50 dark:bg-green-900/30 text-center">
                         <div className="flex items-center justify-center gap-1">
-                          <span className="font-semibold text-base">{reaction.E2}-{reaction.A2}</span>
+                          <Link
+                            to={`/element-data?Z=${reaction.Z2}&A=${reaction.A2}`}
+                            className="font-semibold text-base hover:underline text-blue-600 dark:text-blue-400"
+                          >
+                            {reaction.E2}-{reaction.A2}
+                          </Link>
                           {isOutput2Radioactive && (
                             <Radiation className="w-3 h-3 text-amber-600 dark:text-amber-400" title="Radioactive" />
                           )}
