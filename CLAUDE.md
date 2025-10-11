@@ -38,7 +38,7 @@ npm run db:index                         # Regenerate S3 bucket index.html and v
 # Deployment (AWS S3 + CloudFront)
 npm run deploy       # Deploy to S3 and invalidate CloudFront cache
 npm run deploy:s3    # Sync ./dist to s3://lenr.academy
-npm run deploy:cache # Invalidate CloudFront distribution
+npm run deploy:uncache # Invalidate CloudFront distribution
 ```
 
 ## Architecture

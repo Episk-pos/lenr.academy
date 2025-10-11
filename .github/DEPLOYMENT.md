@@ -65,7 +65,7 @@ npm run deploy
 # Or run steps individually
 npm run build
 npm run deploy:s3
-npm run deploy:cache
+npm run deploy:uncache
 ```
 
 **Requirements:**

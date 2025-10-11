@@ -23,6 +23,8 @@ jobs:
         with:
           ref: ${{ github.event.release.tag_name || github.ref }}
           lfs: true
+          fetch-depth: 0  # Fetch all history for git describe
+          fetch-tags: true  # Fetch tags for version detection
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -141,8 +143,8 @@ jobs:
           LOCAL_VERSION=$(jq -r '.version' public/parkhomov.db.meta.json)
           echo "Local database version: $LOCAL_VERSION"
 
-          # Try to fetch remote version from S3
-          REMOTE_VERSION=$(curl -sf https://db.lenr.academy/latest/parkhomov.db.meta.json | jq -r '.version' 2>/dev/null || echo "none")
+          # Fetch remote version directly from S3 (bypass CloudFront cache)
+          REMOTE_VERSION=$(curl -sf https://db.lenr.academy.s3.amazonaws.com/latest/parkhomov.db.meta.json | jq -r '.version' 2>/dev/null || echo "none")
           echo "Remote database version: $REMOTE_VERSION"
 
           # Compare versions
@@ -169,6 +171,12 @@ jobs:
           VERSION="${{ steps.check_version.outputs.local_version }}"
           echo "📦 Uploading database version $VERSION to S3..."
           npm run db:upload --version="$VERSION"
+
+      - name: Invalidate CloudFront cache for database bucket
+        if: steps.check_version.outputs.db_changed == 'true'
+        run: |
+          echo "🔄 Invalidating CloudFront cache for db.lenr.academy..."
+          aws cloudfront create-invalidation --distribution-id E2U0YFSVME3PDG --paths "/*"
 
       - name: Add database update summary
         run: |

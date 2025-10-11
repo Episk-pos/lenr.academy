@@ -316,7 +316,7 @@ The application is deployed to AWS S3 with CloudFront CDN.
 ```bash
 npm run deploy         # Full deployment (S3 sync + cache invalidation)
 npm run deploy:s3      # Sync ./dist to S3 bucket
-npm run deploy:cache   # Invalidate CloudFront cache
+npm run deploy:uncache   # Invalidate CloudFront cache
 ```
 
 #### AWS Setup
