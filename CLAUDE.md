@@ -196,6 +196,19 @@ The Network Information API has limited browser support. To test the metered war
 
 The warning will only trigger in production on mobile browsers with cellular connections.
 
+### Debugging Playwright Test Failures
+
+When investigating Playwright E2E test failures:
+
+1. **Always check the screenshots** in `test-results/` directory first
+2. Screenshots show the exact state of the page when the test failed
+3. Look for:
+   - Viewport scrolling issues (is the target element visible?)
+   - Actual vs. expected element presence in the DOM
+   - Query execution status (e.g., "Showing X of Y reactions")
+   - Whether pinned elements actually exist in the results
+4. The screenshots can reveal issues that aren't obvious from test error messages alone (e.g., "element not found" might mean the element doesn't exist in query results, not that it's off-screen)
+
 ## File Organization
 
 ```

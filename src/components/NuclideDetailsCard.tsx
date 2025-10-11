@@ -425,6 +425,30 @@ export default function NuclideDetailsCard({ nuclide, onClose }: NuclideDetailsC
               {' '}(positron emission)
             </div>
             <div>
+              <strong>EC:</strong>{' '}
+              <a
+                href="https://en.wikipedia.org/wiki/Electron_capture"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:underline hover:text-amber-900 dark:hover:text-amber-100"
+              >
+                Electron capture
+              </a>
+              {' '}(orbital electron absorbed)
+            </div>
+            <div>
+              <strong>IT:</strong>{' '}
+              <a
+                href="https://en.wikipedia.org/wiki/Isomeric_transition"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:underline hover:text-amber-900 dark:hover:text-amber-100"
+              >
+                Isomeric transition
+              </a>
+              {' '}(excited state decay)
+            </div>
+            <div>
               <strong>G:</strong>{' '}
               <a
                 href="https://en.wikipedia.org/wiki/Gamma_ray"
