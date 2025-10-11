@@ -92,6 +92,7 @@ export default function FissionQuery() {
   const [selectedElementDetails, setSelectedElementDetails] = useState<Element | null>(null)
   const [selectedNuclideDetails, setSelectedNuclideDetails] = useState<Nuclide | null>(null)
   const [selectedElementRadii, setSelectedElementRadii] = useState<AtomicRadiiData | null>(null)
+  const [hasInitializedFromUrl, setHasInitializedFromUrl] = useState(false)
 
   // Load elements when database is ready
   useEffect(() => {
@@ -106,6 +107,35 @@ export default function FissionQuery() {
   useEffect(() => {
     localStorage.setItem('showBosonFermion', JSON.stringify(showBosonFermion))
   }, [showBosonFermion])
+
+  // Initialize pinned state from URL params (after results are loaded)
+  // This effect should ONLY run once when results first load, not on every URL change
+  useEffect(() => {
+    if (!showResults || !isInitialized || hasInitializedFromUrl) return
+
+    const pinE = searchParams.get('pinE')
+    const pinN = searchParams.get('pinN')
+
+    // Only initialize if we have URL params and nothing is currently pinned
+    // This prevents re-pinning on every results change
+    if (pinN && !pinnedNuclide && nuclides.some(nuc => `${nuc.E}-${nuc.A}` === pinN)) {
+      // Pinning nuclide from URL - also pin its parent element
+      const [elementSymbol] = pinN.split('-')
+      setHighlightedNuclide(pinN)
+      setPinnedNuclide(true)
+      setHighlightedElement(elementSymbol)
+      setPinnedElement(true)
+      setHasInitializedFromUrl(true)
+    } else if (pinE && !pinnedElement && elements.some(el => el.E === pinE)) {
+      // Only pin element if no nuclide is being pinned
+      setHighlightedElement(pinE)
+      setPinnedElement(true)
+      setHasInitializedFromUrl(true)
+    } else if (!pinE && !pinN) {
+      // No URL params to initialize from
+      setHasInitializedFromUrl(true)
+    }
+  }, [showResults, isInitialized, elements, nuclides, hasInitializedFromUrl, searchParams, pinnedElement, pinnedNuclide])
 
   // Fetch element or nuclide details when pinned
   useEffect(() => {
@@ -176,8 +206,29 @@ export default function FissionQuery() {
       params.set('limit', filter.limit?.toString() || DEFAULT_LIMIT.toString())
     }
 
+    // Add pinned element/nuclide state
+    if (pinnedElement && highlightedElement) {
+      params.set('pinE', highlightedElement)
+    } else if (!showResults) {
+      // Preserve existing pinE parameter during initial load until pinning logic runs
+      const existingPinE = searchParams.get('pinE')
+      if (existingPinE) {
+        params.set('pinE', existingPinE)
+      }
+    }
+
+    if (pinnedNuclide && highlightedNuclide) {
+      params.set('pinN', highlightedNuclide)
+    } else if (!showResults) {
+      // Preserve existing pinN parameter during initial load until pinning logic runs
+      const existingPinN = searchParams.get('pinN')
+      if (existingPinN) {
+        params.set('pinN', existingPinN)
+      }
+    }
+
     setSearchParams(params, { replace: true })
-  }, [selectedElement, selectedOutputElement1, selectedOutputElement2, filter.minMeV, filter.maxMeV, filter.neutrinoTypes, filter.limit, isInitialized])
+  }, [selectedElement, selectedOutputElement1, selectedOutputElement2, filter.minMeV, filter.maxMeV, filter.neutrinoTypes, filter.limit, pinnedElement, highlightedElement, pinnedNuclide, highlightedNuclide, isInitialized, showResults, searchParams])
 
   // Auto-execute query when filters change
   useEffect(() => {
@@ -615,11 +666,17 @@ export default function FissionQuery() {
                     onMouseLeave={() => !pinnedNuclide && setHighlightedNuclide(null)}
                     onClick={() => {
                       if (pinnedNuclide && highlightedNuclide === nuclideId) {
+                        // Unpinning nuclide only - do NOT unpin parent element
+                        // This allows element to remain pinned independently
                         setPinnedNuclide(false)
                         setHighlightedNuclide(null)
                       } else {
+                        // Pinning nuclide - also pin its parent element
+                        const [elementSymbol] = nuclideId.split('-')
                         setPinnedNuclide(true)
                         setHighlightedNuclide(nuclideId)
+                        setPinnedElement(true)
+                        setHighlightedElement(elementSymbol)
                       }
                     }}
                   >
@@ -661,9 +718,20 @@ export default function FissionQuery() {
                     onMouseLeave={() => !pinnedElement && setHighlightedElement(null)}
                     onClick={() => {
                       if (pinnedElement && highlightedElement === elementId) {
+                        // Unpinning element only - do NOT unpin child nuclides
+                        // This allows nuclides to remain pinned independently
                         setPinnedElement(false)
                         setHighlightedElement(null)
                       } else {
+                        // Pinning element (without selecting a specific nuclide)
+                        // If a nuclide from a DIFFERENT element is pinned, unpin it first
+                        if (pinnedNuclide && highlightedNuclide) {
+                          const [nuclideParentElement] = highlightedNuclide.split('-')
+                          if (nuclideParentElement !== elementId) {
+                            setPinnedNuclide(false)
+                            setHighlightedNuclide(null)
+                          }
+                        }
                         setPinnedElement(true)
                         setHighlightedElement(elementId)
                       }
@@ -695,6 +763,7 @@ export default function FissionQuery() {
                 <NuclideDetailsCard
                   nuclide={selectedNuclideDetails}
                   onClose={() => {
+                    // Unpin nuclide only, keep element pinned
                     setPinnedNuclide(false)
                     setHighlightedNuclide(null)
                   }}
