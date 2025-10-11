@@ -23,20 +23,26 @@ export default function FissionQuery() {
   const [availableElements, setAvailableElements] = useState<Element[]>([])
   const [isInitialized, setIsInitialized] = useState(false)
 
-  // Parse URL parameters or use defaults
+  // Helper to check if any URL parameters exist
+  const hasAnyUrlParams = () => searchParams.toString().length > 0
+
+  // Parse URL parameters or use defaults (only if no params exist)
   const getInitialElement = () => {
     const param = searchParams.get('e')
-    return param ? param.split(',') : DEFAULT_ELEMENT
+    if (param) return param.split(',')
+    return hasAnyUrlParams() ? [] : DEFAULT_ELEMENT
   }
 
   const getInitialOutputElement1 = () => {
     const param = searchParams.get('e1')
-    return param ? param.split(',') : DEFAULT_OUTPUT_ELEMENT1
+    if (param) return param.split(',')
+    return hasAnyUrlParams() ? [] : DEFAULT_OUTPUT_ELEMENT1
   }
 
   const getInitialOutputElement2 = () => {
     const param = searchParams.get('e2')
-    return param ? param.split(',') : DEFAULT_OUTPUT_ELEMENT2
+    if (param) return param.split(',')
+    return hasAnyUrlParams() ? [] : DEFAULT_OUTPUT_ELEMENT2
   }
 
   const getInitialMinMeV = () => {
