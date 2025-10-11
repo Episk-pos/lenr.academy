@@ -185,6 +185,15 @@ Each nuclide has two boson/fermion classifications:
 - `nBorF` - Nuclear: based on whether mass number A is even ('b') or odd ('f')
 - `aBorF` - Atomic: based on neutron count (A-Z)
 
+### Hydrogen Isotopes in Database
+
+The database stores hydrogen isotopes separately with distinct element symbols:
+- `H` - Protium (Hydrogen-1)
+- `D` - Deuterium (Hydrogen-2)
+- `T` - Tritium (Hydrogen-3)
+
+**Important**: When users select "H" (Hydrogen) in the periodic table selector UI, the query automatically includes all three isotopes (H, D, and T). This is why the default Two-To-Two query parameters `E1='H', E2='Ni,Li,Al,B,N', E3='C'` returns 5 results with D-2 (deuterium) reactions, not H-1.
+
 ### Testing Metered Connection Warning
 
 The Network Information API has limited browser support. To test the metered warning:
