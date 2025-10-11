@@ -2,7 +2,7 @@ name: Deploy to Production
 
 on:
   release:
-    types: [released]
+    types: [released, edited]
   workflow_dispatch:
 
 jobs:
@@ -10,8 +10,14 @@ jobs:
     name: Deploy to AWS S3 + CloudFront
     runs-on: ubuntu-latest
 
-    # Deploy only for non-prerelease releases or manual workflow dispatch
-    if: github.event.release.prerelease == false || github.event_name == 'workflow_dispatch'
+    # Deploy only when:
+    # 1. Release is marked as "latest" (not pre-release and not an older release)
+    # 2. Manual workflow dispatch
+    if: |
+      (github.event_name == 'release' &&
+       github.event.release.prerelease == false &&
+       github.event.release.latest == true) ||
+      github.event_name == 'workflow_dispatch'
 
     permissions:
       contents: write  # Needed to upload release assets
@@ -118,8 +124,12 @@ jobs:
     runs-on: ubuntu-latest
     needs: deploy  # Run after deploy succeeds
 
-    # Same conditions as deploy job
-    if: github.event.release.prerelease == false || github.event_name == 'workflow_dispatch'
+    # Same conditions as deploy job - only for latest releases or manual dispatch
+    if: |
+      (github.event_name == 'release' &&
+       github.event.release.prerelease == false &&
+       github.event.release.latest == true) ||
+      github.event_name == 'workflow_dispatch'
 
     steps:
       - name: Checkout code
