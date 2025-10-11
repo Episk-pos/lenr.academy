@@ -8,6 +8,7 @@ import type {
   Nuclide,
   Element,
   AtomicRadiiData,
+  DecayData,
 } from '../types';
 
 /**
@@ -620,5 +621,82 @@ export function getAtomicRadii(db: Database, Z: number): AtomicRadiiData | null 
     calculated: calculated as number | null,
     vanDerWaals: vanDerWaals as number | null,
     covalent: covalent as number | null,
+  };
+}
+
+/**
+ * Get radioactive decay data for a specific isotope
+ */
+export function getRadioactiveDecayData(db: Database, Z: number, A: number): DecayData[] {
+  const sql = `
+    SELECT RDM, RT, DEKeV, RI, HL, Units
+    FROM RadioNuclides
+    WHERE Z = ? AND A = ?
+    ORDER BY RI DESC
+  `;
+  const results = db.exec(sql, [Z, A]);
+
+  if (results.length === 0 || results[0].values.length === 0) {
+    return [];
+  }
+
+  const decayData: DecayData[] = [];
+  results[0].values.forEach((row: any[]) => {
+    decayData.push({
+      decayMode: row[0] as string,
+      radiationType: row[1] as string,
+      energyKeV: row[2] as number | null,
+      intensity: row[3] as number | null,
+      halfLife: row[4] as number | null,
+      halfLifeUnits: row[5] as string | null,
+    });
+  });
+
+  return decayData;
+}
+
+/**
+ * Check if an isotope is radioactive (has decay data)
+ */
+export function isRadioactive(db: Database, Z: number, A: number): boolean {
+  const sql = `
+    SELECT COUNT(*) as count
+    FROM RadioNuclides
+    WHERE Z = ? AND A = ?
+  `;
+  const results = db.exec(sql, [Z, A]);
+
+  if (results.length === 0 || results[0].values.length === 0) {
+    return false;
+  }
+
+  return (results[0].values[0][0] as number) > 0;
+}
+
+/**
+ * Get the primary decay mode for an isotope (highest intensity)
+ */
+export function getPrimaryDecayMode(db: Database, Z: number, A: number): DecayData | null {
+  const sql = `
+    SELECT RDM, RT, DEKeV, RI, HL, Units
+    FROM RadioNuclides
+    WHERE Z = ? AND A = ?
+    ORDER BY RI DESC
+    LIMIT 1
+  `;
+  const results = db.exec(sql, [Z, A]);
+
+  if (results.length === 0 || results[0].values.length === 0) {
+    return null;
+  }
+
+  const row = results[0].values[0];
+  return {
+    decayMode: row[0] as string,
+    radiationType: row[1] as string,
+    energyKeV: row[2] as number | null,
+    intensity: row[3] as number | null,
+    halfLife: row[4] as number | null,
+    halfLifeUnits: row[5] as string | null,
   };
 }

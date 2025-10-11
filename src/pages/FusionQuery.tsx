@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react'
-import { Download, Info, Loader2, Eye, EyeOff } from 'lucide-react'
+import { Download, Info, Loader2, Eye, EyeOff, Radiation } from 'lucide-react'
 import { useSearchParams } from 'react-router-dom'
 import type { FusionReaction, QueryFilter, Nuclide, Element, AtomicRadiiData } from '../types'
 import { useDatabase } from '../contexts/DatabaseContext'
-import { queryFusion, getAllElements, getElementBySymbol, getNuclideBySymbol, getAtomicRadii } from '../services/queryService'
+import { queryFusion, getAllElements, getElementBySymbol, getNuclideBySymbol, getAtomicRadii, isRadioactive } from '../services/queryService'
 import PeriodicTableSelector from '../components/PeriodicTableSelector'
 import ElementDetailsCard from '../components/ElementDetailsCard'
 import NuclideDetailsCard from '../components/NuclideDetailsCard'
@@ -502,18 +502,38 @@ export default function FusionQuery() {
                     const elementMatch = !activeElement || reactionContainsElement(reaction, activeElement)
                     const isDesaturated = (activeNuclide && !nuclideMatch) || (activeElement && !elementMatch)
 
+                    // Check radioactivity for each isotope
+                    const isE1Radioactive = db && isRadioactive(db, reaction.Z1, reaction.A1)
+                    const isE2Radioactive = db && isRadioactive(db, reaction.Z2, reaction.A2)
+                    const isOutputRadioactive = db && isRadioactive(db, reaction.Z, reaction.A)
+
                     return (
                     <tr key={idx} className={isDesaturated ? 'opacity-30 grayscale' : 'transition-all duration-200'}>
                       <td className="bg-blue-50 dark:bg-blue-900/30 text-center">
-                        <div className="font-semibold text-base">{reaction.E1}-{reaction.A1}</div>
+                        <div className="flex items-center justify-center gap-1">
+                          <span className="font-semibold text-base">{reaction.E1}-{reaction.A1}</span>
+                          {isE1Radioactive && (
+                            <Radiation className="w-3 h-3 text-amber-600 dark:text-amber-400" title="Radioactive" />
+                          )}
+                        </div>
                         <div className="text-xs text-gray-600 dark:text-gray-400">(Z={reaction.Z1})</div>
                       </td>
                       <td className="bg-blue-50 dark:bg-blue-900/30 text-center">
-                        <div className="font-semibold text-base">{reaction.E2}-{reaction.A2}</div>
+                        <div className="flex items-center justify-center gap-1">
+                          <span className="font-semibold text-base">{reaction.E2}-{reaction.A2}</span>
+                          {isE2Radioactive && (
+                            <Radiation className="w-3 h-3 text-amber-600 dark:text-amber-400" title="Radioactive" />
+                          )}
+                        </div>
                         <div className="text-xs text-gray-600 dark:text-gray-400">(Z={reaction.Z2})</div>
                       </td>
                       <td className="bg-green-50 dark:bg-green-900/30 text-center">
-                        <div className="font-semibold text-base">{reaction.E}-{reaction.A}</div>
+                        <div className="flex items-center justify-center gap-1">
+                          <span className="font-semibold text-base">{reaction.E}-{reaction.A}</span>
+                          {isOutputRadioactive && (
+                            <Radiation className="w-3 h-3 text-amber-600 dark:text-amber-400" title="Radioactive" />
+                          )}
+                        </div>
                         <div className="text-xs text-gray-600 dark:text-gray-400">(Z={reaction.Z})</div>
                       </td>
                       <td className="text-green-600 font-semibold">{reaction.MeV.toFixed(2)}</td>
@@ -592,6 +612,7 @@ export default function FusionQuery() {
                 const isActive = highlightedNuclide === nuclideId
                 const isPinned = pinnedNuclide && highlightedNuclide === nuclideId
                 const isDesaturated = highlightedNuclide && highlightedNuclide !== nuclideId
+                const nuclideIsRadioactive = db && isRadioactive(db, nuc.Z, nuc.A)
 
                 return (
                 <div
@@ -614,7 +635,12 @@ export default function FusionQuery() {
                     }
                   }}
                 >
-                  <div className="font-semibold text-sm text-gray-900 dark:text-gray-100">{nuc.E}-{nuc.A}</div>
+                  <div className="flex items-center justify-between gap-1">
+                    <span className="font-semibold text-sm text-gray-900 dark:text-gray-100">{nuc.E}-{nuc.A}</span>
+                    {nuclideIsRadioactive && (
+                      <Radiation className="w-3 h-3 text-amber-600 dark:text-amber-400 flex-shrink-0" title="Radioactive" />
+                    )}
+                  </div>
                   <div className="text-xs text-gray-500 dark:text-gray-400">Z={nuc.Z}</div>
                 </div>
                 )
