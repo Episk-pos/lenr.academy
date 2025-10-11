@@ -314,6 +314,20 @@ The S3 bucket is configured for static website hosting. View all available versi
 
 The `.gitignore` excludes `*.db` files but keeps `!*.db.meta.json` for version tracking. The 161MB database file is never committed to Git - it's stored in S3 with explicit versioning.
 
+### Git Stash
+
+When working with stashed changes, **prefer `git stash apply` over `git stash pop`**. This preserves the stash for potential reuse and avoids losing work if something goes wrong during the apply operation.
+
+### Commit Messages
+
+All commits should include the Claude co-authorship footer:
+
+```
+🤖 Generated with [Claude Code](https://claude.com/claude-code)
+
+Co-Authored-By: Claude <noreply@anthropic.com>
+```
+
 ## GitHub Issues and Pull Requests
 
 When asked to work with GitHub issues or pull requests, **prefer using the GitHub CLI (`gh`)** via the Bash tool rather than web scraping or API calls. The `gh` CLI provides structured output and is already installed in the development environment.

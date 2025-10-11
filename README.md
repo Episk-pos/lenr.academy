@@ -115,67 +115,9 @@ Interested in contributing or running locally?
 - 🛠️ **[Developer Documentation](docs/DEVELOPMENT.md)** - Architecture, technology stack, deployment guides
 - 💬 **[GitHub Discussions](https://github.com/Episk-pos/lenr.academy/discussions)** - Ask questions and share ideas
 
-## Initial Development Roadmap
+## Development Roadmap
 
-### Phase 1-4 Complete ✅
-
-- ✅ Project setup with Vite + React + TypeScript + TailwindCSS
-- ✅ Core TypeScript interfaces and data models
-- ✅ Responsive layout with sidebar navigation and dark mode
-- ✅ "Big Three" query tools (Fusion, Fission, TwoToTwo)
-- ✅ Supporting pages (Element Data, Tables, All Tables, Cascades)
-- ✅ **sql.js integration** with client-side SQLite database
-- ✅ **Complete Parkhomov data loaded** (1,389 fusion + 817 fission + 516,789 two-to-two reactions)
-- ✅ **IndexedDB caching** with version management and offline support
-- ✅ **Streaming download** with real-time progress indicators
-- ✅ **Real SQL query execution** across all query pages
-- ✅ **PeriodicTableSelector component** with multi-select
-- ✅ **Periodic table element selector** on Show Element Data page
-- ✅ **Element and Nuclide detail cards** with comprehensive properties
-- ✅ **Isotope selection interface** with B/F badges and stability indicators
-- ✅ Advanced filtering (multi-element, energy ranges, neutrino types)
-- ✅ Dynamic SQL preview and query execution timing
-- ✅ CSV export functionality
-- ✅ **Privacy-focused error tracking** with Sentry (GDPR-compliant, EU hosting)
-- ✅ **Deployed to production** at [lenr.academy](https://lenr.academy)
-
-### Phase 5: Next Steps
-
-- [ ] **Data Visualization**
-  - Energy distribution charts (histogram/density plots)
-  - Reaction network diagrams (force-directed graphs)
-  - Isotope chart (Segré chart visualization)
-  - 3D periodic table visualization
-
-- [ ] **Cascade Simulations**
-  - Implement cascade algorithm (iterative reaction chains)
-  - Visualize reaction pathways and products
-  - Probabilistic branching support
-  - Export cascade results
-
-- [ ] **Query History & Bookmarks**
-  - Save frequently used queries
-  - Query history with timestamps
-  - Share queries via URL parameters
-  - Export/import query sets
-
-- [ ] **Performance Optimizations**
-  - Web Workers for heavy computations
-  - Virtual scrolling for large result sets
-  - Lazy loading of isotope data
-  - Query result caching
-
-- [ ] **PWA Features**
-  - Service worker for true offline support
-  - App manifest for installability
-  - Background sync for database updates
-  - Push notifications for new data
-
-- [ ] **Educational Content**
-  - Interactive tutorials
-  - Glossary of nuclear physics terms
-  - Video explanations
-  - Example queries and use cases
+See [GitHub Issues](https://github.com/Episk-pos/lenr.academy/issues) and [Milestones](https://github.com/Episk-pos/lenr.academy/milestones) for current development plans and progress.
 
 ## License
 
