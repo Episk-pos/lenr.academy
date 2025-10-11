@@ -163,7 +163,7 @@ test.describe('Fission Query Page', () => {
     }
   });
 
-  test('should deselect element when selecting nuclide (and vice versa)', async ({ page }) => {
+  test('should allow both element and nuclide to be pinned simultaneously', async ({ page }) => {
     // Wait for default query results to load
     await page.waitForFunction(
       () => document.querySelector('table') !== null,
@@ -184,16 +184,16 @@ test.describe('Fission Query Page', () => {
     // Verify nuclide is now pinned
     await expect(nuclideCard).toHaveClass(/ring-2.*ring-blue-400/);
 
-    // Verify element is NO LONGER pinned
-    await expect(elementCard).not.toHaveClass(/ring-2.*ring-blue-400/);
-
-    // Click element again
-    await elementCard.click();
-
-    // Verify element is pinned again
+    // Verify element is STILL pinned (both can be pinned simultaneously)
     await expect(elementCard).toHaveClass(/ring-2.*ring-blue-400/);
 
-    // Verify nuclide is NO LONGER pinned
-    await expect(nuclideCard).not.toHaveClass(/ring-2.*ring-blue-400/);
+    // Click element again to unpin it
+    await elementCard.click();
+
+    // Verify element is no longer pinned
+    await expect(elementCard).not.toHaveClass(/ring-2.*ring-blue-400/);
+
+    // Verify nuclide is STILL pinned
+    await expect(nuclideCard).toHaveClass(/ring-2.*ring-blue-400/);
   });
 });

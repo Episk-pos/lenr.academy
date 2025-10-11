@@ -194,7 +194,7 @@ export default function ElementDetailsCard({ element, atomicRadii, onClose }: El
         {atomicRadii && (
           <div>
             <h3 className="font-semibold text-gray-900 dark:text-white mb-3 text-sm uppercase tracking-wide">
-              Atomic Radii
+              Atomic Radii (pm)
             </h3>
             <dl className="space-y-2 text-sm">
               {atomicRadii.empirical !== null && (

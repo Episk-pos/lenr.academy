@@ -283,7 +283,7 @@ export default function ShowElementData() {
 
             {atomicRadii && (
               <div className="card p-6">
-                <h3 className="font-semibold text-gray-900 dark:text-white mb-3 text-sm uppercase tracking-wide">Atomic Radii</h3>
+                <h3 className="font-semibold text-gray-900 dark:text-white mb-3 text-sm uppercase tracking-wide">Atomic Radii (pm)</h3>
                 <dl className="space-y-2 text-sm">
                   {atomicRadii.empirical !== null && (
                     <div className="flex justify-between">
