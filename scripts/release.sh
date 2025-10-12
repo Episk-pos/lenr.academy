@@ -205,36 +205,25 @@ echo -e "${BLUE}Pushing to remote...${NC}"
 git push gh main
 git push gh "v$NEW_VERSION"
 
-# Determine if this is a prerelease
-IS_PRERELEASE="false"
-if [[ "$NEW_VERSION" =~ -(alpha|beta|rc) ]]; then
-    IS_PRERELEASE="true"
-fi
-
-# Create GitHub Release
-echo -e "${BLUE}Creating GitHub Release...${NC}"
-if [ "$IS_PRERELEASE" = "true" ]; then
-    gh release create "v$NEW_VERSION" \
-        --title "v$NEW_VERSION" \
-        --generate-notes \
-        --prerelease
-else
-    gh release create "v$NEW_VERSION" \
-        --title "v$NEW_VERSION" \
-        --generate-notes
-fi
+# Always create as pre-release for staging deployment
+# After QA approval, manually promote to full release for production deployment
+echo -e "${BLUE}Creating GitHub Pre-Release (for staging deployment)...${NC}"
+gh release create "v$NEW_VERSION" \
+    --title "v$NEW_VERSION" \
+    --generate-notes \
+    --prerelease
 
 # Get release URL
 RELEASE_URL=$(gh release view "v$NEW_VERSION" --json url -q .url)
 
 echo ""
 echo -e "${GREEN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-echo -e "${GREEN}✓ Release v$NEW_VERSION published successfully!${NC}"
+echo -e "${GREEN}✓ Pre-release v$NEW_VERSION published successfully!${NC}"
 echo -e "${GREEN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
 echo ""
 echo -e "View release: ${BLUE}$RELEASE_URL${NC}"
 echo ""
-
-if [ "$IS_PRERELEASE" = "true" ]; then
-    echo -e "${YELLOW}Note: This is marked as a pre-release on GitHub${NC}"
-fi
+echo -e "${YELLOW}Next steps:${NC}"
+echo "1. GitHub Actions will automatically deploy to staging.lenr.academy"
+echo "2. After QA approval, uncheck 'pre-release' on GitHub to deploy to production"
+echo ""

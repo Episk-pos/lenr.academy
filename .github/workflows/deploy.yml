@@ -2,7 +2,7 @@ name: Deploy to Production
 
 on:
   release:
-    types: [released, edited]
+    types: [released]
   workflow_dispatch:
 
 jobs:
@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
 
     # Deploy only when:
-    # 1. Release is marked as "latest" (not pre-release and not an older release)
+    # 1. 'released' event fires (when pre-release is unchecked and becomes full release)
     # 2. Manual workflow dispatch
     if: |
       (github.event_name == 'release' &&
@@ -114,6 +114,7 @@ jobs:
 
           echo "## Deployment Successful :rocket:" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Environment:** Production" >> $GITHUB_STEP_SUMMARY
           echo "**Release:** $TAG" >> $GITHUB_STEP_SUMMARY
           echo "**Site:** https://lenr.academy" >> $GITHUB_STEP_SUMMARY
           echo "**Database:** Uploaded to release assets (161MB)" >> $GITHUB_STEP_SUMMARY
