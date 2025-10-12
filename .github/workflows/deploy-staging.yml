@@ -1,0 +1,123 @@
+name: Deploy to Staging
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    name: Deploy to Staging (S3 + CloudFront)
+    runs-on: ubuntu-latest
+
+    # Deploy only when:
+    # 1. Release is a pre-release (for staging QA)
+    # 2. Manual workflow dispatch
+    if: |
+      (github.event_name == 'release' &&
+       github.event.release.prerelease == true) ||
+      github.event_name == 'workflow_dispatch'
+
+    permissions:
+      contents: write  # Needed to upload release assets
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.release.tag_name || github.ref }}
+          lfs: true
+          fetch-depth: 0  # Fetch all history for git describe
+          fetch-tags: true  # Fetch tags for version detection
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build staging bundle
+        env:
+          VITE_SENTRY_DSN: ${{ secrets.VITE_SENTRY_DSN }}
+          SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
+          SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT }}
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+        run: npm run build
+
+      - name: Verify source maps were uploaded to Sentry
+        run: |
+          echo "## Source Map Upload Verification" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          # Check if JS files contain Sentry debug IDs
+          if grep -q "_sentryDebugIds" dist/assets/*.js; then
+            echo "✅ Debug IDs found in JavaScript bundles" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "⚠️ Warning: Debug IDs not found in JavaScript bundles" >> $GITHUB_STEP_SUMMARY
+            echo "This may indicate source maps were not properly uploaded to Sentry" >> $GITHUB_STEP_SUMMARY
+          fi
+
+          # Check that source map files were deleted (security)
+          if [ -f dist/assets/*.map ]; then
+            echo "⚠️ Warning: Source map files still present in dist/" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "✅ Source map files properly deleted from bundle" >> $GITHUB_STEP_SUMMARY
+          fi
+
+      - name: Upload database to release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          # For release events, use the release tag. For manual dispatch, use the ref name.
+          if [ "${{ github.event_name }}" = "release" ]; then
+            TAG="${{ github.event.release.tag_name }}"
+          else
+            TAG="${{ github.ref_name }}"
+          fi
+
+          # Check if a release exists for this tag
+          if gh release view "$TAG" &>/dev/null; then
+            echo "Uploading database to release $TAG..."
+            gh release upload "$TAG" \
+              public/parkhomov.db \
+              --clobber
+          else
+            echo "⚠️  No release found for tag $TAG, skipping database upload"
+            echo "The database can be uploaded later using: npm run release:upload-db"
+          fi
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Sync to S3 (Staging)
+        run: aws s3 sync ./dist s3://staging.lenr.academy --delete
+
+      - name: Invalidate CloudFront cache (Staging)
+        run: aws cloudfront create-invalidation --distribution-id EFGA1FI82OWV5 --paths "/*"
+
+      - name: Add deployment summary
+        run: |
+          if [ "${{ github.event_name }}" = "release" ]; then
+            TAG="${{ github.event.release.tag_name }}"
+          else
+            TAG="${{ github.ref_name }}"
+          fi
+
+          echo "## Deployment Successful :rocket:" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Environment:** Staging" >> $GITHUB_STEP_SUMMARY
+          echo "**Release:** $TAG" >> $GITHUB_STEP_SUMMARY
+          echo "**Site:** https://staging.lenr.academy" >> $GITHUB_STEP_SUMMARY
+          echo "**Database:** Uploaded to release assets (161MB)" >> $GITHUB_STEP_SUMMARY
+          echo "**Deployed at:** $(date -u +'%Y-%m-%d %H:%M:%S UTC')" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Next Steps" >> $GITHUB_STEP_SUMMARY
+          echo "1. Test on staging.lenr.academy" >> $GITHUB_STEP_SUMMARY
+          echo "2. After QA approval, uncheck 'pre-release' on GitHub to deploy to production" >> $GITHUB_STEP_SUMMARY

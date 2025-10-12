@@ -117,6 +117,24 @@ Have an idea? [Request a feature](https://github.com/Episk-pos/lenr.academy/issu
 
 Look for issues labeled [`good first issue`](https://github.com/Episk-pos/lenr.academy/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22) - these are beginner-friendly and well-documented.
 
+### Project Board Workflow
+
+We use a [GitHub Project Board](https://github.com/orgs/Episk-pos/projects/1) to track development progress:
+
+- **Triage** - New issues awaiting review
+- **Backlog** - Validated but not yet prioritized
+- **Ready** - Clear requirements, ready to work on (look for "good first issue" labels!)
+- **In Progress** - Actively being worked on
+- **Review** - Pull requests under review
+- **Done** - Completed work (auto-archived after 14 days)
+
+**To pick up an issue:**
+1. Browse the "Ready" column or check the [Community Contributions view](https://github.com/orgs/Episk-pos/projects/1/views/2)
+2. Comment on the issue expressing interest
+3. Wait for maintainer confirmation
+4. Self-assign and start work
+5. Issue automatically moves to "In Progress"
+
 ## Development Workflow
 
 ### Branch Naming

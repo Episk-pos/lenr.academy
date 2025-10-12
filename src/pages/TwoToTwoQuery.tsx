@@ -545,7 +545,7 @@ export default function TwoToTwoQuery() {
               </div>
             </div>
 
-            <div className="table-container">
+            <div className="table-container -mx-6 sm:mx-0">
               <table className="data-table">
                 <thead>
                   <tr>
