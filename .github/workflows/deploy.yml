@@ -15,8 +15,7 @@ jobs:
     # 2. Manual workflow dispatch
     if: |
       (github.event_name == 'release' &&
-       github.event.release.prerelease == false &&
-       github.event.release.latest == true) ||
+       github.event.release.prerelease == false) ||
       github.event_name == 'workflow_dispatch'
 
     permissions:
@@ -128,8 +127,7 @@ jobs:
     # Same conditions as deploy job - only for latest releases or manual dispatch
     if: |
       (github.event_name == 'release' &&
-       github.event.release.prerelease == false &&
-       github.event.release.latest == true) ||
+       github.event.release.prerelease == false) ||
       github.event_name == 'workflow_dispatch'
 
     steps:
