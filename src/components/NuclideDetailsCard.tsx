@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react'
-import { X, ChevronDown, ChevronUp, ArrowRight } from 'lucide-react'
+import { useEffect, useState, useMemo } from 'react'
+import { X, ChevronDown, ChevronUp, ArrowRight, Radiation } from 'lucide-react'
 import type { Nuclide, DecayData } from '../types'
 import { useDatabase } from '../contexts/DatabaseContext'
 import { getRadioactiveDecayData, getElementSymbolByZ, getNuclideBySymbol } from '../services/queryService'
@@ -66,6 +66,31 @@ function getDaughterNuclide(Z: number, A: number, E: string, decayMode: string):
   return null
 }
 
+// Comprehensive radiation type information
+const RADIATION_TYPE_INFO: Record<string, { name: string; description: string; url: string; category: string }> = {
+  'A': { name: 'Alpha particle', description: 'He-4 nucleus', url: 'https://en.wikipedia.org/wiki/Alpha_particle', category: 'primary' },
+  'B-': { name: 'Beta minus', description: 'electron emission', url: 'https://en.wikipedia.org/wiki/Beta_decay', category: 'primary' },
+  'B+': { name: 'Beta plus', description: 'positron emission', url: 'https://en.wikipedia.org/wiki/Positron_emission', category: 'primary' },
+  'B': { name: 'Beta decay', description: 'unspecified sign', url: 'https://en.wikipedia.org/wiki/Beta_decay', category: 'primary' },
+  'EC': { name: 'Electron capture', description: 'orbital electron absorbed', url: 'https://en.wikipedia.org/wiki/Electron_capture', category: 'primary' },
+  'IT': { name: 'Isomeric transition', description: 'excited state decay', url: 'https://en.wikipedia.org/wiki/Isomeric_transition', category: 'primary' },
+  'G': { name: 'Gamma ray', description: 'high-energy photon', url: 'https://en.wikipedia.org/wiki/Gamma_ray', category: 'gamma' },
+  'G-AN': { name: 'Annihilation gamma', description: 'positron annihilation', url: 'https://en.wikipedia.org/wiki/Electron%E2%80%93positron_annihilation', category: 'gamma' },
+  'G-X-K': { name: 'K-shell X-ray', description: 'K shell transition', url: 'https://en.wikipedia.org/wiki/Characteristic_X-ray', category: 'xray' },
+  'G-X-KA1': { name: 'Kα1 X-ray', description: 'K shell α1 transition', url: 'https://en.wikipedia.org/wiki/Characteristic_X-ray', category: 'xray' },
+  'G-X-KA2': { name: 'Kα2 X-ray', description: 'K shell α2 transition', url: 'https://en.wikipedia.org/wiki/Characteristic_X-ray', category: 'xray' },
+  'G-X-KB': { name: 'Kβ X-ray', description: 'K shell β transition', url: 'https://en.wikipedia.org/wiki/Characteristic_X-ray', category: 'xray' },
+  'G-X-L': { name: 'L-shell X-ray', description: 'L shell transition', url: 'https://en.wikipedia.org/wiki/Characteristic_X-ray', category: 'xray' },
+  'E-CE-K': { name: 'K-shell conversion electron', description: 'internal conversion from K shell', url: 'https://en.wikipedia.org/wiki/Internal_conversion', category: 'electron' },
+  'E-CE-L': { name: 'L-shell conversion electron', description: 'internal conversion from L shell', url: 'https://en.wikipedia.org/wiki/Internal_conversion', category: 'electron' },
+  'E-CE-M': { name: 'M-shell conversion electron', description: 'internal conversion from M shell', url: 'https://en.wikipedia.org/wiki/Internal_conversion', category: 'electron' },
+  'E-CE-M+': { name: 'M+ shell conversion electron', description: 'internal conversion from M+ shell', url: 'https://en.wikipedia.org/wiki/Internal_conversion', category: 'electron' },
+  'E-CE-MN+': { name: 'MN+ shell conversion electron', description: 'internal conversion from MN+ shell', url: 'https://en.wikipedia.org/wiki/Internal_conversion', category: 'electron' },
+  'E-CE-N+': { name: 'N+ shell conversion electron', description: 'internal conversion from N+ shell', url: 'https://en.wikipedia.org/wiki/Internal_conversion', category: 'electron' },
+  'E-AU-K': { name: 'K-shell Auger electron', description: 'atomic de-excitation from K shell', url: 'https://en.wikipedia.org/wiki/Auger_effect', category: 'electron' },
+  'E-AU-L': { name: 'L-shell Auger electron', description: 'atomic de-excitation from L shell', url: 'https://en.wikipedia.org/wiki/Auger_effect', category: 'electron' },
+}
+
 export default function NuclideDetailsCard({ nuclide, onClose }: NuclideDetailsCardProps) {
   const { db } = useDatabase()
   const navigate = useNavigate()
@@ -81,6 +106,17 @@ export default function NuclideDetailsCard({ nuclide, onClose }: NuclideDetailsC
     const data = getRadioactiveDecayData(db, nuclide.Z, nuclide.A)
     setDecayData(data)
   }, [nuclide, db])
+
+  // Compute unique radiation types present in the decay data
+  const uniqueRadiationTypes = useMemo(() => {
+    const types = new Set<string>()
+    decayData.forEach(decay => {
+      if (decay.radiationType) {
+        types.add(decay.radiationType)
+      }
+    })
+    return Array.from(types).sort()
+  }, [decayData])
 
   // Handler to navigate to daughter nuclide
   const handleDecayClick = (decayMode: string) => {
@@ -110,13 +146,18 @@ export default function NuclideDetailsCard({ nuclide, onClose }: NuclideDetailsC
     <div className="card p-6 animate-fade-in">
       <div className="flex items-start justify-between mb-4">
         <div>
-          <h2 className="text-2xl font-bold mb-1">
+          <h2 className="text-2xl font-bold mb-1 flex items-center gap-2">
             <Link
               to={`/element-data?Z=${nuclide.Z}&A=${nuclide.A}`}
               className="text-gray-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 hover:underline transition-colors"
             >
               {nuclide.E}-{nuclide.A}
             </Link>
+            {decayData.length > 0 && (
+              <span title="Radioactive">
+                <Radiation className="w-5 h-5 text-amber-600 dark:text-amber-400" />
+              </span>
+            )}
           </h2>
           <p className="text-sm text-gray-500 dark:text-gray-400">
             Atomic Number: {nuclide.Z} • Mass Number: {nuclide.A}
@@ -298,7 +339,9 @@ export default function NuclideDetailsCard({ nuclide, onClose }: NuclideDetailsC
                         </td>
                         <td className="pl-3 pr-6 py-2 text-gray-900 dark:text-gray-100">
                           {decay.halfLife !== null && decay.halfLifeUnits !== null
-                            ? `${decay.halfLife} ${decay.halfLifeUnits}`
+                            ? decay.halfLife >= 10000
+                              ? `${decay.halfLife.toExponential(2)} ${decay.halfLifeUnits}`
+                              : `${decay.halfLife} ${decay.halfLifeUnits}`
                             : '—'}
                         </td>
                       </tr>
@@ -365,7 +408,9 @@ export default function NuclideDetailsCard({ nuclide, onClose }: NuclideDetailsC
                         </td>
                         <td className="pl-3 pr-6 py-2 text-gray-900 dark:text-gray-100">
                           {decay.halfLife !== null && decay.halfLifeUnits !== null
-                            ? `${decay.halfLife} ${decay.halfLifeUnits}`
+                            ? decay.halfLife >= 10000
+                              ? `${decay.halfLife.toExponential(2)} ${decay.halfLifeUnits}`
+                              : `${decay.halfLife} ${decay.halfLifeUnits}`
                             : '—'}
                         </td>
                       </tr>
@@ -395,126 +440,24 @@ export default function NuclideDetailsCard({ nuclide, onClose }: NuclideDetailsC
             Radiation Type Legend
           </h3>
           <div className="grid md:grid-cols-2 gap-x-4 gap-y-1 text-xs text-amber-800 dark:text-amber-300">
-            <div>
-              <strong>A:</strong>{' '}
-              <a
-                href="https://en.wikipedia.org/wiki/Alpha_particle"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="hover:underline hover:text-amber-900 dark:hover:text-amber-100"
-              >
-                Alpha particle
-              </a>
-              {' '}(He-4 nucleus)
-            </div>
-            <div>
-              <strong>B-, β-:</strong>{' '}
-              <a
-                href="https://en.wikipedia.org/wiki/Beta_decay"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="hover:underline hover:text-amber-900 dark:hover:text-amber-100"
-              >
-                Beta minus
-              </a>
-              {' '}(electron emission)
-            </div>
-            <div>
-              <strong>B+, β+:</strong>{' '}
-              <a
-                href="https://en.wikipedia.org/wiki/Positron_emission"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="hover:underline hover:text-amber-900 dark:hover:text-amber-100"
-              >
-                Beta plus
-              </a>
-              {' '}(positron emission)
-            </div>
-            <div>
-              <strong>EC:</strong>{' '}
-              <a
-                href="https://en.wikipedia.org/wiki/Electron_capture"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="hover:underline hover:text-amber-900 dark:hover:text-amber-100"
-              >
-                Electron capture
-              </a>
-              {' '}(orbital electron absorbed)
-            </div>
-            <div>
-              <strong>IT:</strong>{' '}
-              <a
-                href="https://en.wikipedia.org/wiki/Isomeric_transition"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="hover:underline hover:text-amber-900 dark:hover:text-amber-100"
-              >
-                Isomeric transition
-              </a>
-              {' '}(excited state decay)
-            </div>
-            <div>
-              <strong>G:</strong>{' '}
-              <a
-                href="https://en.wikipedia.org/wiki/Gamma_ray"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="hover:underline hover:text-amber-900 dark:hover:text-amber-100"
-              >
-                Gamma ray
-              </a>
-              {' '}(high-energy photon)
-            </div>
-            <div>
-              <strong>E-CE:</strong>{' '}
-              <a
-                href="https://en.wikipedia.org/wiki/Internal_conversion"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="hover:underline hover:text-amber-900 dark:hover:text-amber-100"
-              >
-                Conversion electron
-              </a>
-              {' '}(internal conversion)
-            </div>
-            <div>
-              <strong>E-AU:</strong>{' '}
-              <a
-                href="https://en.wikipedia.org/wiki/Auger_effect"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="hover:underline hover:text-amber-900 dark:hover:text-amber-100"
-              >
-                Auger electron
-              </a>
-              {' '}(atomic de-excitation)
-            </div>
-            <div>
-              <strong>G-X:</strong>{' '}
-              <a
-                href="https://en.wikipedia.org/wiki/Characteristic_X-ray"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="hover:underline hover:text-amber-900 dark:hover:text-amber-100"
-              >
-                X-ray
-              </a>
-              {' '}(atomic shell transitions)
-            </div>
-            <div>
-              <strong>G-AN:</strong>{' '}
-              <a
-                href="https://en.wikipedia.org/wiki/Electron%E2%80%93positron_annihilation"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="hover:underline hover:text-amber-900 dark:hover:text-amber-100"
-              >
-                Annihilation gamma
-              </a>
-              {' '}(positron annihilation)
-            </div>
+            {uniqueRadiationTypes.map(type => {
+              const info = RADIATION_TYPE_INFO[type]
+              if (!info) return null
+              return (
+                <div key={type}>
+                  <strong>{type}:</strong>{' '}
+                  <a
+                    href={info.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="hover:underline hover:text-amber-900 dark:hover:text-amber-100"
+                  >
+                    {info.name}
+                  </a>
+                  {' '}({info.description})
+                </div>
+              )
+            })}
             <div className="md:col-span-2 mt-1 text-xs opacity-80">
               Shell designations: K (innermost), L, M, N (outer shells)
             </div>
