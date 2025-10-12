@@ -397,36 +397,66 @@ test.describe('Element Data Page', () => {
     await expect(page.getByRole('heading', { name: /Nuclides.*available/i })).toBeVisible();
   });
 
-  test('should show collapsible decay data table for isotopes with multiple decay modes', async ({ page }) => {
-    // Navigate to an isotope with multiple decay modes
-    await page.goto('/element-data?Z=6&A=14');
+  test('should show decay table with first 4 rows always visible', async ({ page }) => {
+    // Navigate to Hf-182 (191 decay modes - exceeds 4 row preview)
+    await page.goto('/element-data?Z=72&A=182');
     await waitForDatabaseReady(page);
 
-    // Look for "Show more decay modes" button
+    // Should show Hf-182 heading
+    const nuclideHeading = page.getByRole('heading', { name: /Hf-182/i });
+    await expect(nuclideHeading).toBeVisible();
+
+    // Scroll to radioactive decay section to ensure table is in view
+    const decayHeading = page.getByRole('heading', { name: /Radioactive Decay/i });
+    await expect(decayHeading).toBeVisible();
+    await decayHeading.scrollIntoViewIfNeeded();
+
+    // Wait for table to be present with proper headers
+    const decayTable = page.locator('table').filter({ hasText: 'Decay Mode' });
+    await expect(decayTable).toBeVisible();
+
+    // Verify the table has all column headers (within the table context)
+    await expect(decayTable.locator('thead')).toContainText('Decay Mode');
+    await expect(decayTable.locator('thead')).toContainText('Radiation');
+    await expect(decayTable.locator('thead')).toContainText('Energy');
+    await expect(decayTable.locator('thead')).toContainText('Intensity');
+    await expect(decayTable.locator('thead')).toContainText('Half-life');
+
+    // Should show exactly 4 data rows initially (before expansion)
+    const dataRows = page.locator('table tbody tr').filter({ hasNot: page.locator('button:has-text("Show")') });
+    const initialRowCount = await dataRows.count();
+    expect(initialRowCount).toBeGreaterThanOrEqual(4);
+    expect(initialRowCount).toBeLessThanOrEqual(5); // 4 data rows + 1 toggle row
+
+    // Should have "Show more" button since there are >4 decay modes
     const showMoreButton = page.getByRole('button', { name: /Show.*more decay mode/i });
-    const hasShowMore = await showMoreButton.isVisible().catch(() => false);
+    await expect(showMoreButton).toBeVisible();
 
-    if (hasShowMore) {
-      // Click to expand
-      await showMoreButton.click();
+    // Button should show correct count (191 total - 4 preview = 187 more)
+    await expect(showMoreButton).toHaveText(/Show 187 more decay modes/i);
 
-      // Should show decay table with columns
-      await expect(page.getByRole('columnheader', { name: /Decay Mode/i })).toBeVisible();
-      await expect(page.getByRole('columnheader', { name: /Radiation/i })).toBeVisible();
-      await expect(page.getByRole('columnheader', { name: /Energy.*MeV/i })).toBeVisible();
-      await expect(page.getByRole('columnheader', { name: /Intensity/i })).toBeVisible();
+    // Click to expand
+    await showMoreButton.click();
 
-      // Should show "Hide details" button
-      const hideButton = page.getByRole('button', { name: /Hide details/i });
-      await expect(hideButton).toBeVisible();
+    // Should now show all 191 rows plus toggle row
+    const expandedRows = page.locator('table tbody tr');
+    const expandedCount = await expandedRows.count();
+    expect(expandedCount).toBe(192); // 191 data rows + 1 toggle row
 
-      // Click to collapse
-      await hideButton.click();
+    // Should show "Hide" button
+    const hideButton = page.getByRole('button', { name: /Hide.*additional decay mode/i });
+    await expect(hideButton).toBeVisible();
+    await expect(hideButton).toHaveText(/Hide 187 additional decay modes/i);
 
-      // Table should be hidden
-      const decayTable = page.getByRole('columnheader', { name: /Decay Mode/i });
-      await expect(decayTable).not.toBeVisible();
-    }
+    // Click to collapse
+    await hideButton.click();
+
+    // Should return to 4 preview rows + toggle row
+    await page.waitForTimeout(300); // Wait for collapse animation
+    const collapsedRows = page.locator('table tbody tr').filter({ hasNot: page.locator('button:has-text("additional")') });
+    const collapsedCount = await collapsedRows.count();
+    expect(collapsedCount).toBeGreaterThanOrEqual(4);
+    expect(collapsedCount).toBeLessThanOrEqual(5);
   });
 
   test('should display radioactivity indicators on isotope selection cards', async ({ page }) => {
@@ -444,6 +474,111 @@ test.describe('Element Data Page', () => {
 
     // Just verify the isotope buttons are visible
     await expect(c14Button).toBeVisible();
+  });
+
+  test('should not show toggle button for isotopes with 4 or fewer decay modes', async ({ page }) => {
+    // Navigate to Tc-98 (3 decay modes)
+    await page.goto('/element-data?Z=43&A=98');
+    await waitForDatabaseReady(page);
+
+    // Should show Tc-98 heading
+    const nuclideHeading = page.getByRole('heading', { name: /Tc-98/i });
+    await expect(nuclideHeading).toBeVisible();
+
+    // Scroll to nuclide section
+    await nuclideHeading.scrollIntoViewIfNeeded();
+
+    // Should show Radioactive Decay heading
+    const decayHeading = page.getByRole('heading', { name: /Radioactive Decay/i });
+    const hasDecayData = await decayHeading.isVisible().catch(() => false);
+
+    if (hasDecayData) {
+      await expect(decayHeading).toBeVisible();
+
+      // Table should be visible with decay mode column
+      const decayTable = page.locator('table').filter({ hasText: 'Decay Mode' });
+      await expect(decayTable).toBeVisible();
+
+      // Should show all 3 decay modes without toggle button
+      const dataRows = page.locator('table tbody tr');
+      const rowCount = await dataRows.count();
+      expect(rowCount).toBe(3); // Exactly 3 rows, no toggle row
+
+      // Should NOT have "Show more" button
+      const showMoreButton = page.getByRole('button', { name: /Show.*more decay mode/i });
+      const hasToggle = await showMoreButton.isVisible().catch(() => false);
+      expect(hasToggle).toBe(false);
+    }
+  });
+
+  test('should show toggle button integrated into table for 5+ decay modes', async ({ page }) => {
+    // Navigate to Hf-182 (191 decay modes)
+    await page.goto('/element-data?Z=72&A=182');
+    await waitForDatabaseReady(page);
+
+    // Should show Hf-182 heading
+    const nuclideHeading = page.getByRole('heading', { name: /Hf-182/i });
+    await expect(nuclideHeading).toBeVisible();
+
+    // Scroll to nuclide section
+    await nuclideHeading.scrollIntoViewIfNeeded();
+
+    // Toggle button should be present
+    const showMoreButton = page.getByRole('button', { name: /Show.*more decay mode/i });
+    await expect(showMoreButton).toBeVisible();
+
+    // Toggle button should be inside a table row
+    const toggleRow = showMoreButton.locator('xpath=ancestor::tr');
+    await expect(toggleRow).toBeVisible();
+
+    // Toggle button should show correct count
+    await expect(showMoreButton).toHaveText(/Show 187 more decay modes/i);
+
+    // Toggle row should have thicker border (visual divider)
+    // Check that it has the border-t-2 class applied
+    const hasBorderClass = await toggleRow.evaluate(el => {
+      return el.classList.contains('border-t-2') ||
+             el.className.includes('border-t-2');
+    });
+    expect(hasBorderClass).toBe(true);
+  });
+
+  test('should apply background tint to expanded decay rows', async ({ page }) => {
+    // Navigate to Hf-182 (191 decay modes)
+    await page.goto('/element-data?Z=72&A=182');
+    await waitForDatabaseReady(page);
+
+    // Scroll to nuclide section
+    const nuclideHeading = page.getByRole('heading', { name: /Hf-182/i });
+    await expect(nuclideHeading).toBeVisible();
+    await nuclideHeading.scrollIntoViewIfNeeded();
+
+    // Expand the table
+    const showMoreButton = page.getByRole('button', { name: /Show.*more decay mode/i });
+    await expect(showMoreButton).toBeVisible();
+    await showMoreButton.click();
+
+    // Wait for expansion
+    await page.waitForTimeout(300);
+
+    // Check that the expanded rows exist
+    // The expanded rows come after the first 4 rows and the toggle row
+    // Count all tbody tr elements
+    const allRows = page.locator('table tbody tr');
+    const totalRowCount = await allRows.count();
+    expect(totalRowCount).toBe(192); // 191 data rows + 1 toggle row
+
+    // Get one of the expanded rows (e.g., the 6th tr, which is after 4 data rows + 1 toggle row)
+    const expandedRow = allRows.nth(5);
+    await expect(expandedRow).toBeVisible();
+
+    // Check if it has background styling (bg-gray-50/30 or dark variant)
+    const hasBackgroundTint = await expandedRow.evaluate(el => {
+      return el.classList.contains('bg-gray-50/30') ||
+             el.classList.contains('dark:bg-gray-800/20') ||
+             el.className.includes('bg-gray-');
+    });
+    expect(hasBackgroundTint).toBe(true);
   });
 });
 
@@ -479,5 +614,73 @@ test.describe('Element Data - Mobile', () => {
 
     // Should show gold data
     await expect(page.getByRole('heading', { name: /Lead \(Pb\)/i })).toBeVisible();
+  });
+
+  test('should not overflow viewport when decay table is expanded on mobile', async ({ page }) => {
+    // Navigate to U-235 (134 decay modes - extensive decay data)
+    await page.goto('/element-data?Z=92&A=235');
+    await waitForDatabaseReady(page);
+
+    // Should show U-235 heading
+    const nuclideHeading = page.getByRole('heading', { name: /U-235/i });
+    await expect(nuclideHeading).toBeVisible();
+
+    // Scroll to radioactive decay section
+    const decayHeading = page.getByRole('heading', { name: /Radioactive Decay/i });
+    await expect(decayHeading).toBeVisible();
+    await decayHeading.scrollIntoViewIfNeeded();
+
+    // Table should always be visible on mobile
+    const decayTable = page.locator('table').filter({ hasText: 'Decay Mode' });
+    await expect(decayTable).toBeVisible();
+
+    // Verify table headers are present
+    await expect(decayTable.locator('thead')).toContainText('Decay Mode');
+
+    // Look for "Show more decay modes" button (should be present with 134 decay modes)
+    const showMoreButton = page.getByRole('button', { name: /Show.*more decay mode/i });
+    await expect(showMoreButton).toBeVisible();
+
+    // Take screenshot before expansion
+    await page.screenshot({
+      path: 'test-results/mobile-decay-table-before.png',
+      fullPage: true
+    });
+
+    // Click to expand decay table
+    await showMoreButton.click();
+
+    // Wait for table to render
+    await page.waitForTimeout(500);
+
+    // Take screenshot after expansion
+    await page.screenshot({
+      path: 'test-results/mobile-decay-table-after.png',
+      fullPage: true
+    });
+
+    // Check that table container doesn't cause horizontal page scroll
+    await expect(decayTable).toBeVisible();
+
+    // Get the scroll container (div with overflow-x-auto)
+    const scrollContainer = decayTable.locator('..');
+    const scrollContainerBox = await scrollContainer.boundingBox();
+    const viewportSize = page.viewportSize();
+
+    if (scrollContainerBox && viewportSize) {
+      // Scroll container itself should fit within viewport
+      // The -mx-6 breaks it out of card padding, so it should span full width
+      expect(scrollContainerBox.x).toBeLessThanOrEqual(1); // Should start near viewport edge
+      // Allow for some tolerance due to sub-pixel rendering and padding
+      expect(scrollContainerBox.x + scrollContainerBox.width).toBeLessThanOrEqual(viewportSize.width + 25);
+    }
+
+    // Verify table is at least as wide as the container (may be wider if scrollable)
+    const scrollWidth = await scrollContainer.evaluate(el => el.scrollWidth);
+    const clientWidth = await scrollContainer.evaluate(el => el.clientWidth);
+
+    // Table should be at least as wide as container, and may be scrollable
+    // scrollWidth >= clientWidth (equal if not scrollable, greater if scrollable)
+    expect(scrollWidth).toBeGreaterThanOrEqual(clientWidth);
   });
 });
