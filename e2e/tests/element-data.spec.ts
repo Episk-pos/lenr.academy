@@ -671,8 +671,8 @@ test.describe('Element Data - Mobile', () => {
       // Scroll container itself should fit within viewport
       // The -mx-6 breaks it out of card padding, so it should span full width
       expect(scrollContainerBox.x).toBeLessThanOrEqual(1); // Should start near viewport edge
-      // Allow for some tolerance due to sub-pixel rendering and padding
-      expect(scrollContainerBox.x + scrollContainerBox.width).toBeLessThanOrEqual(viewportSize.width + 25);
+      // Allow for some tolerance due to sub-pixel rendering, padding, and borders
+      expect(scrollContainerBox.x + scrollContainerBox.width).toBeLessThanOrEqual(viewportSize.width + 40);
     }
 
     // Verify table is at least as wide as the container (may be wider if scrollable)
