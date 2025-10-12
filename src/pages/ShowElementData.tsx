@@ -1,10 +1,11 @@
 import { useState, useEffect, useMemo } from 'react'
 import { useSearchParams } from 'react-router-dom'
+import { Radiation } from 'lucide-react'
 import { useDatabase } from '../contexts/DatabaseContext'
 import type { Element, Nuclide, AtomicRadiiData } from '../types'
 import PeriodicTable from '../components/PeriodicTable'
 import NuclideDetailsCard from '../components/NuclideDetailsCard'
-import { getNuclidesByElement, getAtomicRadii } from '../services/queryService'
+import { getNuclidesByElement, getAtomicRadii, isRadioactive } from '../services/queryService'
 import DatabaseLoadingCard from '../components/DatabaseLoadingCard'
 import DatabaseErrorCard from '../components/DatabaseErrorCard'
 
@@ -336,6 +337,7 @@ export default function ShowElementData() {
                 {isotopes.map(nuclide => {
                   const isSelected = selectedNuclide?.id === nuclide.id
                   const isStable = typeof nuclide.LHL === 'number' && nuclide.LHL > 9
+                  const nuclideIsRadioactive = db ? isRadioactive(db, nuclide.Z, nuclide.A) : false
 
                   return (
                     <button
@@ -350,7 +352,16 @@ export default function ShowElementData() {
                       `}
                     >
                       <div className="text-center">
-                        <div className="text-lg font-bold">{nuclide.E}-{nuclide.A}</div>
+                        <div className="text-lg font-bold flex items-center justify-center gap-1">
+                          <span>{nuclide.E}-{nuclide.A}</span>
+                          {nuclideIsRadioactive && (
+                            <span title="Radioactive">
+                              <Radiation className={`w-3 h-3 flex-shrink-0 ${
+                                isSelected ? 'text-amber-200' : 'text-amber-600 dark:text-amber-400'
+                              }`} />
+                            </span>
+                          )}
+                        </div>
                         <div className="text-xs opacity-75">Z={nuclide.Z}</div>
                         <div className="mt-1 flex flex-wrap gap-1 justify-center">
                           <span className={`px-1.5 py-0.5 rounded text-xs ${

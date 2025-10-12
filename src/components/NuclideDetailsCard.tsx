@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { X, ChevronDown, ChevronUp, ArrowRight } from 'lucide-react'
+import { X, ChevronDown, ChevronUp, ArrowRight, Radiation } from 'lucide-react'
 import type { Nuclide, DecayData } from '../types'
 import { useDatabase } from '../contexts/DatabaseContext'
 import { getRadioactiveDecayData, getElementSymbolByZ, getNuclideBySymbol } from '../services/queryService'
@@ -110,13 +110,18 @@ export default function NuclideDetailsCard({ nuclide, onClose }: NuclideDetailsC
     <div className="card p-6 animate-fade-in">
       <div className="flex items-start justify-between mb-4">
         <div>
-          <h2 className="text-2xl font-bold mb-1">
+          <h2 className="text-2xl font-bold mb-1 flex items-center gap-2">
             <Link
               to={`/element-data?Z=${nuclide.Z}&A=${nuclide.A}`}
               className="text-gray-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 hover:underline transition-colors"
             >
               {nuclide.E}-{nuclide.A}
             </Link>
+            {decayData.length > 0 && (
+              <span title="Radioactive">
+                <Radiation className="w-5 h-5 text-amber-600 dark:text-amber-400" />
+              </span>
+            )}
           </h2>
           <p className="text-sm text-gray-500 dark:text-gray-400">
             Atomic Number: {nuclide.Z} • Mass Number: {nuclide.A}

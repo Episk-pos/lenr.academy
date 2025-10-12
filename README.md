@@ -117,7 +117,7 @@ Interested in contributing or running locally?
 
 ## Development Roadmap
 
-See [GitHub Issues](https://github.com/Episk-pos/lenr.academy/issues) and [Milestones](https://github.com/Episk-pos/lenr.academy/milestones) for current development plans and progress.
+Active development is tracked on our [Project Board](https://github.com/orgs/Episk-pos/projects/1). See [GitHub Issues](https://github.com/Episk-pos/lenr.academy/issues) and [Milestones](https://github.com/Episk-pos/lenr.academy/milestones) for detailed planning.
 
 ## License
 
