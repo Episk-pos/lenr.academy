@@ -1,7 +1,7 @@
 {
-  "version": "1.2.1",
-  "checksum": "dc004bd2d9ce6a204aa1d05d05b57ca4",
-  "size": 161046528,
-  "s3_path": "s3://db.lenr.academy/1.2.1/parkhomov.db",
-  "updated": "2025-10-11T16:09:20Z"
+  "version": "1.2.2",
+  "checksum": "86aa04bc15f287f5ef85e57a68475378",
+  "size": 161050624,
+  "s3_path": "s3://db.lenr.academy/1.2.2/parkhomov.db",
+  "updated": "2025-10-12T19:11:40Z"
 }
