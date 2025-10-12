@@ -1,6 +1,8 @@
 import { useState, useRef, useEffect } from 'react'
-import { ChevronDown, X } from 'lucide-react'
+import { ChevronDown, X, Radiation } from 'lucide-react'
 import type { Element } from '../types'
+import { useDatabase } from '../contexts/DatabaseContext'
+import { hasOnlyRadioactiveIsotopes } from '../services/queryService'
 
 interface PeriodicTableSelectorProps {
   label: string
@@ -141,6 +143,7 @@ export default function PeriodicTableSelector({
   maxSelections,
   align = 'left',
 }: PeriodicTableSelectorProps) {
+  const { db } = useDatabase()
   const [isOpen, setIsOpen] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
 
@@ -221,6 +224,7 @@ export default function PeriodicTableSelector({
 
     const { symbol, Z, isAvailable } = cellData
     const isSelected = selectedElements.includes(symbol)
+    const isPurelyRadioactive = db && isAvailable ? hasOnlyRadioactiveIsotopes(db, Z) : false
 
     return (
       <button
@@ -228,8 +232,19 @@ export default function PeriodicTableSelector({
         onClick={() => isAvailable && toggleElement(symbol)}
         disabled={!isAvailable}
         className={`periodic-cell ${isSelected ? 'periodic-cell-selected' : ''} ${!isAvailable ? 'periodic-cell-disabled' : ''}`}
-        title={isAvailable ? `${cellData.element?.EName || symbol} (${Z})` : `${symbol} (${Z}) - Not available in database`}
+        title={
+          isAvailable
+            ? isPurelyRadioactive
+              ? `${cellData.element?.EName || symbol} (${Z}) - No stable isotopes`
+              : `${cellData.element?.EName || symbol} (${Z})`
+            : `${symbol} (${Z}) - Not available in database`
+        }
       >
+        {isPurelyRadioactive && (
+          <span className="periodic-cell-radiation">
+            <Radiation className="periodic-cell-radiation-icon" />
+          </span>
+        )}
         <div className="periodic-cell-number">{Z}</div>
         <div className="periodic-cell-symbol">{symbol}</div>
       </button>
@@ -359,6 +374,17 @@ export default function PeriodicTableSelector({
               )}
             </div>
           </div>
+
+          {/* Legend */}
+          <div className="border-t border-gray-200 dark:border-gray-700 pt-3 mt-4">
+            <div className="flex items-center gap-2 text-xs text-gray-600 dark:text-gray-400">
+              <span className="flex items-center gap-1">
+                <span className="font-semibold">Legend:</span>
+                <Radiation className="w-3 h-3 text-red-600 dark:text-red-400" />
+                <span>= No stable isotopes (half-life &lt; 10⁹ years)</span>
+              </span>
+            </div>
+          </div>
         </div>
       )}
 
@@ -390,6 +416,27 @@ export default function PeriodicTableSelector({
           flex-direction: column;
           align-items: center;
           justify-content: center;
+        }
+
+        .periodic-cell-radiation {
+          position: absolute;
+          top: 1px;
+          right: 1px;
+          padding: 1px;
+        }
+
+        .periodic-cell-radiation-icon {
+          width: 8px;
+          height: 8px;
+          color: #dc2626;
+        }
+
+        .dark .periodic-cell-radiation-icon {
+          color: #f87171;
+        }
+
+        .periodic-cell-selected .periodic-cell-radiation-icon {
+          color: #fecaca;
         }
 
         @media (min-width: 640px) {

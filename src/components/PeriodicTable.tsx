@@ -1,4 +1,7 @@
+import { Radiation } from 'lucide-react'
 import type { Element } from '../types'
+import { useDatabase } from '../contexts/DatabaseContext'
+import { hasOnlyRadioactiveIsotopes } from '../services/queryService'
 
 interface PeriodicTableProps {
   availableElements: Element[]
@@ -144,6 +147,7 @@ const ALL_ELEMENT_NAMES: Record<number, string> = {
 }
 
 export default function PeriodicTable({ availableElements, selectedElement, onElementClick }: PeriodicTableProps) {
+  const { db } = useDatabase()
   const availableSymbols = new Set(availableElements.map(el => el.E))
 
   // Organize elements by position
@@ -171,6 +175,7 @@ export default function PeriodicTable({ availableElements, selectedElement, onEl
 
     const isSelected = selectedElement === cellData.symbol
     const isAvailable = cellData.isAvailable
+    const isPurelyRadioactive = db && isAvailable ? hasOnlyRadioactiveIsotopes(db, cellData.Z) : false
 
     return (
       <button
@@ -178,7 +183,7 @@ export default function PeriodicTable({ availableElements, selectedElement, onEl
         onClick={() => isAvailable && onElementClick(cellData.symbol)}
         disabled={!isAvailable}
         className={`
-          aspect-square
+          aspect-square relative
           flex flex-col items-center justify-center font-medium rounded border
           transition-all duration-150
           ${isSelected
@@ -188,8 +193,19 @@ export default function PeriodicTable({ availableElements, selectedElement, onEl
               : 'bg-gray-100 dark:bg-gray-900 text-gray-400 dark:text-gray-600 border-gray-200 dark:border-gray-800 cursor-not-allowed'
           }
         `}
-        title={isAvailable ? `${cellData.symbol} (Z=${cellData.Z})` : `${cellData.symbol} - Not available`}
+        title={
+          isAvailable
+            ? isPurelyRadioactive
+              ? `${cellData.symbol} (Z=${cellData.Z}) - No stable isotopes`
+              : `${cellData.symbol} (Z=${cellData.Z})`
+            : `${cellData.symbol} - Not available`
+        }
       >
+        {isPurelyRadioactive && (
+          <span className="absolute top-0 right-0 p-0.5">
+            <Radiation className={`w-2 h-2 ${isSelected ? 'text-red-200' : 'text-red-600 dark:text-red-400'}`} />
+          </span>
+        )}
         <div className="text-[9px] leading-none">{cellData.Z}</div>
         <div className="font-bold text-xs leading-none">{cellData.symbol}</div>
       </button>
@@ -215,8 +231,19 @@ export default function PeriodicTable({ availableElements, selectedElement, onEl
         </div>
 
         {/* Actinides (period 9) */}
-        <div className="grid gap-0.5 sm:gap-1" style={{ gridTemplateColumns: 'repeat(15, minmax(1.75rem, 3rem))', marginLeft: 'calc(3 * minmax(1.75rem, 3rem) + 1.5rem)' }}>
+        <div className="grid gap-0.5 sm:gap-1 mb-3" style={{ gridTemplateColumns: 'repeat(15, minmax(1.75rem, 3rem))', marginLeft: 'calc(3 * minmax(1.75rem, 3rem) + 1.5rem)' }}>
           {Array.from({ length: 15 }, (_, i) => renderCell(9, i + 4))}
+        </div>
+
+        {/* Legend */}
+        <div className="border-t border-gray-200 dark:border-gray-700 pt-3 mt-3">
+          <div className="flex items-center gap-2 text-xs text-gray-600 dark:text-gray-400">
+            <span className="flex items-center gap-1">
+              <span className="font-semibold">Legend:</span>
+              <Radiation className="w-3 h-3 text-red-600 dark:text-red-400" />
+              <span>= No stable isotopes (half-life &lt; 10⁹ years)</span>
+            </span>
+          </div>
         </div>
       </div>
     </div>

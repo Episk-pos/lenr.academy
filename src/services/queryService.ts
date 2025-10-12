@@ -715,6 +715,26 @@ export function isRadioactive(db: Database, Z: number, A: number): boolean {
 }
 
 /**
+ * Check if an element has only radioactive isotopes (no stable isotopes)
+ * An isotope is considered stable if LHL > 9 (half-life > 1 billion years)
+ */
+export function hasOnlyRadioactiveIsotopes(db: Database, Z: number): boolean {
+  const sql = `
+    SELECT MAX(CAST(COALESCE(LHL, 0) AS REAL)) as max_lhl
+    FROM NuclidesPlus
+    WHERE Z = ?
+  `;
+  const results = db.exec(sql, [Z]);
+
+  if (results.length === 0 || results[0].values.length === 0) {
+    return false;
+  }
+
+  const maxLHL = results[0].values[0][0] as number;
+  return maxLHL <= 9;
+}
+
+/**
  * Get the primary decay mode for an isotope (highest intensity)
  */
 export function getPrimaryDecayMode(db: Database, Z: number, A: number): DecayData | null {
