@@ -325,7 +325,7 @@ export default function ShowElementData() {
           </div>
 
           {/* Nuclides Section */}
-          {isotopes.length > 0 && (
+          {isotopes.length > 0 ? (
             <div className="card p-6">
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
                 Nuclides ({isotopes.length} available)
@@ -397,7 +397,19 @@ export default function ShowElementData() {
                 </div>
               )}
             </div>
-          )}
+          ) : element ? (
+            <div className="card p-6 bg-amber-50 dark:bg-amber-900/20 border-2 border-amber-200 dark:border-amber-800">
+              <h3 className="text-lg font-semibold text-amber-900 dark:text-amber-200 mb-2">
+                No Nuclides Available
+              </h3>
+              <p className="text-sm text-amber-800 dark:text-amber-300 mb-2">
+                No nuclides for <strong>{element.EName} ({element.E})</strong> are available in the database.
+              </p>
+              <p className="text-sm text-amber-800 dark:text-amber-300">
+                This element may not be included in the current dataset, which focuses on elements relevant to Low Energy Nuclear Reaction (LENR) research.
+              </p>
+            </div>
+          ) : null}
         </div>
       )}
     </div>
