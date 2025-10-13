@@ -108,7 +108,7 @@ export default function TabNavigation({ tabs, activeTab, onTabChange, className 
     <>
       {/* Sentinel element to detect sticking - positioned just above the sticky element */}
       <div ref={sentinelRef} className="h-px" aria-hidden="true" />
-      <div className={`sticky ${isStuck ? 'top-0' : 'top-16 lg:top-0'} z-20 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 shadow-md ${isStuck ? 'lg:rounded-none' : 'rounded-lg'} ${className} ${isStuck ? '-mx-4 sm:-mx-6 lg:-mx-8' : 'max-[425px]:-mx-4'} transition-all duration-200 ease-in-out`}>
+      <div className={`sticky ${isStuck ? 'top-0' : 'top-16 lg:top-0'} z-20 bg-white dark:bg-gray-900 ${isStuck || isMobile ? 'border-t border-b' : 'border'} border-gray-200 dark:border-gray-700 shadow-md ${isStuck || isMobile ? 'rounded-none' : 'rounded-lg'} ${className} ${isStuck ? '-mx-4 sm:-mx-6 lg:-mx-8' : 'max-[425px]:-mx-4'} transition-all duration-200 ease-in-out`}>
       <div className="flex items-center">
         {/* Hamburger menu button - only visible on mobile when stuck */}
         {isMobile && isStuck && onMenuClick && (
