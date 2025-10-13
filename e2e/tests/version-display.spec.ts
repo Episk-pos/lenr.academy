@@ -95,8 +95,9 @@ test.describe('Version Display', () => {
     // Wait for animation
     await page.waitForTimeout(350);
 
-    // Version should be hidden when sidebar is collapsed
-    await expect(versionElement).not.toBeVisible();
+    // Version should be visually hidden (opacity 0) when sidebar is collapsed
+    const opacity = await versionElement.evaluate(el => window.getComputedStyle(el.parentElement!).opacity);
+    expect(parseFloat(opacity)).toBe(0);
   });
 
   test('should show version when desktop sidebar is expanded', async ({ page }) => {
@@ -108,17 +109,19 @@ test.describe('Version Display', () => {
     await collapseButton.click();
     await page.waitForTimeout(350);
 
-    // Version should be hidden (desktop version is last)
+    // Version should be visually hidden (opacity 0) when collapsed
     const versionElement = page.getByTestId('app-version').last();
-    await expect(versionElement).not.toBeVisible();
+    let opacity = await versionElement.evaluate(el => window.getComputedStyle(el.parentElement!).opacity);
+    expect(parseFloat(opacity)).toBe(0);
 
     // Expand sidebar
     const expandButton = page.getByRole('button', { name: /expand sidebar/i });
     await expandButton.click();
     await page.waitForTimeout(350);
 
-    // Version should be visible again
-    await expect(versionElement).toBeVisible();
+    // Version should be visible again (opacity 1)
+    opacity = await versionElement.evaluate(el => window.getComputedStyle(el.parentElement!).opacity);
+    expect(parseFloat(opacity)).toBe(1);
   });
 
   test('should display version on mobile sidebar', async ({ page }) => {
