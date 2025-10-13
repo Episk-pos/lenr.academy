@@ -1,13 +1,13 @@
-import { useEffect, useState, useMemo } from 'react'
+import { useState, useMemo } from 'react'
 import { X, ChevronDown, ChevronUp, ArrowRight, Radiation } from 'lucide-react'
-import type { Nuclide, DecayData } from '../types'
+import type { RadioactiveNuclideData } from '../types'
 import { useDatabase } from '../contexts/DatabaseContext'
-import { getRadioactiveDecayData, getElementSymbolByZ, getNuclideBySymbol } from '../services/queryService'
+import { getElementSymbolByZ, getNuclideBySymbol } from '../services/queryService'
 import { useNavigate, Link } from 'react-router-dom'
 import { expandHalfLifeUnit } from '../utils/formatUtils'
 
-interface NuclideDetailsCardProps {
-  nuclide: Nuclide | null
+interface RadioactiveNuclideCardProps {
+  nuclideData: RadioactiveNuclideData
   onClose?: () => void
 }
 
@@ -92,26 +92,15 @@ const RADIATION_TYPE_INFO: Record<string, { name: string; description: string; u
   'E-AU-L': { name: 'L-shell Auger electron', description: 'atomic de-excitation from L shell', url: 'https://en.wikipedia.org/wiki/Auger_effect', category: 'electron' },
 }
 
-export default function NuclideDetailsCard({ nuclide, onClose }: NuclideDetailsCardProps) {
+export default function RadioactiveNuclideCard({ nuclideData, onClose }: RadioactiveNuclideCardProps) {
   const { db } = useDatabase()
   const navigate = useNavigate()
-  const [decayData, setDecayData] = useState<DecayData[]>([])
   const [showFullDecayTable, setShowFullDecayTable] = useState(false)
-
-  useEffect(() => {
-    if (!nuclide || !db) {
-      setDecayData([])
-      return
-    }
-
-    const data = getRadioactiveDecayData(db, nuclide.Z, nuclide.A)
-    setDecayData(data)
-  }, [nuclide, db])
 
   // Compute unique radiation types and decay modes present in the decay data
   const uniqueRadiationTypes = useMemo(() => {
     const types = new Set<string>()
-    decayData.forEach(decay => {
+    nuclideData.decayData.forEach(decay => {
       // Include decay modes (e.g., IT, B-, EC) so users understand the "Decay Mode" column
       if (decay.decayMode) {
         types.add(decay.decayMode)
@@ -122,13 +111,13 @@ export default function NuclideDetailsCard({ nuclide, onClose }: NuclideDetailsC
       }
     })
     return Array.from(types).sort()
-  }, [decayData])
+  }, [nuclideData.decayData])
 
   // Handler to navigate to daughter nuclide
   const handleDecayClick = (decayMode: string) => {
-    if (!db || !nuclide) return
+    if (!db) return
 
-    const daughter = getDaughterNuclide(nuclide.Z, nuclide.A, nuclide.E, decayMode)
+    const daughter = getDaughterNuclide(nuclideData.Z, nuclideData.A, nuclideData.E, decayMode)
     if (!daughter) return
 
     // Get element symbol if not provided
@@ -146,27 +135,23 @@ export default function NuclideDetailsCard({ nuclide, onClose }: NuclideDetailsC
     navigate(`/element-data?Z=${daughter.Z}&A=${daughter.A}`)
   }
 
-  if (!nuclide) return null
-
   return (
-    <div className="card p-6 animate-fade-in">
+    <div className="card p-6 animate-fade-in border-2 border-amber-200 dark:border-amber-800">
       <div className="flex items-start justify-between mb-4">
         <div>
           <h2 className="text-2xl font-bold mb-1 flex items-center gap-2">
             <Link
-              to={`/element-data?Z=${nuclide.Z}&A=${nuclide.A}`}
+              to={`/element-data?Z=${nuclideData.Z}&A=${nuclideData.A}`}
               className="text-gray-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 hover:underline transition-colors"
             >
-              {nuclide.E}-{nuclide.A}
+              {nuclideData.E}-{nuclideData.A}
             </Link>
-            {decayData.length > 0 && (
-              <span title="Radioactive">
-                <Radiation className="w-5 h-5 text-amber-600 dark:text-amber-400" />
-              </span>
-            )}
+            <span title="Radioactive">
+              <Radiation className="w-5 h-5 text-amber-600 dark:text-amber-400" />
+            </span>
           </h2>
           <p className="text-sm text-gray-500 dark:text-gray-400">
-            Atomic Number: {nuclide.Z} • Mass Number: {nuclide.A}
+            Atomic Number: {nuclideData.Z} • Mass Number: {nuclideData.A}
           </p>
         </div>
         {onClose && (
@@ -180,7 +165,15 @@ export default function NuclideDetailsCard({ nuclide, onClose }: NuclideDetailsC
         )}
       </div>
 
-      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {/* Limited data banner */}
+      <div className="mb-4 p-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg">
+        <p className="text-sm text-amber-800 dark:text-amber-300">
+          <strong>Limited Data Available:</strong> This isotope exists only in the radioactive decay database.
+          Full nuclear property data (binding energy, atomic mass, quantum properties) is not available for this short-lived nuclide.
+        </p>
+      </div>
+
+      <div className="grid md:grid-cols-2 gap-6">
         <div>
           <h3 className="font-semibold text-gray-900 dark:text-white mb-3 text-sm uppercase tracking-wide">
             Nuclear Properties
@@ -188,84 +181,24 @@ export default function NuclideDetailsCard({ nuclide, onClose }: NuclideDetailsC
           <dl className="space-y-2 text-sm">
             <div className="flex justify-between">
               <dt className="text-gray-600 dark:text-gray-400">Element:</dt>
-              <dd className="font-medium text-gray-900 dark:text-gray-100">{nuclide.E}</dd>
+              <dd className="font-medium text-gray-900 dark:text-gray-100">{nuclideData.E}</dd>
             </div>
             <div className="flex justify-between">
               <dt className="text-gray-600 dark:text-gray-400">Protons (Z):</dt>
-              <dd className="font-medium text-gray-900 dark:text-gray-100">{nuclide.Z}</dd>
+              <dd className="font-medium text-gray-900 dark:text-gray-100">{nuclideData.Z}</dd>
             </div>
             <div className="flex justify-between">
               <dt className="text-gray-600 dark:text-gray-400">Mass Number (A):</dt>
-              <dd className="font-medium text-gray-900 dark:text-gray-100">{nuclide.A}</dd>
+              <dd className="font-medium text-gray-900 dark:text-gray-100">{nuclideData.A}</dd>
             </div>
             <div className="flex justify-between">
               <dt className="text-gray-600 dark:text-gray-400">Neutrons (N):</dt>
-              <dd className="font-medium text-gray-900 dark:text-gray-100">{nuclide.A - nuclide.Z}</dd>
+              <dd className="font-medium text-gray-900 dark:text-gray-100">{nuclideData.A - nuclideData.Z}</dd>
             </div>
           </dl>
         </div>
 
-        <div>
-          <h3 className="font-semibold text-gray-900 dark:text-white mb-3 text-sm uppercase tracking-wide">
-            Quantum Properties
-          </h3>
-          <dl className="space-y-2 text-sm">
-            <div className="flex justify-between items-center">
-              <dt className="text-gray-600 dark:text-gray-400">Nuclear Type:</dt>
-              <dd>
-                <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                  nuclide.nBorF === 'b' ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300' :
-                  'bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300'
-                }`}>
-                  {nuclide.nBorF === 'b' ? 'Boson' : 'Fermion'}
-                </span>
-              </dd>
-            </div>
-            <div className="flex justify-between items-center">
-              <dt className="text-gray-600 dark:text-gray-400">Atomic Type:</dt>
-              <dd>
-                <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                  nuclide.aBorF === 'b' ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300' :
-                  'bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300'
-                }`}>
-                  {nuclide.aBorF === 'b' ? 'Boson' : 'Fermion'}
-                </span>
-              </dd>
-            </div>
-            <div className="mt-3 p-2 bg-gray-50 dark:bg-gray-800 rounded text-xs text-gray-600 dark:text-gray-400">
-              Nuclear: {nuclide.nBorF === 'b' ? 'Even A' : 'Odd A'}<br />
-              Atomic: {nuclide.aBorF === 'b' ? 'Even N' : 'Odd N'}
-            </div>
-          </dl>
-        </div>
-
-        <div>
-          <h3 className="font-semibold text-gray-900 dark:text-white mb-3 text-sm uppercase tracking-wide">
-            Energy & Mass
-          </h3>
-          <dl className="space-y-2 text-sm">
-            <div className="flex justify-between">
-              <dt className="text-gray-600 dark:text-gray-400">Binding Energy:</dt>
-              <dd className="font-medium text-gray-900 dark:text-gray-100">
-                {nuclide.BE.toFixed(3)} MeV
-              </dd>
-            </div>
-            <div className="flex justify-between">
-              <dt className="text-gray-600 dark:text-gray-400">BE per Nucleon:</dt>
-              <dd className="font-medium text-gray-900 dark:text-gray-100">
-                {(nuclide.BE / nuclide.A).toFixed(3)} MeV
-              </dd>
-            </div>
-            <div className="flex justify-between">
-              <dt className="text-gray-600 dark:text-gray-400">Atomic Mass:</dt>
-              <dd className="font-medium text-gray-900 dark:text-gray-100">
-                {nuclide.AMU.toFixed(6)} amu
-              </dd>
-            </div>
-          </dl>
-        </div>
-
-        {typeof nuclide.logHalfLife === 'number' && !isNaN(nuclide.logHalfLife) && (
+        {nuclideData.logHalfLife !== null && (
           <div>
             <h3 className="font-semibold text-gray-900 dark:text-white mb-3 text-sm uppercase tracking-wide">
               Stability
@@ -274,26 +207,38 @@ export default function NuclideDetailsCard({ nuclide, onClose }: NuclideDetailsC
               <div className="flex justify-between">
                 <dt className="text-gray-600 dark:text-gray-400">Log₁₀ Half-life:</dt>
                 <dd className="font-medium text-gray-900 dark:text-gray-100">
-                  {nuclide.logHalfLife.toFixed(2)} years
+                  {nuclideData.logHalfLife.toFixed(2)} years
                 </dd>
               </div>
               <div className="flex justify-between">
                 <dt className="text-gray-600 dark:text-gray-400">Half-life:</dt>
                 <dd className="font-medium text-gray-900 dark:text-gray-100">
-                  {Math.pow(10, nuclide.logHalfLife).toExponential(2)} years
+                  {nuclideData.halfLife !== null && nuclideData.Units !== null
+                    ? nuclideData.halfLife >= 10000
+                      ? `${nuclideData.halfLife.toExponential(2)} ${expandHalfLifeUnit(nuclideData.Units)}`
+                      : `${nuclideData.halfLife} ${expandHalfLifeUnit(nuclideData.Units)}`
+                    : Math.pow(10, nuclideData.logHalfLife).toExponential(2) + ' years'}
+                </dd>
+              </div>
+              <div className="flex justify-between">
+                <dt className="text-gray-600 dark:text-gray-400">Primary Decay Mode:</dt>
+                <dd className="font-medium text-gray-900 dark:text-gray-100">
+                  <span className={`px-2 py-1 rounded-full text-xs ${getDecayModeStyle(nuclideData.RDM).bg} ${getDecayModeStyle(nuclideData.RDM).text}`}>
+                    {nuclideData.RDM}
+                  </span>
                 </dd>
               </div>
               <div className="mt-3 p-2 bg-amber-50 dark:bg-amber-900/20 rounded text-xs text-amber-700 dark:text-amber-300">
-                {nuclide.logHalfLife > 9 ? 'Stable or very long-lived' :
-                 nuclide.logHalfLife > 0 ? 'Radioactive' :
+                {nuclideData.logHalfLife > 9 ? 'Stable or very long-lived' :
+                 nuclideData.logHalfLife > 0 ? 'Radioactive' :
                  'Short-lived radioactive'}
               </div>
             </dl>
           </div>
         )}
 
-        {decayData.length > 0 && (
-          <div className="md:col-span-2 lg:col-span-3">
+        {nuclideData.decayData.length > 0 && (
+          <div className="md:col-span-2">
             <h3 className="font-semibold text-gray-900 dark:text-white mb-3 text-sm uppercase tracking-wide">
               Radioactive Decay
             </h3>
@@ -310,9 +255,9 @@ export default function NuclideDetailsCard({ nuclide, onClose }: NuclideDetailsC
                 </thead>
                 <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
                   {/* Show first 4 decay modes */}
-                  {decayData.slice(0, 4).map((decay, idx) => {
+                  {nuclideData.decayData.slice(0, 4).map((decay, idx) => {
                     const style = getDecayModeStyle(decay.decayMode)
-                    const daughter = getDaughterNuclide(nuclide.Z, nuclide.A, nuclide.E, decay.decayMode)
+                    const daughter = getDaughterNuclide(nuclideData.Z, nuclideData.A, nuclideData.E, decay.decayMode)
                     const hasDaughter = daughter !== null
                     const daughterE = hasDaughter && db ? (daughter!.E || getElementSymbolByZ(db, daughter!.Z)) : null
 
@@ -355,7 +300,7 @@ export default function NuclideDetailsCard({ nuclide, onClose }: NuclideDetailsC
                   })}
 
                   {/* Toggle button row */}
-                  {decayData.length > 4 && (
+                  {nuclideData.decayData.length > 4 && (
                     <tr className="border-t-2 border-gray-300 dark:border-gray-600">
                       <td colSpan={5} className="px-3 py-2 text-center">
                         <button
@@ -365,12 +310,12 @@ export default function NuclideDetailsCard({ nuclide, onClose }: NuclideDetailsC
                           {showFullDecayTable ? (
                             <>
                               <ChevronUp className="w-3 h-3" />
-                              Hide {decayData.length - 4} additional decay mode{decayData.length - 4 !== 1 ? 's' : ''}
+                              Hide {nuclideData.decayData.length - 4} additional decay mode{nuclideData.decayData.length - 4 !== 1 ? 's' : ''}
                             </>
                           ) : (
                             <>
                               <ChevronDown className="w-3 h-3" />
-                              Show {decayData.length - 4} more decay mode{decayData.length - 4 !== 1 ? 's' : ''}
+                              Show {nuclideData.decayData.length - 4} more decay mode{nuclideData.decayData.length - 4 !== 1 ? 's' : ''}
                             </>
                           )}
                         </button>
@@ -379,9 +324,9 @@ export default function NuclideDetailsCard({ nuclide, onClose }: NuclideDetailsC
                   )}
 
                   {/* Additional decay modes when expanded */}
-                  {showFullDecayTable && decayData.length > 4 && decayData.slice(4).map((decay, idx) => {
+                  {showFullDecayTable && nuclideData.decayData.length > 4 && nuclideData.decayData.slice(4).map((decay, idx) => {
                     const style = getDecayModeStyle(decay.decayMode)
-                    const daughter = getDaughterNuclide(nuclide.Z, nuclide.A, nuclide.E, decay.decayMode)
+                    const daughter = getDaughterNuclide(nuclideData.Z, nuclideData.A, nuclideData.E, decay.decayMode)
                     const hasDaughter = daughter !== null
                     const daughterE = hasDaughter && db ? (daughter!.E || getElementSymbolByZ(db, daughter!.Z)) : null
 
@@ -429,18 +374,7 @@ export default function NuclideDetailsCard({ nuclide, onClose }: NuclideDetailsC
         )}
       </div>
 
-      <div className="mt-6 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
-        <h3 className="font-semibold text-blue-900 dark:text-blue-200 mb-2 text-sm">
-          About Boson/Fermion Classification
-        </h3>
-        <p className="text-xs text-blue-800 dark:text-blue-300 leading-relaxed">
-          <strong>Nuclear:</strong> Determined by mass number (A). Even A = Boson, Odd A = Fermion.<br />
-          <strong>Atomic:</strong> Determined by neutron count (N = A - Z). Even N = Boson, Odd N = Fermion.<br />
-          This classification affects quantum statistical behavior and reaction probabilities.
-        </p>
-      </div>
-
-      {decayData.length > 0 && (
+      {nuclideData.decayData.length > 0 && (
         <div className="mt-4 p-4 bg-amber-50 dark:bg-amber-900/20 rounded-lg">
           <h3 className="font-semibold text-amber-900 dark:text-amber-200 mb-2 text-sm">
             Radiation Type Legend

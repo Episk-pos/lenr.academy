@@ -13,7 +13,20 @@ export interface Nuclide {
   AMU: number;      // Atomic mass unit
   nBorF: BosonFermionType;  // Nuclear Boson or Fermion
   aBorF: BosonFermionType;  // Atomic Boson or Fermion
-  LHL?: number;     // log10 of half-life in years
+  logHalfLife?: number;     // log₁₀ of half-life in years
+  BEN?: number;     // Binding Energy per Nucleon (BE/A)
+  SUS?: string;     // Status: SPN (Stable Primordial), SYN (Synthetic), UPN (Unstable Primordial)
+  RDM?: string;     // Primary decay mode (B-, EC, A, etc.)
+  DEMeV?: number;   // Decay energy in MeV
+  pcaNCrust?: number;  // % abundance in Earth's crust
+  ppmNCrust?: number;  // ppm abundance in Earth's crust
+  ppmNSolar?: number;  // ppm abundance in solar system
+  SP?: string;      // Nuclear spin (e.g., "1/2+", "3/2-")
+  MD?: number | string;      // Magnetic dipole moment
+  EQ?: string;      // Electric quadrupole moment
+  RCPT?: string;    // Resonance capture cross section
+  Inova_MHz?: number;  // NMR frequency in MHz
+  MagGR?: number;   // Magnetic gyromagnetic ratio
 }
 
 export interface Element {
@@ -54,6 +67,33 @@ export interface DecayData {
   halfLife: number | null;      // Half-life numeric value
   halfLifeUnits: string | null; // Half-life units (s, m, h, d, y)
 }
+
+export interface RadioactiveNuclideData {
+  E: string;                    // Element symbol
+  Z: number;                    // Atomic number
+  A: number;                    // Mass number
+  RDM: string;                  // Primary decay mode
+  halfLife: number | null;      // Half-life value
+  Units: string | null;         // Half-life units
+  logHalfLife: number | null;   // Log₁₀ half-life in years
+  decayData: DecayData[];       // Full decay table
+}
+
+// Simplified data for RadioNuclides-only isotopes (for display in lists)
+export interface RadioNuclideListItem {
+  E: string;                    // Element symbol
+  Z: number;                    // Atomic number
+  A: number;                    // Mass number
+  RDM: string;                  // Primary decay mode
+  logHalfLife: number | null;   // Log₁₀ half-life in years
+  halfLife: number | null;      // Half-life value
+  Units: string | null;         // Half-life units
+}
+
+// Union type for displaying nuclides in lists
+export type DisplayNuclide =
+  | { type: 'full'; data: Nuclide }
+  | { type: 'radioactive-only'; data: RadioNuclideListItem }
 
 export interface FusionReaction {
   id: number;

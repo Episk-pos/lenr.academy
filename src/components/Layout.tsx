@@ -3,6 +3,7 @@ import { Link, useLocation } from 'react-router-dom'
 import { Menu, X, Atom, Moon, Sun, ChevronLeft, ChevronRight, Home as HomeIcon, GitMerge, Scissors, ArrowLeftRight, FlaskConical, Table, TableProperties, Shield } from 'lucide-react'
 import { useState } from 'react'
 import { useTheme } from '../contexts/ThemeContext'
+import { useLayout } from '../contexts/LayoutContext'
 import DatabaseUpdateBanner from './DatabaseUpdateBanner'
 import PrivacyBanner from './PrivacyBanner'
 import { getVersionInfo, getVersionTooltip, getGitHubReleaseUrl } from '../utils/version'
@@ -30,7 +31,7 @@ const navigation: NavigationItem[] = [
 
 export default function Layout({ children }: LayoutProps) {
   const location = useLocation()
-  const [sidebarOpen, setSidebarOpen] = useState(false)
+  const { sidebarOpen, setSidebarOpen, mobileHeaderHidden } = useLayout()
   const [desktopSidebarCollapsed, setDesktopSidebarCollapsed] = useState(() => {
     const saved = localStorage.getItem('desktopSidebarCollapsed')
     return saved ? JSON.parse(saved) : false
@@ -198,8 +199,10 @@ export default function Layout({ children }: LayoutProps) {
 
       {/* Main content */}
       <div className={`transition-all duration-300 ${desktopSidebarCollapsed ? 'lg:pl-16' : 'lg:pl-64'}`}>
-        {/* Mobile header */}
-        <div className="sticky top-0 z-10 flex h-16 shrink-0 items-center gap-x-4 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 lg:hidden">
+        {/* Mobile header - hides when tabs stick */}
+        <div className={`sticky top-0 z-10 flex h-16 shrink-0 items-center gap-x-4 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 lg:hidden transition-all duration-300 ${
+          mobileHeaderHidden ? 'opacity-0 -translate-y-full pointer-events-none' : 'opacity-100 translate-y-0'
+        }`}>
           <button
             onClick={() => setSidebarOpen(true)}
             className="-m-2.5 p-2.5 text-gray-700 dark:text-gray-300"

@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import * as Sentry from '@sentry/react'
 import { DatabaseProvider } from './contexts/DatabaseContext'
 import { ThemeProvider } from './contexts/ThemeContext'
+import { LayoutProvider } from './contexts/LayoutContext'
 import Layout from './components/Layout'
 import Home from './pages/Home'
 import FusionQuery from './pages/FusionQuery'
@@ -69,8 +70,9 @@ function App() {
       <ThemeProvider>
         <DatabaseProvider>
           <Router>
-            <Layout>
-              <Routes>
+            <LayoutProvider>
+              <Layout>
+                <Routes>
                 <Route path="/" element={<Home />} />
                 <Route path="/fusion" element={<FusionQuery />} />
                 <Route path="/fission" element={<FissionQuery />} />
@@ -84,8 +86,9 @@ function App() {
                 {(import.meta.env.MODE === 'development' || new URLSearchParams(window.location.search).get('debug') === 'true') && (
                   <Route path="/sentry-test" element={<SentryTest />} />
                 )}
-              </Routes>
-            </Layout>
+                </Routes>
+              </Layout>
+            </LayoutProvider>
           </Router>
         </DatabaseProvider>
       </ThemeProvider>
