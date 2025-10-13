@@ -4,6 +4,7 @@ import { useSearchParams, Link } from 'react-router-dom'
 import type { TwoToTwoReaction, QueryFilter, Element, Nuclide, AtomicRadiiData } from '../types'
 import { useDatabase } from '../contexts/DatabaseContext'
 import { queryTwoToTwo, getAllElements, getElementBySymbol, getNuclideBySymbol, getAtomicRadii } from '../services/queryService'
+import { normalizeElementSymbol } from '../utils/formatUtils'
 import PeriodicTableSelector from '../components/PeriodicTableSelector'
 import ElementDetailsCard from '../components/ElementDetailsCard'
 import NuclideDetailsCard from '../components/NuclideDetailsCard'
@@ -141,7 +142,7 @@ export default function TwoToTwoQuery() {
       const [elementSymbol] = pinN.split('-')
       setHighlightedNuclide(pinN)
       setPinnedNuclide(true)
-      setHighlightedElement(elementSymbol)
+      setHighlightedElement(normalizeElementSymbol(elementSymbol))
       setPinnedElement(true)
       setHasInitializedFromUrl(true)
     } else if (pinE && !pinnedElement && resultElements.some(el => el.E === pinE)) {
@@ -776,7 +777,7 @@ export default function TwoToTwoQuery() {
                       setPinnedNuclide(true)
                       setHighlightedNuclide(nuclideId)
                       setPinnedElement(true)
-                      setHighlightedElement(elementSymbol)
+                      setHighlightedElement(normalizeElementSymbol(elementSymbol))
                     }
                   }}
                 >
@@ -829,7 +830,7 @@ export default function TwoToTwoQuery() {
                       // If a nuclide from a DIFFERENT element is pinned, unpin it first
                       if (pinnedNuclide && highlightedNuclide) {
                         const [nuclideParentElement] = highlightedNuclide.split('-')
-                        if (nuclideParentElement !== elementId) {
+                        if (normalizeElementSymbol(nuclideParentElement) !== elementId) {
                           setPinnedNuclide(false)
                           setHighlightedNuclide(null)
                         }

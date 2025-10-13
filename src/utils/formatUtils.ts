@@ -44,3 +44,16 @@ export function expandHalfLifeUnit(abbreviation: string | null): string {
 
   return unitMap[abbreviation] || abbreviation
 }
+
+/**
+ * Normalizes element symbols for hydrogen isotopes to their periodic table representation.
+ * D (Deuterium) and T (Tritium) map to H (Hydrogen) for periodic table highlighting.
+ * @param elementSymbol - Element symbol from database (e.g., 'D', 'T', 'H', 'C')
+ * @returns Normalized element symbol (e.g., 'H', 'H', 'H', 'C')
+ */
+export function normalizeElementSymbol(elementSymbol: string): string {
+  if (elementSymbol === 'D' || elementSymbol === 'T') {
+    return 'H'
+  }
+  return elementSymbol
+}
