@@ -164,7 +164,7 @@ function buildOrderClause(filter: QueryFilter): string {
  * Returns Set of "Z-A" format (e.g., "26-56") for O(1) lookup
  * Single batch SQL query instead of individual queries per nuclide
  */
-function getRadioactiveNuclides(db: Database, nuclides: Nuclide[]): Set<string> {
+export function getRadioactiveNuclides(db: Database, nuclides: Nuclide[]): Set<string> {
   if (nuclides.length === 0) return new Set();
 
   // Build WHERE clause for all nuclides
@@ -777,4 +777,71 @@ export function getElementSymbolByZ(db: Database, Z: number): string | null {
     return null;
   }
   return results[0].values[0][0] as string;
+}
+
+/**
+ * Radioactive decay record interface (maps to RadioNuclides table)
+ */
+export interface RadioactiveDecay {
+  id: number;
+  E: string;        // Element symbol
+  Z: number;        // Atomic number
+  A: number;        // Mass number
+  RDM: string;      // Radioactive decay mode
+  HL: number | null;      // Half-life numeric value
+  Units: string | null;   // Half-life units
+  LHL: number | null;     // Log10 of half-life in years
+  RT: string;       // Radiation type
+  DEKeV: number | null;   // Decay energy in keV
+  RI: number | null;      // Relative intensity (%)
+}
+
+/**
+ * Get all radioactive decay records with pagination support
+ * Used for the Decays tab in Show Element Data page
+ */
+export function getAllDecays(
+  db: Database,
+  options?: {
+    limit?: number;
+    offset?: number;
+    sortBy?: string;
+    sortDirection?: 'asc' | 'desc';
+  }
+): { decays: RadioactiveDecay[]; totalCount: number } {
+  const limit = options?.limit || 50;
+  const offset = options?.offset || 0;
+  const sortBy = options?.sortBy || 'Z';
+  const sortDirection = (options?.sortDirection || 'asc').toUpperCase();
+
+  // Get total count
+  const countSql = 'SELECT COUNT(*) as total FROM RadioNuclides';
+  const countResult = db.exec(countSql);
+  const totalCount = (countResult[0]?.values[0]?.[0] as number) || 0;
+
+  // Get paginated data
+  const sql = `
+    SELECT id, E, Z, A, RDM, HL, Units, LHL, RT, DEKeV, RI
+    FROM RadioNuclides
+    ORDER BY ${sortBy} ${sortDirection}
+    LIMIT ${limit} OFFSET ${offset}
+  `;
+
+  const results = db.exec(sql);
+  const decays: RadioactiveDecay[] = [];
+
+  if (results.length > 0) {
+    const columns = results[0].columns;
+    const values = results[0].values;
+
+    values.forEach((row: any[]) => {
+      const decay: any = {};
+      columns.forEach((col, idx) => {
+        decay[col] = row[idx];
+      });
+      decays.push(decay as RadioactiveDecay);
+    });
+  }
+
+  return { decays, totalCount };
 }
