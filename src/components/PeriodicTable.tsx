@@ -215,7 +215,7 @@ export default function PeriodicTable({ availableElements, selectedElement, onEl
   return (
     <div className="card p-3 sm:p-6 overflow-x-auto">
       <div className="flex justify-start sm:justify-center">
-        <div className="inline-block">
+        <div className="inline-block pr-3 sm:pr-6">
         {/* Main periodic table grid (periods 1-7) */}
         <div className="grid gap-0.5 sm:gap-1 mb-1 sm:mb-2" style={{ gridTemplateColumns: 'repeat(18, minmax(1.75rem, 3rem))' }}>
           {[1, 2, 3, 4, 5, 6, 7].map(period => (
