@@ -122,14 +122,12 @@ export default function Layout({ children }: LayoutProps) {
             )}
           </button>
 
-          <div className={`flex items-center gap-2 p-6 border-b dark:border-gray-700 ${desktopSidebarCollapsed ? 'justify-center' : ''}`}>
-            <Atom className={`text-primary-600 flex-shrink-0 ${desktopSidebarCollapsed ? 'w-6 h-6' : 'w-8 h-8'}`} />
-            {!desktopSidebarCollapsed && (
-              <div>
-                <h1 className="text-xl font-bold text-gray-900 dark:text-white">Nanosoft Suite</h1>
-                <p className="text-xs text-gray-500 dark:text-gray-400">LENR Academy</p>
-              </div>
-            )}
+          <div className={`flex items-center py-6 border-b dark:border-gray-700 overflow-hidden transition-all duration-300 ${desktopSidebarCollapsed ? 'px-4 justify-center' : 'px-7 justify-start gap-2'}`}>
+            <Atom className={`text-primary-600 flex-shrink-0 transition-all duration-300 ${desktopSidebarCollapsed ? 'w-6 h-6' : 'w-8 h-8'}`} />
+            <div className={`whitespace-nowrap transition-all duration-150 overflow-hidden ${desktopSidebarCollapsed ? 'opacity-0 w-0 delay-0' : 'opacity-100 w-auto delay-150'}`}>
+              <h1 className="text-xl font-bold text-gray-900 dark:text-white">Nanosoft Suite</h1>
+              <p className="text-xs text-gray-500 dark:text-gray-400">LENR Academy</p>
+            </div>
           </div>
           <nav className="flex-1 overflow-y-auto p-4">
             {navigation.map((item) => {
@@ -138,61 +136,63 @@ export default function Layout({ children }: LayoutProps) {
                 <Link
                   key={item.path}
                   to={item.path}
-                  className={`flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium mb-1 ${
+                  className={`flex items-center px-3 py-2 rounded-md text-sm font-medium mb-1 overflow-hidden transition-all duration-300 ${
                     location.pathname === item.path
                       ? 'bg-primary-100 dark:bg-primary-900/50 text-primary-700 dark:text-primary-300'
                       : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
-                  } ${desktopSidebarCollapsed ? 'justify-center' : ''}`}
+                  } ${desktopSidebarCollapsed ? 'justify-center' : 'justify-start gap-3'}`}
                   title={desktopSidebarCollapsed ? item.name : undefined}
                 >
-                  <Icon className={`flex-shrink-0 ${desktopSidebarCollapsed ? 'w-5 h-5' : 'w-5 h-5'}`} />
-                  {!desktopSidebarCollapsed && <span>{item.name}</span>}
+                  <Icon className="flex-shrink-0 w-5 h-5" />
+                  <span className={`whitespace-nowrap transition-all duration-150 overflow-hidden ${desktopSidebarCollapsed ? 'opacity-0 w-0 ml-0 delay-0' : 'opacity-100 w-auto ml-0 delay-150'}`}>{item.name}</span>
                 </Link>
               )
             })}
           </nav>
-          <div className={`p-4 border-t ${desktopSidebarCollapsed ? 'flex flex-col items-center' : ''}`}>
+          <div className={`p-4 border-t overflow-hidden ${desktopSidebarCollapsed ? 'flex flex-col items-center' : ''}`}>
             <button
               onClick={toggleTheme}
-              className={`flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors mb-2 ${desktopSidebarCollapsed ? 'justify-center' : 'w-full justify-center'}`}
+              className={`flex items-center justify-center px-3 py-2 rounded-md text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors mb-2 overflow-hidden ${desktopSidebarCollapsed ? '' : 'w-full'}`}
               title={desktopSidebarCollapsed ? (theme === 'dark' ? 'Light Mode' : 'Dark Mode') : undefined}
             >
-              {theme === 'dark' ? (
-                <>
-                  <Sun className="w-4 h-4" />
-                  {!desktopSidebarCollapsed && <span>Light Mode</span>}
-                </>
-              ) : (
-                <>
-                  <Moon className="w-4 h-4" />
-                  {!desktopSidebarCollapsed && <span>Dark Mode</span>}
-                </>
-              )}
+              <div className={`flex items-center transition-all duration-300 ${desktopSidebarCollapsed ? 'gap-0' : 'gap-2'}`}>
+                {theme === 'dark' ? (
+                  <>
+                    <Sun className="w-4 h-4 flex-shrink-0" />
+                    <span className={`whitespace-nowrap transition-all duration-150 overflow-hidden ${desktopSidebarCollapsed ? 'opacity-0 w-0 delay-0' : 'opacity-100 w-auto delay-150'}`}>Light Mode</span>
+                  </>
+                ) : (
+                  <>
+                    <Moon className="w-4 h-4 flex-shrink-0" />
+                    <span className={`whitespace-nowrap transition-all duration-150 overflow-hidden ${desktopSidebarCollapsed ? 'opacity-0 w-0 delay-0' : 'opacity-100 w-auto delay-150'}`}>Dark Mode</span>
+                  </>
+                )}
+              </div>
             </button>
             <Link
               to="/privacy"
-              className={`flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors mb-3 ${desktopSidebarCollapsed ? 'justify-center' : 'w-full justify-center'}`}
+              className={`flex items-center justify-center px-3 py-2 rounded-md text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors mb-3 overflow-hidden ${desktopSidebarCollapsed ? '' : 'w-full'}`}
               title={desktopSidebarCollapsed ? 'Privacy Settings' : undefined}
             >
-              <Shield className="w-4 h-4" />
-              {!desktopSidebarCollapsed && <span>Privacy Settings</span>}
-            </Link>
-            {!desktopSidebarCollapsed && (
-              <div className="text-xs text-gray-500 dark:text-gray-400">
-                <p>Based on work by Dr. Alexander Parkhomov</p>
-                <p className="mt-1">Martin Fleischmann Memorial Project</p>
-                <a
-                  href={getGitHubReleaseUrl(versionInfo)}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="mt-2 inline-block text-gray-400 dark:text-gray-500 hover:text-primary-600 dark:hover:text-primary-400 transition-colors cursor-pointer"
-                  title={getVersionTooltip(versionInfo)}
-                  data-testid="app-version"
-                >
-                  {versionInfo.displayVersion}
-                </a>
+              <div className={`flex items-center transition-all duration-300 ${desktopSidebarCollapsed ? 'gap-0' : 'gap-2'}`}>
+                <Shield className="w-4 h-4 flex-shrink-0" />
+                <span className={`whitespace-nowrap transition-all duration-150 overflow-hidden ${desktopSidebarCollapsed ? 'opacity-0 w-0 delay-0' : 'opacity-100 w-auto delay-150'}`}>Privacy Settings</span>
               </div>
-            )}
+            </Link>
+            <div className={`text-xs text-gray-500 dark:text-gray-400 transition-all duration-150 overflow-hidden ${desktopSidebarCollapsed ? 'opacity-0 max-h-0 delay-0' : 'opacity-100 max-h-96 delay-150'}`}>
+              <p>Based on work by Dr. Alexander Parkhomov</p>
+              <p className="mt-1">Martin Fleischmann Memorial Project</p>
+              <a
+                href={getGitHubReleaseUrl(versionInfo)}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-2 inline-block text-gray-400 dark:text-gray-500 hover:text-primary-600 dark:hover:text-primary-400 transition-colors cursor-pointer"
+                title={getVersionTooltip(versionInfo)}
+                data-testid="app-version"
+              >
+                {versionInfo.displayVersion}
+              </a>
+            </div>
           </div>
         </div>
       </div>

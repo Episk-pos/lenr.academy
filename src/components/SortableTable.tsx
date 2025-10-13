@@ -1,4 +1,4 @@
-import { useState, useMemo, ReactNode } from 'react'
+import React, { useState, useMemo, ReactNode } from 'react'
 import { ChevronUp, ChevronDown, ChevronsUpDown, ChevronRight } from 'lucide-react'
 import { filterDataBySearch } from '../utils/searchUtils'
 
@@ -179,9 +179,8 @@ export default function SortableTable<T extends Record<string, any>>({
                 const isExpanded = expandedRows.has(rowKey)
 
                 return (
-                  <>
+                  <React.Fragment key={rowKey}>
                     <tr
-                      key={rowKey}
                       className={renderExpandedContent ? 'cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800/50' : onRowClick ? 'cursor-pointer' : ''}
                       onClick={() => {
                         if (renderExpandedContent) {
@@ -226,7 +225,7 @@ export default function SortableTable<T extends Record<string, any>>({
                         </td>
                       </tr>
                     )}
-                  </>
+                  </React.Fragment>
                 )
               })
             )}
