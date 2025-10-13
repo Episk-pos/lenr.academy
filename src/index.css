@@ -63,8 +63,16 @@
     @apply px-3 py-2 font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider;
   }
 
+  .data-table th:last-child {
+    @apply border-r-0;
+  }
+
   .data-table td {
-    @apply px-3 py-2 border-b border-gray-100 dark:border-gray-800;
+    @apply px-3 py-2 border-b border-b-gray-200 dark:border-b-gray-700;
+  }
+
+  .data-table td:last-child {
+    @apply border-r-0;
   }
 
   .data-table tbody tr:hover {

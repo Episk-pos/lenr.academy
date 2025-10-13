@@ -20,10 +20,10 @@ interface NavigationItem {
 
 const navigation: NavigationItem[] = [
   { name: 'Home', path: '/', icon: HomeIcon },
+  { name: 'Show Element Data', path: '/element-data', icon: FlaskConical },
   { name: 'Fusion Reactions', path: '/fusion', icon: GitMerge },
   { name: 'Fission Reactions', path: '/fission', icon: Scissors },
   { name: 'Two-To-Two Reactions', path: '/twotwo', icon: ArrowLeftRight },
-  { name: 'Show Element Data', path: '/element-data', icon: FlaskConical },
   { name: 'Tables in Detail', path: '/tables', icon: Table },
   { name: 'All Tables', path: '/all-tables', icon: TableProperties },
   // { name: 'Cascades', path: '/cascades', icon: Workflow },

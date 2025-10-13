@@ -122,7 +122,7 @@ export default function TabNavigation({ tabs, activeTab, onTabChange, className 
           </button>
         )}
 
-        <nav className="-mb-px flex flex-1 space-x-2 sm:space-x-4 md:space-x-8 px-2 sm:px-4 md:px-6 overflow-x-auto" aria-label="Tabs">
+        <nav className="-mb-px flex flex-1 space-x-2 sm:space-x-4 md:space-x-8 px-2 sm:px-4 md:px-6 overflow-x-auto" aria-label="Tabs" role="tablist">
         {tabs.map((tab) => {
           const isActive = activeTab === tab.id
 
@@ -148,7 +148,6 @@ export default function TabNavigation({ tabs, activeTab, onTabChange, className 
               `}
               role="tab"
               aria-selected={isActive}
-              aria-controls={`${tab.id}-panel`}
               tabIndex={isActive ? 0 : -1}
             >
               {tab.label}
