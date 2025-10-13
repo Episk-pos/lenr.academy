@@ -22,11 +22,12 @@ const VIEWPORTS = {
   'desktop-16:9': { width: 1920, height: 1080 },
   'desktop-16:9-small': { width: 1280, height: 720 },
   'mobile-16:9': { width: 640, height: 360 },
+  'mobile-portrait-9:16': { width: 360, height: 640 },
   'tablet-16:9': { width: 1024, height: 576 },
 };
 
 interface Action {
-  type: 'click' | 'wait' | 'scroll' | 'input' | 'select-element' | 'run-query' | 'toggle-theme' | 'navigate' | 'accept-metered' | 'wait-for-db';
+  type: 'click' | 'wait' | 'scroll' | 'input' | 'select-element' | 'run-query' | 'toggle-theme' | 'navigate' | 'accept-metered' | 'wait-for-db' | 'collapse-navbar';
   selector?: string;
   value?: string | number;
   timeout?: number;
@@ -144,6 +145,14 @@ async function executeAction(page: Page, action: Action) {
 
     case 'wait-for-db':
       await waitForDatabaseReady(page, action.timeout || 60000);
+      break;
+
+    case 'collapse-navbar':
+      await page.evaluate(() => {
+        localStorage.setItem('desktopSidebarCollapsed', 'true');
+      });
+      await page.reload();
+      await page.waitForLoadState('networkidle');
       break;
   }
 }

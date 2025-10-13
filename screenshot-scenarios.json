@@ -236,6 +236,112 @@
         { "type": "wait", "timeout": 2000 }
       ],
       "output": "pr-12-filter-panel.png"
+    },
+    "pr-38-elements-tab-desktop-dark": {
+      "name": "PR #38 - Elements Tab Desktop (Dark Mode)",
+      "description": "Shows Elements tab with collapsed navbar, expanded filter panel, and first row (Hydrogen) expanded in dark mode",
+      "page": "/element-data?tab=elements",
+      "viewport": "desktop-16:9-small",
+      "theme": "dark",
+      "actions": [
+        { "type": "collapse-navbar" },
+        { "type": "wait-for-db" },
+        { "type": "accept-metered" },
+        { "type": "wait", "timeout": 2000 },
+        { "type": "click", "selector": "button[aria-label='Expand filters']" },
+        { "type": "wait", "timeout": 500 },
+        { "type": "click", "selector": "table tbody tr:first-child" },
+        { "type": "wait", "timeout": 800 }
+      ],
+      "output": "pr-38-elements-tab-desktop-dark.png"
+    },
+    "pr-38-nuclides-tab-desktop": {
+      "name": "PR #38 - Nuclides Tab Desktop",
+      "description": "Shows Nuclides tab with collapsed navbar, expanded filter panel, and first atom (H-1) expanded",
+      "page": "/element-data?tab=nuclides",
+      "viewport": "desktop-16:9-small",
+      "theme": "light",
+      "actions": [
+        { "type": "collapse-navbar" },
+        { "type": "wait-for-db" },
+        { "type": "accept-metered" },
+        { "type": "wait", "timeout": 2000 },
+        { "type": "click", "selector": "button[aria-label='Expand filters']" },
+        { "type": "wait", "timeout": 500 },
+        { "type": "click", "selector": "table tbody tr:nth-child(4)" },
+        { "type": "wait", "timeout": 800 }
+      ],
+      "output": "pr-38-nuclides-tab-desktop.png"
+    },
+    "pr-38-decays-tab-desktop": {
+      "name": "PR #38 - Decays Tab Desktop",
+      "description": "Shows Decays tab with collapsed navbar, expanded filter panel, and first row expanded",
+      "page": "/element-data?tab=decays",
+      "viewport": "desktop-16:9-small",
+      "theme": "light",
+      "actions": [
+        { "type": "collapse-navbar" },
+        { "type": "wait-for-db" },
+        { "type": "accept-metered" },
+        { "type": "wait", "timeout": 2000 },
+        { "type": "click", "selector": "button[aria-label='Expand filters']" },
+        { "type": "wait", "timeout": 500 },
+        { "type": "click", "selector": "table tbody tr:first-child" },
+        { "type": "wait", "timeout": 800 }
+      ],
+      "output": "pr-38-decays-tab-desktop.png"
+    },
+    "pr-38-nuclides-tab-mobile-dark": {
+      "name": "PR #38 - Nuclides Tab Mobile (Dark Mode)",
+      "description": "Shows Nuclides tab on mobile portrait with expanded filter panel and first atom (H-1) expanded in dark mode",
+      "page": "/element-data?tab=nuclides",
+      "viewport": "mobile-portrait-9:16",
+      "theme": "dark",
+      "actions": [
+        { "type": "wait-for-db" },
+        { "type": "accept-metered" },
+        { "type": "wait", "timeout": 2000 },
+        { "type": "click", "selector": "button[aria-label='Expand filters']" },
+        { "type": "wait", "timeout": 500 },
+        { "type": "click", "selector": "table tbody tr:nth-child(4)" },
+        { "type": "wait", "timeout": 800 }
+      ],
+      "output": "pr-38-nuclides-tab-mobile-dark.png"
+    },
+    "pr-38-decays-tab-mobile": {
+      "name": "PR #38 - Decays Tab Mobile",
+      "description": "Shows Decays tab on mobile portrait with expanded filter panel and first row expanded",
+      "page": "/element-data?tab=decays",
+      "viewport": "mobile-portrait-9:16",
+      "theme": "light",
+      "actions": [
+        { "type": "wait-for-db" },
+        { "type": "accept-metered" },
+        { "type": "wait", "timeout": 2000 },
+        { "type": "click", "selector": "button[aria-label='Expand filters']" },
+        { "type": "wait", "timeout": 500 },
+        { "type": "click", "selector": "table tbody tr:first-child" },
+        { "type": "wait", "timeout": 800 }
+      ],
+      "output": "pr-38-decays-tab-mobile.png"
+    },
+    "pr-38-elements-tab-mobile-sticky": {
+      "name": "PR #38 - Elements Tab Mobile (Sticky Tabs)",
+      "description": "Shows Elements tab on mobile portrait scrolled to demonstrate sticky tab bar and hidden mobile header",
+      "page": "/element-data?tab=elements",
+      "viewport": "mobile-portrait-9:16",
+      "theme": "light",
+      "actions": [
+        { "type": "wait-for-db" },
+        { "type": "accept-metered" },
+        { "type": "wait", "timeout": 2000 },
+        { "type": "click", "selector": "button[aria-label='Expand filters']" },
+        { "type": "wait", "timeout": 500 },
+        { "type": "click", "selector": "table tbody tr:first-child" },
+        { "type": "wait", "timeout": 800 },
+        { "type": "scroll", "y": 300 }
+      ],
+      "output": "pr-38-elements-tab-mobile-sticky.png"
     }
   }
 }
