@@ -679,18 +679,17 @@ export function getAllNuclidesByElement(db: Database, Z: number): import('../typ
   nuclidesPlus.forEach(n => nuclidesMap.set(n.A, n));
 
   // Get RadioNuclides-only entries (those not in NuclidesPlus)
-  // Use GROUP BY to get one row per mass number A, taking the decay mode with highest intensity
+  // Use CTE to properly get one row per mass number A, taking the decay mode with highest intensity
   const radioOnlySql = `
-    SELECT rn.E, rn.Z, rn.A, rn.RDM, rn.LHL, rn.HL, rn.Units
-    FROM RadioNuclides rn
-    WHERE rn.Z = ?
-      AND rn.A NOT IN (SELECT A FROM NuclidesPlus WHERE Z = ?)
-    GROUP BY rn.A
-    HAVING rn.RI = (
-      SELECT MAX(RI)
+    WITH MaxRI AS (
+      SELECT Z, A, MAX(RI) as max_ri
       FROM RadioNuclides
-      WHERE Z = rn.Z AND A = rn.A
+      WHERE Z = ? AND A NOT IN (SELECT A FROM NuclidesPlus WHERE Z = ?)
+      GROUP BY Z, A
     )
+    SELECT DISTINCT rn.E, rn.Z, rn.A, rn.RDM, rn.LHL, rn.HL, rn.Units
+    FROM RadioNuclides rn
+    INNER JOIN MaxRI m ON rn.Z = m.Z AND rn.A = m.A AND rn.RI = m.max_ri
     ORDER BY rn.A
   `;
 
