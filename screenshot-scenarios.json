@@ -1,0 +1,241 @@
+{
+  "scenarios": {
+    "pr-30-radioactive-indicators": {
+      "name": "PR #30 - Radioactive Element Indicators",
+      "description": "Shows radioactive element indicators with radiation icons and legend in periodic table",
+      "page": "/element-data",
+      "viewport": "desktop-16:9-small",
+      "theme": "light",
+      "actions": [
+        { "type": "wait-for-db" },
+        { "type": "accept-metered" },
+        { "type": "wait", "timeout": 1000 }
+      ],
+      "output": "pr-30-radioactive-indicators-periodic-table.png"
+    },
+    "pr-30-decay-table": {
+      "name": "PR #30 - Radioactive Decay Table",
+      "description": "Shows improved decay table UX with responsive layout for Uranium-235",
+      "page": "/element-data?Z=92&A=235",
+      "viewport": "desktop-16:9-small",
+      "theme": "light",
+      "actions": [
+        { "type": "wait-for-db" },
+        { "type": "accept-metered" },
+        { "type": "wait", "timeout": 2000 },
+        { "type": "scroll", "y": 400 }
+      ],
+      "output": "pr-30-decay-table-u235.png"
+    },
+    "pr-30-decay-table-dark": {
+      "name": "PR #30 - Decay Table Dark Mode",
+      "description": "Shows decay table in dark mode with radiation legend",
+      "page": "/element-data?Z=92&A=235",
+      "viewport": "desktop-16:9-small",
+      "theme": "dark",
+      "actions": [
+        { "type": "wait-for-db" },
+        { "type": "accept-metered" },
+        { "type": "wait", "timeout": 2000 },
+        { "type": "scroll", "y": 400 }
+      ],
+      "output": "pr-30-decay-table-dark.png"
+    },
+    "pr-31-mobile-table-layout": {
+      "name": "PR #31 - Mobile Table Responsiveness",
+      "description": "Shows mobile table overflow handling on Two-To-Two query page with default results",
+      "page": "/two-to-two",
+      "viewport": "mobile-16:9",
+      "theme": "light",
+      "actions": [
+        { "type": "wait-for-db" },
+        { "type": "accept-metered" },
+        { "type": "wait", "timeout": 3000 },
+        { "type": "scroll", "y": 1600 }
+      ],
+      "output": "pr-31-mobile-table-layout.png"
+    },
+    "pr-31-mobile-fusion": {
+      "name": "PR #31 - Mobile Fusion Interface",
+      "description": "Shows mobile layout on fusion query page",
+      "page": "/fusion",
+      "viewport": "mobile-16:9",
+      "theme": "light",
+      "actions": [
+        { "type": "wait-for-db" },
+        { "type": "accept-metered" },
+        { "type": "wait", "timeout": 3000 },
+        { "type": "scroll", "y": 1200 }
+      ],
+      "output": "pr-31-mobile-fusion.png"
+    },
+    "pr-11-atomic-radii-card": {
+      "name": "PR #11 - Atomic Radii Card",
+      "description": "Shows new 3-column layout with dedicated Atomic Radii card for Iron",
+      "page": "/element-data?Z=26",
+      "viewport": "desktop-16:9-small",
+      "theme": "light",
+      "actions": [
+        { "type": "wait-for-db" },
+        { "type": "accept-metered" },
+        { "type": "wait", "timeout": 3000 },
+        { "type": "scroll", "y": 1800 }
+      ],
+      "output": "pr-11-atomic-radii-card.png"
+    },
+    "pr-11-atomic-radii-tungsten": {
+      "name": "PR #11 - Atomic Radii for Tungsten",
+      "description": "Shows atomic radii display for Tungsten (all 4 types visible)",
+      "page": "/element-data?Z=74",
+      "viewport": "desktop-16:9-small",
+      "theme": "light",
+      "actions": [
+        { "type": "wait-for-db" },
+        { "type": "accept-metered" },
+        { "type": "wait", "timeout": 3000 },
+        { "type": "scroll", "y": 1800 }
+      ],
+      "output": "pr-11-atomic-radii-tungsten.png"
+    },
+    "pr-11-3-column-layout": {
+      "name": "PR #11 - 3-Column Layout on Element Data",
+      "description": "Shows new 3-column layout with Thermal, Physical, and Atomic Radii cards",
+      "page": "/element-data?Z=29",
+      "viewport": "desktop-16:9-small",
+      "theme": "light",
+      "actions": [
+        { "type": "wait-for-db" },
+        { "type": "accept-metered" },
+        { "type": "wait", "timeout": 3000 },
+        { "type": "scroll", "y": 1800 }
+      ],
+      "output": "pr-11-3-column-layout.png"
+    },
+    "pr-29-decay-table-collapsed": {
+      "name": "PR #29 - Decay Table Collapsed with Expansion Link",
+      "description": "Shows decay badges with 'Show all X decay modes' expansion link for Cs-135",
+      "page": "/element-data?Z=55&A=135",
+      "viewport": "desktop-16:9-small",
+      "theme": "light",
+      "actions": [
+        { "type": "wait-for-db" },
+        { "type": "accept-metered" },
+        { "type": "wait", "timeout": 3000 },
+        { "type": "scroll", "y": 1550 }
+      ],
+      "output": "pr-29-decay-table-collapsed.png"
+    },
+    "pr-29-decay-table-expanded": {
+      "name": "PR #29 - Decay Table Fully Expanded",
+      "description": "Shows expanded decay table with all decay modes visible for Cs-135",
+      "page": "/element-data?Z=55&A=135",
+      "viewport": "desktop-16:9-small",
+      "theme": "light",
+      "actions": [
+        { "type": "wait-for-db" },
+        { "type": "accept-metered" },
+        { "type": "wait", "timeout": 3000 },
+        { "type": "scroll", "y": 1550 },
+        { "type": "wait", "timeout": 500 },
+        { "type": "click", "selector": "button:has-text('Show')" },
+        { "type": "wait", "timeout": 800 }
+      ],
+      "output": "pr-29-decay-table-expanded.png"
+    },
+    "pr-29-radioactivity-indicators": {
+      "name": "PR #29 - Radioactivity Indicators in Decays Table",
+      "description": "Shows radioactive decay data with half-lives and radiation types",
+      "page": "/element-data?tab=decays",
+      "viewport": "desktop-16:9-small",
+      "theme": "light",
+      "actions": [
+        { "type": "wait-for-db" },
+        { "type": "accept-metered" },
+        { "type": "wait", "timeout": 3000 },
+        { "type": "scroll", "y": 800 }
+      ],
+      "output": "pr-29-decays-table.png"
+    },
+    "pr-29-performance": {
+      "name": "PR #29 - Performance Optimization with Large Results",
+      "description": "Shows Two-To-Two query with default results demonstrating batch query performance",
+      "page": "/two-to-two",
+      "viewport": "desktop-16:9-small",
+      "theme": "light",
+      "actions": [
+        { "type": "wait-for-db" },
+        { "type": "accept-metered" },
+        { "type": "wait", "timeout": 5000 }
+      ],
+      "output": "pr-29-performance-batch-query.png"
+    },
+    "pr-12-tab-navigation": {
+      "name": "PR #12 - Tab Navigation on Element Data Page",
+      "description": "Shows new tab navigation system with Integrated, Elements, Nuclides, and Decays tabs with counts",
+      "page": "/element-data",
+      "viewport": "desktop-16:9-small",
+      "theme": "light",
+      "actions": [
+        { "type": "wait-for-db" },
+        { "type": "accept-metered" },
+        { "type": "wait", "timeout": 2000 }
+      ],
+      "output": "pr-12-tab-navigation.png"
+    },
+    "pr-12-elements-tab": {
+      "name": "PR #12 - Elements Tab with Pagination",
+      "description": "Shows Elements tab with paginated list and filter panel",
+      "page": "/element-data?tab=elements",
+      "viewport": "desktop-16:9-small",
+      "theme": "light",
+      "actions": [
+        { "type": "wait-for-db" },
+        { "type": "accept-metered" },
+        { "type": "wait", "timeout": 2000 },
+        { "type": "scroll", "y": 300 }
+      ],
+      "output": "pr-12-elements-tab.png"
+    },
+    "pr-12-nuclides-tab": {
+      "name": "PR #12 - Nuclides Tab with Pagination",
+      "description": "Shows Nuclides tab with paginated isotope list",
+      "page": "/element-data?tab=nuclides",
+      "viewport": "desktop-16:9-small",
+      "theme": "light",
+      "actions": [
+        { "type": "wait-for-db" },
+        { "type": "accept-metered" },
+        { "type": "wait", "timeout": 2000 },
+        { "type": "scroll", "y": 300 }
+      ],
+      "output": "pr-12-nuclides-tab.png"
+    },
+    "pr-12-decays-tab": {
+      "name": "PR #12 - Decays Tab with Pagination",
+      "description": "Shows Decays tab with paginated radioactive decay data",
+      "page": "/element-data?tab=decays",
+      "viewport": "desktop-16:9-small",
+      "theme": "light",
+      "actions": [
+        { "type": "wait-for-db" },
+        { "type": "accept-metered" },
+        { "type": "wait", "timeout": 2000 },
+        { "type": "scroll", "y": 300 }
+      ],
+      "output": "pr-12-decays-tab.png"
+    },
+    "pr-12-filter-panel": {
+      "name": "PR #12 - Filter Panel with Element Selector",
+      "description": "Shows new filter panel with periodic table element selector",
+      "page": "/element-data?tab=elements",
+      "viewport": "desktop-16:9-small",
+      "theme": "light",
+      "actions": [
+        { "type": "wait-for-db" },
+        { "type": "accept-metered" },
+        { "type": "wait", "timeout": 2000 }
+      ],
+      "output": "pr-12-filter-panel.png"
+    }
+  }
+}
