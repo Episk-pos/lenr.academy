@@ -214,7 +214,7 @@ export default function PeriodicTable({ availableElements, selectedElement, onEl
 
   return (
     <div className="card p-3 sm:p-6 overflow-x-auto">
-      <div className="flex justify-center">
+      <div className="flex justify-start sm:justify-center">
         <div className="inline-block">
         {/* Main periodic table grid (periods 1-7) */}
         <div className="grid gap-0.5 sm:gap-1 mb-1 sm:mb-2" style={{ gridTemplateColumns: 'repeat(18, minmax(1.75rem, 3rem))' }}>
@@ -227,12 +227,12 @@ export default function PeriodicTable({ availableElements, selectedElement, onEl
         </div>
 
         {/* Lanthanides (period 8) */}
-        <div className="grid gap-0.5 sm:gap-1 mb-1 sm:mb-2" style={{ gridTemplateColumns: 'repeat(15, minmax(1.75rem, 3rem))', marginLeft: 'calc(3 * minmax(1.75rem, 3rem) + 1.5rem)' }}>
+        <div className="grid gap-0.5 sm:gap-1 mb-1 sm:mb-2 ml-[5.625rem] sm:ml-[9.75rem]" style={{ gridTemplateColumns: 'repeat(15, minmax(1.75rem, 3rem))' }}>
           {Array.from({ length: 15 }, (_, i) => renderCell(8, i + 4))}
         </div>
 
         {/* Actinides (period 9) */}
-        <div className="grid gap-0.5 sm:gap-1 mb-3" style={{ gridTemplateColumns: 'repeat(15, minmax(1.75rem, 3rem))', marginLeft: 'calc(3 * minmax(1.75rem, 3rem) + 1.5rem)' }}>
+        <div className="grid gap-0.5 sm:gap-1 mb-3 ml-[5.625rem] sm:ml-[9.75rem]" style={{ gridTemplateColumns: 'repeat(15, minmax(1.75rem, 3rem))' }}>
           {Array.from({ length: 15 }, (_, i) => renderCell(9, i + 4))}
         </div>
 
