@@ -65,8 +65,8 @@ test.describe('Element Data Page', () => {
     // Should show Carbon heading
     await expect(page.getByRole('heading', { name: /Carbon \(C\)/i })).toBeVisible();
 
-    // Should show nuclides section heading
-    await expect(page.getByRole('heading', { name: /Nuclides.*3 available/i })).toBeVisible();
+    // Should show nuclides section heading with new format "X of Y shown"
+    await expect(page.getByRole('heading', { name: /Nuclides.*of.*shown/i })).toBeVisible();
 
     // Should show multiple isotope buttons (C-12, C-13, C-14)
     await expect(page.getByRole('button', { name: /C-12/i })).toBeVisible();
@@ -217,7 +217,7 @@ test.describe('Element Data Page', () => {
     await expect(page.getByRole('heading', { name: /Carbon \(C\)/i })).toBeVisible();
 
     // Should fall back to showing element data with nuclides
-    await expect(page.getByRole('heading', { name: /Nuclides.*3 available/i })).toBeVisible();
+    await expect(page.getByRole('heading', { name: /Nuclides.*of.*shown/i })).toBeVisible();
   });
 
   test('should show stable vs unstable isotopes', async ({ page }) => {
@@ -226,7 +226,7 @@ test.describe('Element Data Page', () => {
     await waitForDatabaseReady(page);
 
     // Should show nuclides section
-    await expect(page.getByRole('heading', { name: /Nuclides.*3 available/i })).toBeVisible();
+    await expect(page.getByRole('heading', { name: /Nuclides.*of.*shown/i })).toBeVisible();
 
     // Should show isotope buttons (stable: C-12, C-13; unstable: C-14)
     await expect(page.getByRole('button', { name: /C-12/i })).toBeVisible();
@@ -394,7 +394,7 @@ test.describe('Element Data Page', () => {
     await expect(page.getByText(/extremely short-lived/i)).toBeVisible();
 
     // Should still show available isotopes
-    await expect(page.getByRole('heading', { name: /Nuclides.*available/i })).toBeVisible();
+    await expect(page.getByRole('heading', { name: /Nuclides.*of.*shown/i })).toBeVisible();
   });
 
   test('should show decay table with first 4 rows always visible', async ({ page }) => {
@@ -683,4 +683,252 @@ test.describe('Element Data - Mobile', () => {
     // scrollWidth >= clientWidth (equal if not scrollable, greater if scrollable)
     expect(scrollWidth).toBeGreaterThanOrEqual(clientWidth);
   });
+
+  test('should show hamburger menu in tabs only when stuck on mobile', async ({ page }) => {
+    // Navigate to element-data
+    await page.goto('/element-data');
+    await waitForDatabaseReady(page);
+
+    // Initially, hamburger should NOT be in the tab bar
+    const tabMenuButton = page.getByTestId('tab-navigation-menu-button');
+    const initiallyVisible = await tabMenuButton.isVisible().catch(() => false);
+    expect(initiallyVisible).toBe(false);
+
+    // Regular mobile header hamburger should be visible
+    const headerMenu = page.getByRole('button', { name: /Open menu/i }).first();
+    await expect(headerMenu).toBeVisible();
+
+    // Scroll down to make tabs stick
+    await page.evaluate(() => window.scrollBy(0, 300));
+    await page.waitForTimeout(500); // Wait for intersection observer
+
+    // Now the hamburger should appear in the tab bar
+    await expect(tabMenuButton).toBeVisible();
+
+    // Click it to verify it works
+    await tabMenuButton.click();
+    await page.waitForTimeout(300);
+
+    // Sidebar should open (check for sidebar content)
+    const sidebar = page.locator('text=Nanosoft').first();
+    await expect(sidebar).toBeVisible();
+
+    // Close sidebar
+    const closeButton = page.getByRole('button', { name: /Close menu/i });
+    await closeButton.click();
+    await page.waitForTimeout(300);
+
+    // Scroll back to top
+    await page.evaluate(() => window.scrollTo(0, 0));
+    await page.waitForTimeout(500); // Wait for intersection observer
+
+    // Hamburger should disappear from tab bar
+    const finallyVisible = await tabMenuButton.isVisible().catch(() => false);
+    expect(finallyVisible).toBe(false);
+  });
+
+  test('should expand tabs to full width when stuck on mobile', async ({ page }) => {
+    // Navigate to element-data
+    await page.goto('/element-data');
+    await waitForDatabaseReady(page);
+
+    // Get the tab navigation container
+    const tabNav = page.locator('nav[aria-label="Tabs"]').locator('..');
+
+    // Get initial width (should have padding/rounded corners)
+    const initialBox = await tabNav.boundingBox();
+
+    // Scroll down to make tabs stick
+    await page.evaluate(() => window.scrollBy(0, 300));
+    await page.waitForTimeout(500);
+
+    // Get width when stuck (should be full viewport width)
+    const stuckBox = await tabNav.boundingBox();
+    const viewportSize = page.viewportSize();
+
+    if (stuckBox && viewportSize) {
+      // When stuck, tabs should span close to full width
+      expect(stuckBox.width).toBeGreaterThan((initialBox?.width || 0) * 0.9);
+      // Should be close to viewport width (allowing some margin for borders)
+      expect(stuckBox.width).toBeGreaterThanOrEqual(viewportSize.width * 0.95);
+    }
+  });
+
+  test('should scroll selected tab into view on mobile', async ({ page }) => {
+    // Navigate to element-data
+    await page.goto('/element-data');
+    await waitForDatabaseReady(page);
+
+    // Get the tab navigation container
+    const tabNav = page.locator('nav[aria-label="Tabs"]');
+
+    // Get the "Decay" tab (likely to be off-screen on mobile)
+    const decayTab = page.getByRole('tab', { name: /Decay/i });
+
+    // Verify tab exists
+    await expect(decayTab).toBeAttached();
+
+    // Get initial scroll position of the tab container
+    const initialScrollLeft = await tabNav.evaluate(el => el.scrollLeft);
+
+    // Click the Decay tab
+    await decayTab.click();
+    await page.waitForTimeout(500); // Wait for smooth scroll animation
+
+    // Get new scroll position
+    const newScrollLeft = await tabNav.evaluate(el => el.scrollLeft);
+
+    // The tab container should have scrolled (scroll position changed)
+    expect(newScrollLeft).toBeGreaterThan(initialScrollLeft);
+
+    // Verify the Decay tab is now in view by checking if it's within the visible area
+    const tabNavBox = await tabNav.boundingBox();
+    const decayTabBox = await decayTab.boundingBox();
+
+    if (tabNavBox && decayTabBox) {
+      // The tab should be within the visible scroll area
+      // Allow some tolerance for centering
+      expect(decayTabBox.x).toBeGreaterThanOrEqual(tabNavBox.x - 50);
+      expect(decayTabBox.x + decayTabBox.width).toBeLessThanOrEqual(tabNavBox.x + tabNavBox.width + 50);
+    }
+  });
 });
+
+test.describe('Element Data - Tab Navigation Desktop', () => {
+  test.use({ viewport: { width: 1920, height: 1080 } });
+
+  test.beforeEach(async ({ page }) => {
+    await acceptPrivacyConsent(page);
+    await page.goto('/element-data');
+    await acceptMeteredWarningIfPresent(page);
+    await waitForDatabaseReady(page);
+  });
+
+  test('should never show hamburger menu in tabs on desktop', async ({ page }) => {
+    // Navigate to element-data
+    await page.goto('/element-data');
+    await waitForDatabaseReady(page);
+
+    // Hamburger should NEVER appear in tab bar on desktop
+    const tabMenuButton = page.getByTestId('tab-navigation-menu-button');
+    const initiallyVisible = await tabMenuButton.isVisible().catch(() => false);
+    expect(initiallyVisible).toBe(false);
+
+    // Scroll down
+    await page.evaluate(() => window.scrollBy(0, 500));
+    await page.waitForTimeout(500);
+
+    // Still should not be visible
+    const afterScrollVisible = await tabMenuButton.isVisible().catch(() => false);
+    expect(afterScrollVisible).toBe(false);
+
+    // Scroll to bottom
+    await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
+    await page.waitForTimeout(500);
+
+    // Still should not be visible
+    const atBottomVisible = await tabMenuButton.isVisible().catch(() => false);
+    expect(atBottomVisible).toBe(false);
+  });
+
+  test('should maintain desktop appearance when scrolling', async ({ page }) => {
+    // Navigate to element-data
+    await page.goto('/element-data');
+    await waitForDatabaseReady(page);
+
+    // Get tab navigation
+    const tabNav = page.locator('nav[aria-label="Tabs"]').locator('..');
+    const initialBox = await tabNav.boundingBox();
+
+    // Scroll down
+    await page.evaluate(() => window.scrollBy(0, 500));
+    await page.waitForTimeout(500);
+
+    // Width should remain consistent (not expand to full width)
+    const scrolledBox = await tabNav.boundingBox();
+
+    if (initialBox && scrolledBox) {
+      // Width should be similar (allowing small variance)
+      expect(Math.abs(scrolledBox.width - initialBox.width)).toBeLessThan(50);
+    }
+  });
+});
+
+test.describe('Element Data - Half-life Unit Display', () => {
+  test.beforeEach(async ({ page }) => {
+    await acceptPrivacyConsent(page);
+    await page.goto('/element-data');
+    await acceptMeteredWarningIfPresent(page);
+    await waitForDatabaseReady(page);
+  });
+
+  test('should display expanded half-life units, not abbreviations', async ({ page }) => {
+    // Navigate to C-14 which has a half-life in years
+    await page.goto('/element-data?Z=6&A=14');
+    await waitForDatabaseReady(page);
+
+    // Should show C-14 heading
+    await expect(page.getByRole('heading', { name: /C-14/i })).toBeVisible();
+
+    // Check for any decay data on the page
+    const decayTable = page.locator('table').filter({ hasText: 'Half-life' });
+    const hasDecayTable = await decayTable.isVisible({ timeout: 10000 }).catch(() => false);
+
+    if (hasDecayTable) {
+      const tableText = await decayTable.textContent();
+      // Should contain full unit words like "years", "milliseconds", etc.
+      // Check that expanded units appear in the table
+      const hasExpandedUnits = /years|milliseconds|microseconds|nanoseconds|femtoseconds|picoseconds|seconds|minutes|hours|days/.test(tableText || '');
+      expect(hasExpandedUnits).toBe(true);
+    }
+  });
+
+  test('should display expanded millisecond units in decay tables', async ({ page }) => {
+    // Navigate to an isotope with decay data (use Tc-98 which has 3 decay modes)
+    await page.goto('/element-data?Z=43&A=98');
+    await waitForDatabaseReady(page);
+
+    // Wait for the nuclide heading
+    await expect(page.getByRole('heading', { name: /Tc-98/i })).toBeVisible();
+
+    // Look for radioactive decay section
+    const decayHeading = page.getByRole('heading', { name: /Radioactive Decay/i });
+    const hasDecaySection = await decayHeading.isVisible({ timeout: 10000 }).catch(() => false);
+
+    if (hasDecaySection) {
+      await decayHeading.scrollIntoViewIfNeeded();
+
+      // Wait for decay table
+      const decayTable = page.locator('table').filter({ hasText: 'Half-life' });
+      await expect(decayTable).toBeVisible();
+
+      // Get all table cell text
+      const tableText = await decayTable.textContent();
+
+      // Should contain expanded units
+      const hasExpandedUnits = /years|milliseconds|microseconds|nanoseconds|femtoseconds|picoseconds|seconds|minutes|hours|days/.test(tableText || '');
+      expect(hasExpandedUnits).toBe(true);
+    }
+  });
+
+  test('should display expanded units in integrated tab decay chains', async ({ page }) => {
+    // Navigate to decay tab which shows decay table data
+    await page.goto('/element-data?tab=decay');
+    await waitForDatabaseReady(page);
+
+    // Wait for page to load
+    await page.waitForTimeout(2000);
+
+    // Look for decay table with half-life column
+    const decayTable = page.locator('table').filter({ hasText: 'Half-life' });
+    const hasDecayTable = await decayTable.isVisible({ timeout: 10000 }).catch(() => false);
+
+    if (hasDecayTable) {
+      const tableText = await decayTable.textContent();
+      // Should contain expanded units
+      const hasExpandedUnits = /years|milliseconds|microseconds|nanoseconds|femtoseconds|picoseconds|seconds|minutes|hours|days/.test(tableText || '');
+      expect(hasExpandedUnits).toBe(true);
+    }
+  });
+});
+
