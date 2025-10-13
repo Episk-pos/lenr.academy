@@ -156,6 +156,36 @@ Standard viewports for 16:9 aspect ratio:
 
 All screenshots use 16:9 aspect ratio for consistent presentation in PR descriptions.
 
+## Scenario Lifecycle & Automatic Cleanup
+
+Screenshot scenarios in `screenshot-scenarios.json` are automatically cleaned up after PR merge:
+
+1. **During PR development**: Scenarios are tracked in git for reproducibility
+2. **After merge to main**: GitHub Actions automatically removes scenarios matching `pr-{number}-*`
+3. **Result**: Reduces CI noise and keeps the repository clean
+
+**Why automatic cleanup?**
+- Scenarios are only needed during PR review for regenerating screenshots
+- Once merged, screenshots are archived on S3 and in PR descriptions
+- Prevents unnecessary E2E test triggers from scenario file changes
+
+**Manual cleanup** (if needed):
+```bash
+# Remove scenarios for a specific PR
+node -e "
+  const fs = require('fs');
+  const data = JSON.parse(fs.readFileSync('screenshot-scenarios.json', 'utf8'));
+  const filtered = Object.keys(data.scenarios).reduce((acc, key) => {
+    if (!key.startsWith('pr-30-')) acc[key] = data.scenarios[key];
+    return acc;
+  }, {});
+  data.scenarios = filtered;
+  fs.writeFileSync('screenshot-scenarios.json', JSON.stringify(data, null, 2) + '\n');
+"
+git add screenshot-scenarios.json
+git commit -m "chore: remove screenshot scenarios for PR #30"
+```
+
 ## Workflow for New PRs
 
 ### 1. Before Creating PR
@@ -165,7 +195,7 @@ When making UI changes:
 1. **Create scenario(s)** in `screenshot-scenarios.json` that showcase your changes
 2. **Generate screenshots**: `npm run screenshots:pr <scenario-name>`
 3. **Review screenshots** in `docs/screenshots/pr/`
-4. **Commit scenario config** (but not screenshots - see below)
+4. **Commit scenario config** (scenarios will be auto-cleaned after merge)
 
 ### 2. Creating the PR
 
@@ -294,9 +324,44 @@ See existing scenarios in `screenshot-scenarios.json` for working examples of:
 - Query page interactions (PR #29)
 - Dark mode variations (PR #30)
 
+## CI/CD Integration
+
+### E2E Test Skipping
+
+The E2E test workflows (`.github/workflows/e2e-pr.yml` and `.github/workflows/e2e-main.yml`) skip running when only `screenshot-scenarios.json` changes:
+
+```yaml
+paths-ignore:
+  - 'screenshot-scenarios.json'
+```
+
+This prevents unnecessary CI activity when scenarios are added, updated, or cleaned up.
+
+### Automatic Cleanup Workflow
+
+The cleanup workflow (`.github/workflows/cleanup-scenarios.yml`) runs automatically after PR merge:
+
+**Trigger**: Push to main branch (after PR merge)
+
+**Process**:
+1. Detects PR number from merge commit message
+2. Removes all scenarios matching `pr-{number}-*` pattern
+3. Commits changes with `[skip ci]` to avoid triggering other workflows
+4. Creates a GitHub Actions summary showing what was cleaned
+
+**Manual trigger** (if needed):
+```bash
+gh workflow run cleanup-scenarios.yml -f pr_number=30
+```
+
+**Supported merge commit formats**:
+- Standard merge: `Merge pull request #30 from ...`
+- Squash merge: `feat: something (#30)`
+
 ## Related Documentation
 
 - [CONTRIBUTING.md](../CONTRIBUTING.md) - General contribution guidelines
 - [DEVELOPMENT.md](DEVELOPMENT.md) - Development setup and architecture
 - `screenshot-scenarios.json` - Scenario configuration file
 - `scripts/generate-pr-screenshots.ts` - Screenshot generation script
+- `.github/workflows/cleanup-scenarios.yml` - Automatic cleanup workflow

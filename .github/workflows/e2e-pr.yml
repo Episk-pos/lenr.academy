@@ -3,6 +3,8 @@ name: E2E Tests (PR)
 on:
   pull_request:
     branches: [ main ]
+    paths-ignore:
+      - 'screenshot-scenarios.json'
 
 jobs:
   test:
