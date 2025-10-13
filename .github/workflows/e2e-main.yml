@@ -3,6 +3,8 @@ name: E2E Tests (Main Branch)
 on:
   push:
     branches: [ main ]
+    paths-ignore:
+      - 'screenshot-scenarios.json'
   workflow_dispatch:
 
 jobs:
