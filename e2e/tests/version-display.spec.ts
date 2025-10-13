@@ -117,7 +117,9 @@ test.describe('Version Display', () => {
     // Expand sidebar
     const expandButton = page.getByRole('button', { name: /expand sidebar/i });
     await expandButton.click();
-    await page.waitForTimeout(350);
+
+    // Wait for CSS transition to complete (150ms delay + 150ms duration + buffer)
+    await page.waitForTimeout(400);
 
     // Version should be visible again (opacity 1)
     opacity = await versionElement.evaluate(el => window.getComputedStyle(el.parentElement!).opacity);

@@ -258,17 +258,15 @@ test.describe('Element Data Page', () => {
     await waitForDatabaseReady(page);
     await expect(page.getByRole('heading', { name: /Copper/i })).toBeVisible();
 
-    // Go back
+    // Go back - wait for React to re-render with Iron data
     await page.goBack();
-    await page.waitForLoadState('networkidle');
     await expect(page).toHaveURL(/Z=26/);
-    await expect(page.getByRole('heading', { name: /Iron/i })).toBeVisible();
+    await expect(page.getByRole('heading', { name: /Iron/i })).toBeVisible({ timeout: 10000 });
 
-    // Go forward
+    // Go forward - wait for React to re-render with Copper data
     await page.goForward();
-    await page.waitForLoadState('networkidle');
     await expect(page).toHaveURL(/Z=29/);
-    await expect(page.getByRole('heading', { name: /Copper/i })).toBeVisible();
+    await expect(page.getByRole('heading', { name: /Copper/i })).toBeVisible({ timeout: 10000 });
   });
 
   test('should link to nuclides in reaction tables', async ({ page }) => {
