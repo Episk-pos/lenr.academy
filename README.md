@@ -7,6 +7,8 @@ A modern web application for exploring Low Energy Nuclear Reactions (LENR) and c
 
 **🌐 Live Application**: [lenr.academy](https://lenr.academy)
 
+**📋 GitHub Project**: [Project Board](https://github.com/orgs/Episk-pos/projects/1)
+
 **💬 Community**: [GitHub Discussions](https://github.com/Episk-pos/lenr.academy/discussions)
 
 **📊 Analytics Dashboard**: [Public Usage Statistics](https://cloud.umami.is/share/JGkYeKU60K9D1t4U)
