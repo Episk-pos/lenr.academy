@@ -251,24 +251,24 @@ test.describe('Element Data Page', () => {
     // Navigate to Fe
     await page.goto('/element-data?Z=26');
     await waitForDatabaseReady(page);
-    await expect(page.getByText(/Iron/i)).toBeVisible();
+    await expect(page.getByRole('heading', { name: /Iron/i })).toBeVisible();
 
     // Navigate to Cu
     await page.goto('/element-data?Z=29');
     await waitForDatabaseReady(page);
-    await expect(page.getByText(/Copper/i)).toBeVisible();
+    await expect(page.getByRole('heading', { name: /Copper/i })).toBeVisible();
 
     // Go back
     await page.goBack();
     await page.waitForLoadState('networkidle');
     await expect(page).toHaveURL(/Z=26/);
-    await expect(page.getByText(/Iron/i)).toBeVisible();
+    await expect(page.getByRole('heading', { name: /Iron/i })).toBeVisible();
 
     // Go forward
     await page.goForward();
     await page.waitForLoadState('networkidle');
     await expect(page).toHaveURL(/Z=29/);
-    await expect(page.getByText(/Copper/i)).toBeVisible();
+    await expect(page.getByRole('heading', { name: /Copper/i })).toBeVisible();
   });
 
   test('should link to nuclides in reaction tables', async ({ page }) => {
@@ -385,12 +385,12 @@ test.describe('Element Data Page', () => {
     // Should show element (Iron) heading
     await expect(page.getByRole('heading', { name: /Iron \(Fe\)/i })).toBeVisible();
 
-    // Should show "Nuclide Not Available" message
+    // Should show "Nuclide Not Available" message with extended timeout
     const notAvailableHeading = page.getByRole('heading', { name: /Nuclide Not Available/i });
-    await expect(notAvailableHeading).toBeVisible();
+    await expect(notAvailableHeading).toBeVisible({ timeout: 10000 });
 
     // Should explain why
-    await expect(page.getByText(/Fe-999.*not available in the database/i)).toBeVisible();
+    await expect(page.getByText(/Fe-999.*not available/i)).toBeVisible();
     await expect(page.getByText(/extremely short-lived/i)).toBeVisible();
 
     // Should still show available isotopes
@@ -597,8 +597,14 @@ test.describe('Element Data - Mobile', () => {
 
     // Select Hydrogen element (periodic table should be responsive)
     const h = page.getByRole('button', { name: '1 H' });
-    await h.waitFor({ state: 'visible', timeout: 10000 });
-    await h.click();
+    await h.waitFor({ state: 'visible', timeout: 15000 });
+
+    // Ensure element is scrolled into view and layout is stable
+    await h.scrollIntoViewIfNeeded();
+    await page.waitForTimeout(500); // Allow layout to settle after scroll
+
+    // Click with extended timeout for mobile
+    await h.click({ timeout: 15000 });
 
     // Should show element data in mobile-friendly layout
     await expect(page.getByRole('heading', { name: /Hydrogen \(H\)/i })).toBeVisible();

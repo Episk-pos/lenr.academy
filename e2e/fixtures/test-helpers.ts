@@ -141,3 +141,51 @@ export async function navigateToPage(page: Page, pageName: string) {
     await page.waitForTimeout(500);
   }
 }
+
+/**
+ * Helper to disable CSS animations and transitions for faster tests
+ * This significantly improves test performance, especially in Firefox
+ */
+export async function disableAnimations(page: Page) {
+  await page.addStyleTag({
+    content: `
+      *, *::before, *::after {
+        animation-duration: 0.001ms !important;
+        animation-delay: 0ms !important;
+        transition-duration: 0.001ms !important;
+        transition-delay: 0ms !important;
+      }
+    `
+  });
+}
+
+/**
+ * Helper to click on elements in mobile viewport with proper scrolling and timing
+ * Handles common mobile click issues like elements outside viewport
+ */
+export async function clickOnMobile(page: Page, selector: ReturnType<typeof page.getByRole>) {
+  // Wait for element to be visible
+  await selector.waitFor({ state: 'visible', timeout: 15000 });
+
+  // Scroll element into view
+  await selector.scrollIntoViewIfNeeded();
+
+  // Allow layout to settle after scroll
+  await page.waitForTimeout(500);
+
+  // Verify element is in viewport (optional logging)
+  const box = await selector.boundingBox();
+  const viewport = page.viewportSize();
+
+  if (box && viewport) {
+    // Ensure element is within viewport bounds
+    if (box.y < 0 || box.y + box.height > viewport.height) {
+      // Element still not fully visible, try scrolling again
+      await selector.scrollIntoViewIfNeeded();
+      await page.waitForTimeout(300);
+    }
+  }
+
+  // Click with extended timeout
+  await selector.click({ timeout: 15000 });
+}
