@@ -27,7 +27,7 @@ const VIEWPORTS = {
 };
 
 interface Action {
-  type: 'click' | 'wait' | 'scroll' | 'input' | 'select-element' | 'run-query' | 'toggle-theme' | 'navigate' | 'accept-metered' | 'wait-for-db' | 'collapse-navbar';
+  type: 'click' | 'wait' | 'scroll' | 'scroll-to-top' | 'input' | 'select-element' | 'run-query' | 'toggle-theme' | 'navigate' | 'accept-metered' | 'wait-for-db' | 'collapse-navbar';
   selector?: string;
   value?: string | number;
   timeout?: number;
@@ -102,6 +102,13 @@ async function executeAction(page: Page, action: Action) {
       await page.evaluate(({ x, y }) => {
         window.scrollBy(x || 0, y || 0);
       }, { x: action.x, y: action.y });
+      await page.waitForTimeout(300); // Wait for scroll to settle
+      break;
+
+    case 'scroll-to-top':
+      await page.evaluate(() => {
+        window.scrollTo(0, 0);
+      });
       await page.waitForTimeout(300); // Wait for scroll to settle
       break;
 

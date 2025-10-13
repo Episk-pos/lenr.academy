@@ -287,14 +287,15 @@
         { "type": "click", "selector": "button[aria-label='Expand filters']" },
         { "type": "wait", "timeout": 500 },
         { "type": "click", "selector": "table tbody tr:first-child" },
-        { "type": "wait", "timeout": 800 }
+        { "type": "wait", "timeout": 800 },
+        { "type": "scroll-to-top" }
       ],
       "output": "pr-38-decays-tab-desktop.png"
     },
     "pr-38-nuclides-tab-mobile-dark": {
       "name": "PR #38 - Nuclides Tab Mobile (Dark Mode)",
-      "description": "Shows Nuclides tab on mobile portrait with expanded filter panel and first atom (H-1) expanded in dark mode",
-      "page": "/element-data?tab=nuclides",
+      "description": "Shows Nuclides tab on mobile portrait with Oxygen filter selected, expanded filter panel, and first isotope expanded in dark mode",
+      "page": "/element-data?tab=nuclides&Z=8",
       "viewport": "mobile-portrait-9:16",
       "theme": "dark",
       "actions": [
@@ -303,8 +304,9 @@
         { "type": "wait", "timeout": 2000 },
         { "type": "click", "selector": "button[aria-label='Expand filters']" },
         { "type": "wait", "timeout": 500 },
-        { "type": "click", "selector": "table tbody tr:nth-child(4)" },
-        { "type": "wait", "timeout": 800 }
+        { "type": "click", "selector": "table tbody tr:first-child" },
+        { "type": "wait", "timeout": 800 },
+        { "type": "scroll-to-top" }
       ],
       "output": "pr-38-nuclides-tab-mobile-dark.png"
     },
@@ -321,7 +323,8 @@
         { "type": "click", "selector": "button[aria-label='Expand filters']" },
         { "type": "wait", "timeout": 500 },
         { "type": "click", "selector": "table tbody tr:first-child" },
-        { "type": "wait", "timeout": 800 }
+        { "type": "wait", "timeout": 800 },
+        { "type": "scroll-to-top" }
       ],
       "output": "pr-38-decays-tab-mobile.png"
     },
