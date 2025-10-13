@@ -330,3 +330,4 @@ gh pr view 456                 # View PR details
 gh pr create --title "..." --body "..."  # Create PR
 gh pr checks                   # View PR status checks
 ```
+- When considering E2E tests, let's use the DB to find which elements/nuclides we need to select to put the UI into a state which expresses what we're trying to test
