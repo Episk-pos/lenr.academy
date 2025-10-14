@@ -153,7 +153,8 @@ jobs:
           echo "Local database version: $LOCAL_VERSION"
 
           # Fetch remote version directly from S3 (bypass CloudFront cache)
-          REMOTE_VERSION=$(curl -sf https://db.lenr.academy.s3.amazonaws.com/latest/parkhomov.db.meta.json | jq -r '.version' 2>/dev/null || echo "none")
+          # Note: Use path-style URL because bucket name contains dots
+          REMOTE_VERSION=$(curl -sf https://s3.amazonaws.com/db.lenr.academy/latest/parkhomov.db.meta.json | jq -r '.version' 2>/dev/null || echo "none")
           echo "Remote database version: $REMOTE_VERSION"
 
           # Compare versions
@@ -185,7 +186,7 @@ jobs:
         if: steps.check_version.outputs.db_changed == 'true'
         run: |
           echo "🔄 Invalidating CloudFront cache for db.lenr.academy..."
-          aws cloudfront create-invalidation --distribution-id E2U0YFSVME3PDG --paths "/*"
+          aws cloudfront create-invalidation --distribution-id E2HHYQ6QJH13V0 --paths "/*"
 
       - name: Add database update summary
         run: |
