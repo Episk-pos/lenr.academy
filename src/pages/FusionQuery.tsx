@@ -316,7 +316,13 @@ export default function FusionQuery() {
 
   // Helper function to check if a reaction contains a specific element
   const reactionContainsElement = (reaction: FusionReaction, element: string) => {
-    return reaction.E1 === element || reaction.E2 === element || reaction.E === element
+    // Normalize both the reaction element symbols and the search element to handle D/T → H mapping
+    const normalizedElement = normalizeElementSymbol(element)
+    return (
+      normalizeElementSymbol(reaction.E1) === normalizedElement ||
+      normalizeElementSymbol(reaction.E2) === normalizedElement ||
+      normalizeElementSymbol(reaction.E) === normalizedElement
+    )
   }
 
   if (dbLoading) {

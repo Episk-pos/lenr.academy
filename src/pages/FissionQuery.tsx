@@ -307,7 +307,13 @@ export default function FissionQuery() {
 
   // Helper function to check if a reaction contains a specific element
   const reactionContainsElement = (reaction: FissionReaction, element: string) => {
-    return reaction.E === element || reaction.E1 === element || reaction.E2 === element
+    // Normalize both the reaction element symbols and the search element to handle D/T → H mapping
+    const normalizedElement = normalizeElementSymbol(element)
+    return (
+      normalizeElementSymbol(reaction.E) === normalizedElement ||
+      normalizeElementSymbol(reaction.E1) === normalizedElement ||
+      normalizeElementSymbol(reaction.E2) === normalizedElement
+    )
   }
 
   if (dbLoading) {

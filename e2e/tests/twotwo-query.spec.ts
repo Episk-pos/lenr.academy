@@ -421,6 +421,58 @@ test.describe('Two-to-Two Query Page', () => {
     const url = page.url();
     expect(url).not.toContain(`pinN=${nuclideText}`);
   });
+
+  test('should highlight rows containing D-2 when D-2 is pinned (D/T nuclide pinning regression)', async ({ page }) => {
+    // Navigate with D+D two-to-two query
+    await page.goto('/twotwo?e1=D&e2=D');
+    await waitForDatabaseReady(page);
+
+    // Wait for results to load
+    await page.waitForFunction(
+      () => document.querySelector('table tbody tr') !== null,
+      { timeout: 15000 }
+    );
+
+    // Wait for nuclides section to be visible
+    await page.locator('text=Nuclides Appearing in Results').waitFor({ state: 'visible', timeout: 10000 });
+    await page.locator('text=Nuclides Appearing in Results').scrollIntoViewIfNeeded();
+
+    // Find and click the D-2 nuclide card
+    const nuclideCards = page.locator('text=Nuclides Appearing in Results').locator('..').locator('div[class*="cursor-pointer"]');
+    const d2Card = nuclideCards.filter({ hasText: /^D-2$/ }).first();
+    await d2Card.click();
+
+    // Verify D-2 is pinned
+    await expect(d2Card).toHaveClass(/ring-2.*ring-blue-400/);
+
+    // Get all result rows
+    const allRows = page.locator('tbody tr');
+    const rowCount = await allRows.count();
+    expect(rowCount).toBeGreaterThan(0);
+
+    // Verify that rows containing D-2 are NOT desaturated (opacity-30 grayscale)
+    // and rows without D-2 ARE desaturated
+    for (let i = 0; i < rowCount; i++) {
+      const row = allRows.nth(i);
+      const rowText = await row.textContent();
+
+      // Check if row contains D-2 (in any column)
+      const containsD2 = rowText?.includes('D-2');
+
+      if (containsD2) {
+        // Rows with D-2 should NOT be desaturated
+        await expect(row).not.toHaveClass(/opacity-30.*grayscale/);
+      } else {
+        // Rows without D-2 should be desaturated
+        await expect(row).toHaveClass(/opacity-30.*grayscale/);
+      }
+    }
+
+    // URL should contain pinN=D-2
+    await page.waitForTimeout(500);
+    const url = page.url();
+    expect(url).toContain('pinN=D-2');
+  });
 });
 
 test.describe('Two-to-Two Query - Performance', () => {
