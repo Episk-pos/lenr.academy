@@ -1,6 +1,6 @@
 import React, { useState, useMemo, ReactNode } from 'react'
 import { ChevronUp, ChevronDown, ChevronsUpDown, ChevronRight } from 'lucide-react'
-import { filterDataBySearch } from '../utils/searchUtils'
+import { filterDataBySearch, SearchMetadata } from '../utils/searchUtils'
 
 export interface TableColumn<T> {
   key: string
@@ -16,6 +16,7 @@ interface SortableTableProps<T> {
   columns: TableColumn<T>[]
   onRowClick?: (row: T) => void
   searchTerm?: string  // Optional: for backward compatibility, search is now handled by FilterPanel
+  searchMetadata?: SearchMetadata  // Optional: metadata for enhanced searching (element names, daughter nuclides)
   className?: string
   emptyMessage?: string
   renderExpandedContent?: (row: T) => ReactNode  // Optional: render function for expandable row content
@@ -31,6 +32,7 @@ export default function SortableTable<T extends Record<string, any>>({
   columns,
   onRowClick,
   searchTerm,
+  searchMetadata,
   className = '',
   emptyMessage = 'No data available',
   renderExpandedContent,
@@ -78,7 +80,7 @@ export default function SortableTable<T extends Record<string, any>>({
 
     // Apply search filter if searchTerm provided (using utility function)
     if (searchTerm) {
-      result = filterDataBySearch(result, columns, searchTerm)
+      result = filterDataBySearch(result, columns, searchTerm, searchMetadata)
     }
 
     // Apply sorting (if search prioritization isn't active or as secondary sort)
@@ -106,7 +108,7 @@ export default function SortableTable<T extends Record<string, any>>({
     }
 
     return result
-  }, [data, sortKey, sortDirection, searchTerm, columns])
+  }, [data, sortKey, sortDirection, searchTerm, searchMetadata, columns])
 
   return (
     <div className={className}>

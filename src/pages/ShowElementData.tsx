@@ -29,6 +29,7 @@ import {
   type RadioactiveDecay
 } from '../services/queryService'
 import { expandHalfLifeUnit } from '../utils/formatUtils'
+import { filterDataBySearch, SearchMetadata } from '../utils/searchUtils'
 import { RADIATION_TYPE_INFO } from '../constants/radiationTypes'
 
 // Comprehensive decay mode information
@@ -197,6 +198,15 @@ export default function ShowElementData() {
     return getAllElements(db)
   }, [db])
 
+  // Create element info array for enhanced searching (memoized)
+  const elementInfoArray = useMemo(() => {
+    return allElements.map(el => ({
+      symbol: el.E,
+      name: el.EName,
+      Z: el.Z
+    }))
+  }, [allElements])
+
   // Get all nuclides from database (memoized)
   const allNuclides: Nuclide[] = useMemo(() => {
     if (!db) return []
@@ -275,8 +285,21 @@ export default function ShowElementData() {
       result = result.filter(el => el.STPDensity != null && el.STPDensity <= elementsFilters.density.max)
     }
 
+    // Apply search filter (after other filters, before pagination)
+    if (elementsSearch) {
+      const columns = [
+        { key: 'Z' },
+        { key: 'E' },
+        { key: 'EName' },
+        { key: 'Period' },
+        { key: 'Group' },
+        { key: 'AWeight' }
+      ]
+      result = filterDataBySearch(result, columns, elementsSearch)
+    }
+
     return result
-  }, [allElements, elementsFilters])
+  }, [allElements, elementsFilters, elementsSearch])
 
   const filteredNuclides = useMemo(() => {
     let result = allNuclides
@@ -329,8 +352,24 @@ export default function ShowElementData() {
       result = result.filter(n => radioactiveNuclides.has(`${n.Z}-${n.A}`))
     }
 
+    // Apply search filter (after other filters, before pagination)
+    if (nuclidesSearch) {
+      const columns = [
+        { key: 'E' },
+        { key: 'Z' },
+        { key: 'A' },
+        { key: 'BE' },
+        { key: 'nBorF' },
+        { key: 'aBorF' }
+      ]
+      const searchMetadata: SearchMetadata = {
+        elements: elementInfoArray
+      }
+      result = filterDataBySearch(result, columns, nuclidesSearch, searchMetadata)
+    }
+
     return result
-  }, [allNuclides, nuclidesFilters, radioactiveNuclides])
+  }, [allNuclides, nuclidesFilters, radioactiveNuclides, nuclidesSearch, elementInfoArray])
 
   const filteredDecays = useMemo(() => {
     let result = allDecays
@@ -366,8 +405,28 @@ export default function ShowElementData() {
       result = result.filter(d => d.RI != null && d.RI <= decaysFilters.intensity.max)
     }
 
+    // Apply search filter (after other filters, before pagination)
+    if (decaysSearch) {
+      const columns = [
+        { key: 'E' },
+        { key: 'Z' },
+        { key: 'A' },
+        { key: 'RDM' },
+        { key: 'RT' },
+        { key: 'DEKeV' },
+        { key: 'RI' }
+      ]
+      const searchMetadata: SearchMetadata = {
+        elements: elementInfoArray,
+        daughterNuclideGetter: (row: RadioactiveDecay) => {
+          return getDaughterNuclide(row.Z, row.A, row.E, row.RDM || '')
+        }
+      }
+      result = filterDataBySearch(result, columns, decaysSearch, searchMetadata)
+    }
+
     return result
-  }, [allDecays, decaysFilters])
+  }, [allDecays, decaysFilters, decaysSearch, elementInfoArray])
 
   // Pagination: Calculate total pages and paginated data
   const elementsTotalPages = Math.ceil(filteredElements.length / perPage)
@@ -1833,7 +1892,6 @@ export default function ShowElementData() {
             <SortableTable
               data={paginatedElements}
               columns={elementsColumns}
-              searchTerm={elementsSearch}
               expandedRows={elementsExpandedRows}
               onExpandedRowsChange={setElementsExpandedRows}
               title="Elements Table"
@@ -1997,7 +2055,6 @@ export default function ShowElementData() {
             <SortableTable
               data={paginatedNuclides}
               columns={nuclidesColumns}
-              searchTerm={nuclidesSearch}
               expandedRows={nuclidesExpandedRows}
               onExpandedRowsChange={setNuclidesExpandedRows}
               title="Nuclides Table"
@@ -2187,7 +2244,6 @@ export default function ShowElementData() {
             <SortableTable
               data={paginatedDecays}
               columns={decaysColumns}
-              searchTerm={decaysSearch}
               expandedRows={decaysExpandedRows}
               onExpandedRowsChange={setDecaysExpandedRows}
               title="Radioactive Decays Table"
