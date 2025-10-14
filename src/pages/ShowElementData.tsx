@@ -930,6 +930,18 @@ export default function ShowElementData() {
     return isotopes.some(displayNuclide => displayNuclide.type === 'radioactive-only')
   }, [isotopes])
 
+  // Check if ALL isotopes are limited-data (no full nuclides available)
+  const allIsotopesAreLimitedData = useMemo(() => {
+    return isotopes.length > 0 && isotopes.every(displayNuclide => displayNuclide.type === 'radioactive-only')
+  }, [isotopes])
+
+  // Auto-enable toggle when all isotopes are limited-data
+  useEffect(() => {
+    if (allIsotopesAreLimitedData) {
+      setShowLimitedDataNuclides(true)
+    }
+  }, [allIsotopesAreLimitedData])
+
   // Filter isotopes based on limited-data visibility toggle
   const visibleIsotopes = useMemo(() => {
     if (showLimitedDataNuclides) {
@@ -1630,18 +1642,21 @@ export default function ShowElementData() {
                     </h3>
 
                     {/* Toggle for limited-data nuclides (RadioNuclides-only entries) */}
-                    <label className={`flex items-center gap-3 ${hasLimitedDataNuclides ? 'cursor-pointer' : 'cursor-not-allowed opacity-50'}`}>
+                    <label className={`flex items-center gap-3 ${hasLimitedDataNuclides && !allIsotopesAreLimitedData ? 'cursor-pointer' : 'cursor-not-allowed opacity-50'}`}>
                       <span className="text-sm text-gray-700 dark:text-gray-300">
                         Include limited-data nuclides
+                        {allIsotopesAreLimitedData && (
+                          <span className="ml-1 text-xs text-gray-500 dark:text-gray-400">(required)</span>
+                        )}
                       </span>
                       <button
                         type="button"
                         role="switch"
                         aria-checked={showLimitedDataNuclides && hasLimitedDataNuclides}
-                        disabled={!hasLimitedDataNuclides}
-                        onClick={() => hasLimitedDataNuclides && setShowLimitedDataNuclides(!showLimitedDataNuclides)}
+                        disabled={!hasLimitedDataNuclides || allIsotopesAreLimitedData}
+                        onClick={() => hasLimitedDataNuclides && !allIsotopesAreLimitedData && setShowLimitedDataNuclides(!showLimitedDataNuclides)}
                         className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none ${
-                          hasLimitedDataNuclides ? 'focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800' : ''
+                          hasLimitedDataNuclides && !allIsotopesAreLimitedData ? 'focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800' : ''
                         } ${
                           showLimitedDataNuclides && hasLimitedDataNuclides
                             ? 'bg-blue-600'
