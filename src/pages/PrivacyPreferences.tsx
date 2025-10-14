@@ -349,6 +349,26 @@ export default function PrivacyPreferences() {
             </ul>
           </div>
 
+          <div className="p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
+            <h3 className="font-semibold text-blue-900 dark:text-blue-300 mb-2">
+              Full Transparency
+            </h3>
+            <p className="text-sm text-blue-800 dark:text-blue-300 mb-3">
+              We believe in complete transparency. You can view our public analytics dashboard to see exactly what data we collect and how it's displayed. No secrets, no hidden tracking.
+            </p>
+            <a
+              href="https://cloud.umami.is/share/JGkYeKU60K9D1t4U"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 text-sm font-semibold"
+            >
+              View Public Analytics Dashboard
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+              </svg>
+            </a>
+          </div>
+
           <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
             <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
               Umami is fully GDPR, CCPA, and PECR compliant. It's designed to give website owners insights without invading visitor privacy.

@@ -44,6 +44,15 @@ export default function PrivacyBanner() {
           <p className="text-sm text-gray-600 dark:text-gray-400">
             We use privacy-friendly analytics (Umami) to understand how visitors use this site.
             No cookies, no personal data collection, fully GDPR compliant.{' '}
+            <a
+              href="https://cloud.umami.is/share/JGkYeKU60K9D1t4U"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-primary-600 dark:text-primary-400 hover:underline font-medium"
+            >
+              View public dashboard
+            </a>
+            {' '}to see what we collect.{' '}
             <span className="font-medium">You can change this later in Privacy Settings.</span>
           </p>
         </div>
