@@ -372,6 +372,7 @@ function getUniqueNuclides(db: Database, reactions: any[], type: string): Nuclid
   reactions.forEach((r) => {
     if (type === 'fusion') {
       elementSet.add(`${r.E1}-${r.A1}`);
+      elementSet.add(`${r.E2}-${r.A2}`);
       elementSet.add(`${r.E}-${r.A}`);
     } else if (type === 'fission') {
       elementSet.add(`${r.E}-${r.A}`);

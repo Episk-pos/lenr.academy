@@ -439,7 +439,7 @@ test.describe('Two-to-Two Query Page', () => {
 
     // Find and click the D-2 nuclide card
     const nuclideCards = page.locator('text=Nuclides Appearing in Results').locator('..').locator('div[class*="cursor-pointer"]');
-    const d2Card = nuclideCards.filter({ hasText: /^D-2$/ }).first();
+    const d2Card = nuclideCards.filter({ hasText: 'D-2' }).first();
     await d2Card.click();
 
     // Verify D-2 is pinned
