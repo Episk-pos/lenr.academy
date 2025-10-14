@@ -13,14 +13,19 @@ import type {
 
 /**
  * Expand element list to include isotope variants
- * For example, when H is selected, also include D (deuterium)
+ * For example, when H is selected, also include D (deuterium) and T (tritium)
  */
 function expandElementList(elements: string[]): string[] {
   const expanded = [...elements];
 
-  // If H is selected, also include D
-  if (elements.includes('H') && !elements.includes('D')) {
-    expanded.push('D');
+  // If H is selected, also include D and T
+  if (elements.includes('H')) {
+    if (!elements.includes('D')) {
+      expanded.push('D');
+    }
+    if (!elements.includes('T')) {
+      expanded.push('T');
+    }
   }
 
   return expanded;

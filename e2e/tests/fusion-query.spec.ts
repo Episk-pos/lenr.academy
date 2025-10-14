@@ -653,6 +653,59 @@ test.describe('Fusion Query Page', () => {
     const url = page.url();
     expect(url).toContain('pinN=D-2');
   });
+
+  test('should display T-3 in nuclides list when H fusion produces T (T nuclide appearance regression)', async ({ page }) => {
+    // Navigate with H+? → He fusion query which includes H+T-3→He-4
+    await page.goto('/fusion?e1=H&e=He');
+    await waitForDatabaseReady(page);
+
+    // Wait for results to load
+    await page.waitForFunction(
+      () => document.querySelector('table tbody tr') !== null,
+      { timeout: 10000 }
+    );
+
+    // Wait for nuclides section to be visible
+    await page.locator('text=Nuclides Appearing in Results').waitFor({ state: 'visible', timeout: 10000 });
+    await page.locator('text=Nuclides Appearing in Results').scrollIntoViewIfNeeded();
+
+    // Verify T-3 appears in the nuclides list (this is the main regression check)
+    const nuclideCards = page.locator('text=Nuclides Appearing in Results').locator('..').locator('div[class*="cursor-pointer"]');
+    const t3Card = nuclideCards.filter({ hasText: 'T-3' }).first();
+    await expect(t3Card).toBeVisible();
+
+    // Verify T-3 has radioactive indicator
+    await expect(t3Card.locator('svg')).toBeVisible();
+
+    // Click T-3 to pin it
+    await t3Card.click();
+
+    // Verify T-3 is pinned
+    await expect(t3Card).toHaveClass(/ring-2.*ring-blue-400/);
+
+    // Verify at least one row contains T-3
+    const allRows = page.locator('tbody tr');
+    const rowCount = await allRows.count();
+    expect(rowCount).toBeGreaterThan(0);
+
+    let foundT3Row = false;
+    for (let i = 0; i < rowCount; i++) {
+      const row = allRows.nth(i);
+      const rowText = await row.textContent();
+      if (rowText?.includes('T-3')) {
+        foundT3Row = true;
+        // Verify this row is NOT desaturated
+        await expect(row).not.toHaveClass(/opacity-30.*grayscale/);
+        break;
+      }
+    }
+    expect(foundT3Row).toBe(true);
+
+    // URL should contain pinN=T-3
+    await page.waitForTimeout(500);
+    const url = page.url();
+    expect(url).toContain('pinN=T-3');
+  });
 });
 
 test.describe('Fusion Query - Mobile', () => {
