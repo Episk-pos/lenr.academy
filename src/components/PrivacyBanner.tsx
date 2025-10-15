@@ -1,10 +1,18 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { X } from 'lucide-react'
 
 const ANALYTICS_CONSENT_KEY = 'lenr-analytics-consent'
+const EXIT_ANIMATION_MS = 250
 
-export default function PrivacyBanner() {
+interface PrivacyBannerProps {
+  className?: string
+}
+
+export default function PrivacyBanner({ className = '' }: PrivacyBannerProps) {
   const [isVisible, setIsVisible] = useState(false)
+  const [isRendered, setIsRendered] = useState(false)
+  const [isActive, setIsActive] = useState(false)
+  const exitTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   useEffect(() => {
     // Check if user has already made a choice
@@ -12,6 +20,32 @@ export default function PrivacyBanner() {
     if (consent === null) {
       // No choice made yet, show banner
       setIsVisible(true)
+    }
+  }, [])
+
+  useEffect(() => {
+    if (isVisible) {
+      if (exitTimerRef.current) {
+        clearTimeout(exitTimerRef.current)
+        exitTimerRef.current = null
+      }
+      setIsRendered(true)
+      requestAnimationFrame(() => setIsActive(true))
+    } else if (isRendered) {
+      setIsActive(false)
+      exitTimerRef.current = setTimeout(() => {
+        setIsRendered(false)
+        exitTimerRef.current = null
+      }, EXIT_ANIMATION_MS)
+    }
+  }, [isVisible, isRendered])
+
+  useEffect(() => {
+    return () => {
+      if (exitTimerRef.current) {
+        clearTimeout(exitTimerRef.current)
+        exitTimerRef.current = null
+      }
     }
   }, [])
 
@@ -32,10 +66,15 @@ export default function PrivacyBanner() {
     handleOptOut()
   }
 
-  if (!isVisible) return null
+  if (!isRendered) return null
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-50 p-4 bg-white dark:bg-gray-800 border-t-2 border-gray-200 dark:border-gray-700 shadow-lg">
+    <div
+      className={`p-4 bg-white dark:bg-gray-800 border-t-2 border-gray-200 dark:border-gray-700 shadow-lg transition-all duration-300 transform ${
+        isActive ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0 pointer-events-none'
+      } ${className}`}
+      data-testid="analytics-banner"
+    >
       <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-start sm:items-center gap-4">
         <div className="flex-1">
           <h3 className="font-semibold text-gray-900 dark:text-white mb-1">

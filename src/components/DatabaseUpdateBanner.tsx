@@ -1,8 +1,12 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Download, X, RefreshCw, CheckCircle } from 'lucide-react'
 import { useDatabase } from '../contexts/DatabaseContext'
 
-export default function DatabaseUpdateBanner() {
+interface DatabaseUpdateBannerProps {
+  className?: string
+}
+
+export default function DatabaseUpdateBanner({ className = '' }: DatabaseUpdateBannerProps) {
   const {
     isUpdateAvailable,
     isDownloadingUpdate,
@@ -15,9 +19,40 @@ export default function DatabaseUpdateBanner() {
   } = useDatabase()
 
   const [dismissed, setDismissed] = useState(false)
+  const [isRendered, setIsRendered] = useState(false)
+  const [isActive, setIsActive] = useState(false)
+  const exitTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  const shouldShow = !dismissed && (updateReady || isDownloadingUpdate || isUpdateAvailable)
+
+  useEffect(() => {
+    if (shouldShow) {
+      if (exitTimerRef.current) {
+        clearTimeout(exitTimerRef.current)
+        exitTimerRef.current = null
+      }
+      setIsRendered(true)
+      requestAnimationFrame(() => setIsActive(true))
+    } else if (isRendered) {
+      setIsActive(false)
+      exitTimerRef.current = setTimeout(() => {
+        setIsRendered(false)
+        exitTimerRef.current = null
+      }, 250)
+    }
+  }, [shouldShow, isRendered])
+
+  useEffect(() => {
+    return () => {
+      if (exitTimerRef.current) {
+        clearTimeout(exitTimerRef.current)
+        exitTimerRef.current = null
+      }
+    }
+  }, [])
 
   // Don't show if dismissed or no update scenario
-  if (dismissed || (!isUpdateAvailable && !isDownloadingUpdate && !updateReady)) {
+  if (!isRendered) {
     return null
   }
 
@@ -28,7 +63,12 @@ export default function DatabaseUpdateBanner() {
   // Update ready - prompt to reload
   if (updateReady) {
     return (
-      <div className="fixed bottom-0 left-0 right-0 z-50 bg-green-600 text-white shadow-lg">
+      <div
+        className={`bg-green-600 text-white shadow-lg transition-all duration-300 transform ${
+          isActive ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0 pointer-events-none'
+        } ${className}`}
+        data-testid="database-update-banner"
+      >
         <div className="max-w-7xl mx-auto px-4 py-3 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between flex-wrap">
             <div className="flex items-center flex-1">
@@ -66,7 +106,12 @@ export default function DatabaseUpdateBanner() {
     const total = downloadProgress?.totalBytes || 1
 
     return (
-      <div className="fixed bottom-0 left-0 right-0 z-50 bg-blue-600 text-white shadow-lg">
+      <div
+        className={`bg-blue-600 text-white shadow-lg transition-all duration-300 transform ${
+          isActive ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0 pointer-events-none'
+        } ${className}`}
+        data-testid="database-update-banner"
+      >
         <div className="max-w-7xl mx-auto px-4 py-3 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between flex-wrap">
             <div className="flex-1 min-w-0">
@@ -109,7 +154,12 @@ export default function DatabaseUpdateBanner() {
   // Update available - prompt to download
   if (isUpdateAvailable) {
     return (
-      <div className="fixed bottom-0 left-0 right-0 z-50 bg-yellow-600 text-white shadow-lg">
+      <div
+        className={`bg-yellow-600 text-white shadow-lg transition-all duration-300 transform ${
+          isActive ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0 pointer-events-none'
+        } ${className}`}
+        data-testid="database-update-banner"
+      >
         <div className="max-w-7xl mx-auto px-4 py-3 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between flex-wrap">
             <div className="flex items-center flex-1">

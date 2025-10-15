@@ -6,6 +6,7 @@ import { useTheme } from '../contexts/ThemeContext'
 import { useLayout } from '../contexts/LayoutContext'
 import DatabaseUpdateBanner from './DatabaseUpdateBanner'
 import PrivacyBanner from './PrivacyBanner'
+import AppUpdateBanner from './AppUpdateBanner'
 import { getVersionInfo, getVersionTooltip, getGitHubReleaseUrl } from '../utils/version'
 
 interface LayoutProps {
@@ -36,6 +37,7 @@ export default function Layout({ children }: LayoutProps) {
     const saved = localStorage.getItem('desktopSidebarCollapsed')
     return saved ? JSON.parse(saved) : false
   })
+  const [appUpdateVisible, setAppUpdateVisible] = useState(false)
   const { theme, toggleTheme } = useTheme()
   const versionInfo = getVersionInfo()
 
@@ -227,11 +229,14 @@ export default function Layout({ children }: LayoutProps) {
         </main>
       </div>
 
-      {/* Database Update Banner */}
-      <DatabaseUpdateBanner />
-
-      {/* Privacy/Analytics Consent Banner */}
-      <PrivacyBanner />
+      {/* Global Banners */}
+      <div className="fixed bottom-0 left-0 right-0 z-50 pointer-events-none">
+        <div className="flex flex-col gap-3 px-4 sm:px-6 lg:px-8 pb-3 sm:pb-5 pointer-events-auto">
+          {!appUpdateVisible && <DatabaseUpdateBanner className="rounded-lg overflow-hidden" />}
+          <AppUpdateBanner className="rounded-lg overflow-hidden" onVisibilityChange={setAppUpdateVisible} />
+          <PrivacyBanner className="rounded-lg overflow-hidden" />
+        </div>
+      </div>
     </div>
   )
 }
