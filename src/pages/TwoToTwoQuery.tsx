@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo, useCallback, useRef } from 'react'
 import { Download, Info, Loader2, Eye, EyeOff, Radiation } from 'lucide-react'
 import { useSearchParams, Link } from 'react-router-dom'
 import type { TwoToTwoReaction, QueryFilter, Element, Nuclide, AtomicRadiiData } from '../types'
@@ -10,6 +10,7 @@ import ElementDetailsCard from '../components/ElementDetailsCard'
 import NuclideDetailsCard from '../components/NuclideDetailsCard'
 import DatabaseLoadingCard from '../components/DatabaseLoadingCard'
 import DatabaseErrorCard from '../components/DatabaseErrorCard'
+import { VirtualizedList } from '../components/VirtualizedList'
 
 // Default values
 const DEFAULT_ELEMENT1 = ['H']
@@ -18,6 +19,8 @@ const DEFAULT_OUTPUT_ELEMENT3 = ['C']
 const DEFAULT_OUTPUT_ELEMENT4: string[] = []
 const DEFAULT_NEUTRINO_TYPES = ['none', 'left', 'right']
 const DEFAULT_LIMIT = 100
+const SCROLLBAR_COMPENSATION = 16
+const SMALL_RESULT_THRESHOLD = 12
 
 export default function TwoToTwoQuery() {
   const { db, isLoading: dbLoading, error: dbError, downloadProgress } = useDatabase()
@@ -103,6 +106,63 @@ export default function TwoToTwoQuery() {
     // Default to hide (off) for TwoToTwo - 8 B/F columns is too much
     return false
   })
+
+  const tableContainerRef = useRef<HTMLDivElement | null>(null)
+  const [twoTwoViewportHeight, setTwoTwoViewportHeight] = useState<number | null>(null)
+
+  const updateTwoTwoViewportHeight = useCallback(() => {
+    if (!tableContainerRef.current) return
+    const rect = tableContainerRef.current.getBoundingClientRect()
+    const padding = 120
+    const available = Math.max(220, window.innerHeight - rect.top - padding)
+    setTwoTwoViewportHeight(available)
+  }, [])
+
+  useEffect(() => {
+    updateTwoTwoViewportHeight()
+  }, [updateTwoTwoViewportHeight, results.length, showBosonFermion])
+
+  useEffect(() => {
+    window.addEventListener('resize', updateTwoTwoViewportHeight)
+    return () => window.removeEventListener('resize', updateTwoTwoViewportHeight)
+  }, [updateTwoTwoViewportHeight])
+
+  const twoTwoColumnTemplate = useMemo(() => {
+    if (showBosonFermion) {
+      return 'repeat(4, minmax(150px, 1fr)) repeat(10, minmax(120px, 0.9fr))'
+    }
+    return 'repeat(4, minmax(170px, 1fr)) minmax(140px, 1fr) minmax(140px, 1fr)'
+  }, [showBosonFermion])
+
+  const twoTwoMinWidth = useMemo(() => (showBosonFermion ? 1800 : 960), [showBosonFermion])
+
+  const twoTwoEstimatedRowHeight = useMemo(() => (showBosonFermion ? 110 : 92), [showBosonFermion])
+  const twoTwoCompactRowHeight = useMemo(() => (showBosonFermion ? 92 : 82), [showBosonFermion])
+
+  const twoTwoBaseListHeight = useMemo(() => {
+    if (results.length === 0) {
+      return 160
+    }
+    if (results.length <= SMALL_RESULT_THRESHOLD) {
+      return results.length * twoTwoCompactRowHeight + 16
+    }
+    const preferred = results.length * twoTwoEstimatedRowHeight
+    const min = Math.max(twoTwoEstimatedRowHeight * Math.min(results.length, 4), 280)
+    const max = 640
+    return Math.min(max, Math.max(min, preferred))
+  }, [results.length, twoTwoCompactRowHeight, twoTwoEstimatedRowHeight])
+
+  const twoTwoListHeight = useMemo(() => {
+    const minHeight = 220
+    const base = Math.max(minHeight, twoTwoBaseListHeight)
+    if (twoTwoViewportHeight == null) {
+      return base
+    }
+    return Math.max(minHeight, Math.min(base, twoTwoViewportHeight))
+  }, [twoTwoBaseListHeight, twoTwoViewportHeight])
+
+  const twoTwoUsesScrollbar = twoTwoListHeight < twoTwoBaseListHeight
+  const twoTwoHeaderPadding = !showBosonFermion && twoTwoUsesScrollbar ? SCROLLBAR_COMPENSATION : 0
 
   const [highlightedNuclide, setHighlightedNuclide] = useState<string | null>(null)
   const [pinnedNuclide, setPinnedNuclide] = useState(false)
@@ -553,201 +613,288 @@ export default function TwoToTwoQuery() {
               </div>
             </div>
 
-            <div className="table-container -mx-6 sm:mx-0">
-              <table className="data-table">
-                <thead>
-                  <tr>
-                    <th colSpan={2} className="bg-blue-50 dark:bg-blue-900/30">Inputs</th>
-                    <th colSpan={2} className="bg-green-50 dark:bg-green-900/30">Outputs</th>
-                    <th rowSpan={2}>Energy<br/>(MeV)</th>
-                    <th rowSpan={2}>Neutrino</th>
+            <div
+              ref={tableContainerRef}
+              className="table-container -mx-6 sm:mx-0"
+              role="table"
+              aria-label="Two-to-two reaction results"
+            >
+              <div className="min-w-full" style={{ minWidth: twoTwoMinWidth }}>
+                <div
+                  className="sticky top-0 z-10"
+                  role="rowgroup"
+                  style={{ paddingRight: twoTwoHeaderPadding }}
+                >
+                  <div
+                    className="grid border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-sm font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-300"
+                    style={{ gridTemplateColumns: twoTwoColumnTemplate }}
+                    role="row"
+                  >
+                    <div className="px-3 py-2 text-center bg-blue-50 dark:bg-blue-900/30 col-span-2" role="columnheader">
+                      Inputs
+                    </div>
+                    <div className="px-3 py-2 text-center bg-green-50 dark:bg-green-900/30 col-span-2" role="columnheader">
+                      Outputs
+                    </div>
+                    <div className="px-3 py-2 text-center" role="columnheader">Energy (MeV)</div>
+                    <div className="px-3 py-2 text-center" role="columnheader">Neutrino</div>
                     {showBosonFermion && (
                       <>
-                        <th colSpan={2} className="bg-purple-50 dark:bg-purple-900/30">Input 1 Type</th>
-                        <th colSpan={2} className="bg-purple-50 dark:bg-purple-900/30">Input 2 Type</th>
-                        <th colSpan={2} className="bg-amber-50 dark:bg-amber-900/30">Output 1 Type</th>
-                        <th colSpan={2} className="bg-amber-50 dark:bg-amber-900/30">Output 2 Type</th>
+                        <div className="px-3 py-2 text-center bg-purple-50 dark:bg-purple-900/30 col-span-2" role="columnheader">
+                          Input 1 Type
+                        </div>
+                        <div className="px-3 py-2 text-center bg-purple-50 dark:bg-purple-900/30 col-span-2" role="columnheader">
+                          Input 2 Type
+                        </div>
+                        <div className="px-3 py-2 text-center bg-amber-50 dark:bg-amber-900/30 col-span-2" role="columnheader">
+                          Output 1 Type
+                        </div>
+                        <div className="px-3 py-2 text-center bg-amber-50 dark:bg-amber-900/30 col-span-2" role="columnheader">
+                          Output 2 Type
+                        </div>
                       </>
                     )}
-                  </tr>
-                  <tr>
-                    <th className="bg-blue-50 dark:bg-blue-900/30">Input 1</th>
-                    <th className="bg-blue-50 dark:bg-blue-900/30">Input 2</th>
-                    <th className="bg-green-50 dark:bg-green-900/30">Output 1</th>
-                    <th className="bg-green-50 dark:bg-green-900/30">Output 2</th>
+                  </div>
+                  <div
+                    className="grid border-b border-gray-200 dark:border-gray-700 bg-gray-100 dark:bg-gray-800/80 text-xs font-medium uppercase text-gray-500 dark:text-gray-400"
+                    style={{ gridTemplateColumns: twoTwoColumnTemplate }}
+                    role="row"
+                  >
+                    <div className="px-3 py-2 text-center bg-blue-50 dark:bg-blue-900/30" role="columnheader">Input 1</div>
+                    <div className="px-3 py-2 text-center bg-blue-50 dark:bg-blue-900/30" role="columnheader">Input 2</div>
+                    <div className="px-3 py-2 text-center bg-green-50 dark:bg-green-900/30" role="columnheader">Output 1</div>
+                    <div className="px-3 py-2 text-center bg-green-50 dark:bg-green-900/30" role="columnheader">Output 2</div>
+                    <div className="px-3 py-2 text-center" role="columnheader">Energy</div>
+                    <div className="px-3 py-2 text-center" role="columnheader">Neutrino</div>
                     {showBosonFermion && (
                       <>
-                        <th>Nuclear</th>
-                        <th>Atomic</th>
-                        <th>Nuclear</th>
-                        <th>Atomic</th>
-                        <th>Nuclear</th>
-                        <th>Atomic</th>
-                        <th>Nuclear</th>
-                        <th>Atomic</th>
+                        <div className="px-3 py-2 text-center" role="columnheader">Nuclear</div>
+                        <div className="px-3 py-2 text-center" role="columnheader">Atomic</div>
+                        <div className="px-3 py-2 text-center" role="columnheader">Nuclear</div>
+                        <div className="px-3 py-2 text-center" role="columnheader">Atomic</div>
+                        <div className="px-3 py-2 text-center" role="columnheader">Nuclear</div>
+                        <div className="px-3 py-2 text-center" role="columnheader">Atomic</div>
+                        <div className="px-3 py-2 text-center" role="columnheader">Nuclear</div>
+                        <div className="px-3 py-2 text-center" role="columnheader">Atomic</div>
                       </>
                     )}
-                  </tr>
-                </thead>
-                <tbody>
-                  {results.map((reaction, idx) => {
-                    // Determine if this row should be desaturated
-                    const activeNuclide = pinnedNuclide ? highlightedNuclide : highlightedNuclide
-                    const activeElement = pinnedElement ? highlightedElement : highlightedElement
-                    const nuclideMatch = !activeNuclide || reactionContainsNuclide(reaction, activeNuclide)
-                    const elementMatch = !activeElement || reactionContainsElement(reaction, activeElement)
-                    const isDesaturated = (activeNuclide && !nuclideMatch) || (activeElement && !elementMatch)
+                  </div>
+                </div>
 
-                    // Check radioactivity for each isotope (O(1) Set lookup instead of SQL query)
-                    const isE1Radioactive = radioactiveNuclides.has(`${reaction.Z1}-${reaction.A1}`)
-                    const isE2Radioactive = radioactiveNuclides.has(`${reaction.Z2}-${reaction.A2}`)
-                    const isE3Radioactive = radioactiveNuclides.has(`${reaction.Z3}-${reaction.A3}`)
-                    const isE4Radioactive = radioactiveNuclides.has(`${reaction.Z4}-${reaction.A4}`)
+                {results.length === 0 ? (
+                  <div className="p-6 text-center text-sm text-gray-500 dark:text-gray-400">
+                    Run a query to view two-to-two reactions.
+                  </div>
+                ) : (
+                  <div style={{ paddingRight: twoTwoHeaderPadding }}>
+                    <VirtualizedList
+                      items={results}
+                      estimatedRowHeight={twoTwoEstimatedRowHeight}
+                      height={twoTwoListHeight}
+                      overscanRowCount={6}
+                      className="relative"
+                    >
+                      {(reaction) => {
+                        const activeNuclide = pinnedNuclide ? highlightedNuclide : highlightedNuclide
+                        const activeElement = pinnedElement ? highlightedElement : highlightedElement
+                        const nuclideMatch = !activeNuclide || reactionContainsNuclide(reaction, activeNuclide)
+                        const elementMatch = !activeElement || reactionContainsElement(reaction, activeElement)
+                        const isDesaturated = (activeNuclide && !nuclideMatch) || (activeElement && !elementMatch)
 
-                    return (
-                    <tr key={idx} className={isDesaturated ? 'opacity-30 grayscale' : 'transition-all duration-200'}>
-                      <td className="bg-blue-50 dark:bg-blue-900/30 text-center">
-                        <div className="flex items-center justify-center gap-1">
-                          <Link
-                            to={`/element-data?Z=${reaction.Z1}&A=${reaction.A1}`}
-                            className="font-semibold text-base hover:underline text-blue-600 dark:text-blue-400"
+                        const isE1Radioactive = radioactiveNuclides.has(`${reaction.Z1}-${reaction.A1}`)
+                        const isE2Radioactive = radioactiveNuclides.has(`${reaction.Z2}-${reaction.A2}`)
+                        const isE3Radioactive = radioactiveNuclides.has(`${reaction.Z3}-${reaction.A3}`)
+                        const isE4Radioactive = radioactiveNuclides.has(`${reaction.Z4}-${reaction.A4}`)
+
+                        return (
+                          <div
+                            className={`grid border-b border-gray-200 dark:border-gray-700 transition-colors duration-150 ${
+                              isDesaturated ? 'opacity-30 grayscale' : 'hover:bg-gray-50 dark:hover:bg-gray-800/60'
+                            }`}
+                            style={{ gridTemplateColumns: twoTwoColumnTemplate }}
+                            role="row"
                           >
-                            {reaction.E1}-{reaction.A1}
-                          </Link>
-                          {isE1Radioactive && (
-                            <span title="Radioactive">
-                              <Radiation className="w-3 h-3 text-amber-600 dark:text-amber-400" />
+                          <div className="px-3 py-3 bg-blue-50 dark:bg-blue-900/20 text-center" role="cell">
+                            <div className="flex items-center justify-center gap-1">
+                              <Link
+                                to={`/element-data?Z=${reaction.Z1}&A=${reaction.A1}`}
+                                className="font-semibold text-base hover:underline text-blue-600 dark:text-blue-400"
+                              >
+                                {reaction.E1}-{reaction.A1}
+                              </Link>
+                              {isE1Radioactive && (
+                                <span title="Radioactive">
+                                  <Radiation className="w-3 h-3 text-amber-600 dark:text-amber-400" />
+                                </span>
+                              )}
+                            </div>
+                            <div className="text-xs text-gray-600 dark:text-gray-400">(Z={reaction.Z1})</div>
+                          </div>
+                          <div className="px-3 py-3 bg-blue-50 dark:bg-blue-900/20 text-center" role="cell">
+                            <div className="flex items-center justify-center gap-1">
+                              <Link
+                                to={`/element-data?Z=${reaction.Z2}&A=${reaction.A2}`}
+                                className="font-semibold text-base hover:underline text-blue-600 dark:text-blue-400"
+                              >
+                                {reaction.E2}-{reaction.A2}
+                              </Link>
+                              {isE2Radioactive && (
+                                <span title="Radioactive">
+                                  <Radiation className="w-3 h-3 text-amber-600 dark:text-amber-400" />
+                                </span>
+                              )}
+                            </div>
+                            <div className="text-xs text-gray-600 dark:text-gray-400">(Z={reaction.Z2})</div>
+                          </div>
+                          <div className="px-3 py-3 bg-green-50 dark:bg-green-900/20 text-center" role="cell">
+                            <div className="flex items-center justify-center gap-1">
+                              <Link
+                                to={`/element-data?Z=${reaction.Z3}&A=${reaction.A3}`}
+                                className="font-semibold text-base hover:underline text-green-600 dark:text-green-400"
+                              >
+                                {reaction.E3}-{reaction.A3}
+                              </Link>
+                              {isE3Radioactive && (
+                                <span title="Radioactive">
+                                  <Radiation className="w-3 h-3 text-amber-600 dark:text-amber-400" />
+                                </span>
+                              )}
+                            </div>
+                            <div className="text-xs text-gray-600 dark:text-gray-400">(Z={reaction.Z3})</div>
+                          </div>
+                          <div className="px-3 py-3 bg-green-50 dark:bg-green-900/20 text-center" role="cell">
+                            <div className="flex items-center justify-center gap-1">
+                              <Link
+                                to={`/element-data?Z=${reaction.Z4}&A=${reaction.A4}`}
+                                className="font-semibold text-base hover:underline text-green-600 dark:text-green-400"
+                              >
+                                {reaction.E4}-{reaction.A4}
+                              </Link>
+                              {isE4Radioactive && (
+                                <span title="Radioactive">
+                                  <Radiation className="w-3 h-3 text-amber-600 dark:text-amber-400" />
+                                </span>
+                              )}
+                            </div>
+                            <div className="text-xs text-gray-600 dark:text-gray-400">(Z={reaction.Z4})</div>
+                          </div>
+                          <div className="px-3 py-3 text-center" role="cell">
+                            <span className="font-semibold text-green-600 dark:text-green-300">{reaction.MeV.toFixed(2)}</span>
+                          </div>
+                          <div className="px-3 py-3 text-center" role="cell">
+                            <span
+                              className={`px-2 py-1 rounded-full text-xs font-medium ${
+                                reaction.neutrino === 'none'
+                                  ? 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300'
+                                  : reaction.neutrino === 'left'
+                                  ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300'
+                                  : 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300'
+                              }`}
+                            >
+                              {reaction.neutrino === 'none' ? 'None' : reaction.neutrino === 'left' ? 'Left' : 'Right'}
                             </span>
+                          </div>
+                          {showBosonFermion && (
+                            <>
+                              <div className="px-3 py-3 text-center" role="cell">
+                                <span
+                                  className={`px-2 py-1 rounded-full text-xs font-medium ${
+                                    reaction.nBorF1 === 'b'
+                                      ? 'bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300'
+                                      : 'bg-orange-100 dark:bg-orange-900/40 text-orange-700 dark:text-orange-300'
+                                  }`}
+                                >
+                                  {reaction.nBorF1 === 'b' ? 'Boson' : 'Fermion'}
+                                </span>
+                              </div>
+                              <div className="px-3 py-3 text-center" role="cell">
+                                <span
+                                  className={`px-2 py-1 rounded-full text-xs font-medium ${
+                                    reaction.aBorF1 === 'b'
+                                      ? 'bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300'
+                                      : 'bg-orange-100 dark:bg-orange-900/40 text-orange-700 dark:text-orange-300'
+                                  }`}
+                                >
+                                  {reaction.aBorF1 === 'b' ? 'Boson' : 'Fermion'}
+                                </span>
+                              </div>
+                              <div className="px-3 py-3 text-center" role="cell">
+                                <span
+                                  className={`px-2 py-1 rounded-full text-xs font-medium ${
+                                    reaction.nBorF2 === 'b'
+                                      ? 'bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300'
+                                      : 'bg-orange-100 dark:bg-orange-900/40 text-orange-700 dark:text-orange-300'
+                                  }`}
+                                >
+                                  {reaction.nBorF2 === 'b' ? 'Boson' : 'Fermion'}
+                                </span>
+                              </div>
+                              <div className="px-3 py-3 text-center" role="cell">
+                                <span
+                                  className={`px-2 py-1 rounded-full text-xs font-medium ${
+                                    reaction.aBorF2 === 'b'
+                                      ? 'bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300'
+                                      : 'bg-orange-100 dark:bg-orange-900/40 text-orange-700 dark:text-orange-300'
+                                  }`}
+                                >
+                                  {reaction.aBorF2 === 'b' ? 'Boson' : 'Fermion'}
+                                </span>
+                              </div>
+                              <div className="px-3 py-3 text-center" role="cell">
+                                <span
+                                  className={`px-2 py-1 rounded-full text-xs font-medium ${
+                                    reaction.nBorF3 === 'b'
+                                      ? 'bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300'
+                                      : 'bg-orange-100 dark:bg-orange-900/40 text-orange-700 dark:text-orange-300'
+                                  }`}
+                                >
+                                  {reaction.nBorF3 === 'b' ? 'Boson' : 'Fermion'}
+                                </span>
+                              </div>
+                              <div className="px-3 py-3 text-center" role="cell">
+                                <span
+                                  className={`px-2 py-1 rounded-full text-xs font-medium ${
+                                    reaction.aBorF3 === 'b'
+                                      ? 'bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300'
+                                      : 'bg-orange-100 dark:bg-orange-900/40 text-orange-700 dark:text-orange-300'
+                                  }`}
+                                >
+                                  {reaction.aBorF3 === 'b' ? 'Boson' : 'Fermion'}
+                                </span>
+                              </div>
+                              <div className="px-3 py-3 text-center" role="cell">
+                                <span
+                                  className={`px-2 py-1 rounded-full text-xs font-medium ${
+                                    reaction.nBorF4 === 'b'
+                                      ? 'bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300'
+                                      : 'bg-orange-100 dark:bg-orange-900/40 text-orange-700 dark:text-orange-300'
+                                  }`}
+                                >
+                                  {reaction.nBorF4 === 'b' ? 'Boson' : 'Fermion'}
+                                </span>
+                              </div>
+                              <div className="px-3 py-3 text-center" role="cell">
+                                <span
+                                  className={`px-2 py-1 rounded-full text-xs font-medium ${
+                                    reaction.aBorF4 === 'b'
+                                      ? 'bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300'
+                                      : 'bg-orange-100 dark:bg-orange-900/40 text-orange-700 dark:text-orange-300'
+                                  }`}
+                                >
+                                  {reaction.aBorF4 === 'b' ? 'Boson' : 'Fermion'}
+                                </span>
+                              </div>
+                            </>
                           )}
                         </div>
-                        <div className="text-xs text-gray-600 dark:text-gray-400">(Z={reaction.Z1})</div>
-                      </td>
-                      <td className="bg-blue-50 dark:bg-blue-900/30 text-center">
-                        <div className="flex items-center justify-center gap-1">
-                          <Link
-                            to={`/element-data?Z=${reaction.Z2}&A=${reaction.A2}`}
-                            className="font-semibold text-base hover:underline text-blue-600 dark:text-blue-400"
-                          >
-                            {reaction.E2}-{reaction.A2}
-                          </Link>
-                          {isE2Radioactive && (
-                            <span title="Radioactive">
-                              <Radiation className="w-3 h-3 text-amber-600 dark:text-amber-400" />
-                            </span>
-                          )}
-                        </div>
-                        <div className="text-xs text-gray-600 dark:text-gray-400">(Z={reaction.Z2})</div>
-                      </td>
-                      <td className="bg-green-50 dark:bg-green-900/30 text-center">
-                        <div className="flex items-center justify-center gap-1">
-                          <Link
-                            to={`/element-data?Z=${reaction.Z3}&A=${reaction.A3}`}
-                            className="font-semibold text-base hover:underline text-blue-600 dark:text-blue-400"
-                          >
-                            {reaction.E3}-{reaction.A3}
-                          </Link>
-                          {isE3Radioactive && (
-                            <span title="Radioactive">
-                              <Radiation className="w-3 h-3 text-amber-600 dark:text-amber-400" />
-                            </span>
-                          )}
-                        </div>
-                        <div className="text-xs text-gray-600 dark:text-gray-400">(Z={reaction.Z3})</div>
-                      </td>
-                      <td className="bg-green-50 dark:bg-green-900/30 text-center">
-                        <div className="flex items-center justify-center gap-1">
-                          <Link
-                            to={`/element-data?Z=${reaction.Z4}&A=${reaction.A4}`}
-                            className="font-semibold text-base hover:underline text-blue-600 dark:text-blue-400"
-                          >
-                            {reaction.E4}-{reaction.A4}
-                          </Link>
-                          {isE4Radioactive && (
-                            <span title="Radioactive">
-                              <Radiation className="w-3 h-3 text-amber-600 dark:text-amber-400" />
-                            </span>
-                          )}
-                        </div>
-                        <div className="text-xs text-gray-600 dark:text-gray-400">(Z={reaction.Z4})</div>
-                      </td>
-                      <td className="text-green-600 font-semibold">{reaction.MeV.toFixed(2)}</td>
-                      <td>
-                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                          reaction.neutrino === 'none' ? 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300' :
-                          reaction.neutrino === 'left' ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300' :
-                          'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300'
-                        }`}>
-                          {reaction.neutrino}
-                        </span>
-                      </td>
-                      {showBosonFermion && (
-                        <>
-                          <td className="bg-purple-50 dark:bg-purple-900/30">
-                            <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                              reaction.nBorF1 === 'b' ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300' : 'bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300'
-                            }`}>
-                              {reaction.nBorF1 === 'b' ? 'Boson' : 'Fermion'}
-                            </span>
-                          </td>
-                          <td className="bg-purple-50 dark:bg-purple-900/30">
-                            <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                              reaction.aBorF1 === 'b' ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300' : 'bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300'
-                            }`}>
-                              {reaction.aBorF1 === 'b' ? 'Boson' : 'Fermion'}
-                            </span>
-                          </td>
-                          <td className="bg-purple-50 dark:bg-purple-900/30">
-                            <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                              reaction.nBorF2 === 'b' ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300' : 'bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300'
-                            }`}>
-                              {reaction.nBorF2 === 'b' ? 'Boson' : 'Fermion'}
-                            </span>
-                          </td>
-                          <td className="bg-purple-50 dark:bg-purple-900/30">
-                            <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                              reaction.aBorF2 === 'b' ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300' : 'bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300'
-                            }`}>
-                              {reaction.aBorF2 === 'b' ? 'Boson' : 'Fermion'}
-                            </span>
-                          </td>
-                          <td className="bg-amber-50 dark:bg-amber-900/30">
-                            <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                              reaction.nBorF3 === 'b' ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300' : 'bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300'
-                            }`}>
-                              {reaction.nBorF3 === 'b' ? 'Boson' : 'Fermion'}
-                            </span>
-                          </td>
-                          <td className="bg-amber-50 dark:bg-amber-900/30">
-                            <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                              reaction.aBorF3 === 'b' ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300' : 'bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300'
-                            }`}>
-                              {reaction.aBorF3 === 'b' ? 'Boson' : 'Fermion'}
-                            </span>
-                          </td>
-                          <td className="bg-amber-50 dark:bg-amber-900/30">
-                            <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                              reaction.nBorF4 === 'b' ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300' : 'bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300'
-                            }`}>
-                              {reaction.nBorF4 === 'b' ? 'Boson' : 'Fermion'}
-                            </span>
-                          </td>
-                          <td className="bg-amber-50 dark:bg-amber-900/30">
-                            <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                              reaction.aBorF4 === 'b' ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300' : 'bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300'
-                            }`}>
-                              {reaction.aBorF4 === 'b' ? 'Boson' : 'Fermion'}
-                            </span>
-                          </td>
-                        </>
-                      )}
-                    </tr>
-                    )
-                  })}
-                </tbody>
-              </table>
+                        )
+                      }}
+                    </VirtualizedList>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
-
           {/* Nuclides Summary */}
           <div className="card p-6">
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">

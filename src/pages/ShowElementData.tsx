@@ -162,10 +162,6 @@ export default function ShowElementData() {
   const [showLimitedDataNuclides, setShowLimitedDataNuclides] = useState(false) // Only show full NuclidesPlus data by default
 
   // Pagination state (URL-based)
-  const elementsPageParam = Number(searchParams.get('elementsPage')) || 1
-  const nuclidesPageParam = Number(searchParams.get('nuclidesPage')) || 1
-  const decaysPageParam = Number(searchParams.get('decaysPage')) || 1
-  const perPage = 50
 
   // Filter state (URL-stateful)
   const [elementsFilters, setElementsFilters] = useState<Record<string, any>>({})
@@ -430,57 +426,6 @@ export default function ShowElementData() {
 
     return result
   }, [allDecays, decaysFilters, decaysSearch, elementInfoArray])
-
-  // Pagination: Calculate total pages and paginated data
-  const elementsTotalPages = Math.ceil(filteredElements.length / perPage)
-  const nuclidesTotalPages = Math.ceil(filteredNuclides.length / perPage)
-  const decaysTotalPages = Math.ceil(filteredDecays.length / perPage)
-
-  const paginatedElements = useMemo(() => {
-    const startIndex = (elementsPageParam - 1) * perPage
-    return filteredElements.slice(startIndex, startIndex + perPage)
-  }, [filteredElements, elementsPageParam, perPage])
-
-  const paginatedNuclides = useMemo(() => {
-    const startIndex = (nuclidesPageParam - 1) * perPage
-    return filteredNuclides.slice(startIndex, startIndex + perPage)
-  }, [filteredNuclides, nuclidesPageParam, perPage])
-
-  const paginatedDecays = useMemo(() => {
-    const startIndex = (decaysPageParam - 1) * perPage
-    return filteredDecays.slice(startIndex, startIndex + perPage)
-  }, [filteredDecays, decaysPageParam, perPage])
-
-  // Pagination handlers that update URL
-  const handleElementsPageChange = (page: number) => {
-    const newParams = new URLSearchParams(searchParams)
-    if (page === 1) {
-      newParams.delete('elementsPage')
-    } else {
-      newParams.set('elementsPage', page.toString())
-    }
-    setSearchParams(newParams)
-  }
-
-  const handleNuclidesPageChange = (page: number) => {
-    const newParams = new URLSearchParams(searchParams)
-    if (page === 1) {
-      newParams.delete('nuclidesPage')
-    } else {
-      newParams.set('nuclidesPage', page.toString())
-    }
-    setSearchParams(newParams)
-  }
-
-  const handleDecaysPageChange = (page: number) => {
-    const newParams = new URLSearchParams(searchParams)
-    if (page === 1) {
-      newParams.delete('decaysPage')
-    } else {
-      newParams.set('decaysPage', page.toString())
-    }
-    setSearchParams(newParams)
-  }
 
   // Filter handlers
   const handleElementsFilterChange = (key: string, value: any) => {
@@ -1952,7 +1897,7 @@ export default function ShowElementData() {
 
           <div className="card p-6">
             <SortableTable
-              data={paginatedElements}
+              data={filteredElements}
               columns={elementsColumns}
               expandedRows={elementsExpandedRows}
               onExpandedRowsChange={setElementsExpandedRows}
@@ -2063,29 +2008,7 @@ export default function ShowElementData() {
             />
 
             {/* Pagination controls */}
-            {elementsTotalPages > 1 && (
-              <div className="mt-6 flex items-center justify-between">
-                <div className="text-sm text-gray-600 dark:text-gray-400">
-                  Page {elementsPageParam} of {elementsTotalPages} ({filteredElements.length} total)
-                </div>
-                <div className="flex gap-2">
-                  <button
-                    onClick={() => handleElementsPageChange(elementsPageParam - 1)}
-                    disabled={elementsPageParam === 1}
-                    className="btn btn-secondary px-4 py-2 text-sm disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    Previous
-                  </button>
-                  <button
-                    onClick={() => handleElementsPageChange(elementsPageParam + 1)}
-                    disabled={elementsPageParam >= elementsTotalPages}
-                    className="btn btn-secondary px-4 py-2 text-sm disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    Next
-                  </button>
-                </div>
-              </div>
-            )}
+
           </div>
         </div>
       )}
@@ -2115,7 +2038,7 @@ export default function ShowElementData() {
 
           <div className="card p-6">
             <SortableTable
-              data={paginatedNuclides}
+              data={filteredNuclides}
               columns={nuclidesColumns}
               expandedRows={nuclidesExpandedRows}
               onExpandedRowsChange={setNuclidesExpandedRows}
@@ -2252,29 +2175,7 @@ export default function ShowElementData() {
             />
 
             {/* Pagination controls */}
-            {nuclidesTotalPages > 1 && (
-              <div className="mt-6 flex items-center justify-between">
-                <div className="text-sm text-gray-600 dark:text-gray-400">
-                  Page {nuclidesPageParam} of {nuclidesTotalPages} ({filteredNuclides.length} total)
-                </div>
-                <div className="flex gap-2">
-                  <button
-                    onClick={() => handleNuclidesPageChange(nuclidesPageParam - 1)}
-                    disabled={nuclidesPageParam === 1}
-                    className="btn btn-secondary px-4 py-2 text-sm disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    Previous
-                  </button>
-                  <button
-                    onClick={() => handleNuclidesPageChange(nuclidesPageParam + 1)}
-                    disabled={nuclidesPageParam >= nuclidesTotalPages}
-                    className="btn btn-secondary px-4 py-2 text-sm disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    Next
-                  </button>
-                </div>
-              </div>
-            )}
+
           </div>
         </div>
       )}
@@ -2304,7 +2205,7 @@ export default function ShowElementData() {
 
           <div className="card p-6">
             <SortableTable
-              data={paginatedDecays}
+              data={filteredDecays}
               columns={decaysColumns}
               expandedRows={decaysExpandedRows}
               onExpandedRowsChange={setDecaysExpandedRows}
@@ -2486,29 +2387,7 @@ export default function ShowElementData() {
             />
 
             {/* Pagination controls */}
-            {decaysTotalPages > 1 && (
-              <div className="mt-6 flex items-center justify-between">
-                <div className="text-sm text-gray-600 dark:text-gray-400">
-                  Page {decaysPageParam} of {decaysTotalPages} ({filteredDecays.length} total)
-                </div>
-                <div className="flex gap-2">
-                  <button
-                    onClick={() => handleDecaysPageChange(decaysPageParam - 1)}
-                    disabled={decaysPageParam === 1}
-                    className="btn btn-secondary px-4 py-2 text-sm disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    Previous
-                  </button>
-                  <button
-                    onClick={() => handleDecaysPageChange(decaysPageParam + 1)}
-                    disabled={decaysPageParam >= decaysTotalPages}
-                    className="btn btn-secondary px-4 py-2 text-sm disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    Next
-                  </button>
-                </div>
-              </div>
-            )}
+
           </div>
         </div>
       )}

@@ -1,6 +1,7 @@
-import React, { useState, useMemo, ReactNode } from 'react'
+import { useState, useMemo, ReactNode, useRef, useEffect } from 'react'
 import { ChevronUp, ChevronDown, ChevronsUpDown, ChevronRight } from 'lucide-react'
 import { filterDataBySearch, SearchMetadata } from '../utils/searchUtils'
+import { VirtualizedList, VirtualizedSizeReset } from './VirtualizedList'
 
 export interface TableColumn<T> {
   key: string
@@ -45,6 +46,7 @@ export default function SortableTable<T extends Record<string, any>>({
   const [sortKey, setSortKey] = useState<string | null>(null)
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc')
   const [internalExpandedRows, setInternalExpandedRows] = useState<Set<string | number>>(new Set())
+  const sizeResetRef = useRef<VirtualizedSizeReset | null>(null)
 
   // Use controlled state if provided, otherwise use internal state
   const expandedRows = controlledExpandedRows ?? internalExpandedRows
@@ -61,7 +63,7 @@ export default function SortableTable<T extends Record<string, any>>({
     }
   }
 
-  const toggleRowExpansion = (rowKey: string | number) => {
+  const toggleRowExpansion = (rowKey: string | number, rowIndex?: number) => {
     const newSet = new Set(expandedRows)
     if (newSet.has(rowKey)) {
       newSet.delete(rowKey)
@@ -69,10 +71,16 @@ export default function SortableTable<T extends Record<string, any>>({
       newSet.add(rowKey)
     }
     setExpandedRows(newSet)
+    if (rowIndex != null) {
+      sizeResetRef.current?.(rowIndex)
+    } else {
+      sizeResetRef.current?.()
+    }
   }
 
   const collapseAll = () => {
     setExpandedRows(new Set())
+    sizeResetRef.current?.()
   }
 
   const sortedAndFilteredData = useMemo(() => {
@@ -110,6 +118,36 @@ export default function SortableTable<T extends Record<string, any>>({
     return result
   }, [data, sortKey, sortDirection, searchTerm, searchMetadata, columns])
 
+  const estimatedRowHeight = useMemo(
+    () => (renderExpandedContent ? 160 : 72),
+    [renderExpandedContent]
+  )
+
+  const listHeight = useMemo(() => {
+    const rowCount = sortedAndFilteredData.length
+    if (rowCount === 0) {
+      return 200
+    }
+    const base = rowCount * estimatedRowHeight
+    const min = Math.min(440, estimatedRowHeight * Math.min(rowCount, 6))
+    const max = 640
+    return Math.min(max, Math.max(min, base))
+  }, [estimatedRowHeight, sortedAndFilteredData.length])
+
+  const gridTemplateColumns = useMemo(() => {
+    return `repeat(${columns.length}, minmax(0, 1fr))`
+  }, [columns.length])
+
+  const tableMinWidth = useMemo(() => Math.max(640, columns.length * 160), [columns.length])
+
+  useEffect(() => {
+    sizeResetRef.current?.()
+  }, [sortedAndFilteredData.length, columns.length])
+
+  useEffect(() => {
+    sizeResetRef.current?.()
+  }, [expandedRows])
+
   return (
     <div className={className}>
       {(title || description || (renderExpandedContent && hasExpandedRows)) && (
@@ -138,62 +176,78 @@ export default function SortableTable<T extends Record<string, any>>({
           </div>
         </div>
       )}
-      <div className="table-container">
-        <table className="data-table">
-          <thead>
-            <tr>
+      <div className="table-container" role="table">
+        <div className="min-w-full" style={{ minWidth: tableMinWidth }}>
+          <div className="sticky top-0 z-10" role="rowgroup">
+            <div
+              className="grid bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 text-xs font-semibold uppercase tracking-wider text-gray-600 dark:text-gray-300"
+              style={{ gridTemplateColumns: gridTemplateColumns }}
+              role="row"
+            >
               {columns.map((col) => (
-                <th
+                <div
                   key={col.key}
-                  className={`${col.sortable !== false ? 'cursor-pointer select-none hover:bg-gray-100 dark:hover:bg-gray-700' : ''} ${col.className || ''}`}
+                  role="columnheader"
+                  className={`px-3 py-2 flex items-center gap-2 ${col.sortable !== false ? 'cursor-pointer select-none hover:bg-gray-100 dark:hover:bg-gray-700' : ''} ${col.className || ''}`}
                   onClick={() => col.sortable !== false && handleSort(col.key)}
                 >
-                  <div className="flex items-center gap-2">
-                    <span>{col.label}</span>
-                    {col.sortable !== false && (
-                      <span className="text-gray-400">
-                        {sortKey === col.key ? (
-                          sortDirection === 'asc' ? (
-                            <ChevronUp className="w-4 h-4" />
-                          ) : (
-                            <ChevronDown className="w-4 h-4" />
-                          )
+                  <span>{col.label}</span>
+                  {col.sortable !== false && (
+                    <span className="text-gray-400">
+                      {sortKey === col.key ? (
+                        sortDirection === 'asc' ? (
+                          <ChevronUp className="w-4 h-4" />
                         ) : (
-                          <ChevronsUpDown className="w-4 h-4" />
-                        )}
-                      </span>
-                    )}
-                  </div>
-                </th>
+                          <ChevronDown className="w-4 h-4" />
+                        )
+                      ) : (
+                        <ChevronsUpDown className="w-4 h-4" />
+                      )}
+                    </span>
+                  )}
+                </div>
               ))}
-            </tr>
-          </thead>
-          <tbody>
-            {sortedAndFilteredData.length === 0 ? (
-              <tr>
-                <td colSpan={columns.length} className="text-center py-8 text-gray-500 dark:text-gray-400">
-                  {emptyMessage}
-                </td>
-              </tr>
-            ) : (
-              sortedAndFilteredData.map((row, idx) => {
-                const rowKey = getRowKey ? getRowKey(row, idx) : idx
+            </div>
+          </div>
+
+          {sortedAndFilteredData.length === 0 ? (
+            <div className="p-6 text-center text-sm text-gray-500 dark:text-gray-400">
+              {emptyMessage}
+            </div>
+          ) : (
+            <VirtualizedList
+              items={sortedAndFilteredData}
+              estimatedRowHeight={estimatedRowHeight}
+              height={listHeight}
+              overscanRowCount={4}
+              onRegisterSizeReset={(reset) => {
+                sizeResetRef.current = reset
+              }}
+            >
+              {(row, { index }) => {
+                const rowKey = getRowKey ? getRowKey(row, index) : index
                 const isExpanded = expandedRows.has(rowKey)
 
+                const handleRowClick = () => {
+                  if (renderExpandedContent) {
+                    toggleRowExpansion(rowKey, index)
+                  } else {
+                    onRowClick?.(row)
+                  }
+                }
+
                 return (
-                  <React.Fragment key={rowKey}>
-                    <tr
-                      className={renderExpandedContent ? 'cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800/50' : onRowClick ? 'cursor-pointer' : ''}
-                      onClick={() => {
-                        if (renderExpandedContent) {
-                          toggleRowExpansion(rowKey)
-                        } else {
-                          onRowClick?.(row)
-                        }
-                      }}
+                  <div role="rowgroup">
+                    <div
+                      className={`grid items-center border-b border-gray-200 dark:border-gray-700 text-sm transition-colors duration-150 ${
+                        renderExpandedContent || onRowClick ? 'hover:bg-gray-50 dark:hover:bg-gray-800/60 cursor-pointer' : ''
+                      }`}
+                      style={{ gridTemplateColumns: gridTemplateColumns }}
+                      onClick={handleRowClick}
+                      role="row"
                     >
                       {columns.map((col, colIdx) => (
-                        <td key={col.key} className={col.className || ''}>
+                        <div key={col.key} className={`px-3 py-2 ${col.className || ''}`} role="cell">
                           <div className="flex items-center gap-2">
                             {renderExpandedContent && colIdx === 0 && (
                               <ChevronRight
@@ -210,29 +264,27 @@ export default function SortableTable<T extends Record<string, any>>({
                                 : typeof row[col.key] === 'number'
                                 ? row[col.key].toLocaleString(undefined, {
                                     minimumFractionDigits: 0,
-                                    maximumFractionDigits: row[col.key] % 1 === 0 ? 0 : 3
+                                    maximumFractionDigits: row[col.key] % 1 === 0 ? 0 : 3,
                                   })
                                 : String(row[col.key])}
                             </span>
                           </div>
-                        </td>
+                        </div>
                       ))}
-                    </tr>
+                    </div>
                     {renderExpandedContent && isExpanded && (
-                      <tr key={`${rowKey}-expanded`} className="bg-gray-50 dark:bg-gray-800/50">
-                        <td colSpan={columns.length} className="p-6 border-t border-b-2 border-gray-200 dark:border-gray-700">
-                          <div className="border border-gray-200 dark:border-gray-600 rounded-lg p-4 bg-white dark:bg-gray-800">
-                            {renderExpandedContent(row)}
-                          </div>
-                        </td>
-                      </tr>
+                      <div className="bg-gray-50 dark:bg-gray-800/40 border-b border-gray-200 dark:border-gray-700 px-4 py-4">
+                        <div className="border border-gray-200 dark:border-gray-600 rounded-lg p-4 bg-white dark:bg-gray-800">
+                          {renderExpandedContent(row)}
+                        </div>
+                      </div>
                     )}
-                  </React.Fragment>
+                  </div>
                 )
-              })
-            )}
-          </tbody>
-        </table>
+              }}
+            </VirtualizedList>
+          )}
+        </div>
       </div>
     </div>
   )
