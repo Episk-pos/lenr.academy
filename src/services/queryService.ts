@@ -12,34 +12,6 @@ import type {
 } from '../types';
 
 /**
- * Expand element list to include isotope variants
- * For example, when H is selected, also include D (deuterium) and T (tritium)
- */
-function expandElementList(elements: string[]): string[] {
-  const expanded = [...elements];
-  const hasHydrogen = expanded.includes('H');
-  const hasDeuterium = expanded.includes('D');
-  const hasTritium = expanded.includes('T');
-
-  // Selecting elemental hydrogen exposes its common isotopes
-  if (hasHydrogen) {
-    if (!hasDeuterium) {
-      expanded.push('D');
-    }
-    if (!hasTritium) {
-      expanded.push('T');
-    }
-  }
-
-  // Selecting an isotope should still match hydrogen entries in the database
-  if (!hasHydrogen && (hasDeuterium || hasTritium)) {
-    expanded.push('H');
-  }
-
-  return expanded;
-}
-
-/**
  * Build SQL WHERE clause from filter
  */
 function buildWhereClause(filter: QueryFilter, tableType: 'fusion' | 'fission' | 'twotwo'): string {
@@ -61,14 +33,12 @@ function buildWhereClause(filter: QueryFilter, tableType: 'fusion' | 'fission' |
 
   // Element-specific lists (E1 and E/E2)
   if (filter.element1List && filter.element1List.length > 0) {
-    const expandedElements = expandElementList(filter.element1List);
-    const elements = expandedElements.map(e => `'${e}'`).join(',');
+    const elements = filter.element1List.map(e => `'${e}'`).join(',');
     conditions.push(`E1 IN (${elements})`);
   }
 
   if (filter.element2List && filter.element2List.length > 0) {
-    const expandedElements = expandElementList(filter.element2List);
-    const elements = expandedElements.map(e => `'${e}'`).join(',');
+    const elements = filter.element2List.map(e => `'${e}'`).join(',');
     if (tableType === 'fusion') {
       conditions.push(`E2 IN (${elements})`);
     } else if (tableType === 'fission') {
@@ -80,8 +50,7 @@ function buildWhereClause(filter: QueryFilter, tableType: 'fusion' | 'fission' |
 
   // Output element filter (for fusion output element E)
   if (filter.outputElementList && filter.outputElementList.length > 0) {
-    const expandedElements = expandElementList(filter.outputElementList);
-    const elements = expandedElements.map(e => `'${e}'`).join(',');
+    const elements = filter.outputElementList.map(e => `'${e}'`).join(',');
     if (tableType === 'fusion') {
       conditions.push(`E IN (${elements})`);
     }
@@ -89,8 +58,7 @@ function buildWhereClause(filter: QueryFilter, tableType: 'fusion' | 'fission' |
 
   // Fission output element 1 filter
   if (filter.outputElement1List && filter.outputElement1List.length > 0) {
-    const expandedElements = expandElementList(filter.outputElement1List);
-    const elements = expandedElements.map(e => `'${e}'`).join(',');
+    const elements = filter.outputElement1List.map(e => `'${e}'`).join(',');
     if (tableType === 'fission') {
       conditions.push(`E1 IN (${elements})`);
     }
@@ -98,8 +66,7 @@ function buildWhereClause(filter: QueryFilter, tableType: 'fusion' | 'fission' |
 
   // Fission output element 2 filter
   if (filter.outputElement2List && filter.outputElement2List.length > 0) {
-    const expandedElements = expandElementList(filter.outputElement2List);
-    const elements = expandedElements.map(e => `'${e}'`).join(',');
+    const elements = filter.outputElement2List.map(e => `'${e}'`).join(',');
     if (tableType === 'fission') {
       conditions.push(`E2 IN (${elements})`);
     }
@@ -107,8 +74,7 @@ function buildWhereClause(filter: QueryFilter, tableType: 'fusion' | 'fission' |
 
   // TwoToTwo output element 3 filter
   if (filter.outputElement3List && filter.outputElement3List.length > 0) {
-    const expandedElements = expandElementList(filter.outputElement3List);
-    const elements = expandedElements.map(e => `'${e}'`).join(',');
+    const elements = filter.outputElement3List.map(e => `'${e}'`).join(',');
     if (tableType === 'twotwo') {
       conditions.push(`E3 IN (${elements})`);
     }
@@ -116,8 +82,7 @@ function buildWhereClause(filter: QueryFilter, tableType: 'fusion' | 'fission' |
 
   // TwoToTwo output element 4 filter
   if (filter.outputElement4List && filter.outputElement4List.length > 0) {
-    const expandedElements = expandElementList(filter.outputElement4List);
-    const elements = expandedElements.map(e => `'${e}'`).join(',');
+    const elements = filter.outputElement4List.map(e => `'${e}'`).join(',');
     if (tableType === 'twotwo') {
       conditions.push(`E4 IN (${elements})`);
     }
@@ -170,6 +135,26 @@ function buildOrderClause(filter: QueryFilter): string {
   const orderBy = filter.orderBy || 'MeV';
   const direction = filter.orderDirection || 'desc';
   return `ORDER BY ${orderBy} ${direction.toUpperCase()}`;
+}
+
+/**
+ * Build SQL preview for fusion reactions using the same logic as the executed query.
+ */
+export function getFusionSqlPreview(filter: QueryFilter): string {
+  const whereClause = buildWhereClause(filter, 'fusion');
+  const orderClause = buildOrderClause(filter);
+  const limit = Math.min(filter.limit || 100, 1000);
+
+  const parts = ['SELECT * FROM FusionAll'];
+  if (whereClause) {
+    parts.push(whereClause);
+  }
+  if (orderClause) {
+    parts.push(orderClause);
+  }
+  parts.push(`LIMIT ${limit}`);
+
+  return parts.join('\n');
 }
 
 /**

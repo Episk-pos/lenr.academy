@@ -2,13 +2,15 @@ import { test, expect } from '@playwright/test';
 import {
   waitForDatabaseReady,
   acceptMeteredWarningIfPresent,
-  acceptPrivacyConsent
+  acceptPrivacyConsent,
+  dismissChangelogIfPresent
 } from '../fixtures/test-helpers';
 
 test.describe('Two-to-Two Query Page', () => {
   test.beforeEach(async ({ page }) => {
     await acceptPrivacyConsent(page);
     await page.goto('/twotwo');
+    await dismissChangelogIfPresent(page);
     await acceptMeteredWarningIfPresent(page);
     await waitForDatabaseReady(page);
   });
@@ -22,7 +24,7 @@ test.describe('Two-to-Two Query Page', () => {
   });
 
   test('should execute two-to-two query', async ({ page }) => {
-    // Use default selections (H + Ni,Li,Al,B,N + C → Any)
+    // Use default selections (D + Ni,Li,Al,B,N + C → Any)
     // Query should execute automatically on page load
     await page.waitForFunction(
       () => document.querySelector('table') !== null,
@@ -81,7 +83,7 @@ test.describe('Two-to-Two Query Page', () => {
   });
 
   test('should handle complex multi-element queries', async ({ page }) => {
-    // Use default multi-element selection (H + Ni,Li,Al,B,N + C)
+    // Use default multi-element selection (D + Ni,Li,Al,B,N + C)
     // which already tests complex queries
     await page.waitForFunction(
       () => document.querySelector('table') !== null,
@@ -374,7 +376,7 @@ test.describe('Two-to-Two Query Page', () => {
   });
 
   test('should unpin nuclide when pinning a different element', async ({ page }) => {
-    // Wait for default query results to load (H+Ni,Li,Al,B,N+C)
+    // Wait for default query results to load (D+Ni,Li,Al,B,N+C)
     await page.waitForFunction(
       () => document.querySelector('table') !== null,
       { timeout: 15000 }
@@ -479,6 +481,7 @@ test.describe('Two-to-Two Query - Performance', () => {
   test.beforeEach(async ({ page }) => {
     await acceptPrivacyConsent(page);
     await page.goto('/twotwo');
+    await dismissChangelogIfPresent(page);
     await acceptMeteredWarningIfPresent(page);
     await waitForDatabaseReady(page);
   });
@@ -510,6 +513,7 @@ test.describe('Two-to-Two Query - Navigation Links', () => {
   test.beforeEach(async ({ page }) => {
     await acceptPrivacyConsent(page);
     await page.goto('/twotwo');
+    await dismissChangelogIfPresent(page);
     await acceptMeteredWarningIfPresent(page);
     await waitForDatabaseReady(page);
   });

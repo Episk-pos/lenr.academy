@@ -3,7 +3,7 @@ import { Download, Info, Loader2, Eye, EyeOff, Radiation } from 'lucide-react'
 import { useSearchParams, Link } from 'react-router-dom'
 import type { FusionReaction, QueryFilter, Nuclide, Element, AtomicRadiiData } from '../types'
 import { useDatabase } from '../contexts/DatabaseContext'
-import { queryFusion, getAllElements, getElementBySymbol, getNuclideBySymbol, getAtomicRadii } from '../services/queryService'
+import { queryFusion, getAllElements, getElementBySymbol, getNuclideBySymbol, getAtomicRadii, getFusionSqlPreview } from '../services/queryService'
 import { normalizeElementSymbol } from '../utils/formatUtils'
 import PeriodicTableSelector from '../components/PeriodicTableSelector'
 import ElementDetailsCard from '../components/ElementDetailsCard'
@@ -161,6 +161,18 @@ export default function FusionQuery() {
   const [selectedElementRadii, setSelectedElementRadii] = useState<AtomicRadiiData | null>(null)
   const [hasInitializedFromUrl, setHasInitializedFromUrl] = useState(false)
 
+  const queryFilter = useMemo<QueryFilter>(() => {
+    const filterWithSelections: QueryFilter = {
+      ...filter,
+      element1List: selectedElement1.length > 0 ? selectedElement1 : undefined,
+      element2List: selectedElement2.length > 0 ? selectedElement2 : undefined,
+      outputElementList: selectedOutputElement.length > 0 ? selectedOutputElement : undefined
+    }
+    return filterWithSelections
+  }, [filter, selectedElement1, selectedElement2, selectedOutputElement])
+
+  const sqlPreview = useMemo(() => getFusionSqlPreview(queryFilter), [queryFilter])
+
   // Load elements when database is ready
   useEffect(() => {
     if (db) {
@@ -310,7 +322,7 @@ export default function FusionQuery() {
     if (db) {
       handleQuery()
     }
-  }, [db, selectedElement1, selectedElement2, selectedOutputElement, filter.minMeV, filter.maxMeV, filter.neutrinoTypes, filter.limit])
+  }, [db, queryFilter])
 
   const handleQuery = () => {
     if (!db) return
@@ -318,14 +330,6 @@ export default function FusionQuery() {
     setIsQuerying(true)
 
     try {
-      // Build filter with selected elements
-      const queryFilter: QueryFilter = {
-        ...filter,
-        element1List: selectedElement1.length > 0 ? selectedElement1 : undefined,
-        element2List: selectedElement2.length > 0 ? selectedElement2 : undefined,
-        outputElementList: selectedOutputElement.length > 0 ? selectedOutputElement : undefined
-      }
-
       const result = queryFusion(db, queryFilter)
 
       setResults(result.reactions)
@@ -532,17 +536,7 @@ export default function FusionQuery() {
             <span className="text-sm font-medium text-gray-700 dark:text-gray-300">SQL Preview:</span>
           </div>
           <code className="text-xs text-gray-600 dark:text-gray-400 block font-mono whitespace-pre-wrap">
-            SELECT * FROM FusionAll
-            {(selectedElement1.length > 0 || selectedElement2.length > 0 || selectedOutputElement.length > 0 || filter.minMeV !== undefined || filter.maxMeV !== undefined) && ' WHERE '}
-            {selectedElement1.length > 0 && `E1 IN (${selectedElement1.map(e => `'${e}'`).join(', ')})`}
-            {selectedElement1.length > 0 && (selectedElement2.length > 0 || selectedOutputElement.length > 0) && ' AND '}
-            {selectedElement2.length > 0 && `E2 IN (${selectedElement2.map(e => `'${e}'`).join(', ')})`}
-            {selectedElement2.length > 0 && selectedOutputElement.length > 0 && ' AND '}
-            {selectedOutputElement.length > 0 && `E IN (${selectedOutputElement.map(e => `'${e}'`).join(', ')})`}
-            {(selectedElement1.length > 0 || selectedElement2.length > 0 || selectedOutputElement.length > 0) && filter.minMeV !== undefined && ' AND '}
-            {filter.minMeV !== undefined && `MeV >= ${filter.minMeV}`}
-            {filter.maxMeV !== undefined && ` AND MeV <= ${filter.maxMeV}`}
-            {` ORDER BY MeV ${filter.orderDirection?.toUpperCase()} LIMIT ${filter.limit || 100}`}
+            {`${sqlPreview};`}
           </code>
         </div>
       </div>

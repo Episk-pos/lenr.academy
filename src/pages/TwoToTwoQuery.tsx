@@ -13,7 +13,7 @@ import DatabaseErrorCard from '../components/DatabaseErrorCard'
 import { VirtualizedList } from '../components/VirtualizedList'
 
 // Default values
-const DEFAULT_ELEMENT1 = ['H']
+const DEFAULT_ELEMENT1 = ['D']
 const DEFAULT_ELEMENT2 = ['Ni', 'Li', 'Al', 'B', 'N']
 const DEFAULT_OUTPUT_ELEMENT3 = ['C']
 const DEFAULT_OUTPUT_ELEMENT4: string[] = []
