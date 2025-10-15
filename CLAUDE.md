@@ -192,7 +192,7 @@ The database stores hydrogen isotopes separately with distinct element symbols:
 - `D` - Deuterium (Hydrogen-2)
 - `T` - Tritium (Hydrogen-3)
 
-**Important**: When users select "H" (Hydrogen) in the periodic table selector UI, the query automatically includes all three isotopes (H, D, and T). This is why the default Two-To-Two query parameters `E1='H', E2='Ni,Li,Al,B,N', E3='C'` returns 5 results with D-2 (deuterium) reactions, not H-1.
+**Important**: Users must explicitly select hydrogen isotopes (H, D, or T) in the periodic table selector - isotopes are not automatically expanded. The default Two-To-Two query uses `E1='D', E2='Ni,Li,Al,B,N', E3='C'` which returns 5 deuterium-based reactions. This explicit selection ensures the SQL preview matches the actual query execution.
 
 ### Testing Metered Connection Warning
 
