@@ -17,15 +17,23 @@ import type {
  */
 function expandElementList(elements: string[]): string[] {
   const expanded = [...elements];
+  const hasHydrogen = expanded.includes('H');
+  const hasDeuterium = expanded.includes('D');
+  const hasTritium = expanded.includes('T');
 
-  // If H is selected, also include D and T
-  if (elements.includes('H')) {
-    if (!elements.includes('D')) {
+  // Selecting elemental hydrogen exposes its common isotopes
+  if (hasHydrogen) {
+    if (!hasDeuterium) {
       expanded.push('D');
     }
-    if (!elements.includes('T')) {
+    if (!hasTritium) {
       expanded.push('T');
     }
+  }
+
+  // Selecting an isotope should still match hydrogen entries in the database
+  if (!hasHydrogen && (hasDeuterium || hasTritium)) {
+    expanded.push('H');
   }
 
   return expanded;

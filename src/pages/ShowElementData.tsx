@@ -28,7 +28,7 @@ import {
   getUniqueRadiationTypes,
   type RadioactiveDecay
 } from '../services/queryService'
-import { expandHalfLifeUnit } from '../utils/formatUtils'
+import { expandHalfLifeUnit, normalizeElementSymbol } from '../utils/formatUtils'
 import { filterDataBySearch, SearchMetadata } from '../utils/searchUtils'
 import { RADIATION_TYPE_INFO } from '../constants/radiationTypes'
 
@@ -232,7 +232,10 @@ export default function ShowElementData() {
     return getRadioactiveNuclides(db, allNuclides)
   }, [db, allNuclides])
 
-  const element = allElements.find(el => el.E === selectedElement)
+  const normalizedSelectedElement = selectedElement ? normalizeElementSymbol(selectedElement) : null
+  const element = normalizedSelectedElement
+    ? allElements.find(el => el.E === normalizedSelectedElement)
+    : undefined
 
   // Apply filters to data (memoized)
   const filteredElements = useMemo(() => {
@@ -740,6 +743,23 @@ export default function ShowElementData() {
     if (!db || allElements.length === 0) return
 
     const zParam = searchParams.get('Z')
+    const isoParam = searchParams.get('iso')
+    const validIso = isoParam === 'D' || isoParam === 'T'
+
+    if (validIso) {
+      setSelectedElement(isoParam)
+      if (zParam !== '1') {
+        const newParams = new URLSearchParams(searchParams)
+        newParams.set('Z', '1')
+        setSearchParams(newParams, { replace: true })
+      }
+      return
+    } else if (isoParam && !validIso) {
+      const newParams = new URLSearchParams(searchParams)
+      newParams.delete('iso')
+      setSearchParams(newParams, { replace: true })
+    }
+
     const aParam = searchParams.get('A')
 
     // Validate atomic number exists
@@ -760,14 +780,16 @@ export default function ShowElementData() {
       setSelectedElement('H')
       const newParams = new URLSearchParams(searchParams)
       newParams.set('Z', '1')
+      newParams.delete('iso')
+      newParams.delete('A')
       setSearchParams(newParams, { replace: true })
     }
   }, [db, allElements, searchParams, setSearchParams, activeTab])
 
   // Fetch isotopes and atomic radii when element changes and check for isotope in URL
   useEffect(() => {
-    if (db && selectedElement) {
-      const currentElement = allElements.find(el => el.E === selectedElement)
+    if (db && normalizedSelectedElement) {
+      const currentElement = allElements.find(el => el.E === normalizedSelectedElement)
       if (currentElement) {
         const allIsotopes = getAllNuclidesByElement(db, currentElement.Z)
         setIsotopes(allIsotopes)
@@ -776,10 +798,23 @@ export default function ShowElementData() {
         const radiiData = getAtomicRadii(db, currentElement.Z)
         setAtomicRadii(radiiData)
 
-        // Check if there's an A (mass number) param in URL
-        const aParam = searchParams.get('A')
-        if (aParam) {
-          const massNumber = parseInt(aParam)
+        // Determine target mass number from URL or automatic isotope selection (D/T)
+        const urlMassParam = searchParams.get('A')
+        const autoMass =
+          selectedElement === 'D' ? 2 :
+          selectedElement === 'T' ? 3 :
+          null
+
+        let massNumber: number | null = urlMassParam ? parseInt(urlMassParam) : null
+        if (autoMass !== null && massNumber !== autoMass) {
+          // Update URL to reflect the isotope-specific selection
+          const newParams = new URLSearchParams(searchParams)
+          newParams.set('A', String(autoMass))
+          setSearchParams(newParams, { replace: true })
+          massNumber = autoMass
+        }
+
+        if (massNumber != null && !isNaN(massNumber)) {
           const foundIsotope = allIsotopes.find(iso => {
             const A = iso.type === 'full' ? iso.data.A : iso.data.A
             return A === massNumber
@@ -793,7 +828,6 @@ export default function ShowElementData() {
               setRadioactiveNuclideData(null)
             } else {
               // RadioNuclides-only - fetch full decay data and show radioactive card
-              // Auto-enable the limited-data toggle so the user can see this nuclide in the list
               setShowLimitedDataNuclides(true)
               setSelectedNuclide(null)
               const radioactiveData = getRadioactiveNuclideData(db, currentElement.E, massNumber)
@@ -801,7 +835,6 @@ export default function ShowElementData() {
                 setRadioactiveNuclideData(radioactiveData)
                 setRequestedMissingNuclide(null)
               } else {
-                // Shouldn't happen since we found it in the list, but handle gracefully
                 setRadioactiveNuclideData(null)
                 setRequestedMissingNuclide({ E: currentElement.E, A: massNumber })
               }
@@ -825,7 +858,7 @@ export default function ShowElementData() {
       setRequestedMissingNuclide(null)
       setRadioactiveNuclideData(null)
     }
-  }, [db, selectedElement, allElements, searchParams])
+  }, [db, normalizedSelectedElement, selectedElement, allElements, searchParams])
 
   // Sync activeTab with URL param
   useEffect(() => {
@@ -955,30 +988,54 @@ export default function ShowElementData() {
 
   // Handler to update element selection and URL
   const handleElementClick = (elementSymbol: string) => {
-    const clickedElement = allElements.find(el => el.E === elementSymbol)
+    const normalizedSymbol = normalizeElementSymbol(elementSymbol)
+    const clickedElement = allElements.find(el => el.E === normalizedSymbol)
     if (clickedElement) {
       setSelectedElement(elementSymbol)
       const newParams = new URLSearchParams(searchParams)
       newParams.set('tab', 'integrated')
-      newParams.set('Z', clickedElement.Z.toString())
-      newParams.delete('A') // Clear isotope selection
-      setSearchParams(newParams)
+      const isHydrogenIsotope = elementSymbol === 'D' || elementSymbol === 'T'
+
+      if (isHydrogenIsotope) {
+        newParams.set('iso', elementSymbol)
+        newParams.set('Z', '1')
+        newParams.set('A', elementSymbol === 'D' ? '2' : '3')
+      } else {
+        newParams.delete('iso')
+        newParams.set('Z', clickedElement.Z.toString())
+        newParams.delete('A') // Clear isotope selection for non-isotopes
+      }
+
+      setSearchParams(newParams, { replace: true })
     }
   }
 
   // Handler to update nuclide selection and URL
   const handleNuclideClick = (displayNuclide: DisplayNuclide) => {
     const newParams = new URLSearchParams(searchParams)
+    const nuclideData = displayNuclide.data
 
     if (displayNuclide.type === 'full') {
       // Full nuclide - set directly and update URL
-      setSelectedNuclide(displayNuclide.data)
-      newParams.set('Z', displayNuclide.data.Z.toString())
-      newParams.set('A', displayNuclide.data.A.toString())
+      setSelectedNuclide(nuclideData)
+    }
+
+    newParams.set('Z', nuclideData.Z.toString())
+    newParams.set('A', nuclideData.A.toString())
+
+    if (nuclideData.Z === 1) {
+      if (nuclideData.A === 2) {
+        newParams.set('iso', 'D')
+        setSelectedElement('D')
+      } else if (nuclideData.A === 3) {
+        newParams.set('iso', 'T')
+        setSelectedElement('T')
+      } else {
+        newParams.delete('iso')
+        setSelectedElement('H')
+      }
     } else {
-      // RadioNuclides-only - update URL which will trigger the useEffect to load decay data
-      newParams.set('Z', displayNuclide.data.Z.toString())
-      newParams.set('A', displayNuclide.data.A.toString())
+      newParams.delete('iso')
     }
 
     setSearchParams(newParams, { replace: true })

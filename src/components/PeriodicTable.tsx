@@ -9,6 +9,13 @@ interface PeriodicTableProps {
   onElementClick: (symbol: string) => void
 }
 
+const HYDROGEN_ISOTOPES = [
+  { symbol: 'D', label: 'Deuterium (2H)' },
+  { symbol: 'T', label: 'Tritium (3H)' }
+]
+
+const ISOTOPE_BUTTON_COMMON = 'grid place-items-center rounded border border-dashed text-xs font-semibold leading-none px-1.5 py-1 transition-all duration-150 min-w-[2rem] min-h-[2rem]';
+
 // Standard periodic table layout (Period, Group) for each element by atomic number
 const ELEMENT_POSITIONS: Record<number, { period: number; group: number }> = {
   1: { period: 1, group: 1 },   // H
@@ -150,6 +157,11 @@ export default function PeriodicTable({ availableElements, selectedElement, onEl
   const { db } = useDatabase()
   const availableSymbols = new Set(availableElements.map(el => el.E))
 
+  if (availableSymbols.has('H')) {
+    availableSymbols.add('D')
+    availableSymbols.add('T')
+  }
+
   // Organize elements by position
   const elementsByPosition: Record<string, { Z: number; symbol: string; isAvailable: boolean }> = {}
 
@@ -176,31 +188,28 @@ export default function PeriodicTable({ availableElements, selectedElement, onEl
     const isSelected = selectedElement === cellData.symbol
     const isAvailable = cellData.isAvailable
     const isPurelyRadioactive = db && isAvailable ? hasOnlyRadioactiveIsotopes(db, cellData.Z) : false
+    const isHydrogenCell = cellData.symbol === 'H'
 
-    return (
-      <button
-        key={key}
-        onClick={() => isAvailable && onElementClick(cellData.symbol)}
-        disabled={!isAvailable}
-        className={`
-          aspect-square relative
-          flex flex-col items-center justify-center font-medium rounded border
-          transition-all duration-150
-          ${isSelected
-            ? 'bg-blue-500 text-white border-blue-600 ring-2 ring-blue-400 shadow-md'
-            : isAvailable
-              ? 'bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600 hover:bg-blue-50 dark:hover:bg-blue-900/30 hover:border-blue-400 cursor-pointer'
-              : 'bg-gray-100 dark:bg-gray-900 text-gray-400 dark:text-gray-600 border-gray-200 dark:border-gray-800 cursor-not-allowed'
-          }
-        `}
-        title={
-          isAvailable
-            ? isPurelyRadioactive
-              ? `${cellData.symbol} (Z=${cellData.Z}) - No stable isotopes`
-              : `${cellData.symbol} (Z=${cellData.Z})`
-            : `${cellData.symbol} - Not available`
-        }
-      >
+    const buttonClassName = `
+      aspect-square relative
+      flex flex-col items-center justify-center font-medium rounded border
+      transition-all duration-150
+      ${isSelected
+        ? 'bg-blue-500 text-white border-blue-600 ring-2 ring-blue-400 shadow-md'
+        : isAvailable
+          ? 'bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600 hover:bg-blue-50 dark:hover:bg-blue-900/30 hover:border-blue-400 cursor-pointer'
+          : 'bg-gray-100 dark:bg-gray-900 text-gray-400 dark:text-gray-600 border-gray-200 dark:border-gray-800 cursor-not-allowed'
+      }
+    `
+
+    const buttonTitle = isAvailable
+      ? isPurelyRadioactive
+        ? `${cellData.symbol} (Z=${cellData.Z}) - No stable isotopes`
+        : `${cellData.symbol} (Z=${cellData.Z})`
+      : `${cellData.symbol} - Not available`
+
+    const buttonContent = (
+      <>
         {isPurelyRadioactive && (
           <span className="absolute top-0 right-0 p-0.5">
             <Radiation className={`w-2 h-2 ${isSelected ? 'text-red-200' : 'text-red-600 dark:text-red-400'}`} />
@@ -208,7 +217,60 @@ export default function PeriodicTable({ availableElements, selectedElement, onEl
         )}
         <div className="text-[9px] leading-none">{cellData.Z}</div>
         <div className="font-bold text-xs leading-none">{cellData.symbol}</div>
-      </button>
+      </>
+    )
+
+    if (!isHydrogenCell) {
+      return (
+        <button
+          key={key}
+          onClick={() => isAvailable && onElementClick(cellData.symbol)}
+          disabled={!isAvailable}
+          className={buttonClassName}
+          title={buttonTitle}
+        >
+          {buttonContent}
+        </button>
+      )
+    }
+
+    return (
+      <div key={key} className="relative inline-flex">
+        <button
+          onClick={() => isAvailable && onElementClick(cellData.symbol)}
+          disabled={!isAvailable}
+          className={buttonClassName}
+          title={buttonTitle}
+        >
+          {buttonContent}
+        </button>
+        <div className="absolute left-full top-1/2 -translate-y-1/2 ml-1 flex items-center gap-1">
+          {HYDROGEN_ISOTOPES.map(isotope => {
+            const isotopeAvailable = availableSymbols.has(isotope.symbol)
+            const isotopeSelected = selectedElement === isotope.symbol
+
+            return (
+              <button
+                key={isotope.symbol}
+                onClick={() => isotopeAvailable && onElementClick(isotope.symbol)}
+                disabled={!isotopeAvailable}
+                className={`
+                  ${ISOTOPE_BUTTON_COMMON}
+                  ${isotopeSelected
+                    ? 'bg-blue-500 text-white border-blue-600 ring-1 ring-blue-300 shadow'
+                    : isotopeAvailable
+                      ? 'bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600 hover:bg-blue-50 dark:hover:bg-blue-900/30 hover:border-blue-400 cursor-pointer'
+                      : 'bg-gray-100 dark:bg-gray-900 text-gray-400 dark:text-gray-600 border-gray-200 dark:border-gray-800 cursor-not-allowed'
+                  }
+                `}
+                title={`${isotope.label} - hydrogen isotope`}
+              >
+                {isotope.symbol}
+              </button>
+            )
+          })}
+        </div>
+      </div>
     )
   }
 
@@ -243,6 +305,11 @@ export default function PeriodicTable({ availableElements, selectedElement, onEl
               <span className="font-semibold">Legend:</span>
               <Radiation className="w-3 h-3 text-red-600 dark:text-red-400" />
               <span>= No stable isotopes (half-life &lt; 10⁹ years)</span>
+            </span>
+            <span className="flex items-center gap-1">
+              <span className="inline-flex items-center justify-center rounded border border-dashed border-gray-300 dark:border-gray-600 px-1.5 py-1 text-xs font-semibold leading-none">D</span>
+              <span className="inline-flex items-center justify-center rounded border border-dashed border-gray-300 dark:border-gray-600 px-1.5 py-1 text-xs font-semibold leading-none">T</span>
+              <span>= Hydrogen isotopes (selectable)</span>
             </span>
           </div>
         </div>

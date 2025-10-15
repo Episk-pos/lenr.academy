@@ -13,6 +13,13 @@ interface PeriodicTableSelectorProps {
   align?: 'left' | 'center' | 'right'
 }
 
+const HYDROGEN_ISOTOPES = [
+  { symbol: 'D', label: 'Deuterium (2H)' },
+  { symbol: 'T', label: 'Tritium (3H)' }
+]
+
+const ISOTOPE_BUTTON_COMMON = 'periodic-cell-isotope-base';
+
 // Standard periodic table layout (Period, Group) for each element by atomic number
 const ELEMENT_POSITIONS: Record<number, { period: number; group: number }> = {
   1: { period: 1, group: 1 },   // H
@@ -178,6 +185,9 @@ export default function PeriodicTableSelector({
 
   // Create a set of available element symbols for quick lookup
   const availableSymbols = new Set(availableElements.map(el => el.E))
+  if (availableSymbols.has('H')) {
+    HYDROGEN_ISOTOPES.forEach(isotope => availableSymbols.add(isotope.symbol))
+  }
 
   // Create full element list with all 118 elements
   const allElementNames: Record<number, string> = {
@@ -226,20 +236,14 @@ export default function PeriodicTableSelector({
     const isSelected = selectedElements.includes(symbol)
     const isPurelyRadioactive = db && isAvailable ? hasOnlyRadioactiveIsotopes(db, Z) : false
 
-    return (
-      <button
-        key={key}
-        onClick={() => isAvailable && toggleElement(symbol)}
-        disabled={!isAvailable}
-        className={`periodic-cell ${isSelected ? 'periodic-cell-selected' : ''} ${!isAvailable ? 'periodic-cell-disabled' : ''}`}
-        title={
-          isAvailable
-            ? isPurelyRadioactive
-              ? `${cellData.element?.EName || symbol} (${Z}) - No stable isotopes`
-              : `${cellData.element?.EName || symbol} (${Z})`
-            : `${symbol} (${Z}) - Not available in database`
-        }
-      >
+    const buttonTitle = isAvailable
+      ? isPurelyRadioactive
+        ? `${cellData.element?.EName || symbol} (${Z}) - No stable isotopes`
+        : `${cellData.element?.EName || symbol} (${Z})`
+      : `${symbol} (${Z}) - Not available in database`
+
+    const buttonChildren = (
+      <>
         {isPurelyRadioactive && (
           <span className="periodic-cell-radiation">
             <Radiation className="periodic-cell-radiation-icon" />
@@ -247,7 +251,51 @@ export default function PeriodicTableSelector({
         )}
         <div className="periodic-cell-number">{Z}</div>
         <div className="periodic-cell-symbol">{symbol}</div>
-      </button>
+      </>
+    )
+
+    if (symbol !== 'H') {
+      return (
+        <button
+          key={key}
+          onClick={() => isAvailable && toggleElement(symbol)}
+          disabled={!isAvailable}
+          className={`periodic-cell ${isSelected ? 'periodic-cell-selected' : ''} ${!isAvailable ? 'periodic-cell-disabled' : ''}`}
+          title={buttonTitle}
+        >
+          {buttonChildren}
+        </button>
+      )
+    }
+
+    return (
+      <div key={key} className="periodic-cell-wrapper">
+        <button
+          onClick={() => isAvailable && toggleElement(symbol)}
+          disabled={!isAvailable}
+          className={`periodic-cell ${isSelected ? 'periodic-cell-selected' : ''} ${!isAvailable ? 'periodic-cell-disabled' : ''}`}
+          title={buttonTitle}
+        >
+          {buttonChildren}
+        </button>
+        <div className="periodic-cell-isotope-group">
+          {HYDROGEN_ISOTOPES.map(isotope => {
+            const isotopeAvailable = availableSymbols.has(isotope.symbol)
+            const isotopeSelected = selectedElements.includes(isotope.symbol)
+            return (
+              <button
+                key={isotope.symbol}
+                onClick={() => isotopeAvailable && toggleElement(isotope.symbol)}
+                disabled={!isotopeAvailable}
+                className={`${ISOTOPE_BUTTON_COMMON} ${isotopeSelected ? 'periodic-cell-isotope-selected' : ''} ${!isotopeAvailable ? 'periodic-cell-isotope-disabled' : ''}`}
+                title={`${isotope.label} - hydrogen isotope`}
+              >
+                {isotope.symbol}
+              </button>
+            )
+          })}
+        </div>
+      </div>
     )
   }
 
@@ -276,6 +324,7 @@ export default function PeriodicTableSelector({
         <div className="flex flex-wrap gap-1 mt-2">
           {selectedElements.map(symbol => {
             const element = availableElements.find(e => e.E === symbol)
+            const isotopeLabel = HYDROGEN_ISOTOPES.find(isotope => isotope.symbol === symbol)?.label
             return (
               <span
                 key={symbol}
@@ -283,6 +332,7 @@ export default function PeriodicTableSelector({
               >
                 {symbol}
                 {element && ` (${element.EName})`}
+                {!element && isotopeLabel && ` (${isotopeLabel})`}
                 <button
                   type="button"
                   onClick={() => toggleElement(symbol)}
@@ -383,6 +433,11 @@ export default function PeriodicTableSelector({
                 <Radiation className="w-3 h-3 text-red-600 dark:text-red-400" />
                 <span>= No stable isotopes (half-life &lt; 10⁹ years)</span>
               </span>
+              <span className="flex items-center gap-1">
+                <span className={`${ISOTOPE_BUTTON_COMMON} legend-swatch`}>D</span>
+                <span className={`${ISOTOPE_BUTTON_COMMON} legend-swatch`}>T</span>
+                <span>= Hydrogen isotopes</span>
+              </span>
             </div>
           </div>
         </div>
@@ -394,6 +449,11 @@ export default function PeriodicTableSelector({
           display: flex;
           flex-direction: column;
           gap: 2px;
+        }
+
+        .periodic-cell-wrapper {
+          position: relative;
+          display: inline-flex;
         }
 
         .periodic-row {
@@ -518,6 +578,87 @@ export default function PeriodicTableSelector({
           font-size: 10px;
           font-weight: 600;
           line-height: 1;
+        }
+
+        .periodic-cell-isotope-group {
+          position: absolute;
+          left: 100%;
+          top: 50%;
+          transform: translateY(-50%);
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+          gap: 6px;
+          margin-left: 6px;
+        }
+
+        .periodic-cell-isotope-base {
+          display: grid;
+          place-items: center;
+          min-width: 22px;
+          min-height: 22px;
+          padding: 2px 6px;
+          border: 1px dashed #d1d5db;
+          border-radius: 6px;
+          background: #ffffff;
+          font-size: 13px;
+          font-weight: 600;
+          cursor: pointer;
+          transition: all 0.15s ease;
+        }
+
+        .periodic-cell-isotope-base:hover:not(.periodic-cell-isotope-disabled) {
+          border-color: #3b82f6;
+          background: #eff6ff;
+          transform: scale(1.05);
+          box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
+        }
+
+        .periodic-cell-isotope-selected {
+          background: #3b82f6;
+          border-color: #2563eb;
+          color: #ffffff;
+        }
+
+        .dark .periodic-cell-isotope-base {
+          background: #1f2937;
+          border-color: #4b5563;
+          color: #e5e7eb;
+        }
+
+        .dark .periodic-cell-isotope-base:hover:not(.periodic-cell-isotope-disabled) {
+          background: #1e3a8a;
+          border-color: #60a5fa;
+        }
+
+        .dark .periodic-cell-isotope-selected {
+          background: #2563eb;
+          border-color: #1d4ed8;
+        }
+
+        .periodic-cell-isotope-disabled {
+          opacity: 0.4;
+          cursor: not-allowed;
+          background: #f3f4f6;
+          color: #9ca3af;
+        }
+
+        .periodic-cell-isotope-disabled:hover {
+          transform: none;
+          box-shadow: none;
+          border-color: #d1d5db;
+          background: #f3f4f6;
+        }
+
+        .dark .periodic-cell-isotope-disabled {
+          background: #1f2937;
+          border-color: #4b5563;
+          color: #6b7280;
+        }
+
+        .legend-swatch {
+          pointer-events: none;
+          cursor: default;
         }
 
         @media (min-width: 640px) {
