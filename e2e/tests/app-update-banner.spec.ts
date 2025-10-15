@@ -7,6 +7,13 @@ import {
 
 const MOCK_VERSION = 'v9.9.9-test';
 const MOCK_BUILD_TIME = '2025-01-01T12:00:00.000Z';
+const MOCK_RELEASE_RESPONSE = {
+  name: 'v9.9.9-test Release',
+  tag_name: MOCK_VERSION,
+  body: '## Added\n- Amazing new feature',
+  published_at: '2025-01-01T12:00:00.000Z',
+  html_url: 'https://github.com/Episk-pos/lenr.academy/releases/tag/v9.9.9-test',
+};
 
 test.describe('App Update Banner', () => {
   test.beforeEach(async ({ page }) => {
@@ -23,6 +30,26 @@ test.describe('App Update Banner', () => {
           version: MOCK_VERSION,
           buildTime: MOCK_BUILD_TIME,
         }),
+      });
+    });
+
+    await page.route('**/repos/Episk-pos/lenr.academy/releases/tags/**', async (route) => {
+      await route.fulfill({
+        status: 200,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(MOCK_RELEASE_RESPONSE),
+      });
+    });
+
+    await page.route('**/repos/Episk-pos/lenr.academy/releases?*', async (route) => {
+      await route.fulfill({
+        status: 200,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify([MOCK_RELEASE_RESPONSE]),
       });
     });
 
@@ -63,5 +90,21 @@ test.describe('App Update Banner', () => {
     await waitForDatabaseReady(page);
 
     await expect(page.getByTestId('app-update-banner')).toHaveCount(0);
+  });
+
+  test('can open changelog modal from the app update banner', async ({ page }) => {
+    const banner = page.getByTestId('app-update-banner');
+    await expect(banner).toBeVisible();
+
+    const changelogButton = banner.getByRole('button', { name: /view what's new/i });
+    await expect(changelogButton).toBeVisible();
+    await changelogButton.click();
+
+    const modal = page.getByTestId('changelog-modal');
+    await expect(modal).toBeVisible();
+    await expect(modal).toContainText('Amazing new feature');
+
+    await modal.getByRole('button', { name: /close changelog/i }).click({ timeout: 5000 });
+    await expect(modal).toBeHidden();
   });
 });

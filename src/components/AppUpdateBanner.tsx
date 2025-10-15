@@ -5,6 +5,7 @@ import { startVersionPolling, VersionCheckResult } from '../services/versionChec
 interface AppUpdateBannerProps {
   className?: string
   onVisibilityChange?: (visible: boolean) => void
+  onViewChangelog?: (version: string | null) => void
 }
 
 const CURRENT_VERSION = (import.meta.env.VITE_APP_VERSION as string | undefined) ?? 'unknown'
@@ -48,7 +49,7 @@ function markVersionDismissed(version: string) {
   }
 }
 
-export default function AppUpdateBanner({ className = '', onVisibilityChange }: AppUpdateBannerProps) {
+export default function AppUpdateBanner({ className = '', onVisibilityChange, onViewChangelog }: AppUpdateBannerProps) {
   const [availableVersion, setAvailableVersion] = useState<string | null>(null)
   const [buildTime, setBuildTime] = useState<string | null>(null)
   const [isRendered, setIsRendered] = useState(false)
@@ -131,7 +132,7 @@ export default function AppUpdateBanner({ className = '', onVisibilityChange }: 
 
   return (
     <div
-      className={`bg-yellow-600 text-white shadow-lg transition-all duration-300 transform ${
+      className={`bg-amber-500 text-white shadow-lg border border-white/20 transition-all duration-300 transform ${
         isActive ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0 pointer-events-none'
       } ${className}`}
       data-testid="app-update-banner"
@@ -145,23 +146,31 @@ export default function AppUpdateBanner({ className = '', onVisibilityChange }: 
                 App update available: {CURRENT_VERSION} → {availableVersion}
               </p>
               {formattedBuildTime && (
-                <p className="text-xs text-yellow-100 mt-1">
+                <p className="text-xs text-amber-100 mt-1">
                   Deployed {formattedBuildTime}
                 </p>
               )}
             </div>
           </div>
           <div className="flex items-center gap-3">
+            {onViewChangelog && (
+              <button
+                onClick={() => onViewChangelog(availableVersion)}
+                className="px-4 py-2 bg-amber-400/20 text-white border border-white/20 rounded-md text-sm font-medium hover:bg-amber-400/30 transition-colors"
+              >
+                View What&apos;s New
+              </button>
+            )}
             <button
               onClick={handleRefresh}
-              className="px-4 py-2 bg-white text-yellow-600 rounded-md text-sm font-medium hover:bg-yellow-50 transition-colors"
+              className="px-4 py-2 bg-white text-amber-600 rounded-md text-sm font-medium hover:bg-amber-50 transition-colors"
             >
               <RefreshCw className="w-4 h-4 inline mr-1" aria-hidden="true" />
               Refresh Now
             </button>
             <button
               onClick={handleDismiss}
-              className="text-white hover:text-yellow-100 transition-colors"
+              className="text-white hover:text-amber-100 transition-colors"
               aria-label="Dismiss app update notification"
             >
               <X className="w-5 h-5" aria-hidden="true" />

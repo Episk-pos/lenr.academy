@@ -1,13 +1,14 @@
-import { ReactNode, useEffect } from 'react'
+import { ReactNode, useEffect, useCallback, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { Menu, X, Atom, Moon, Sun, ChevronLeft, ChevronRight, Home as HomeIcon, GitMerge, Scissors, ArrowLeftRight, FlaskConical, Table, TableProperties, Shield } from 'lucide-react'
-import { useState } from 'react'
 import { useTheme } from '../contexts/ThemeContext'
 import { useLayout } from '../contexts/LayoutContext'
 import DatabaseUpdateBanner from './DatabaseUpdateBanner'
 import PrivacyBanner from './PrivacyBanner'
 import AppUpdateBanner from './AppUpdateBanner'
+import ChangelogModal from './ChangelogModal'
 import { getVersionInfo, getVersionTooltip, getGitHubReleaseUrl } from '../utils/version'
+import { fetchReleaseNotes, type ReleaseNotes } from '../services/changelog'
 
 interface LayoutProps {
   children: ReactNode
@@ -38,13 +39,137 @@ export default function Layout({ children }: LayoutProps) {
     return saved ? JSON.parse(saved) : false
   })
   const [appUpdateVisible, setAppUpdateVisible] = useState(false)
+  const [isChangelogOpen, setIsChangelogOpen] = useState(false)
+  const [changelogLoading, setChangelogLoading] = useState(false)
+  const [changelogError, setChangelogError] = useState<string | null>(null)
+  const [changelogNotes, setChangelogNotes] = useState<ReleaseNotes | null>(null)
+  const [changelogTargetTag, setChangelogTargetTag] = useState<string | null>(null)
+  const [changelogVersionLabel, setChangelogVersionLabel] = useState<string>('')
+  const [fetchedTag, setFetchedTag] = useState<string | null>(null)
   const { theme, toggleTheme } = useTheme()
   const versionInfo = getVersionInfo()
+  const currentVersionKey = versionInfo.fullVersion
+  const currentDisplayVersion = versionInfo.displayVersion
+  const releaseTag = versionInfo.isRelease ? versionInfo.version : null
+
+  const CHANGELOG_SEEN_KEY = 'lenr-changelog-last-seen'
+  const RELEASES_URL = 'https://github.com/Episk-pos/lenr.academy/releases'
 
   // Save sidebar collapse state to localStorage
   useEffect(() => {
     localStorage.setItem('desktopSidebarCollapsed', JSON.stringify(desktopSidebarCollapsed))
   }, [desktopSidebarCollapsed])
+
+  const closeChangelog = useCallback(() => {
+    setIsChangelogOpen(false)
+  }, [])
+
+  const openChangelog = useCallback(
+    (targetTag: string | null, label: string, options: { markSeen?: boolean } = {}) => {
+      if (options.markSeen && currentVersionKey) {
+        localStorage.setItem(CHANGELOG_SEEN_KEY, currentVersionKey)
+      }
+
+      setChangelogVersionLabel(label)
+
+      if (targetTag !== changelogTargetTag) {
+        setFetchedTag(null)
+        setChangelogNotes(null)
+      }
+
+      setChangelogTargetTag(targetTag)
+      setChangelogError(null)
+
+      if (targetTag && fetchedTag === targetTag && changelogNotes) {
+        setChangelogLoading(false)
+      } else if (!targetTag) {
+        setChangelogLoading(false)
+      } else {
+        setChangelogLoading(true)
+      }
+
+      setIsChangelogOpen(true)
+    },
+    [changelogNotes, changelogTargetTag, currentVersionKey, fetchedTag]
+  )
+
+  const handleRetryChangelog = useCallback(() => {
+    if (!isChangelogOpen) return
+    setFetchedTag(null)
+    setChangelogNotes(null)
+    setChangelogError(null)
+    if (changelogTargetTag) {
+      setChangelogLoading(true)
+    } else {
+      setChangelogLoading(false)
+    }
+  }, [changelogTargetTag, isChangelogOpen])
+
+  useEffect(() => {
+    if (!isChangelogOpen) {
+      return
+    }
+
+    if (changelogTargetTag === null) {
+      setChangelogNotes({
+        tagName: changelogVersionLabel,
+        name: changelogVersionLabel,
+        body: 'Detailed release notes are not available for this build.',
+        publishedAt: null,
+        htmlUrl: RELEASES_URL,
+      })
+      setChangelogError(null)
+      setChangelogLoading(false)
+      return
+    }
+
+    if (fetchedTag === changelogTargetTag) {
+      setChangelogLoading(false)
+      setChangelogError(null)
+      return
+    }
+
+    const controller = new AbortController()
+
+    setChangelogLoading(true)
+    setChangelogError(null)
+
+    fetchReleaseNotes(changelogTargetTag, { signal: controller.signal })
+      .then((notes) => {
+        setChangelogNotes(notes)
+        setFetchedTag(changelogTargetTag)
+        setChangelogError(null)
+      })
+      .catch((error) => {
+        if (controller.signal.aborted) return
+        const message = error instanceof Error ? error.message : 'Failed to load release notes.'
+        setChangelogError(message)
+        setChangelogNotes(null)
+      })
+      .finally(() => {
+        if (!controller.signal.aborted) {
+          setChangelogLoading(false)
+        }
+      })
+
+    return () => controller.abort()
+  }, [changelogTargetTag, changelogVersionLabel, fetchedTag, isChangelogOpen])
+
+  useEffect(() => {
+    if (!currentVersionKey) return
+
+    const lastSeen = localStorage.getItem(CHANGELOG_SEEN_KEY)
+
+    if (versionInfo.isRelease) {
+      if (lastSeen !== currentVersionKey && releaseTag) {
+        openChangelog(releaseTag, currentDisplayVersion, { markSeen: true })
+      } else if (!lastSeen) {
+        localStorage.setItem(CHANGELOG_SEEN_KEY, currentVersionKey)
+      }
+    } else if (!lastSeen) {
+      localStorage.setItem(CHANGELOG_SEEN_KEY, currentVersionKey)
+    }
+  }, [CHANGELOG_SEEN_KEY, currentDisplayVersion, currentVersionKey, openChangelog, releaseTag, versionInfo.isRelease])
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
@@ -233,10 +358,32 @@ export default function Layout({ children }: LayoutProps) {
       <div className="fixed bottom-0 left-0 right-0 z-50 pointer-events-none">
         <div className="flex flex-col gap-3 px-4 sm:px-6 lg:px-8 pb-3 sm:pb-5 pointer-events-auto">
           {!appUpdateVisible && <DatabaseUpdateBanner className="rounded-lg overflow-hidden" />}
-          <AppUpdateBanner className="rounded-lg overflow-hidden" onVisibilityChange={setAppUpdateVisible} />
+          <AppUpdateBanner
+            className="rounded-lg overflow-hidden"
+            onVisibilityChange={setAppUpdateVisible}
+            onViewChangelog={(version) => {
+              const label = version ?? 'Latest Release'
+              const targetTag = version ?? releaseTag
+              if (!targetTag) {
+                openChangelog(null, label)
+                return
+              }
+              openChangelog(targetTag, label)
+            }}
+          />
           <PrivacyBanner className="rounded-lg overflow-hidden" />
         </div>
       </div>
+
+      <ChangelogModal
+        isOpen={isChangelogOpen}
+        onClose={closeChangelog}
+        releaseNotes={changelogNotes}
+        isLoading={changelogLoading}
+        error={changelogError}
+        onRetry={handleRetryChangelog}
+        versionLabel={changelogVersionLabel || currentDisplayVersion}
+      />
     </div>
   )
 }

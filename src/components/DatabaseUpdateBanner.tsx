@@ -64,7 +64,7 @@ export default function DatabaseUpdateBanner({ className = '' }: DatabaseUpdateB
   if (updateReady) {
     return (
       <div
-        className={`bg-green-600 text-white shadow-lg transition-all duration-300 transform ${
+        className={`bg-green-600 text-white shadow-lg border border-white/20 transition-all duration-300 transform ${
           isActive ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0 pointer-events-none'
         } ${className}`}
         data-testid="database-update-banner"
@@ -107,7 +107,7 @@ export default function DatabaseUpdateBanner({ className = '' }: DatabaseUpdateB
 
     return (
       <div
-        className={`bg-blue-600 text-white shadow-lg transition-all duration-300 transform ${
+        className={`bg-blue-600 text-white shadow-lg border border-white/15 transition-all duration-300 transform ${
           isActive ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0 pointer-events-none'
         } ${className}`}
         data-testid="database-update-banner"
@@ -155,7 +155,7 @@ export default function DatabaseUpdateBanner({ className = '' }: DatabaseUpdateB
   if (isUpdateAvailable) {
     return (
       <div
-        className={`bg-yellow-600 text-white shadow-lg transition-all duration-300 transform ${
+        className={`bg-yellow-600 text-white shadow-lg border border-white/20 transition-all duration-300 transform ${
           isActive ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0 pointer-events-none'
         } ${className}`}
         data-testid="database-update-banner"
