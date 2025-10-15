@@ -2,11 +2,14 @@ import { Radiation } from 'lucide-react'
 import type { Element } from '../types'
 import { useDatabase } from '../contexts/DatabaseContext'
 import { hasOnlyRadioactiveIsotopes } from '../services/queryService'
+import { SPECIAL_PARTICLES } from '../constants/specialParticles'
 
 interface PeriodicTableProps {
   availableElements: Element[]
   selectedElement: string | null
   onElementClick: (symbol: string) => void
+  selectedParticle?: string | null
+  onParticleClick?: (particleId: string) => void
 }
 
 const HYDROGEN_ISOTOPES = [
@@ -153,7 +156,18 @@ const ALL_ELEMENT_NAMES: Record<number, string> = {
   111: 'Rg', 112: 'Cn', 113: 'Nh', 114: 'Fl', 115: 'Mc', 116: 'Lv', 117: 'Ts', 118: 'Og'
 }
 
-export default function PeriodicTable({ availableElements, selectedElement, onElementClick }: PeriodicTableProps) {
+const SPECIAL_PARTICLES_BY_GROUP = SPECIAL_PARTICLES.reduce<Record<number, typeof SPECIAL_PARTICLES[number]>>((acc, particle) => {
+  acc[particle.position.group] = particle
+  return acc
+}, {})
+
+export default function PeriodicTable({
+  availableElements,
+  selectedElement,
+  onElementClick,
+  selectedParticle = null,
+  onParticleClick
+}: PeriodicTableProps) {
   const { db } = useDatabase()
   const availableSymbols = new Set(availableElements.map(el => el.E))
 
@@ -177,7 +191,63 @@ export default function PeriodicTable({ availableElements, selectedElement, onEl
     }
   })
 
+  const renderParticleButton = (particle: (typeof SPECIAL_PARTICLES)[number]) => {
+    const isSelectedParticle = selectedParticle === particle.id
+
+    return (
+      <div className="flex flex-col items-center gap-1 pb-2">
+        <button
+          type="button"
+          onClick={() => onParticleClick?.(particle.id)}
+          className={`
+            w-8 h-8 rounded-[10px] border border-dashed transition-all duration-150 flex items-center justify-center text-sm font-semibold
+            ${isSelectedParticle
+              ? 'bg-blue-500/20 border-blue-500 text-blue-900 dark:text-blue-100 shadow-md'
+              : 'bg-white/80 dark:bg-gray-800/80 border-blue-200/70 dark:border-blue-900/60 hover:bg-blue-100/60 dark:hover:bg-blue-900/40 hover:border-blue-400'}
+            ${onParticleClick ? 'cursor-pointer' : 'cursor-default'}
+          `}
+        >
+          {particle.displaySymbol}
+        </button>
+        <span className="text-[0.55rem] uppercase tracking-wide text-gray-500 dark:text-gray-400 leading-none text-center">
+          {particle.name}
+        </span>
+      </div>
+    )
+  }
+
   const renderCell = (period: number, group: number) => {
+    if (period === 2) {
+      if (group === 3) {
+        return (
+          <div
+            key={`particle-band-${period}`}
+            className="h-full flex items-end"
+            style={{ gridColumn: '3 / 13' }}
+          >
+            <div className="w-full grid grid-cols-10 gap-[2px] items-end">
+              {Array.from({ length: 10 }, (_, idx) => {
+                const groupNumber = idx + 3
+                const particle = SPECIAL_PARTICLES_BY_GROUP[groupNumber]
+                if (!particle) {
+                  return <div key={groupNumber} />
+                }
+                return (
+                  <div key={groupNumber} className="flex justify-center">
+                    {renderParticleButton(particle)}
+                  </div>
+                )
+              })}
+            </div>
+          </div>
+        )
+      }
+
+      if (group > 3 && group < 13) {
+        return null
+      }
+    }
+
     const key = `${period}-${group}`
     const cellData = elementsByPosition[key]
 
