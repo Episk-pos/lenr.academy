@@ -49,6 +49,16 @@ async function downloadWithCurl(url, outputPath) {
 }
 
 async function downloadDatabase() {
+  const skipDbDownload = String(process.env.SKIP_DB_DOWNLOAD || '').toLowerCase();
+  if (['1', 'true', 'yes'].includes(skipDbDownload)) {
+    log('⏭️  Skipping database download (SKIP_DB_DOWNLOAD set)', 'yellow');
+    return;
+  }
+
+  const forceMetaDownload = String(process.env.FORCE_DB_META_DOWNLOAD || '').toLowerCase();
+  const shouldDownloadMeta =
+    !existsSync(metaPath) || ['1', 'true', 'yes'].includes(forceMetaDownload);
+
   // Check if database already exists
   if (existsSync(dbPath)) {
     log('✓ Database already exists, skipping download', 'green');
@@ -70,13 +80,21 @@ async function downloadDatabase() {
       // Use AWS CLI if available (faster)
       log('  Using AWS CLI for download...', 'blue');
       await execAsync(`aws s3 cp s3://db.lenr.academy/latest/parkhomov.db "${dbPath}" --no-sign-request`);
-      await execAsync(`aws s3 cp s3://db.lenr.academy/latest/parkhomov.db.meta.json "${metaPath}" --no-sign-request`);
+      if (shouldDownloadMeta) {
+        await execAsync(`aws s3 cp s3://db.lenr.academy/latest/parkhomov.db.meta.json "${metaPath}" --no-sign-request`);
+      } else {
+        log('  Metadata already tracked, skipping download (set FORCE_DB_META_DOWNLOAD=1 to override)', 'yellow');
+      }
     } else {
       // Fallback to HTTPS download via curl
       log('  AWS CLI not found, using HTTPS download...', 'blue');
       log('  (Install AWS CLI for faster downloads)', 'yellow');
       await downloadWithCurl('https://db.lenr.academy.s3.amazonaws.com/latest/parkhomov.db', dbPath);
-      await downloadWithCurl('https://db.lenr.academy.s3.amazonaws.com/latest/parkhomov.db.meta.json', metaPath);
+      if (shouldDownloadMeta) {
+        await downloadWithCurl('https://db.lenr.academy.s3.amazonaws.com/latest/parkhomov.db.meta.json', metaPath);
+      } else {
+        log('  Metadata already tracked, skipping download (set FORCE_DB_META_DOWNLOAD=1 to override)', 'yellow');
+      }
     }
 
     log('\n✅ Database downloaded successfully!', 'green');
