@@ -6,6 +6,7 @@ import { useLayout } from '../contexts/LayoutContext'
 import type { Element, Nuclide, AtomicRadiiData, RadioactiveNuclideData, DisplayNuclide, RadioNuclideListItem } from '../types'
 import PeriodicTable from '../components/PeriodicTable'
 import NuclideDetailsCard from '../components/NuclideDetailsCard'
+import ParticleDetailsCard from '../components/ParticleDetailsCard'
 import RadioactiveNuclideCard from '../components/RadioactiveNuclideCard'
 import TabNavigation, { Tab } from '../components/TabNavigation'
 import SortableTable, { TableColumn } from '../components/SortableTable'
@@ -31,6 +32,7 @@ import {
 import { expandHalfLifeUnit, normalizeElementSymbol } from '../utils/formatUtils'
 import { filterDataBySearch, SearchMetadata } from '../utils/searchUtils'
 import { RADIATION_TYPE_INFO } from '../constants/radiationTypes'
+import { SPECIAL_PARTICLE_IDS, SPECIAL_PARTICLES_BY_ID } from '../constants/specialParticles'
 
 // Comprehensive decay mode information
 const DECAY_MODE_INFO: Record<string, { name: string; description: string; url: string }> = {
@@ -154,6 +156,7 @@ export default function ShowElementData() {
 
   // Integrated tab state
   const [selectedElement, setSelectedElement] = useState<string | null>(null)
+  const [selectedParticle, setSelectedParticle] = useState<string | null>(null)
   const [isotopes, setIsotopes] = useState<DisplayNuclide[]>([])
   const [selectedNuclide, setSelectedNuclide] = useState<Nuclide | null>(null)
   const [atomicRadii, setAtomicRadii] = useState<AtomicRadiiData | null>(null)
@@ -232,6 +235,13 @@ export default function ShowElementData() {
   const element = normalizedSelectedElement
     ? allElements.find(el => el.E === normalizedSelectedElement)
     : undefined
+
+  const selectedParticleInfo = selectedParticle ? SPECIAL_PARTICLES_BY_ID[selectedParticle] : undefined
+
+  const selectedParticleNuclide = useMemo(() => {
+    if (!db || !selectedParticleInfo) return null
+    return getNuclideBySymbol(db, selectedParticleInfo.id, selectedParticleInfo.massNumber)
+  }, [db, selectedParticleInfo])
 
   // Apply filters to data (memoized)
   const filteredElements = useMemo(() => {
@@ -687,11 +697,56 @@ export default function ShowElementData() {
   useEffect(() => {
     if (!db || allElements.length === 0) return
 
+    const particleParam = searchParams.get('particle')
+    const isValidParticle = particleParam && SPECIAL_PARTICLE_IDS.includes(particleParam as any)
+
+    if (isValidParticle) {
+      if (selectedParticle !== particleParam) {
+        setSelectedParticle(particleParam as string)
+      }
+      if (selectedElement !== null) {
+        setSelectedElement(null)
+      }
+      setSelectedNuclide(null)
+      setRadioactiveNuclideData(null)
+      setRequestedMissingNuclide(null)
+
+      const newParams = new URLSearchParams(searchParams)
+      let mutated = false
+      if (newParams.has('Z')) {
+        newParams.delete('Z')
+        mutated = true
+      }
+      if (newParams.has('A')) {
+        newParams.delete('A')
+        mutated = true
+      }
+      if (newParams.has('iso')) {
+        newParams.delete('iso')
+        mutated = true
+      }
+      if (mutated) {
+        setSearchParams(newParams, { replace: true })
+      }
+      return
+    }
+
+    if (particleParam && !isValidParticle) {
+      const newParams = new URLSearchParams(searchParams)
+      newParams.delete('particle')
+      setSearchParams(newParams, { replace: true })
+    } else if (!particleParam && selectedParticle !== null) {
+      setSelectedParticle(null)
+    }
+
     const zParam = searchParams.get('Z')
     const isoParam = searchParams.get('iso')
     const validIso = isoParam === 'D' || isoParam === 'T'
 
     if (validIso) {
+      if (selectedParticle !== null) {
+        setSelectedParticle(null)
+      }
       setSelectedElement(isoParam)
       if (zParam !== '1') {
         const newParams = new URLSearchParams(searchParams)
@@ -711,6 +766,9 @@ export default function ShowElementData() {
     const validElement = zParam && allElements.find(el => el.Z === parseInt(zParam))
 
     if (validElement) {
+      if (selectedParticle !== null) {
+        setSelectedParticle(null)
+      }
       setSelectedElement(validElement.E)
 
       // If mass number param exists, we'll validate it after isotopes are loaded
@@ -722,14 +780,18 @@ export default function ShowElementData() {
       }
     } else if (activeTab === 'integrated') {
       // Default to H (Z=1) if no valid element in URL and on integrated tab
+      if (selectedParticle !== null) {
+        setSelectedParticle(null)
+      }
       setSelectedElement('H')
       const newParams = new URLSearchParams(searchParams)
       newParams.set('Z', '1')
       newParams.delete('iso')
       newParams.delete('A')
+      newParams.delete('particle')
       setSearchParams(newParams, { replace: true })
     }
-  }, [db, allElements, searchParams, setSearchParams, activeTab])
+  }, [db, allElements, searchParams, setSearchParams, activeTab, selectedParticle, selectedElement])
 
   // Fetch isotopes and atomic radii when element changes and check for isotope in URL
   useEffect(() => {
@@ -937,6 +999,9 @@ export default function ShowElementData() {
     const clickedElement = allElements.find(el => el.E === normalizedSymbol)
     if (clickedElement) {
       setSelectedElement(elementSymbol)
+      if (selectedParticle !== null) {
+        setSelectedParticle(null)
+      }
       const newParams = new URLSearchParams(searchParams)
       newParams.set('tab', 'integrated')
       const isHydrogenIsotope = elementSymbol === 'D' || elementSymbol === 'T'
@@ -950,9 +1015,29 @@ export default function ShowElementData() {
         newParams.set('Z', clickedElement.Z.toString())
         newParams.delete('A') // Clear isotope selection for non-isotopes
       }
+      newParams.delete('particle')
 
       setSearchParams(newParams, { replace: true })
     }
+  }
+
+  const handleParticleClick = (particleId: string) => {
+    if (!SPECIAL_PARTICLES_BY_ID[particleId]) return
+    if (selectedElement !== null) {
+      setSelectedElement(null)
+    }
+    setSelectedParticle(particleId)
+    setSelectedNuclide(null)
+    setRadioactiveNuclideData(null)
+    setRequestedMissingNuclide(null)
+
+    const newParams = new URLSearchParams(searchParams)
+    newParams.set('tab', 'integrated')
+    newParams.set('particle', particleId)
+    newParams.delete('Z')
+    newParams.delete('A')
+    newParams.delete('iso')
+    setSearchParams(newParams, { replace: true })
   }
 
   // Handler to update nuclide selection and URL
@@ -970,8 +1055,22 @@ export default function ShowElementData() {
       nuclideData = radioactiveOnly
     }
 
+    const isSpecialParticle = SPECIAL_PARTICLE_IDS.includes(nuclideData.E as any)
+
+    if (isSpecialParticle) {
+      setSelectedElement(null)
+      setSelectedParticle(nuclideData.E as string)
+      newParams.set('particle', nuclideData.E as string)
+      newParams.delete('Z')
+      newParams.delete('A')
+      newParams.delete('iso')
+      setSearchParams(newParams, { replace: true })
+      return
+    }
+
     newParams.set('Z', nuclideData.Z.toString())
     newParams.set('A', nuclideData.A.toString())
+    newParams.delete('particle')
 
     if (nuclideData.Z === 1) {
       if (nuclideData.A === 2) {
@@ -1523,8 +1622,14 @@ export default function ShowElementData() {
           <PeriodicTable
             availableElements={allElements}
             selectedElement={selectedElement}
+            selectedParticle={selectedParticle}
             onElementClick={handleElementClick}
+            onParticleClick={handleParticleClick}
           />
+
+          {selectedParticleInfo && (
+            <ParticleDetailsCard particle={selectedParticleInfo} nuclide={selectedParticleNuclide} />
+          )}
 
           {element && (
             <div className="space-y-6 mt-6">
@@ -2164,8 +2269,24 @@ export default function ShowElementData() {
                                 e.stopPropagation()
                                 const newParams = new URLSearchParams(searchParams)
                                 newParams.set('tab', 'integrated')
-                                newParams.set('Z', nuclide.Z.toString())
-                                newParams.set('A', nuclide.A.toString())
+
+                                if (SPECIAL_PARTICLE_IDS.includes(nuclide.E as any)) {
+                                  setSelectedElement(null)
+                                  setSelectedParticle(nuclide.E as string)
+                                  setSelectedNuclide(null)
+                                  setRadioactiveNuclideData(null)
+                                  setRequestedMissingNuclide(null)
+                                  newParams.set('particle', nuclide.E as string)
+                                  newParams.delete('Z')
+                                  newParams.delete('A')
+                                  newParams.delete('iso')
+                                } else {
+                                  setSelectedParticle(null)
+                                  newParams.set('Z', nuclide.Z.toString())
+                                  newParams.set('A', nuclide.A.toString())
+                                  newParams.delete('particle')
+                                }
+
                                 setSearchParams(newParams)
                               }}
                               className="text-primary-600 dark:text-primary-400 hover:underline text-sm font-medium"

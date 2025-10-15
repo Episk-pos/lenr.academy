@@ -3,6 +3,7 @@ import { ChevronDown, X, Radiation } from 'lucide-react'
 import type { Element } from '../types'
 import { useDatabase } from '../contexts/DatabaseContext'
 import { hasOnlyRadioactiveIsotopes } from '../services/queryService'
+import { SPECIAL_PARTICLES } from '../constants/specialParticles'
 
 interface PeriodicTableSelectorProps {
   label: string
@@ -19,6 +20,11 @@ const HYDROGEN_ISOTOPES = [
 ]
 
 const ISOTOPE_BUTTON_COMMON = 'periodic-cell-isotope-base';
+
+const SPECIAL_PARTICLES_BY_GROUP = SPECIAL_PARTICLES.reduce<Record<number, typeof SPECIAL_PARTICLES[number]>>((acc, particle) => {
+  acc[particle.position.group] = particle
+  return acc
+}, {})
 
 // Standard periodic table layout (Period, Group) for each element by atomic number
 const ELEMENT_POSITIONS: Record<number, { period: number; group: number }> = {
@@ -188,9 +194,10 @@ export default function PeriodicTableSelector({
   if (availableSymbols.has('H')) {
     HYDROGEN_ISOTOPES.forEach(isotope => availableSymbols.add(isotope.symbol))
   }
+  SPECIAL_PARTICLES.forEach(particle => availableSymbols.add(particle.id))
 
   // Create full element list with all 118 elements
-  const allElementNames: Record<number, string> = {
+const allElementNames: Record<number, string> = {
     1: 'H', 2: 'He', 3: 'Li', 4: 'Be', 5: 'B', 6: 'C', 7: 'N', 8: 'O', 9: 'F', 10: 'Ne',
     11: 'Na', 12: 'Mg', 13: 'Al', 14: 'Si', 15: 'P', 16: 'S', 17: 'Cl', 18: 'Ar', 19: 'K', 20: 'Ca',
     21: 'Sc', 22: 'Ti', 23: 'V', 24: 'Cr', 25: 'Mn', 26: 'Fe', 27: 'Co', 28: 'Ni', 29: 'Cu', 30: 'Zn',
@@ -203,6 +210,29 @@ export default function PeriodicTableSelector({
     91: 'Pa', 92: 'U', 93: 'Np', 94: 'Pu', 95: 'Am', 96: 'Cm', 97: 'Bk', 98: 'Cf', 99: 'Es', 100: 'Fm',
     101: 'Md', 102: 'No', 103: 'Lr', 104: 'Rf', 105: 'Db', 106: 'Sg', 107: 'Bh', 108: 'Hs', 109: 'Mt', 110: 'Ds',
     111: 'Rg', 112: 'Cn', 113: 'Nh', 114: 'Fl', 115: 'Mc', 116: 'Lv', 117: 'Ts', 118: 'Og'
+}
+
+  const renderParticleButton = (particle: (typeof SPECIAL_PARTICLES)[number]) => {
+    const isSelected = selectedElements.includes(particle.id)
+    return (
+      <div className="periodic-particle-cell">
+        <button
+          type="button"
+          onClick={() => toggleElement(particle.id)}
+          className={`
+            periodic-particle-button
+            ${isSelected
+              ? 'periodic-particle-selected'
+              : ''}
+          `}
+        >
+          {particle.displaySymbol}
+        </button>
+        <span className="periodic-particle-label">
+          {particle.name}
+        </span>
+      </div>
+    )
   }
 
   // Organize elements by their position in the periodic table
@@ -225,6 +255,37 @@ export default function PeriodicTableSelector({
 
   // Render a single element cell
   const renderCell = (period: number, group: number) => {
+    if (period === 2) {
+      if (group === 3) {
+        return (
+          <div
+            key="particle-row"
+            className="periodic-particle-band"
+            style={{ gridColumn: '3 / 13' }}
+          >
+            <div className="periodic-particle-grid">
+              {Array.from({ length: 10 }, (_, idx) => {
+                const groupNumber = idx + 3
+                const particle = SPECIAL_PARTICLES_BY_GROUP[groupNumber]
+                if (!particle) {
+                  return <div key={groupNumber} className="periodic-particle-spacer" />
+                }
+                return (
+                  <div key={groupNumber} className="periodic-particle-cell-wrapper">
+                    {renderParticleButton(particle)}
+                  </div>
+                )
+              })}
+            </div>
+          </div>
+        )
+      }
+
+      if (group > 3 && group < 13) {
+        return null
+      }
+    }
+
     const key = `${period}-${group}`
     const cellData = elementsByPosition[key]
 
@@ -325,6 +386,7 @@ export default function PeriodicTableSelector({
           {selectedElements.map(symbol => {
             const element = availableElements.find(e => e.E === symbol)
             const isotopeLabel = HYDROGEN_ISOTOPES.find(isotope => isotope.symbol === symbol)?.label
+            const particleLabel = SPECIAL_PARTICLES.find(p => p.id === symbol)?.name
             return (
               <span
                 key={symbol}
@@ -333,6 +395,7 @@ export default function PeriodicTableSelector({
                 {symbol}
                 {element && ` (${element.EName})`}
                 {!element && isotopeLabel && ` (${isotopeLabel})`}
+                {!element && !isotopeLabel && particleLabel && ` (${particleLabel})`}
                 <button
                   type="button"
                   onClick={() => toggleElement(symbol)}
@@ -381,7 +444,7 @@ export default function PeriodicTableSelector({
               <div key={period} className="periodic-row">
                 {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18].map(group => {
                   // Skip groups 3-12 for periods 1-3 (they don't have elements there)
-                  if (period <= 2 && group >= 3 && group <= 12) {
+                  if (period === 1 && group >= 3 && group <= 12) {
                     return <div key={`${period}-${group}`} className="periodic-cell-empty" />
                   }
                   if (period === 3 && group >= 3 && group <= 12) {
@@ -460,6 +523,96 @@ export default function PeriodicTableSelector({
           display: grid;
           grid-template-columns: repeat(18, 1fr);
           gap: 2px;
+        }
+
+        .periodic-particle-band {
+          display: flex;
+          align-items: flex-end;
+          justify-content: center;
+          padding: 2px 0;
+          pointer-events: none;
+        }
+
+        .periodic-particle-grid {
+          pointer-events: auto;
+          width: 100%;
+          display: grid;
+          grid-template-columns: repeat(10, 1fr);
+          gap: 2px;
+          align-items: end;
+        }
+
+        .periodic-particle-cell-wrapper {
+          display: flex;
+          justify-content: center;
+          align-items: flex-end;
+          padding-bottom: 6px;
+        }
+
+        .periodic-particle-cell {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 4px;
+        }
+
+        .periodic-particle-button {
+          width: 24px;
+          height: 24px;
+          border: 1px dashed rgba(59, 130, 246, 0.6);
+          border-radius: 10px;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 0.75rem;
+          font-weight: 600;
+          background: rgba(255, 255, 255, 0.8);
+          color: rgba(59, 130, 246, 0.9);
+          transition: all 0.15s ease;
+          cursor: pointer;
+        }
+
+        .dark .periodic-particle-button {
+          background: rgba(55, 65, 81, 0.8);
+          color: rgba(191, 219, 254, 0.9);
+          border-color: rgba(96, 165, 250, 0.6);
+        }
+
+        .periodic-particle-button:hover {
+          background: rgba(191, 219, 254, 0.6);
+        }
+
+        .dark .periodic-particle-button:hover {
+          background: rgba(59, 130, 246, 0.25);
+        }
+
+        .periodic-particle-selected {
+          background: rgba(59, 130, 246, 0.2);
+          border-color: rgb(59, 130, 246);
+          color: rgb(30, 64, 175);
+          box-shadow: 0 0 8px rgba(59, 130, 246, 0.3);
+        }
+
+        .dark .periodic-particle-selected {
+          background: rgba(59, 130, 246, 0.3);
+          color: #bfdbfe;
+          border-color: #60a5fa;
+        }
+
+        .periodic-particle-label {
+          text-transform: uppercase;
+          font-size: 0.6rem;
+          color: #6b7280;
+          text-align: center;
+          line-height: 1;
+        }
+
+        .dark .periodic-particle-label {
+          color: #9ca3af;
+        }
+
+        .periodic-particle-spacer {
+          pointer-events: none;
         }
 
         .periodic-cell {
