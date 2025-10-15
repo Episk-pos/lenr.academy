@@ -1903,6 +1903,10 @@ export default function ShowElementData() {
               onExpandedRowsChange={setElementsExpandedRows}
               title="Elements Table"
               description="Browse and search all chemical elements. Click any row to view detailed properties in the Integrated tab."
+              autoFillHeight
+              autoFillHeightOffset={64}
+              minVisibleRows={10}
+              virtualizationThreshold={10}
               renderExpandedContent={(element) => (
                 <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                   <div>
@@ -2044,6 +2048,10 @@ export default function ShowElementData() {
               onExpandedRowsChange={setNuclidesExpandedRows}
               title="Nuclides Table"
               description="Browse all nuclear isotopes with binding energies, boson/fermion classifications, and stability indicators. Click any row to view detailed properties in the Integrated tab."
+              autoFillHeight
+              autoFillHeightOffset={64}
+              minVisibleRows={10}
+              virtualizationThreshold={10}
               renderExpandedContent={(nuclide) => {
                 const hasAbundance = (nuclide.pcaNCrust && nuclide.pcaNCrust > 0) || (nuclide.ppmNSolar && nuclide.ppmNSolar > 0)
                 const hasMagneticData = nuclide.SP || nuclide.MD || nuclide.Inova_MHz
@@ -2211,6 +2219,10 @@ export default function ShowElementData() {
               onExpandedRowsChange={setDecaysExpandedRows}
               title="Radioactive Decays Table"
               description="Browse radioactive decay modes, half-lives, energies, and intensities for all unstable isotopes. Click any row to view the parent nuclide in the Integrated tab."
+              autoFillHeight
+              autoFillHeightOffset={64}
+              minVisibleRows={10}
+              virtualizationThreshold={10}
               renderExpandedContent={(decay) => {
                 // Calculate daughter nuclide
                 const daughter = getDaughterNuclide(decay.Z, decay.A, decay.E, decay.RDM || '')
