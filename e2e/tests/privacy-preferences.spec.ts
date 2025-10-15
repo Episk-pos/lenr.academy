@@ -13,8 +13,15 @@ test.describe('Privacy Preferences Page', () => {
 
   test('should navigate to privacy preferences from sidebar', async ({ page }) => {
     await page.reload();
-    await acceptMeteredWarningIfPresent(page);
+   await acceptMeteredWarningIfPresent(page);
     await waitForDatabaseReady(page);
+
+    // Dismiss analytics banner if visible to prevent overlay on sidebar links
+    const analyticsBanner = page.locator('[data-testid="analytics-banner"]');
+    if (await analyticsBanner.isVisible({ timeout: 1000 }).catch(() => false)) {
+      await analyticsBanner.getByRole('button', { name: /opt out/i }).click();
+      await analyticsBanner.waitFor({ state: 'hidden' });
+    }
 
     // Click privacy settings link in sidebar - use first() to avoid strict mode issues
     const privacyLink = page.getByRole('link', { name: /privacy settings/i }).first();
