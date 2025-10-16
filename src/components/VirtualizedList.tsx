@@ -93,6 +93,7 @@ export function VirtualizedList<T>({
 
   const rowRenderer = ({ index, key, parent, style }: ListRowProps) => {
     const item = items[index]
+
     const content = (
       <div key={key} style={style}>
         {children(item, { index })}

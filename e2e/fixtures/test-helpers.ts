@@ -134,6 +134,37 @@ export async function waitForQueryResults(page: Page) {
 }
 
 /**
+ * Helper to wait for query results to be visible (works with both virtualized and non-virtualized rendering)
+ * This replaces table-specific selectors that break with small result sets
+ */
+export async function waitForReactionResults(page: Page, queryType: 'fusion' | 'fission' | 'twotwo', timeout = 10000) {
+  const labelMap: Record<string, string> = {
+    'fusion': 'Fusion reaction results',
+    'fission': 'Fission reaction results',
+    'twotwo': 'Two-to-two reaction results'
+  };
+  const ariaLabel = labelMap[queryType];
+
+  await page.waitForFunction(
+    (label) => {
+      const resultsRegion = document.querySelector(`[role="region"][aria-label="${label}"]`);
+      if (!resultsRegion) return false;
+
+      // Check if results have content (either virtualized list or direct rendering)
+      const hasVirtualizedContent = resultsRegion.querySelector('[role="grid"]') !== null;
+      const hasDirectContent = resultsRegion.querySelector('div[class*="grid"][class*="border-b"]') !== null;
+      const hasEmptyMessage = resultsRegion.textContent?.includes('Run a query') ||
+                             resultsRegion.textContent?.includes('no results') ||
+                             resultsRegion.textContent?.includes('0 results');
+
+      return hasVirtualizedContent || hasDirectContent || hasEmptyMessage;
+    },
+    ariaLabel,
+    { timeout }
+  );
+}
+
+/**
  * Helper to navigate using sidebar
  */
 export async function navigateToPage(page: Page, pageName: string) {
