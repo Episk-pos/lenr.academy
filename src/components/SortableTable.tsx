@@ -30,6 +30,7 @@ interface SortableTableProps<T> {
   autoFillHeightOffset?: number
   minVisibleRows?: number
   virtualizationThreshold?: number
+  expandedContentNoPadding?: boolean  // Skip padding/border wrapper for expanded content
 }
 
 export default function SortableTable<T extends Record<string, any>>({
@@ -49,7 +50,8 @@ export default function SortableTable<T extends Record<string, any>>({
   autoFillHeight = false,
   autoFillHeightOffset = 160,
   minVisibleRows = 0,
-  virtualizationThreshold = 0
+  virtualizationThreshold = 0,
+  expandedContentNoPadding = false
 }: SortableTableProps<T>) {
   const [sortKey, setSortKey] = useState<string | null>(null)
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc')
@@ -168,8 +170,18 @@ export default function SortableTable<T extends Record<string, any>>({
     }
 
     const handleResize = () => updateAutoHeight()
+    const handleTransitionEnd = () => {
+      // Catch any CSS transitions (like FilterPanel expand/collapse)
+      updateAutoHeight()
+    }
+
     window.addEventListener('resize', handleResize)
-    return () => window.removeEventListener('resize', handleResize)
+    document.addEventListener('transitionend', handleTransitionEnd)
+
+    return () => {
+      window.removeEventListener('resize', handleResize)
+      document.removeEventListener('transitionend', handleTransitionEnd)
+    }
   }, [autoFillHeight, updateAutoHeight])
 
   useEffect(() => {
@@ -260,11 +272,17 @@ export default function SortableTable<T extends Record<string, any>>({
     )
 
     const expandedSection = renderExpandedContent && isExpanded ? (
-      <div className="bg-gray-50 dark:bg-gray-800/40 border-b border-gray-200 dark:border-gray-700 px-4 py-4">
-        <div className="border border-gray-200 dark:border-gray-600 rounded-lg p-4 bg-white dark:bg-gray-800">
+      expandedContentNoPadding ? (
+        <div className="border-b border-gray-200 dark:border-gray-700">
           {renderExpandedContent(row)}
         </div>
-      </div>
+      ) : (
+        <div className="bg-gray-50 dark:bg-gray-800/40 border-b border-gray-200 dark:border-gray-700 px-4 py-4">
+          <div className="border border-gray-200 dark:border-gray-600 rounded-lg p-4 bg-white dark:bg-gray-800">
+            {renderExpandedContent(row)}
+          </div>
+        </div>
+      )
     ) : null
 
     if (includeKey) {

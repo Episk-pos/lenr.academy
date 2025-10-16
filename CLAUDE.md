@@ -71,6 +71,7 @@ The application uses **sql.js** (SQLite compiled to WebAssembly) to run queries 
 **Key tables**:
 - `NuclidesPlus` - Nuclide properties (Z, A, binding energy, half-life, boson/fermion flags)
 - `ElementPropertiesPlus` - Element properties (melting point, density, electronegativity, etc.)
+- `RadioNuclides` - Radioactive decay data (46,797 records) with decay modes, radiation types, energies, intensities, and half-lives
 - `FusionAll` - A + B → C reactions (includes neutrino-involved reactions)
 - `FissionAll` - A → B + C reactions (includes neutrino-involved reactions)
 - `TwoToTwoAll` - A + B → C + D reactions (includes neutrino-involved reactions)
@@ -135,6 +136,54 @@ const result = queryFusionReactions(db, {
 - **Context up**: Components access global state via `useDatabase()` and `useTheme()` hooks
 - **URL state**: ShowElementData uses `useSearchParams` for shareable state
 
+### Radioactive Decay Chain Visualization
+
+The application includes interactive multi-generation decay chain visualization for radioactive nuclides:
+
+**Architecture** (`src/services/decayChainService.ts`):
+- `traceDecayChain()` - Recursively builds decay trees from `RadioNuclides` table
+  - Parameters: `db`, `Z`, `A`, `maxDepth` (default: 10), `minBranchingRatio` (default: 1%)
+  - Returns: Tree structure with nodes containing nuclide, decay mode, branching ratio, children[]
+  - Handles branching decay paths and circular references (e.g., isomeric transitions)
+  - Stop conditions: stable nuclide (LHL > 9), max depth reached, or already visited
+- `getDaughterNuclide()` - Calculates daughter Z/A from decay modes (A, B-, B+, EC, IT)
+- `getLinearDecayChain()` - Simplified linear chain following primary decay mode only
+
+**UI Components**:
+- `DecayChainDiagram.tsx` - SVG tree visualization with:
+  - Reingold-Tilford tree layout algorithm for balanced node spacing
+  - Color-coded decay modes (alpha=red, beta-=blue, beta+=green, EC=purple, IT=yellow)
+  - Interactive nodes (click to navigate to nuclide details page)
+  - Hover tooltips with full decay information
+  - Responsive sizing with automatic viewBox calculation
+- `NuclideDetailsCard.tsx` - Integrates decay chain with:
+  - Collapsible "Decay Chain Visualization" section
+  - Interactive depth slider (1-15 generations)
+  - Branching ratio filter (1-100%)
+  - Chain metadata display (total generations, branch count, terminal nuclides)
+
+**Famous Decay Series** (`src/constants/decaySeries.ts`):
+- Uranium-238 series (4n+2) - 14 steps → Pb-206
+- Thorium-232 series (4n) - 10 steps → Pb-208
+- Uranium-235 actinium series (4n+3) - 11 steps → Pb-207
+- Neptunium-237 series (4n+1) - 11 steps → Bi-209 (synthetic)
+
+**Usage Example**:
+```typescript
+import { traceDecayChain } from '../services/decayChainService'
+
+// Trace U-238 decay chain
+const chain = traceDecayChain(db, 92, 238, {
+  maxDepth: 10,
+  minBranchingRatio: 5  // Only show branches ≥5%
+})
+
+// chain.root contains full tree
+// chain.totalGenerations = maximum depth
+// chain.branchCount = number of decay branches
+// chain.terminalNuclides = array of leaf nodes
+```
+
 ## Data Types
 
 All type definitions are in `src/types/index.ts`:
@@ -146,6 +195,9 @@ All type definitions are in `src/types/index.ts`:
 - `TwoToTwoReaction` - Two inputs → two outputs
 - `QueryFilter` - Filter parameters for reaction queries
 - `QueryResult` - Standardized query response with timing
+- `DecayChainNode` - Tree node for multi-generation decay sequences (nuclide, decay mode, branching ratio, children)
+- `DecayChainResult` - Complete decay chain result (root node, total generations, branch count, terminal nuclides)
+- `DecayData` - Individual decay record from RadioNuclides table (decay mode, radiation type, energy, intensity, half-life)
 
 ## Database Column Mapping
 

@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react'
 import { useSearchParams } from 'react-router-dom'
-import { Radiation, ArrowRight } from 'lucide-react'
+import { Radiation } from 'lucide-react'
 import { useDatabase } from '../contexts/DatabaseContext'
 import { useLayout } from '../contexts/LayoutContext'
 import type { Element, Nuclide, AtomicRadiiData, RadioactiveNuclideData, DisplayNuclide, RadioNuclideListItem } from '../types'
@@ -14,6 +14,7 @@ import FilterPanel, { FilterConfig, FilterPreset } from '../components/FilterPan
 import DatabaseLoadingCard from '../components/DatabaseLoadingCard'
 import DatabaseErrorCard from '../components/DatabaseErrorCard'
 import Tooltip from '../components/Tooltip'
+import DecayChainDiagram from '../components/DecayChainDiagram'
 import {
   getAllNuclidesByElement,
   getAtomicRadii,
@@ -21,14 +22,13 @@ import {
   getAllNuclides,
   getAllDecays,
   getRadioactiveNuclides,
-  getElementSymbolByZ,
   getNuclideBySymbol,
-  getRadioactiveDecayData,
   getRadioactiveNuclideData,
   getUniqueDecayModes,
   getUniqueRadiationTypes,
   type RadioactiveDecay
 } from '../services/queryService'
+import { traceDecayChain } from '../services/decayChainService'
 import { expandHalfLifeUnit, normalizeElementSymbol } from '../utils/formatUtils'
 import { filterDataBySearch, SearchMetadata } from '../utils/searchUtils'
 import { RADIATION_TYPE_INFO } from '../constants/radiationTypes'
@@ -190,6 +190,21 @@ export default function ShowElementData() {
   const [elementsExpandedRows, setElementsExpandedRows] = useState<Set<string | number>>(new Set())
   const [nuclidesExpandedRows, setNuclidesExpandedRows] = useState<Set<string | number>>(new Set())
   const [decaysExpandedRows, setDecaysExpandedRows] = useState<Set<string | number>>(new Set())
+
+  // Handler for decays table to ensure only one row is expanded at a time
+  const handleDecaysExpandedRowsChange = (newExpandedRows: Set<string | number>) => {
+    // If expanding a row, only keep the newly expanded one
+    if (newExpandedRows.size > decaysExpandedRows.size) {
+      // Find the newly added row key
+      const newKey = Array.from(newExpandedRows).find(key => !decaysExpandedRows.has(key))
+      if (newKey !== undefined) {
+        setDecaysExpandedRows(new Set([newKey]))
+      }
+    } else {
+      // If collapsing, use the new set as-is
+      setDecaysExpandedRows(newExpandedRows)
+    }
+  }
 
   // Get all elements from database (memoized to prevent recreating on every render)
   const allElements: Element[] = useMemo(() => {
@@ -2009,7 +2024,7 @@ export default function ShowElementData() {
               title="Elements Table"
               description="Browse and search all chemical elements. Click any row to view detailed properties in the Integrated tab."
               autoFillHeight
-              autoFillHeightOffset={64}
+              autoFillHeightOffset={80}
               minVisibleRows={10}
               virtualizationThreshold={10}
               renderExpandedContent={(element) => (
@@ -2154,7 +2169,7 @@ export default function ShowElementData() {
               title="Nuclides Table"
               description="Browse all nuclear isotopes with binding energies, boson/fermion classifications, and stability indicators. Click any row to view detailed properties in the Integrated tab."
               autoFillHeight
-              autoFillHeightOffset={64}
+              autoFillHeightOffset={80}
               minVisibleRows={10}
               virtualizationThreshold={10}
               renderExpandedContent={(nuclide) => {
@@ -2337,183 +2352,30 @@ export default function ShowElementData() {
               data={filteredDecays}
               columns={decaysColumns}
               expandedRows={decaysExpandedRows}
-              onExpandedRowsChange={setDecaysExpandedRows}
+              onExpandedRowsChange={handleDecaysExpandedRowsChange}
               title="Radioactive Decays Table"
               description="Browse radioactive decay modes, half-lives, energies, and intensities for all unstable isotopes. Click any row to view the parent nuclide in the Integrated tab."
               autoFillHeight
-              autoFillHeightOffset={64}
+              autoFillHeightOffset={80}
               minVisibleRows={10}
               virtualizationThreshold={10}
+              expandedContentNoPadding={true}
               renderExpandedContent={(decay) => {
-                // Calculate daughter nuclide
-                const daughter = getDaughterNuclide(decay.Z, decay.A, decay.E, decay.RDM || '')
-                const hasDaughter = daughter !== null && db
-                const daughterE = hasDaughter ? (daughter!.E || getElementSymbolByZ(db!, daughter!.Z)) : null
+                if (!db) return null
 
-                // Get daughter's properties from NuclidesPlus if it exists
-                const daughterNuclide = hasDaughter && daughterE && db ? getNuclideBySymbol(db, daughterE, daughter!.A) : null
-                const daughterIsStable = daughterNuclide && typeof daughterNuclide.logHalfLife === 'number' && daughterNuclide.logHalfLife > 9
-
-                // Get daughter's primary decay if radioactive
-                const daughterDecay = !daughterIsStable && db && daughterE && daughter && daughterNuclide ?
-                  getRadioactiveDecayData(db, daughter.Z, daughter.A).find(d => d.decayMode === daughterNuclide.RDM) : null
-
-                // Calculate granddaughter if daughter is also radioactive
-                const granddaughter = daughterDecay && daughterE && daughter ?
-                  getDaughterNuclide(daughter.Z, daughter.A, daughterE, daughterDecay.decayMode) : null
-                const granddaughterE = granddaughter && db ? getElementSymbolByZ(db, granddaughter.Z) : null
-
-                // Get all decay modes for this parent nuclide (for showing alternatives)
-                const allDecayModes = db ? getRadioactiveDecayData(db, decay.Z, decay.A) : []
-                const uniqueDecayModes = allDecayModes.reduce((acc, d) => {
-                  const key = d.decayMode
-                  if (!acc.some(x => x.decayMode === key)) {
-                    acc.push(d)
-                  }
-                  return acc
-                }, [] as typeof allDecayModes)
+                // Build decay chain for this nuclide
+                const chain = traceDecayChain(db, decay.Z, decay.A, {
+                  maxDepth: 10,
+                  minBranchingRatio: 1.0
+                })
 
                 return (
-                  <div className="space-y-6">
-                    {/* Decay Chain Visualization */}
-                    <div>
-                      <h4 className="font-semibold text-gray-900 dark:text-white mb-3 text-sm uppercase tracking-wide">
-                        Decay Chain
-                      </h4>
-                      <div className="flex items-center gap-3 flex-wrap">
-                        {/* Parent Nuclide */}
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation()
-                            const newParams = new URLSearchParams(searchParams)
-                            newParams.set('tab', 'integrated')
-                            newParams.set('Z', decay.Z.toString())
-                            newParams.set('A', decay.A.toString())
-                            setSearchParams(newParams)
-                          }}
-                          className="p-3 border-2 border-amber-300 dark:border-amber-700 rounded-lg hover:bg-amber-50 dark:hover:bg-amber-900/20 transition-colors"
-                        >
-                          <div className="text-center">
-                            <div className="font-bold text-lg text-gray-900 dark:text-gray-100">{decay.E}-{decay.A}</div>
-                            <div className="text-xs text-gray-600 dark:text-gray-400">Parent</div>
-                            {decay.halfLife && decay.Units && (
-                              <div className="text-xs text-amber-600 dark:text-amber-400 font-medium">
-                                t½ = {Number(decay.halfLife) >= 1000 ? Number(decay.halfLife).toExponential(1) : Number(decay.halfLife).toFixed(2)} {expandHalfLifeUnit(decay.Units)}
-                              </div>
-                            )}
-                          </div>
-                        </button>
-
-                        {/* Decay Arrow */}
-                        {hasDaughter && (
-                          <>
-                            <div className="flex flex-col items-center text-center px-2">
-                              <ArrowRight className="w-6 h-6 text-gray-500 dark:text-gray-400" />
-                              <div className="text-xs font-medium text-purple-600 dark:text-purple-400 mt-1">{decay.RDM}</div>
-                              {decay.RT && <div className="text-xs text-gray-500 dark:text-gray-400">{decay.RT}</div>}
-                              {decay.DEKeV && <div className="text-xs text-gray-500 dark:text-gray-400">{(decay.DEKeV / 1000).toFixed(1)} MeV</div>}
-                            </div>
-
-                            {/* Daughter Nuclide */}
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation()
-                                const newParams = new URLSearchParams(searchParams)
-                                newParams.set('tab', 'integrated')
-                                newParams.set('Z', daughter!.Z.toString())
-                                newParams.set('A', daughter!.A.toString())
-                                setSearchParams(newParams)
-                              }}
-                              className={`p-3 border-2 rounded-lg transition-colors ${
-                                daughterIsStable
-                                  ? 'border-green-300 dark:border-green-700 hover:bg-green-50 dark:hover:bg-green-900/20'
-                                  : 'border-blue-300 dark:border-blue-700 hover:bg-blue-50 dark:hover:bg-blue-900/20'
-                              }`}
-                            >
-                              <div className="text-center">
-                                <div className="font-bold text-lg text-gray-900 dark:text-gray-100">{daughterE}-{daughter!.A}</div>
-                                <div className="text-xs text-gray-600 dark:text-gray-400">Daughter</div>
-                                {daughterIsStable ? (
-                                  <div className="text-xs text-green-600 dark:text-green-400 font-medium">Stable</div>
-                                ) : daughterDecay ? (
-                                  <div className="text-xs text-amber-600 dark:text-amber-400 font-medium">
-                                    t½ = {daughterDecay.halfLife && daughterDecay.halfLifeUnits ?
-                                      `${Number(daughterDecay.halfLife) >= 1000 ? Number(daughterDecay.halfLife).toExponential(1) : Number(daughterDecay.halfLife).toFixed(2)} ${expandHalfLifeUnit(daughterDecay.halfLifeUnits)}`
-                                      : 'Radioactive'}
-                                  </div>
-                                ) : (
-                                  <div className="text-xs text-gray-500 dark:text-gray-400">—</div>
-                                )}
-                              </div>
-                            </button>
-
-                            {/* Granddaughter (if daughter is also radioactive) */}
-                            {granddaughter && granddaughterE && (
-                              <>
-                                <div className="flex flex-col items-center text-center px-2">
-                                  <ArrowRight className="w-5 h-5 text-gray-400 dark:text-gray-500" />
-                                  <div className="text-xs font-medium text-purple-600 dark:text-purple-400 mt-1">{daughterDecay?.decayMode}</div>
-                                </div>
-
-                                <button
-                                  onClick={(e) => {
-                                    e.stopPropagation()
-                                    const newParams = new URLSearchParams(searchParams)
-                                    newParams.set('tab', 'integrated')
-                                    newParams.set('Z', granddaughter.Z.toString())
-                                    newParams.set('A', granddaughter.A.toString())
-                                    setSearchParams(newParams)
-                                  }}
-                                  className="p-3 border-2 border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors opacity-75"
-                                >
-                                  <div className="text-center">
-                                    <div className="font-bold text-lg text-gray-900 dark:text-gray-100">{granddaughterE}-{granddaughter.A}</div>
-                                    <div className="text-xs text-gray-600 dark:text-gray-400">Granddaughter</div>
-                                  </div>
-                                </button>
-                              </>
-                            )}
-                          </>
-                        )}
-                      </div>
-                    </div>
-
-                    {/* Alternative Decay Modes (if multiple paths exist) */}
-                    {uniqueDecayModes.length > 1 && (
-                      <div>
-                        <h4 className="font-semibold text-gray-900 dark:text-white mb-3 text-sm uppercase tracking-wide">
-                          Alternative Decay Modes for {decay.E}-{decay.A}
-                        </h4>
-                        <div className="space-y-2">
-                          {uniqueDecayModes.map((mode, idx) => {
-                            const altDaughter = getDaughterNuclide(decay.Z, decay.A, decay.E, mode.decayMode)
-                            const altDaughterE = altDaughter && db ? getElementSymbolByZ(db, altDaughter.Z) : null
-
-                            return (
-                              <div key={idx} className="flex items-center justify-between text-sm p-2 rounded bg-gray-50 dark:bg-gray-800">
-                                <div className="flex items-center gap-2">
-                                  <span className="px-2 py-1 rounded-full text-xs font-medium bg-purple-100 dark:bg-purple-900/50 text-purple-700 dark:text-purple-300">
-                                    {mode.decayMode}
-                                  </span>
-                                  <span className="text-gray-600 dark:text-gray-400">→</span>
-                                  <span className="font-medium text-gray-900 dark:text-gray-100">
-                                    {altDaughterE}-{altDaughter?.A || '?'}
-                                  </span>
-                                  <span className="px-2 py-1 rounded-full text-xs bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300">
-                                    {mode.radiationType}
-                                  </span>
-                                </div>
-                                <div className="flex items-center gap-3 text-xs text-gray-600 dark:text-gray-400">
-                                  {mode.intensity && <span>{mode.intensity.toFixed(1)}%</span>}
-                                  {mode.energyKeV && <span>{(mode.energyKeV / 1000).toFixed(2)} MeV</span>}
-                                </div>
-                              </div>
-                            )
-                          })}
-                        </div>
-                      </div>
-                    )}
-                  </div>
+                  <DecayChainDiagram
+                    root={chain.root}
+                    maxHeight={300}
+                    showWrapper={false}
+                    minimal={true}
+                  />
                 )
               }}
               getRowKey={(row, idx) => `${row.Z}-${row.A}-${row.RDM}-${row.RT}-${idx}`}
