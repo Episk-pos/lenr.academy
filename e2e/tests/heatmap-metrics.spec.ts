@@ -20,11 +20,11 @@ test.describe('Heatmap Metrics Calculation', () => {
       { timeout: 10000 }
     );
 
-    // Verify that the query executed and has elements appearing in results
-    const hasElementsSection = await page.getByText('Elements Appearing in Results').isVisible();
+    // Verify that the query executed and has nuclides appearing in results
+    const hasNuclidesSection = await page.getByText('Nuclides Appearing in Results').isVisible();
     const hasResults = await page.locator('table tbody tr').count() > 0;
 
-    expect(hasElementsSection).toBe(true);
+    expect(hasNuclidesSection).toBe(true);
     expect(hasResults).toBe(true);
   });
 
@@ -38,21 +38,17 @@ test.describe('Heatmap Metrics Calculation', () => {
       { timeout: 10000 }
     );
 
-    // Verify H appears in results (input element)
-    const hasHydrogen = await page.getByText('Elements Appearing in Results')
-      .locator('..')
-      .locator('text=/\\bH\\b/')
-      .first()
-      .isVisible();
+    // Verify nuclides section exists and contains hydrogen or helium isotopes
+    const nuclidesSection = page.getByText('Nuclides Appearing in Results');
+    await nuclidesSection.scrollIntoViewIfNeeded();
+    const hasNuclides = await nuclidesSection.isVisible();
 
-    // Verify He appears in results (input element)
-    const hasHelium = await page.getByText('Elements Appearing in Results')
-      .locator('..')
-      .locator('text=/\\bHe\\b/')
-      .first()
-      .isVisible();
+    // Verify at least one nuclide appears (H-based or He-based)
+    const hasHydrogenNuclide = await page.locator('text=/H-\\d+/').first().isVisible().catch(() => false);
+    const hasHeliumNuclide = await page.locator('text=/He-\\d+/').first().isVisible().catch(() => false);
 
-    expect(hasHydrogen || hasHelium).toBe(true);
+    expect(hasNuclides).toBe(true);
+    expect(hasHydrogenNuclide || hasHeliumNuclide).toBe(true);
   });
 
   test('should track unique isotopes for diversity metric', async ({ page }) => {
@@ -114,24 +110,185 @@ test.describe('Heatmap Metrics Calculation', () => {
       { timeout: 10000 }
     );
 
-    // Verify elements appear in fission results
-    const elementsSection = await page.getByText('Elements Appearing in Results').isVisible();
+    // Verify nuclides appear in fission results (Elements card was removed)
+    const nuclidesSection = await page.getByText('Nuclides Appearing in Results').isVisible();
 
-    expect(elementsSection).toBe(true);
+    expect(nuclidesSection).toBe(true);
   });
 
   test('should work with two-to-two queries', async ({ page }) => {
-    await page.goto('/twotwo?e1=H&e2=Li&e3=He');
+    // Use default query parameters that are known to have results
+    await page.goto('/twotwo?e1=D&e2=Ni&e3=C');
     await waitForDatabaseReady(page);
 
     // Wait for the "Showing all X matching reactions" text which confirms query executed
     await page.waitForSelector('text=/Showing .* matching reactions/', { timeout: 15000 });
 
-    // Verify elements appear in two-to-two results (scroll into view if needed)
-    const elementsSection = page.getByText('Elements Appearing in Results');
-    await elementsSection.scrollIntoViewIfNeeded();
-    const isVisible = await elementsSection.isVisible();
+    // Verify nuclides appear in two-to-two results (Elements card was removed, only Nuclides remain)
+    const nuclideSection = page.getByText('Nuclides Appearing in Results');
+    await nuclideSection.scrollIntoViewIfNeeded();
+    const isVisible = await nuclideSection.isVisible();
 
     expect(isVisible).toBe(true);
+  });
+
+  test('should filter nuclides when element is pinned', async ({ page }) => {
+    // Navigate to fusion query with default results
+    await page.goto('/fusion');
+    await waitForDatabaseReady(page);
+
+    await page.waitForFunction(
+      () => document.querySelector('table tbody tr') !== null,
+      { timeout: 10000 }
+    );
+
+    // Get initial nuclide count
+    const initialText = await page.locator('h3:has-text("Nuclides Appearing in Results")').textContent();
+    const initialMatch = initialText?.match(/\((\d+)\)/);
+    const initialCount = initialMatch ? parseInt(initialMatch[1]) : 0;
+
+    expect(initialCount).toBeGreaterThan(0);
+
+    // Click on an element in the periodic table heatmap
+    // First scroll to and expand the heatmap
+    const heatmapToggle = page.locator('button[title*="periodic table"]').first();
+    await heatmapToggle.scrollIntoViewIfNeeded();
+    await heatmapToggle.click();
+
+    // Wait for heatmap to expand
+    await page.waitForTimeout(500);
+
+    // Find and click an available element (e.g., Carbon)
+    // Use getByRole to be more specific about finding exactly "C"
+    const carbonButton = page.getByRole('button', { name: /^6\s+C$/ }).first();
+    await carbonButton.click();
+
+    // Wait for the nuclides list to update
+    await page.waitForTimeout(500);
+
+    // Verify nuclides are filtered
+    const filteredText = await page.locator('h3:has-text("Nuclides Appearing in Results")').textContent();
+    expect(filteredText).toContain('showing C isotopes');
+
+    // Extract filtered count
+    const filteredMatch = filteredText?.match(/\((\d+) of (\d+)/);
+    if (filteredMatch) {
+      const filteredCount = parseInt(filteredMatch[1]);
+      const totalCount = parseInt(filteredMatch[2]);
+
+      expect(filteredCount).toBeLessThan(totalCount);
+      expect(filteredCount).toBeGreaterThan(0);
+      expect(totalCount).toBe(initialCount);
+    }
+  });
+
+  test('should auto-expand heatmap when loading with pinned element', async ({ page }) => {
+    // Navigate to fusion query with pinE parameter AND element selections to ensure Carbon is in results
+    await page.goto('/fusion?e1=H&e2=C&pinE=C');
+    await waitForDatabaseReady(page);
+
+    await page.waitForFunction(
+      () => document.querySelector('table tbody tr') !== null,
+      { timeout: 10000 }
+    );
+
+    // Scroll to heatmap section to ensure it's in view
+    const heatmapSection = page.locator('h3:has-text("Heatmap Visualization")');
+    await heatmapSection.scrollIntoViewIfNeeded();
+
+    // Wait longer for the auto-expansion effect to run
+    await page.waitForTimeout(2000);
+
+    // Verify heatmap is expanded by checking if the toggle button text says "Collapse"
+    const heatmapToggle = page.locator('button[title*="periodic table"]').first();
+    const toggleText = await heatmapToggle.getAttribute('title');
+
+    expect(toggleText).toContain('Collapse');
+
+    // Also verify periodic table elements are visible
+    const carbonButton = page.getByRole('button', { name: /^6\s+C$/ });
+    await expect(carbonButton).toBeVisible();
+
+    // Verify the element is pinned (look for the filter message)
+    const nuclidesHeader = await page.locator('h3:has-text("Nuclides Appearing in Results")').textContent();
+    expect(nuclidesHeader).toContain('showing C isotopes');
+  });
+
+  test('should color elements with heatmap data even if not selectable', async ({ page }) => {
+    // Navigate to a fusion query where some output elements may not be in input selectors
+    await page.goto('/fusion?e1=H&e2=Li');
+    await waitForDatabaseReady(page);
+
+    await page.waitForFunction(
+      () => document.querySelector('table tbody tr') !== null,
+      { timeout: 10000 }
+    );
+
+    // Expand heatmap
+    const heatmapToggle = page.locator('button[title*="periodic table"]').first();
+    await heatmapToggle.click();
+
+    await page.waitForTimeout(500);
+
+    // Check that elements in the periodic table have background colors
+    // Get all periodic table buttons
+    const buttons = page.locator('.grid button[class*="aspect-square"]');
+    const buttonCount = await buttons.count();
+
+    let coloredCount = 0;
+
+    // Sample a few buttons to check for colors
+    for (let i = 0; i < Math.min(buttonCount, 20); i++) {
+      const button = buttons.nth(i);
+      const bgColor = await button.evaluate((el) => {
+        return window.getComputedStyle(el).backgroundColor;
+      });
+
+      // Check if it has a color other than transparent or default gray
+      if (bgColor && bgColor !== 'rgba(0, 0, 0, 0)' && !bgColor.includes('243, 244, 246')) {
+        coloredCount++;
+      }
+    }
+
+    // At least some elements should have heatmap colors
+    expect(coloredCount).toBeGreaterThan(0);
+  });
+
+  test('should use 16-level color gradient in heatmap', async ({ page }) => {
+    // Navigate to a query with diverse results
+    await page.goto('/fusion?e1=H&e2=C,O');
+    await waitForDatabaseReady(page);
+
+    await page.waitForFunction(
+      () => document.querySelector('table tbody tr') !== null,
+      { timeout: 10000 }
+    );
+
+    // Expand heatmap
+    const heatmapToggle = page.locator('button[title*="periodic table"]').first();
+    await heatmapToggle.click();
+
+    await page.waitForTimeout(500);
+
+    // Collect background colors from periodic table elements
+    const buttons = page.locator('.grid button[class*="aspect-square"]');
+    const buttonCount = await buttons.count();
+
+    const uniqueColors = new Set<string>();
+
+    for (let i = 0; i < Math.min(buttonCount, 50); i++) {
+      const button = buttons.nth(i);
+      const bgColor = await button.evaluate((el) => {
+        return window.getComputedStyle(el).backgroundColor;
+      });
+
+      if (bgColor && bgColor !== 'rgba(0, 0, 0, 0)') {
+        uniqueColors.add(bgColor);
+      }
+    }
+
+    // Should have multiple distinct colors (not just 1 or 2)
+    // With 16-level gradient, we expect at least 3-4 different colors in typical results
+    expect(uniqueColors.size).toBeGreaterThanOrEqual(3);
   });
 });

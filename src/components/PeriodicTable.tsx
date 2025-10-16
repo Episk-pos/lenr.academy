@@ -169,6 +169,7 @@ const SPECIAL_PARTICLES_BY_GROUP = SPECIAL_PARTICLES.reduce<Record<number, typeo
 /**
  * Calculate heatmap background color for an element
  * Returns gradient colors from light → dark based on metric intensity
+ * Uses continuous gradient with 32 levels for fine color differentiation
  */
 function getHeatmapColor(
   symbol: string,
@@ -188,22 +189,26 @@ function getHeatmapColor(
   // Calculate intensity (0-1 scale)
   const intensity = value / maxValue
 
-  // Light mode: blue gradient (light-blue-50 → blue-900)
-  // Dark mode: green gradient (green-900/10 → green-400)
+  // 32-level gradient for very fine color differentiation
+  // Light mode: blue gradient (light blue → deep blue)
+  // Dark mode: green gradient (dim green → bright green)
   if (isDarkMode) {
-    // Green gradient for dark mode
-    if (intensity < 0.2) return 'rgba(20, 83, 45, 0.1)'  // green-900/10
-    if (intensity < 0.4) return 'rgba(20, 83, 45, 0.2)'  // green-900/20
-    if (intensity < 0.6) return 'rgba(34, 197, 94, 0.2)' // green-500/20
-    if (intensity < 0.8) return 'rgba(34, 197, 94, 0.4)' // green-500/40
-    return 'rgba(74, 222, 128, 0.6)'                      // green-400/60
+    // Green gradient for dark mode with 32 distinct levels
+    // Using HSL interpolation for smoother, more perceptible transitions
+    // hsl(140, 60%, 20%) at 0 → hsl(140, 80%, 65%) at 1
+    const hue = 140
+    const saturation = 60 + (intensity * 20) // 60% → 80%
+    const lightness = 20 + (intensity * 45)  // 20% → 65%
+    const alpha = 0.3 + (intensity * 0.6)    // 0.3 → 0.9 for better visibility
+    return `hsla(${hue}, ${saturation}%, ${lightness}%, ${alpha})`
   } else {
-    // Blue gradient for light mode
-    if (intensity < 0.2) return 'rgb(239, 246, 255)'  // blue-50
-    if (intensity < 0.4) return 'rgb(219, 234, 254)'  // blue-100
-    if (intensity < 0.6) return 'rgb(191, 219, 254)'  // blue-200
-    if (intensity < 0.8) return 'rgb(147, 197, 253)'  // blue-300
-    return 'rgb(96, 165, 250)'                         // blue-400
+    // Blue gradient for light mode with 32 distinct levels
+    // Using RGB interpolation with exponential scaling for better perceptual uniformity
+    // From light blue rgb(240, 245, 255) to deep blue rgb(20, 60, 180)
+    const r = Math.round(240 - (intensity ** 0.8) * 220)
+    const g = Math.round(245 - (intensity ** 0.8) * 185)
+    const b = Math.round(255 - (intensity ** 0.8) * 75)
+    return `rgb(${r}, ${g}, ${b})`
   }
 }
 
@@ -342,9 +347,7 @@ export default function PeriodicTable({
     const isPurelyRadioactive = db && isAvailable ? hasOnlyRadioactiveIsotopes(db, cellData.Z) : false
     const isHydrogenCell = cellData.symbol === 'H'
 
-    // Get heatmap background color
-    // In heatmap mode, color all elements that have data (even if not selectable)
-    // In selector mode, only color available/selectable elements
+    // Get heatmap background color - show heatmap for ALL elements with data, not just available ones
     const heatmapBgColor = getHeatmapColor(cellData.symbol, heatmapData, showHeatmap, isDarkMode)
     const hasHeatmap = heatmapBgColor !== 'transparent'
 
@@ -356,7 +359,9 @@ export default function PeriodicTable({
         ? 'bg-blue-500 text-white border-blue-600 ring-2 ring-blue-400 shadow-md'
         : isAvailable
           ? 'bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600 hover:bg-blue-50 dark:hover:bg-blue-900/30 hover:border-blue-400 cursor-pointer'
-          : 'bg-gray-100 dark:bg-gray-900 text-gray-400 dark:text-gray-600 border-gray-200 dark:border-gray-800 cursor-not-allowed'
+          : hasHeatmap
+            ? 'text-gray-900 dark:text-gray-100 border-gray-400 dark:border-gray-500 cursor-not-allowed'
+            : 'bg-gray-100 dark:bg-gray-900 text-gray-400 dark:text-gray-600 border-gray-200 dark:border-gray-800 cursor-not-allowed'
       }
     `
 
@@ -391,7 +396,7 @@ export default function PeriodicTable({
           disabled={!isAvailable}
           className={buttonClassName}
           title={buttonTitle}
-          style={!isSelected && hasHeatmap ? { backgroundColor: heatmapBgColor } : undefined}
+          style={!isSelected && hasHeatmap ? { backgroundColor: heatmapBgColor, borderColor: hasHeatmap && !isAvailable ? 'rgb(156, 163, 175)' : undefined } : undefined}
         >
           {buttonContent}
         </button>
@@ -405,7 +410,7 @@ export default function PeriodicTable({
           disabled={!isAvailable}
           className={buttonClassName}
           title={buttonTitle}
-          style={!isSelected && hasHeatmap ? { backgroundColor: heatmapBgColor } : undefined}
+          style={!isSelected && hasHeatmap ? { backgroundColor: heatmapBgColor, borderColor: hasHeatmap && !isAvailable ? 'rgb(156, 163, 175)' : undefined } : undefined}
         >
           {buttonContent}
         </button>
