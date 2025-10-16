@@ -133,7 +133,8 @@ export default function FusionQuery() {
       return 160
     }
     if (results.length <= SMALL_RESULT_THRESHOLD) {
-      return results.length * fusionCompactRowHeight + 12
+      // For small result sets, skip virtualization - no fixed height needed
+      return results.length * fusionCompactRowHeight
     }
     const preferred = results.length * fusionEstimatedRowHeight
     const min = Math.max(fusionEstimatedRowHeight * Math.min(results.length, 4), 260)
@@ -142,13 +143,17 @@ export default function FusionQuery() {
   }, [fusionCompactRowHeight, fusionEstimatedRowHeight, results.length])
 
   const fusionListHeight = useMemo(() => {
+    // For small result sets, don't enforce a minimum height
+    if (results.length <= SMALL_RESULT_THRESHOLD && results.length > 0) {
+      return fusionBaseListHeight
+    }
     const minHeight = 220
     const base = Math.max(minHeight, fusionBaseListHeight)
     if (fusionViewportHeight == null) {
       return base
     }
     return Math.max(minHeight, Math.min(base, fusionViewportHeight))
-  }, [fusionBaseListHeight, fusionViewportHeight])
+  }, [fusionBaseListHeight, fusionViewportHeight, results.length])
 
   const fusionUsesScrollbar = fusionListHeight < fusionBaseListHeight
   const fusionHeaderPadding = !showBosonFermion && fusionUsesScrollbar ? SCROLLBAR_COMPENSATION : 0
@@ -644,17 +649,9 @@ export default function FusionQuery() {
                   <div className="p-6 text-center text-sm text-gray-500 dark:text-gray-400">
                     Run a query to view fusion reactions.
                   </div>
-                ) : (
+                ) : results.length <= SMALL_RESULT_THRESHOLD ? (
                   <div style={{ paddingRight: fusionHeaderPadding }}>
-                    <VirtualizedList
-                      items={results}
-                      estimatedRowHeight={fusionEstimatedRowHeight}
-                      height={fusionListHeight}
-                      overscanRowCount={6}
-                      className="relative"
-                      ariaLabel="Fusion reaction results"
-                    >
-                      {(reaction) => {
+                    {results.map((reaction, index) => {
                       const activeNuclide = pinnedNuclide ? highlightedNuclide : highlightedNuclide
                       const activeElement = pinnedElement ? highlightedElement : highlightedElement
                       const nuclideMatch = !activeNuclide || reactionContainsNuclide(reaction, activeNuclide)
@@ -667,6 +664,7 @@ export default function FusionQuery() {
 
                       return (
                         <div
+                          key={index}
                           className={`grid border-b border-gray-200 dark:border-gray-700 transition-colors duration-150 ${
                             isDesaturated ? 'opacity-30 grayscale' : 'hover:bg-gray-50 dark:hover:bg-gray-800/60'
                           }`}
@@ -808,8 +806,174 @@ export default function FusionQuery() {
                           )}
                         </div>
                       )
-                    }}
-                  </VirtualizedList>
+                    })}
+                  </div>
+                ) : (
+                  <div style={{ paddingRight: fusionHeaderPadding }}>
+                    <VirtualizedList
+                      items={results}
+                      estimatedRowHeight={fusionEstimatedRowHeight}
+                      height={fusionListHeight}
+                      overscanRowCount={4}
+                      className="fusion-results-list"
+                      ariaLabel="Fusion reactions list"
+                    >
+                      {(reaction) => {
+                        const activeNuclide = pinnedNuclide ? highlightedNuclide : highlightedNuclide
+                        const activeElement = pinnedElement ? highlightedElement : highlightedElement
+                        const nuclideMatch = !activeNuclide || reactionContainsNuclide(reaction, activeNuclide)
+                        const elementMatch = !activeElement || reactionContainsElement(reaction, activeElement)
+                        const isDesaturated = (activeNuclide && !nuclideMatch) || (activeElement && !elementMatch)
+
+                        const isE1Radioactive = radioactiveNuclides.has(`${reaction.Z1}-${reaction.A1}`)
+                        const isE2Radioactive = radioactiveNuclides.has(`${reaction.Z2}-${reaction.A2}`)
+                        const isOutputRadioactive = radioactiveNuclides.has(`${reaction.Z}-${reaction.A}`)
+
+                        return (
+                          <div
+                            className={`grid border-b border-gray-200 dark:border-gray-700 transition-colors duration-150 ${
+                              isDesaturated ? 'opacity-30 grayscale' : 'hover:bg-gray-50 dark:hover:bg-gray-800/60'
+                            }`}
+                            style={{ gridTemplateColumns: fusionColumnTemplate, borderLeft: 'none', borderRight: 'none' }}
+                          >
+                            <div className="px-3 py-3 bg-blue-50 dark:bg-blue-900/20 text-center">
+                              <div className="flex items-center justify-center gap-1">
+                                <Link
+                                  to={`/element-data?Z=${reaction.Z1}&A=${reaction.A1}`}
+                                  className="font-semibold text-base hover:underline text-blue-600 dark:text-blue-400"
+                                >
+                                  {reaction.E1}-{reaction.A1}
+                                </Link>
+                                {isE1Radioactive && (
+                                  <span title="Radioactive">
+                                    <Radiation className="w-3 h-3 text-amber-600 dark:text-amber-400" />
+                                  </span>
+                                )}
+                              </div>
+                              <div className="text-xs text-gray-600 dark:text-gray-400">(Z={reaction.Z1})</div>
+                            </div>
+                            <div className="px-3 py-3 bg-blue-50 dark:bg-blue-900/20 text-center">
+                              <div className="flex items-center justify-center gap-1">
+                                <Link
+                                  to={`/element-data?Z=${reaction.Z2}&A=${reaction.A2}`}
+                                  className="font-semibold text-base hover:underline text-blue-600 dark:text-blue-400"
+                                >
+                                  {reaction.E2}-{reaction.A2}
+                                </Link>
+                                {isE2Radioactive && (
+                                  <span title="Radioactive">
+                                    <Radiation className="w-3 h-3 text-amber-600 dark:text-amber-400" />
+                                  </span>
+                                )}
+                              </div>
+                              <div className="text-xs text-gray-600 dark:text-gray-400">(Z={reaction.Z2})</div>
+                            </div>
+                            <div className="px-3 py-3 bg-green-50 dark:bg-green-900/20 text-center">
+                              <div className="flex items-center justify-center gap-1">
+                                <Link
+                                  to={`/element-data?Z=${reaction.Z}&A=${reaction.A}`}
+                                  className="font-semibold text-base hover:underline text-green-600 dark:text-green-400"
+                                >
+                                  {reaction.E}-{reaction.A}
+                                </Link>
+                                {isOutputRadioactive && (
+                                  <span title="Radioactive">
+                                    <Radiation className="w-3 h-3 text-amber-600 dark:text-amber-400" />
+                                  </span>
+                                )}
+                              </div>
+                              <div className="text-xs text-gray-600 dark:text-gray-400">(Z={reaction.Z})</div>
+                            </div>
+                            <div className="px-3 py-3 text-center">
+                              <span className="font-semibold text-green-600 dark:text-green-300">{reaction.MeV.toFixed(2)}</span>
+                            </div>
+                            <div className="px-3 py-3 text-center">
+                              <span
+                                className={`px-2 py-1 rounded-full text-xs font-medium ${
+                                  reaction.neutrino === 'none'
+                                    ? 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300'
+                                    : reaction.neutrino === 'left'
+                                    ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300'
+                                    : 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300'
+                                }`}
+                              >
+                                {reaction.neutrino === 'none' ? 'None' : reaction.neutrino === 'left' ? 'Left' : 'Right'}
+                              </span>
+                            </div>
+                            {showBosonFermion && (
+                              <>
+                                <div className="px-3 py-3 text-center">
+                                  <span
+                                    className={`px-2 py-1 rounded-full text-xs font-medium ${
+                                      reaction.nBorF1 === 'b'
+                                        ? 'bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300'
+                                        : 'bg-orange-100 dark:bg-orange-900/40 text-orange-700 dark:text-orange-300'
+                                    }`}
+                                  >
+                                    {reaction.nBorF1 === 'b' ? 'Boson' : 'Fermion'}
+                                  </span>
+                                </div>
+                                <div className="px-3 py-3 text-center">
+                                  <span
+                                    className={`px-2 py-1 rounded-full text-xs font-medium ${
+                                      reaction.aBorF1 === 'b'
+                                        ? 'bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300'
+                                        : 'bg-orange-100 dark:bg-orange-900/40 text-orange-700 dark:text-orange-300'
+                                    }`}
+                                  >
+                                    {reaction.aBorF1 === 'b' ? 'Boson' : 'Fermion'}
+                                  </span>
+                                </div>
+                                <div className="px-3 py-3 text-center">
+                                  <span
+                                    className={`px-2 py-1 rounded-full text-xs font-medium ${
+                                      reaction.nBorF2 === 'b'
+                                        ? 'bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300'
+                                        : 'bg-orange-100 dark:bg-orange-900/40 text-orange-700 dark:text-orange-300'
+                                    }`}
+                                  >
+                                    {reaction.nBorF2 === 'b' ? 'Boson' : 'Fermion'}
+                                  </span>
+                                </div>
+                                <div className="px-3 py-3 text-center">
+                                  <span
+                                    className={`px-2 py-1 rounded-full text-xs font-medium ${
+                                      reaction.aBorF2 === 'b'
+                                        ? 'bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300'
+                                        : 'bg-orange-100 dark:bg-orange-900/40 text-orange-700 dark:text-orange-300'
+                                    }`}
+                                  >
+                                    {reaction.aBorF2 === 'b' ? 'Boson' : 'Fermion'}
+                                  </span>
+                                </div>
+                                <div className="px-3 py-3 text-center">
+                                  <span
+                                    className={`px-2 py-1 rounded-full text-xs font-medium ${
+                                      reaction.nBorF === 'b'
+                                        ? 'bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300'
+                                        : 'bg-orange-100 dark:bg-orange-900/40 text-orange-700 dark:text-orange-300'
+                                    }`}
+                                  >
+                                    {reaction.nBorF === 'b' ? 'Boson' : 'Fermion'}
+                                  </span>
+                                </div>
+                                <div className="px-3 py-3 text-center">
+                                  <span
+                                    className={`px-2 py-1 rounded-full text-xs font-medium ${
+                                      reaction.aBorF === 'b'
+                                        ? 'bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300'
+                                        : 'bg-orange-100 dark:bg-orange-900/40 text-orange-700 dark:text-orange-300'
+                                    }`}
+                                  >
+                                    {reaction.aBorF === 'b' ? 'Boson' : 'Fermion'}
+                                  </span>
+                                </div>
+                              </>
+                            )}
+                          </div>
+                        )
+                      }}
+                    </VirtualizedList>
                   </div>
                 )}
               </div>

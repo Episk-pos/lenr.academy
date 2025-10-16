@@ -133,7 +133,8 @@ export default function FissionQuery() {
       return 160
     }
     if (results.length <= SMALL_RESULT_THRESHOLD) {
-      return results.length * fissionCompactRowHeight + 12
+      // For small result sets, skip virtualization - no fixed height needed
+      return results.length * fissionCompactRowHeight
     }
     const preferred = results.length * fissionEstimatedRowHeight
     const min = Math.max(fissionEstimatedRowHeight * Math.min(results.length, 4), 260)
@@ -142,13 +143,17 @@ export default function FissionQuery() {
   }, [fissionCompactRowHeight, fissionEstimatedRowHeight, results.length])
 
   const fissionListHeight = useMemo(() => {
+    // For small result sets, don't enforce a minimum height
+    if (results.length <= SMALL_RESULT_THRESHOLD && results.length > 0) {
+      return fissionBaseListHeight
+    }
     const minHeight = 220
     const base = Math.max(minHeight, fissionBaseListHeight)
     if (fissionViewportHeight == null) {
       return base
     }
     return Math.max(minHeight, Math.min(base, fissionViewportHeight))
-  }, [fissionBaseListHeight, fissionViewportHeight])
+  }, [fissionBaseListHeight, fissionViewportHeight, results.length])
 
   const fissionUsesScrollbar = fissionListHeight < fissionBaseListHeight
   const fissionHeaderPadding = !showBosonFermion && fissionUsesScrollbar ? SCROLLBAR_COMPENSATION : 0
@@ -776,6 +781,10 @@ export default function FissionQuery() {
                 {results.length === 0 ? (
                   <div className="p-6 text-center text-sm text-gray-500 dark:text-gray-400">
                     Run a query to view fission reactions.
+                  </div>
+                ) : results.length <= SMALL_RESULT_THRESHOLD ? (
+                  <div style={{ paddingRight: fissionHeaderPadding }}>
+                    {results.map((reaction, index) => renderFissionRow(reaction, index))}
                   </div>
                 ) : (
                   <div style={{ paddingRight: fissionHeaderPadding }}>
