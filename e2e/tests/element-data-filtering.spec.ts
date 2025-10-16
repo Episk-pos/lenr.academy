@@ -8,9 +8,13 @@ import {
 test.describe('Element Data - Filtering and Sorting', () => {
   test.beforeEach(async ({ page }) => {
     await acceptPrivacyConsent(page);
-    await page.goto('/element-data');
+    // Navigate to Iron (Z=26) which has good data for all tabs
+    await page.goto('/element-data?Z=26');
     await acceptMeteredWarningIfPresent(page);
     await waitForDatabaseReady(page);
+
+    // Wait for element data to load
+    await page.getByRole('heading', { name: /Iron \(Fe\)/i }).waitFor({ state: 'visible', timeout: 10000 });
   });
 
   test.describe('Search Functionality', () => {
@@ -19,23 +23,29 @@ test.describe('Element Data - Filtering and Sorting', () => {
       await page.getByRole('tab', { name: /Elements/i }).click();
       await page.waitForTimeout(500);
 
-      // Get initial row count
-      const table = page.locator('table tbody tr');
-      const initialCount = await table.count();
+      // Wait for data rows to be visible (skip header row by using nth)
+      const dataRows = page.locator('div[role="row"]').nth(1);
+      await dataRows.waitFor({ state: 'visible', timeout: 10000 });
+
+      // Get initial row count (all rows minus header)
+      const allRows = page.locator('div[role="row"]');
+      const initialCount = await allRows.count() - 1; // Subtract header row
+      expect(initialCount).toBeGreaterThan(0); // Ensure we have data before filtering
 
       // Search for "Iron"
       const searchInput = page.locator('input[placeholder*="Search"]');
       await searchInput.fill('Iron');
-      await page.waitForTimeout(300);
+      await page.waitForTimeout(500); // Increased timeout for filtering
 
       // Should have fewer results
-      const filteredCount = await table.count();
+      const filteredCount = await allRows.count() - 1; // Subtract header row
       expect(filteredCount).toBeLessThan(initialCount);
       expect(filteredCount).toBeGreaterThan(0);
 
       // Check that "Iron" appears in results
-      const tableText = await table.first().textContent();
-      expect(tableText).toContain('Fe');
+      const firstDataRow = page.locator('div[role="row"]').nth(1);
+      const rowText = await firstDataRow.textContent();
+      expect(rowText).toContain('Fe');
     });
 
     test('should filter nuclides table by search term', async ({ page }) => {
@@ -43,19 +53,23 @@ test.describe('Element Data - Filtering and Sorting', () => {
       await page.getByRole('tab', { name: /Nuclides/i }).click();
       await page.waitForTimeout(500);
 
+      // Wait for data rows to be visible (skip header row)
+      const dataRows = page.locator('div[role="row"]').nth(1);
+      await dataRows.waitFor({ state: 'visible', timeout: 10000 });
+
       // Search for "C-14"
       const searchInput = page.locator('input[placeholder*="Search"]');
       await searchInput.fill('C-14');
-      await page.waitForTimeout(300);
+      await page.waitForTimeout(500); // Increased timeout for filtering
 
-      // Should have results
-      const table = page.locator('table tbody tr');
-      const count = await table.count();
+      // Should have results (subtract header row)
+      const allRows = page.locator('div[role="row"]');
+      const count = await allRows.count() - 1;
       expect(count).toBeGreaterThan(0);
 
       // Check for C-14 in results
-      const firstRow = table.first();
-      const rowText = await firstRow.textContent();
+      const firstDataRow = page.locator('div[role="row"]').nth(1);
+      const rowText = await firstDataRow.textContent();
       expect(rowText).toMatch(/C.*14/);
     });
 
@@ -85,18 +99,18 @@ test.describe('Element Data - Filtering and Sorting', () => {
       await page.getByRole('tab', { name: /Elements/i }).click();
       await page.waitForTimeout(500);
 
-      // Get table
-      const table = page.locator('table');
-      await expect(table).toBeVisible();
+      // Wait for data rows to be visible
+      const dataRows = page.locator('div[role="row"]').nth(1);
+      await dataRows.waitFor({ state: 'visible', timeout: 10000 });
 
       // Find "Symbol" column header and click it
-      const symbolHeader = table.locator('thead th').filter({ hasText: /Symbol/i }).first();
+      const symbolHeader = page.locator('div[role="columnheader"]').filter({ hasText: /Symbol/i }).first();
       await symbolHeader.click();
-      await page.waitForTimeout(300);
+      await page.waitForTimeout(500); // Increased timeout for sorting
 
-      // Get first row's symbol (td[0] has chevron+Z, td[1] has SYMBOL)
-      const firstRow = table.locator('tbody tr').first();
-      const firstSymbol = await firstRow.locator('td').nth(1).textContent();
+      // Get first data row's symbol (cell[0] has Z, cell[1] has SYMBOL)
+      const firstDataRow = page.locator('div[role="row"]').nth(1);
+      const firstSymbol = await firstDataRow.locator('div[role="cell"]').nth(1).textContent();
 
       // Should be sorted alphabetically (Ac is first alphabetically, Zr is last)
       // After first click, should show valid element symbol
@@ -104,9 +118,9 @@ test.describe('Element Data - Filtering and Sorting', () => {
 
       // Click again to reverse sort
       await symbolHeader.click();
-      await page.waitForTimeout(300);
+      await page.waitForTimeout(500); // Increased timeout for sorting
 
-      const firstSymbolReversed = await table.locator('tbody tr').first().locator('td').nth(1).textContent();
+      const firstSymbolReversed = await page.locator('div[role="row"]').nth(1).locator('div[role="cell"]').nth(1).textContent();
       // After reversing, first symbol should be different
       expect(firstSymbolReversed?.trim()).not.toBe(firstSymbol?.trim());
     });
@@ -116,23 +130,27 @@ test.describe('Element Data - Filtering and Sorting', () => {
       await page.getByRole('tab', { name: /Nuclides/i }).click();
       await page.waitForTimeout(500);
 
-      const table = page.locator('table');
-      await expect(table).toBeVisible();
+      // Wait for data rows to be visible
+      const dataRows = page.locator('div[role="row"]').nth(1);
+      await dataRows.waitFor({ state: 'visible', timeout: 10000 });
 
       // Find "Z" column header
-      const zHeader = table.locator('thead th').filter({ hasText: /^Z$/i }).first();
+      const zHeader = page.locator('div[role="columnheader"]').filter({ hasText: /^Z$/i }).first();
       await zHeader.click();
-      await page.waitForTimeout(300);
+      await page.waitForTimeout(500); // Increased timeout for sorting
 
-      // Get first few rows
-      const rows = table.locator('tbody tr');
-      const firstRow = await rows.first().locator('td').nth(1).textContent(); // Z column
-      const secondRow = await rows.nth(1).locator('td').nth(1).textContent();
+      // Get first few data rows (skip header at nth(0))
+      const firstRow = page.locator('div[role="row"]').nth(1);
+      const secondRow = page.locator('div[role="row"]').nth(2);
+
+      // Z column is typically at index 1 (after nuclide name/symbol)
+      const firstZ = await firstRow.locator('div[role="cell"]').nth(1).textContent();
+      const secondZ = await secondRow.locator('div[role="cell"]').nth(1).textContent();
 
       // Should be numerically sorted
-      const firstZ = parseInt(firstRow || '0');
-      const secondZ = parseInt(secondRow || '0');
-      expect(firstZ).toBeLessThanOrEqual(secondZ);
+      const firstZNum = parseInt(firstZ || '0');
+      const secondZNum = parseInt(secondZ || '0');
+      expect(firstZNum).toBeLessThanOrEqual(secondZNum);
     });
 
     test('should sort decay table by energy', async ({ page }) => {
@@ -140,17 +158,18 @@ test.describe('Element Data - Filtering and Sorting', () => {
       await page.getByRole('tab', { name: /Decay/i }).click();
       await page.waitForTimeout(1000);
 
-      const table = page.locator('table');
-      await expect(table).toBeVisible();
+      // Wait for data rows to be visible
+      const dataRows = page.locator('div[role="row"]').nth(1);
+      await dataRows.waitFor({ state: 'visible', timeout: 10000 });
 
       // Find "Energy" column header
-      const energyHeader = table.locator('thead th').filter({ hasText: /Energy/i }).first();
+      const energyHeader = page.locator('div[role="columnheader"]').filter({ hasText: /Energy/i }).first();
       await energyHeader.click();
-      await page.waitForTimeout(300);
+      await page.waitForTimeout(500); // Increased timeout for sorting
 
-      // Verify sorting indicator appears (optional)
-      const rows = table.locator('tbody tr');
-      const count = await rows.count();
+      // Verify sorting indicator appears and we have data rows
+      const allRows = page.locator('div[role="row"]');
+      const count = await allRows.count() - 1; // Subtract header row
       expect(count).toBeGreaterThan(0);
     });
   });
@@ -276,15 +295,16 @@ test.describe('Element Data - Filtering and Sorting', () => {
       const hasBadgeSelector = await alphaBadge.isVisible().catch(() => false);
 
       if (hasBadgeSelector) {
-        // Get initial row count
-        const initialCount = await page.locator('table tbody tr').count();
+        // Get initial row count (subtract header)
+        const allRows = page.locator('div[role="row"]');
+        const initialCount = await allRows.count() - 1;
 
         // Click Alpha badge
         await alphaBadge.click();
         await page.waitForTimeout(500);
 
         // Row count should change (likely decrease)
-        const filteredCount = await page.locator('table tbody tr').count();
+        const filteredCount = await allRows.count() - 1;
 
         // Should have some results but likely fewer
         expect(filteredCount).toBeGreaterThan(0);
@@ -325,8 +345,9 @@ test.describe('Element Data - Filtering and Sorting', () => {
         expect(alphaClass).toContain('bg-purple');
         expect(betaClass).toContain('bg-purple');
 
-        // Should still have results
-        const count = await page.locator('table tbody tr').count();
+        // Should still have results (subtract header)
+        const allRows = page.locator('div[role="row"]');
+        const count = await allRows.count() - 1;
         expect(count).toBeGreaterThan(0);
       }
     });
@@ -402,9 +423,13 @@ test.describe('Element Data - Filtering Mobile', () => {
 
   test.beforeEach(async ({ page }) => {
     await acceptPrivacyConsent(page);
-    await page.goto('/element-data');
+    // Navigate to Iron (Z=26) which has good data for all tabs
+    await page.goto('/element-data?Z=26');
     await acceptMeteredWarningIfPresent(page);
     await waitForDatabaseReady(page);
+
+    // Wait for element data to load
+    await page.getByRole('heading', { name: /Iron \(Fe\)/i }).waitFor({ state: 'visible', timeout: 10000 });
   });
 
   test('should have mobile-friendly filter panel', async ({ page }) => {
@@ -444,9 +469,9 @@ test.describe('Element Data - Filtering Mobile', () => {
     await collapseButton.click();
     await page.waitForTimeout(300);
 
-    // Filter panel should be collapsed, table should still be visible
-    const table = page.locator('table');
-    await expect(table).toBeVisible();
+    // Filter panel should be collapsed, data rows should still be visible
+    const dataRows = page.locator('div[role="row"]').nth(1);
+    await expect(dataRows).toBeVisible();
     await expect(expandButton).toBeVisible();
   });
 });
