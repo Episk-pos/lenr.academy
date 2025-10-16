@@ -3,7 +3,8 @@ import {
   waitForDatabaseReady,
   acceptMeteredWarningIfPresent,
   acceptPrivacyConsent,
-  dismissChangelogIfPresent
+  dismissChangelogIfPresent,
+  waitForReactionResults
 } from '../fixtures/test-helpers';
 
 test.describe('Two-to-Two Query Page', () => {
@@ -26,13 +27,11 @@ test.describe('Two-to-Two Query Page', () => {
   test('should execute two-to-two query', async ({ page }) => {
     // Use default selections (D + Ni,Li,Al,B,N + C → Any)
     // Query should execute automatically on page load
-    await page.waitForFunction(
-      () => document.querySelector('table') !== null,
-      { timeout: 15000 }
-    );
+    await waitForReactionResults(page, 'twotwo');
 
-    // Should show results table
-    await expect(page.locator('table')).toBeVisible();
+    // Should show results region
+    const resultsRegion = page.getByRole('region', { name: /Two-to-two reaction results/i });
+    await expect(resultsRegion).toBeVisible();
 
     // Should show execution time
     await expect(page.getByText(/Query executed in/i)).toBeVisible();
@@ -40,10 +39,7 @@ test.describe('Two-to-Two Query Page', () => {
 
   test('should filter by output elements', async ({ page }) => {
     // Wait for default query to execute
-    await page.waitForFunction(
-      () => document.querySelector('table') !== null,
-      { timeout: 15000 }
-    );
+    await waitForReactionResults(page, 'twotwo');
 
     // Open Output Element 4 selector and add Nitrogen
     const outputSelector = page.getByRole('button', { name: /^Any$/i }).last();
@@ -58,15 +54,13 @@ test.describe('Two-to-Two Query Page', () => {
     // Query should re-execute automatically
     await page.waitForTimeout(2000);
 
-    await expect(page.locator('table')).toBeVisible();
+    const resultsRegion = page.getByRole('region', { name: /Two-to-two reaction results/i });
+    await expect(resultsRegion).toBeVisible();
   });
 
   test('should filter by energy range', async ({ page }) => {
     // Wait for default query to execute first
-    await page.waitForFunction(
-      () => document.querySelector('table') !== null,
-      { timeout: 15000 }
-    );
+    await waitForReactionResults(page, 'twotwo');
 
     // Set energy range using placeholder selectors
     const minMevInput = page.getByPlaceholder(/min/i);
@@ -78,19 +72,18 @@ test.describe('Two-to-Two Query Page', () => {
     // Query auto-executes when filters change - wait for results to update
     await page.waitForTimeout(2000);
 
-    // Verify results table is still visible
-    await expect(page.locator('table')).toBeVisible();
+    // Verify results region is still visible
+    const resultsRegion = page.getByRole('region', { name: /Two-to-two reaction results/i });
+    await expect(resultsRegion).toBeVisible();
   });
 
   test('should handle complex multi-element queries', async ({ page }) => {
     // Use default multi-element selection (D + Ni,Li,Al,B,N + C)
     // which already tests complex queries
-    await page.waitForFunction(
-      () => document.querySelector('table') !== null,
-      { timeout: 20000 }
-    );
+    await waitForReactionResults(page, 'twotwo');
 
-    await expect(page.locator('table')).toBeVisible();
+    const resultsRegion = page.getByRole('region', { name: /Two-to-two reaction results/i });
+    await expect(resultsRegion).toBeVisible();
 
     // Verify multiple elements are selected
     await expect(page.getByText(/5 selected.*Ni.*Li/i)).toBeVisible();
@@ -99,17 +92,18 @@ test.describe('Two-to-Two Query Page', () => {
   test('should display reaction format A + B → C + D', async ({ page }) => {
     // Use default query which executes on load
     await page.waitForFunction(
-      () => document.querySelector('table tbody tr') !== null,
+      () => document.querySelector('[role="region"][aria-label="Two-to-two reaction results"] div[class*="grid"][class*="border-b"]') !== null,
       { timeout: 15000 }
     );
 
     // Results should show A + B → C + D format
-    const firstRow = page.locator('tbody tr').first();
+    const resultsRegion = page.getByRole('region', { name: /Two-to-two reaction results/i });
+    const firstRow = resultsRegion.locator('div[class*="grid"][class*="border-b"]').first();
     await expect(firstRow).toBeVisible();
 
-    // Should have table cells with nuclide data
-    const cells = firstRow.locator('td');
-    const count = await cells.count();
+    // Should have nuclide links in result rows
+    const links = resultsRegion.locator('a');
+    const count = await links.count();
     expect(count).toBeGreaterThan(0);
   });
 
@@ -117,7 +111,7 @@ test.describe('Two-to-Two Query Page', () => {
     // Two-to-two has 516,789 reactions, so limits are important
     // Default limit is 100, let's change it to 50
     await page.waitForFunction(
-      () => document.querySelector('table tbody') !== null,
+      () => document.querySelector('[role="region"][aria-label="Two-to-two reaction results"] div[class*="grid"][class*="border-b"]') !== null,
       { timeout: 15000 }
     );
 
@@ -128,7 +122,8 @@ test.describe('Two-to-Two Query Page', () => {
     await page.waitForTimeout(2000);
 
     // Should have at most 50 results
-    const rows = page.locator('tbody tr');
+    const resultsRegion = page.getByRole('region', { name: /Two-to-two reaction results/i });
+    const rows = resultsRegion.locator('div[class*="grid"][class*="border-b"]');
     const count = await rows.count();
     expect(count).toBeLessThanOrEqual(50);
 
@@ -138,10 +133,7 @@ test.describe('Two-to-Two Query Page', () => {
 
   test('should export two-to-two results', async ({ page }) => {
     // Use default query
-    await page.waitForFunction(
-      () => document.querySelector('table') !== null,
-      { timeout: 15000 }
-    );
+    await waitForReactionResults(page, 'twotwo');
 
     // Find export button
     const exportButton = page.getByRole('button', { name: /export|CSV/i });
@@ -157,13 +149,11 @@ test.describe('Two-to-Two Query Page', () => {
 
   test('should show performance warning for large queries', async ({ page }) => {
     // Default query already handles large dataset
-    await page.waitForFunction(
-      () => document.querySelector('table') !== null,
-      { timeout: 15000 }
-    );
+    await waitForReactionResults(page, 'twotwo');
 
     // Just verify query completes and shows results
-    await expect(page.locator('table')).toBeVisible();
+    const resultsRegion = page.getByRole('region', { name: /Two-to-two reaction results/i });
+    await expect(resultsRegion).toBeVisible();
 
     // Should show "Showing X of Y" message
     await expect(page.getByText(/Showing/i)).toBeVisible();
@@ -185,10 +175,7 @@ test.describe('Two-to-Two Query Page', () => {
 
   test('should allow both element and nuclide to be pinned simultaneously', async ({ page }) => {
     // Wait for default query results to load
-    await page.waitForFunction(
-      () => document.querySelector('table') !== null,
-      { timeout: 15000 }
-    );
+    await waitForReactionResults(page, 'twotwo');
 
     // Wait for sections to populate
     await page.locator('text=Elements Appearing in Results').waitFor({ state: 'visible', timeout: 10000 });
@@ -244,10 +231,7 @@ test.describe('Two-to-Two Query Page', () => {
 
   test('should persist pinned element in URL with pinE parameter', async ({ page }) => {
     // Wait for default query results to load
-    await page.waitForFunction(
-      () => document.querySelector('table') !== null,
-      { timeout: 15000 }
-    );
+    await waitForReactionResults(page, 'twotwo');
 
     // Click an element card from "Elements Appearing in Results"
     const elementCard = page.locator('text=Elements Appearing in Results').locator('..').locator('div[class*="cursor-pointer"]').first();
@@ -267,10 +251,7 @@ test.describe('Two-to-Two Query Page', () => {
 
   test('should persist pinned nuclide in URL with pinN parameter', async ({ page }) => {
     // Wait for default query results to load
-    await page.waitForFunction(
-      () => document.querySelector('table') !== null,
-      { timeout: 15000 }
-    );
+    await waitForReactionResults(page, 'twotwo');
 
     // Click a nuclide card from "Nuclides Appearing in Results"
     const nuclideCard = page.locator('text=Nuclides Appearing in Results').locator('..').locator('div[class*="cursor-pointer"]').first();
@@ -295,10 +276,7 @@ test.describe('Two-to-Two Query Page', () => {
     await waitForDatabaseReady(page);
 
     // Wait for results to load
-    await page.waitForFunction(
-      () => document.querySelector('table') !== null,
-      { timeout: 15000 }
-    );
+    await waitForReactionResults(page, 'twotwo');
 
     // Wait for "Elements Appearing in Results" section to be visible
     await page.locator('text=Elements Appearing in Results').waitFor({ state: 'visible', timeout: 10000 });
@@ -329,10 +307,7 @@ test.describe('Two-to-Two Query Page', () => {
     await waitForDatabaseReady(page);
 
     // Wait for results to load
-    await page.waitForFunction(
-      () => document.querySelector('table') !== null,
-      { timeout: 15000 }
-    );
+    await waitForReactionResults(page, 'twotwo');
 
     // Wait for sections to be visible
     await page.locator('text=Elements Appearing in Results').waitFor({ state: 'visible', timeout: 10000 });
@@ -365,10 +340,7 @@ test.describe('Two-to-Two Query Page', () => {
     await waitForDatabaseReady(page);
 
     // Wait for results to load
-    await page.waitForFunction(
-      () => document.querySelector('table') !== null,
-      { timeout: 15000 }
-    );
+    await waitForReactionResults(page, 'twotwo');
 
     // No cards should be pinned
     const pinnedCards = page.locator('div[class*="ring-2 ring-blue-400"]');
@@ -377,10 +349,7 @@ test.describe('Two-to-Two Query Page', () => {
 
   test('should unpin nuclide when pinning a different element', async ({ page }) => {
     // Wait for default query results to load (D+Ni,Li,Al,B,N+C)
-    await page.waitForFunction(
-      () => document.querySelector('table') !== null,
-      { timeout: 15000 }
-    );
+    await waitForReactionResults(page, 'twotwo');
 
     // Pin the first nuclide that appears in results
     const nuclideCards = page.locator('text=Nuclides Appearing in Results').locator('..').locator('div[class*="cursor-pointer"]');
@@ -431,7 +400,7 @@ test.describe('Two-to-Two Query Page', () => {
 
     // Wait for results to load
     await page.waitForFunction(
-      () => document.querySelector('table tbody tr') !== null,
+      () => document.querySelector('[role="region"][aria-label="Two-to-two reaction results"] div[class*="grid"][class*="border-b"]') !== null,
       { timeout: 15000 }
     );
 
@@ -447,8 +416,9 @@ test.describe('Two-to-Two Query Page', () => {
     // Verify D-2 is pinned
     await expect(d2Card).toHaveClass(/ring-2.*ring-blue-400/);
 
-    // Get all result rows
-    const allRows = page.locator('tbody tr');
+    // Get all result rows (skip header rows by excluding rows with uppercase text class)
+    const resultsRegion = page.getByRole('region', { name: /Two-to-two reaction results/i });
+    const allRows = resultsRegion.locator('div[class*="grid"][class*="border-b"]:not([class*="uppercase"])');
     const rowCount = await allRows.count();
     expect(rowCount).toBeGreaterThan(0);
 
@@ -491,10 +461,7 @@ test.describe('Two-to-Two Query - Performance', () => {
     const startTime = Date.now();
 
     // Wait for results
-    await page.waitForFunction(
-      () => document.querySelector('table') !== null,
-      { timeout: 20000 }
-    );
+    await waitForReactionResults(page, 'twotwo');
 
     const endTime = Date.now();
     const duration = endTime - startTime;
@@ -502,7 +469,8 @@ test.describe('Two-to-Two Query - Performance', () => {
     // Query should complete in reasonable time (< 20 seconds for complex query)
     expect(duration).toBeLessThan(20000);
 
-    await expect(page.locator('table')).toBeVisible();
+    const resultsRegion = page.getByRole('region', { name: /Two-to-two reaction results/i });
+    await expect(resultsRegion).toBeVisible();
 
     // Should show execution time
     await expect(page.getByText(/Query executed in/i)).toBeVisible();
@@ -521,12 +489,13 @@ test.describe('Two-to-Two Query - Navigation Links', () => {
   test('should have clickable links to element-data page for nuclides in results table', async ({ page }) => {
     // Wait for default query results to load
     await page.waitForFunction(
-      () => document.querySelector('table tbody tr') !== null,
+      () => document.querySelector('[role="region"][aria-label="Two-to-two reaction results"] div[class*="grid"][class*="border-b"]') !== null,
       { timeout: 15000 }
     );
 
-    // Find the first nuclide link in the results table
-    const firstNuclideLink = page.locator('tbody tr td a').first();
+    // Find the first nuclide link in the results
+    const resultsRegion = page.getByRole('region', { name: /Two-to-two reaction results/i });
+    const firstNuclideLink = resultsRegion.locator('a').first();
     await expect(firstNuclideLink).toBeVisible();
 
     // Verify it's a link with href

@@ -2,7 +2,8 @@ import { test, expect } from '@playwright/test';
 import {
   waitForDatabaseReady,
   acceptMeteredWarningIfPresent,
-  acceptPrivacyConsent
+  acceptPrivacyConsent,
+  waitForReactionResults
 } from '../fixtures/test-helpers';
 
 test.describe('Fusion Query Page', () => {
@@ -54,20 +55,15 @@ test.describe('Fusion Query Page', () => {
     // Query auto-executes on page load with default selections
 
     // Wait for results to load
-    await page.waitForFunction(
-      () => {
-        const resultsTable = document.querySelector('table');
-        return resultsTable !== null;
-      },
-      { timeout: 10000 }
-    );
+    await waitForReactionResults(page, 'fusion');
 
-    // Should show results table
-    await expect(page.locator('table')).toBeVisible();
+    // Should show results region
+    const resultsRegion = page.getByRole('region', { name: /fusion reaction results/i });
+    await expect(resultsRegion).toBeVisible();
 
-    // Should show some results (assuming H + C,O has reactions)
-    const rows = page.locator('tbody tr');
-    await expect(rows.first()).toBeVisible();
+    // Should show some results (check for result rows or grid cells)
+    const firstRow = resultsRegion.locator('div[class*="grid"][class*="border-b"]').first();
+    await expect(firstRow).toBeVisible();
 
     // Should show execution time
     await expect(page.getByText(/query executed in/i)).toBeVisible();
@@ -84,21 +80,15 @@ test.describe('Fusion Query Page', () => {
 
     // Query auto-executes when filters change - wait for results
     await page.waitForFunction(
-      () => document.querySelector('table') !== null,
+      () => document.querySelector('[role="region"][aria-label="Fusion reaction results"]') !== null,
       { timeout: 10000 }
     );
 
     // Verify results are within range (if results are shown)
-    const resultsTable = page.locator('table');
-    if (await resultsTable.isVisible()) {
-      // Check that MeV column values are within range
-      const mevCells = page.locator('tbody tr td:has-text("MeV")');
-      const count = await mevCells.count();
-
-      if (count > 0) {
-        // At least verify table exists with results
-        await expect(page.locator('tbody tr').first()).toBeVisible();
-      }
+    const resultsRegion = page.getByRole('region', { name: /Fusion reaction results/i });
+    if (await resultsRegion.isVisible()) {
+      // At least verify results region exists with results
+      await expect(resultsRegion.locator('div[class*="grid"][class*="border-b"]').first()).toBeVisible();
     }
   });
 
@@ -116,7 +106,7 @@ test.describe('Fusion Query Page', () => {
     await page.waitForTimeout(2000);
 
     // Results should be filtered accordingly
-    await expect(page.locator('table')).toBeVisible();
+    await expect(page.getByRole('region', { name: /Fusion reaction results/i })).toBeVisible();
   });
 
   test('should support multiple element selections', async ({ page }) => {
@@ -141,22 +131,22 @@ test.describe('Fusion Query Page', () => {
 
     // Query should execute automatically - wait for results
     await page.waitForFunction(
-      () => document.querySelector('table') !== null,
+      () => document.querySelector('[role="region"][aria-label="Fusion reaction results"]') !== null,
       { timeout: 10000 }
     );
 
-    await expect(page.locator('table')).toBeVisible();
+    await expect(page.getByRole('region', { name: /Fusion reaction results/i })).toBeVisible();
   });
 
   test('should display nuclide details on hover', async ({ page }) => {
     // Query auto-executes with default selections - wait for results table
     await page.waitForFunction(
-      () => document.querySelector('table tbody tr') !== null,
+      () => document.querySelector('[role="region"][aria-label="Fusion reaction results"] div[class*="grid"][class*="border-b"]') !== null,
       { timeout: 10000 }
     );
 
     // Hover over a nuclide symbol in the results
-    const firstNuclide = page.locator('tbody tr td a').first();
+    const firstNuclide = page.getByRole('region', { name: /Fusion reaction results/i }).locator('a').first();
 
     if (await firstNuclide.isVisible()) {
       await firstNuclide.hover();
@@ -173,7 +163,7 @@ test.describe('Fusion Query Page', () => {
   test('should export results to CSV', async ({ page }) => {
     // Query auto-executes with default selections - wait for results
     await page.waitForFunction(
-      () => document.querySelector('table') !== null,
+      () => document.querySelector('[role="region"][aria-label="Fusion reaction results"]') !== null,
       { timeout: 10000 }
     );
 
@@ -280,12 +270,12 @@ test.describe('Fusion Query Page', () => {
 
       // Query auto-executes when limit changes - wait for results
       await page.waitForFunction(
-        () => document.querySelector('table tbody') !== null,
+        () => document.querySelector('[role="region"][aria-label="Fusion reaction results"] div[class*="grid"][class*="border-b"]') !== null,
         { timeout: 10000 }
       );
 
       // Count rows
-      const rows = page.locator('tbody tr');
+      const rows = page.getByRole('region', { name: /Fusion reaction results/i }).locator('div[class*="grid"][class*="border-b"]');
       const count = await rows.count();
 
       // Should have at most 10 results (or fewer if query returns less)
@@ -296,7 +286,7 @@ test.describe('Fusion Query Page', () => {
   test('should allow both element and nuclide to be pinned simultaneously', async ({ page }) => {
     // Wait for default query results to load
     await page.waitForFunction(
-      () => document.querySelector('table') !== null,
+      () => document.querySelector('[role="region"][aria-label="Fusion reaction results"]') !== null,
       { timeout: 10000 }
     );
 
@@ -330,23 +320,23 @@ test.describe('Fusion Query Page', () => {
   test('should display radioactivity indicators for unstable isotopes in results', async ({ page }) => {
     // Wait for default query results to load
     await page.waitForFunction(
-      () => document.querySelector('table tbody tr') !== null,
+      () => document.querySelector('[role="region"][aria-label="Fusion reaction results"] div[class*="grid"][class*="border-b"]') !== null,
       { timeout: 10000 }
     );
 
-    // Look for radioactivity indicators (radiation icon SVG) in table cells
+    // Look for radioactivity indicators (radiation icon SVG) in result rows
     // The Radiation icon from lucide-react should appear next to radioactive isotopes
-    const radiationIcons = page.locator('tbody tr td svg[class*="lucide"]');
+    const resultsRegion = page.getByRole('region', { name: /Fusion reaction results/i });
 
-    // Just verify that the results table is visible and functional
+    // Just verify that the results region is visible and functional with rows
     // (Not all queries will return radioactive isotopes)
-    await expect(page.locator('table tbody tr').first()).toBeVisible();
+    await expect(resultsRegion.locator('div[class*="grid"][class*="border-b"]').first()).toBeVisible();
   });
 
   test('should show radioactivity indicators in nuclide summary cards', async ({ page }) => {
     // Wait for default query results to load
     await page.waitForFunction(
-      () => document.querySelector('table') !== null,
+      () => document.querySelector('[role="region"][aria-label="Fusion reaction results"]') !== null,
       { timeout: 10000 }
     );
 
@@ -369,7 +359,7 @@ test.describe('Fusion Query Page', () => {
   test('should persist pinned element in URL with pinE parameter', async ({ page }) => {
     // Wait for default query results to load
     await page.waitForFunction(
-      () => document.querySelector('table') !== null,
+      () => document.querySelector('[role="region"][aria-label="Fusion reaction results"]') !== null,
       { timeout: 10000 }
     );
 
@@ -392,7 +382,7 @@ test.describe('Fusion Query Page', () => {
   test('should persist pinned nuclide in URL with pinN parameter', async ({ page }) => {
     // Wait for default query results to load
     await page.waitForFunction(
-      () => document.querySelector('table') !== null,
+      () => document.querySelector('[role="region"][aria-label="Fusion reaction results"]') !== null,
       { timeout: 10000 }
     );
 
@@ -419,7 +409,7 @@ test.describe('Fusion Query Page', () => {
 
     // Wait for results to load
     await page.waitForFunction(
-      () => document.querySelector('table') !== null,
+      () => document.querySelector('[role="region"][aria-label="Fusion reaction results"]') !== null,
       { timeout: 10000 }
     );
 
@@ -450,7 +440,7 @@ test.describe('Fusion Query Page', () => {
 
     // Wait for results to load
     await page.waitForFunction(
-      () => document.querySelector('table') !== null,
+      () => document.querySelector('[role="region"][aria-label="Fusion reaction results"]') !== null,
       { timeout: 10000 }
     );
 
@@ -481,7 +471,7 @@ test.describe('Fusion Query Page', () => {
 
     // Wait for results to load
     await page.waitForFunction(
-      () => document.querySelector('table') !== null,
+      () => document.querySelector('[role="region"][aria-label="Fusion reaction results"]') !== null,
       { timeout: 10000 }
     );
 
@@ -518,7 +508,7 @@ test.describe('Fusion Query Page', () => {
 
     // Wait for results to load
     await page.waitForFunction(
-      () => document.querySelector('table') !== null,
+      () => document.querySelector('[role="region"][aria-label="Fusion reaction results"]') !== null,
       { timeout: 10000 }
     );
 
@@ -557,7 +547,7 @@ test.describe('Fusion Query Page', () => {
 
     // Wait for results to load
     await page.waitForFunction(
-      () => document.querySelector('table') !== null,
+      () => document.querySelector('[role="region"][aria-label="Fusion reaction results"]') !== null,
       { timeout: 10000 }
     );
 
@@ -572,7 +562,7 @@ test.describe('Fusion Query Page', () => {
   test('should unpin nuclide when pinning a different element', async ({ page }) => {
     // Wait for default query results to load (H + C,O)
     await page.waitForFunction(
-      () => document.querySelector('table') !== null,
+      () => document.querySelector('[role="region"][aria-label="Fusion reaction results"]') !== null,
       { timeout: 10000 }
     );
 
@@ -609,7 +599,7 @@ test.describe('Fusion Query Page', () => {
 
     // Wait for results to load
     await page.waitForFunction(
-      () => document.querySelector('table tbody tr') !== null,
+      () => document.querySelector('[role="region"][aria-label="Fusion reaction results"] div[class*="grid"][class*="border-b"]') !== null,
       { timeout: 10000 }
     );
 
@@ -625,8 +615,9 @@ test.describe('Fusion Query Page', () => {
     // Verify D-2 is pinned
     await expect(d2Card).toHaveClass(/ring-2.*ring-blue-400/);
 
-    // Get all result rows
-    const allRows = page.locator('tbody tr');
+    // Get all result rows (skip header rows by excluding rows with uppercase text class)
+    const resultsRegion = page.getByRole('region', { name: /Fusion reaction results/i });
+    const allRows = resultsRegion.locator('div[class*="grid"][class*="border-b"]:not([class*="uppercase"])');
     const rowCount = await allRows.count();
     expect(rowCount).toBeGreaterThan(0);
 
@@ -661,7 +652,7 @@ test.describe('Fusion Query Page', () => {
 
     // Wait for results to load
     await page.waitForFunction(
-      () => document.querySelector('table tbody tr') !== null,
+      () => document.querySelector('[role="region"][aria-label="Fusion reaction results"] div[class*="grid"][class*="border-b"]') !== null,
       { timeout: 10000 }
     );
 
@@ -684,7 +675,7 @@ test.describe('Fusion Query Page', () => {
     await expect(t3Card).toHaveClass(/ring-2.*ring-blue-400/);
 
     // Verify at least one row contains T-3
-    const allRows = page.locator('tbody tr');
+    const allRows = page.getByRole('region', { name: /Fusion reaction results/i }).locator('div[class*="grid"][class*="border-b"]');
     const rowCount = await allRows.count();
     expect(rowCount).toBeGreaterThan(0);
 
@@ -724,12 +715,12 @@ test.describe('Fusion Query - Mobile', () => {
     // Use default selections (H + C,O) and verify query works
     // Query should execute automatically on page load
     await page.waitForFunction(
-      () => document.querySelector('table') !== null,
+      () => document.querySelector('[role="region"][aria-label="Fusion reaction results"]') !== null,
       { timeout: 10000 }
     );
 
     // Results table should be visible and responsive
-    await expect(page.locator('table')).toBeVisible();
+    await expect(page.getByRole('region', { name: /Fusion reaction results/i })).toBeVisible();
   });
 });
 
@@ -744,12 +735,12 @@ test.describe('Fusion Query - Navigation Links', () => {
   test('should have clickable links to element-data page for nuclides in results table', async ({ page }) => {
     // Wait for default query results to load
     await page.waitForFunction(
-      () => document.querySelector('table tbody tr') !== null,
+      () => document.querySelector('[role="region"][aria-label="Fusion reaction results"] div[class*="grid"][class*="border-b"]') !== null,
       { timeout: 10000 }
     );
 
     // Find the first nuclide link in the results table
-    const firstNuclideLink = page.locator('tbody tr td a').first();
+    const firstNuclideLink = page.getByRole('region', { name: /Fusion reaction results/i }).locator('a').first();
     await expect(firstNuclideLink).toBeVisible();
 
     // Verify it's a link with href

@@ -2,7 +2,8 @@ import { test, expect } from '@playwright/test';
 import {
   waitForDatabaseReady,
   acceptMeteredWarningIfPresent,
-  acceptPrivacyConsent
+  acceptPrivacyConsent,
+  waitForReactionResults
 } from '../fixtures/test-helpers';
 
 test.describe('Fission Query Page', () => {
@@ -29,14 +30,12 @@ test.describe('Fission Query Page', () => {
     await ni.waitFor({ state: 'visible', timeout: 5000 });
     await ni.click();
 
-    // Query executes automatically - wait for results table
-    await page.waitForFunction(
-      () => document.querySelector('table') !== null,
-      { timeout: 10000 }
-    );
+    // Query executes automatically - wait for results
+    await waitForReactionResults(page, 'fission');
 
-    // Should show results table
-    await expect(page.locator('table')).toBeVisible();
+    // Should show results region
+    const resultsRegion = page.getByRole('region', { name: /Fission reaction results/i });
+    await expect(resultsRegion).toBeVisible();
 
     // Should show execution time
     await expect(page.getByText(/Query executed in/i)).toBeVisible();
@@ -50,12 +49,10 @@ test.describe('Fission Query Page', () => {
     await ni.click();
 
     // Query executes automatically - results should appear
-    await page.waitForFunction(
-      () => document.querySelector('table') !== null,
-      { timeout: 10000 }
-    );
+    await waitForReactionResults(page, 'fission');
 
-    await expect(page.locator('table')).toBeVisible();
+    const resultsRegion = page.getByRole('region', { name: /Fission reaction results/i });
+    await expect(resultsRegion).toBeVisible();
   });
 
   test('should filter by energy range', async ({ page }) => {
@@ -66,10 +63,7 @@ test.describe('Fission Query Page', () => {
     await fe.click();
 
     // Wait for dropdown to close and query to execute
-    await page.waitForFunction(
-      () => document.querySelector('table') !== null,
-      { timeout: 10000 }
-    );
+    await waitForReactionResults(page, 'fission');
 
     // Set energy filters
     const minMevInput = page.locator('input[type="number"]').first();
@@ -81,7 +75,8 @@ test.describe('Fission Query Page', () => {
     // Query should re-execute automatically
     await page.waitForTimeout(1000);
 
-    await expect(page.locator('table')).toBeVisible();
+    const resultsRegion = page.getByRole('region', { name: /Fission reaction results/i });
+    await expect(resultsRegion).toBeVisible();
   });
 
   test('should display fission reaction details', async ({ page }) => {
@@ -93,16 +88,17 @@ test.describe('Fission Query Page', () => {
 
     // Wait for results
     await page.waitForFunction(
-      () => document.querySelector('table tbody tr') !== null,
+      () => document.querySelector('[role="region"][aria-label="Fission reaction results"] div[class*="grid"][class*="border-b"]') !== null,
       { timeout: 10000 }
     );
 
     // Results should show input → output1 + output2 format
-    const firstRow = page.locator('tbody tr').first();
+    const resultsRegion = page.getByRole('region', { name: /Fission reaction results/i });
+    const firstRow = resultsRegion.locator('div[class*="grid"][class*="border-b"]').first();
     await expect(firstRow).toBeVisible();
 
-    // Should have nuclide data in table cells
-    await expect(page.locator('tbody tr td').first()).toBeVisible();
+    // Should have nuclide links in result rows
+    await expect(resultsRegion.locator('a').first()).toBeVisible();
   });
 
   test('should export fission results', async ({ page }) => {
@@ -113,10 +109,7 @@ test.describe('Fission Query Page', () => {
     await ni.click();
 
     // Wait for results
-    await page.waitForFunction(
-      () => document.querySelector('table') !== null,
-      { timeout: 10000 }
-    );
+    await waitForReactionResults(page, 'fission');
 
     // Find export button
     const exportButton = page.getByRole('button', { name: /export|download/i });
@@ -165,10 +158,7 @@ test.describe('Fission Query Page', () => {
 
   test('should allow both element and nuclide to be pinned simultaneously', async ({ page }) => {
     // Wait for default query results to load
-    await page.waitForFunction(
-      () => document.querySelector('table') !== null,
-      { timeout: 10000 }
-    );
+    await waitForReactionResults(page, 'fission');
 
     // Click an element card from "Elements Appearing in Results"
     const elementCard = page.locator('text=Elements Appearing in Results').locator('..').locator('div[class*="cursor-pointer"]').first();
@@ -199,10 +189,7 @@ test.describe('Fission Query Page', () => {
 
   test('should persist pinned element in URL with pinE parameter', async ({ page }) => {
     // Wait for default query results to load
-    await page.waitForFunction(
-      () => document.querySelector('table') !== null,
-      { timeout: 10000 }
-    );
+    await waitForReactionResults(page, 'fission');
 
     // Click an element card from "Elements Appearing in Results"
     const elementCard = page.locator('text=Elements Appearing in Results').locator('..').locator('div[class*="cursor-pointer"]').first();
@@ -222,10 +209,7 @@ test.describe('Fission Query Page', () => {
 
   test('should persist pinned nuclide in URL with pinN parameter', async ({ page }) => {
     // Wait for default query results to load
-    await page.waitForFunction(
-      () => document.querySelector('table') !== null,
-      { timeout: 10000 }
-    );
+    await waitForReactionResults(page, 'fission');
 
     // Click a nuclide card from "Nuclides Appearing in Results"
     const nuclideCard = page.locator('text=Nuclides Appearing in Results').locator('..').locator('div[class*="cursor-pointer"]').first();
@@ -249,10 +233,7 @@ test.describe('Fission Query Page', () => {
     await waitForDatabaseReady(page);
 
     // Wait for results to load
-    await page.waitForFunction(
-      () => document.querySelector('table') !== null,
-      { timeout: 10000 }
-    );
+    await waitForReactionResults(page, 'fission');
 
     // Wait for "Elements Appearing in Results" section to be visible
     await page.locator('text=Elements Appearing in Results').waitFor({ state: 'visible', timeout: 10000 });
@@ -282,10 +263,7 @@ test.describe('Fission Query Page', () => {
     await waitForDatabaseReady(page);
 
     // Wait for results to load
-    await page.waitForFunction(
-      () => document.querySelector('table') !== null,
-      { timeout: 10000 }
-    );
+    await waitForReactionResults(page, 'fission');
 
     // Wait for sections to be visible
     await page.locator('text=Elements Appearing in Results').waitFor({ state: 'visible', timeout: 10000 });
@@ -316,10 +294,7 @@ test.describe('Fission Query Page', () => {
     await waitForDatabaseReady(page);
 
     // Wait for results to load
-    await page.waitForFunction(
-      () => document.querySelector('table') !== null,
-      { timeout: 10000 }
-    );
+    await waitForReactionResults(page, 'fission');
 
     // No cards should be pinned
     const pinnedCards = page.locator('div[class*="ring-2 ring-blue-400"]');
@@ -328,10 +303,7 @@ test.describe('Fission Query Page', () => {
 
   test('should unpin nuclide when pinning a different element', async ({ page }) => {
     // Wait for default query results to load (Zr fission)
-    await page.waitForFunction(
-      () => document.querySelector('table') !== null,
-      { timeout: 10000 }
-    );
+    await waitForReactionResults(page, 'fission');
 
     // Pin a nuclide (e.g., Ca-48)
     const nuclideCards = page.locator('text=Nuclides Appearing in Results').locator('..').locator('div[class*="cursor-pointer"]');
@@ -362,12 +334,13 @@ test.describe('Fission Query Page', () => {
   test('should have clickable links to element-data page for nuclides in results table', async ({ page }) => {
     // Wait for default query results to load
     await page.waitForFunction(
-      () => document.querySelector('table tbody tr') !== null,
+      () => document.querySelector('[role="region"][aria-label="Fission reaction results"] div[class*="grid"][class*="border-b"]') !== null,
       { timeout: 10000 }
     );
 
-    // Find the first nuclide link in the results table
-    const firstNuclideLink = page.locator('tbody tr td a').first();
+    // Find the first nuclide link in the results
+    const resultsRegion = page.getByRole('region', { name: /Fission reaction results/i });
+    const firstNuclideLink = resultsRegion.locator('a').first();
     await expect(firstNuclideLink).toBeVisible();
 
     // Verify it's a link with href

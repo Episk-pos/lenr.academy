@@ -70,8 +70,8 @@ export async function setTheme(page: Page, theme: 'light' | 'dark') {
 export async function acceptPrivacyConsent(page: Page) {
   await page.context().addInitScript(() => {
     localStorage.setItem('lenr-analytics-consent', 'true');
-    // Also mark changelog as seen to prevent modal from appearing
-    localStorage.setItem('lenr-last-seen-version', 'v0.1.0-alpha.11');
+    // Disable changelog auto-launch (tests will open it explicitly if needed)
+    localStorage.setItem('lenr-changelog-disable-auto', 'true');
   });
 }
 
@@ -130,6 +130,37 @@ export async function waitForQueryResults(page: Page) {
       return !spinner;
     },
     { timeout: 10000 }
+  );
+}
+
+/**
+ * Helper to wait for query results to be visible (works with both virtualized and non-virtualized rendering)
+ * This replaces table-specific selectors that break with small result sets
+ */
+export async function waitForReactionResults(page: Page, queryType: 'fusion' | 'fission' | 'twotwo', timeout = 10000) {
+  const labelMap: Record<string, string> = {
+    'fusion': 'Fusion reaction results',
+    'fission': 'Fission reaction results',
+    'twotwo': 'Two-to-two reaction results'
+  };
+  const ariaLabel = labelMap[queryType];
+
+  await page.waitForFunction(
+    (label) => {
+      const resultsRegion = document.querySelector(`[role="region"][aria-label="${label}"]`);
+      if (!resultsRegion) return false;
+
+      // Check if results have content (either virtualized list or direct rendering)
+      const hasVirtualizedContent = resultsRegion.querySelector('[role="grid"]') !== null;
+      const hasDirectContent = resultsRegion.querySelector('div[class*="grid"][class*="border-b"]') !== null;
+      const hasEmptyMessage = resultsRegion.textContent?.includes('Run a query') ||
+                             resultsRegion.textContent?.includes('no results') ||
+                             resultsRegion.textContent?.includes('0 results');
+
+      return hasVirtualizedContent || hasDirectContent || hasEmptyMessage;
+    },
+    ariaLabel,
+    { timeout }
   );
 }
 

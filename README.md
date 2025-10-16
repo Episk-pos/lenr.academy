@@ -5,13 +5,15 @@
 
 A modern web application for exploring Low Energy Nuclear Reactions (LENR) and cold fusion transmutation pathways. Built on Dr. Alexander Parkhomov's nuclear reaction databases, this tool provides interactive queries and analysis of thermodynamically favorable nuclear transmutations.
 
-**🌐 Live Application**: [lenr.academy](https://lenr.academy)
+## Quick Links
 
-**📋 GitHub Project**: [Project Board](https://github.com/orgs/Episk-pos/projects/1)
-
-**💬 Community**: [GitHub Discussions](https://github.com/Episk-pos/lenr.academy/discussions)
-
-**📊 Analytics Dashboard**: [Public Usage Statistics](https://cloud.umami.is/share/JGkYeKU60K9D1t4U)
+| | |
+|---|---|
+| 🌐 **Production** | [lenr.academy](https://lenr.academy) |
+| 🧪 **Beta** | [beta.lenr.academy](https://beta.lenr.academy) - Latest `main` with passing CI |
+| 📋 **Project Board** | [View active development](https://github.com/orgs/Episk-pos/projects/1) |
+| 💬 **Discussions** | [Community & support](https://github.com/Episk-pos/lenr.academy/discussions) |
+| 📊 **Analytics** | [Public usage statistics](https://cloud.umami.is/share/JGkYeKU60K9D1t4U) |
 
 ## About
 
