@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo, useCallback, useRef } from 'react'
-import { Download, Info, Loader, Eye, EyeOff, Radiation, ChevronDown } from 'lucide-react'
+import { Download, Info, Loader, Eye, EyeOff, Radiation, ChevronDown, GripVertical } from 'lucide-react'
 import { useSearchParams, Link } from 'react-router-dom'
 import type { FissionReaction, QueryFilter, Element, Nuclide, AtomicRadiiData, HeatmapMode, HeatmapMetrics } from '../types'
 import { useDatabase } from '../contexts/DatabaseContext'
@@ -100,6 +100,10 @@ export default function FissionQuery() {
 
   const tableContainerRef = useRef<HTMLDivElement | null>(null)
   const [fissionViewportHeight, setFissionViewportHeight] = useState<number | null>(null)
+  const [userTableHeight, setUserTableHeight] = useState<number | null>(null)
+  const [isResizing, setIsResizing] = useState(false)
+  const resizeStartY = useRef<number>(0)
+  const resizeStartHeight = useRef<number>(0)
 
   const updateFissionViewportHeight = useCallback(() => {
     if (!tableContainerRef.current) return
@@ -144,6 +148,13 @@ export default function FissionQuery() {
   }, [fissionCompactRowHeight, fissionEstimatedRowHeight, results.length])
 
   const fissionListHeight = useMemo(() => {
+    // If user has manually resized, use their height (bounded by min/max)
+    if (userTableHeight !== null) {
+      const minHeight = 220
+      const maxHeight = fissionBaseListHeight
+      return Math.max(minHeight, Math.min(userTableHeight, maxHeight))
+    }
+
     // For small result sets, don't enforce a minimum height
     if (results.length <= SMALL_RESULT_THRESHOLD && results.length > 0) {
       return fissionBaseListHeight
@@ -154,9 +165,10 @@ export default function FissionQuery() {
       return base
     }
     return Math.max(minHeight, Math.min(base, fissionViewportHeight))
-  }, [fissionBaseListHeight, fissionViewportHeight, results.length])
+  }, [fissionBaseListHeight, fissionViewportHeight, results.length, userTableHeight])
 
-  const fissionUsesScrollbar = fissionListHeight < fissionBaseListHeight
+  // Check if scrollbar is needed: list is shorter than content OR content needs virtualization
+  const fissionUsesScrollbar = fissionListHeight < fissionBaseListHeight || results.length > SMALL_RESULT_THRESHOLD
   const fissionHeaderPadding = !showBosonFermion && fissionUsesScrollbar ? SCROLLBAR_COMPENSATION : 0
   const [highlightedNuclide, setHighlightedNuclide] = useState<string | null>(null)
   const [pinnedNuclide, setPinnedNuclide] = useState(false)
@@ -401,6 +413,52 @@ export default function FissionQuery() {
     a.download = `fission_reactions_${new Date().toISOString().split('T')[0]}.csv`
     a.click()
   }
+
+  // Table resize handlers
+  const handleResizeStart = useCallback((e: React.MouseEvent) => {
+    e.preventDefault()
+    setIsResizing(true)
+    resizeStartY.current = e.clientY
+    resizeStartHeight.current = userTableHeight ?? fissionListHeight
+  }, [fissionListHeight, userTableHeight])
+
+  const handleResizeMove = useCallback((e: MouseEvent) => {
+    if (!isResizing) return
+    const deltaY = e.clientY - resizeStartY.current
+    const newHeight = resizeStartHeight.current + deltaY
+    const minHeight = 220
+    const maxHeight = fissionBaseListHeight
+    setUserTableHeight(Math.max(minHeight, Math.min(newHeight, maxHeight)))
+  }, [isResizing, fissionBaseListHeight])
+
+  const handleResizeEnd = useCallback(() => {
+    setIsResizing(false)
+  }, [])
+
+  const handleResizeReset = useCallback(() => {
+    setUserTableHeight(null)
+  }, [])
+
+  // Reset user height when results change significantly
+  useEffect(() => {
+    setUserTableHeight(null)
+  }, [results.length, showBosonFermion])
+
+  // Add/remove mouse event listeners for resizing
+  useEffect(() => {
+    if (isResizing) {
+      document.addEventListener('mousemove', handleResizeMove)
+      document.addEventListener('mouseup', handleResizeEnd)
+      document.body.style.cursor = 'ns-resize'
+      document.body.style.userSelect = 'none'
+      return () => {
+        document.removeEventListener('mousemove', handleResizeMove)
+        document.removeEventListener('mouseup', handleResizeEnd)
+        document.body.style.cursor = ''
+        document.body.style.userSelect = ''
+      }
+    }
+  }, [isResizing, handleResizeMove, handleResizeEnd])
 
   // Helper function to check if a reaction contains a specific nuclide
   const reactionContainsNuclide = (reaction: FissionReaction, nuclide: string) => {
@@ -1009,6 +1067,18 @@ export default function FissionQuery() {
                   </div>
                 )}
               </div>
+
+              {/* Resize Handle - only show for virtualized tables with many results */}
+              {results.length > SMALL_RESULT_THRESHOLD && (
+                <div
+                  className="flex items-center justify-center py-1 cursor-ns-resize hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors border-t border-gray-200 dark:border-gray-700"
+                  onMouseDown={handleResizeStart}
+                  onDoubleClick={handleResizeReset}
+                  title="Drag to resize table height (double-click to reset)"
+                >
+                  <GripVertical className="w-4 h-4 text-gray-400 dark:text-gray-500" />
+                </div>
+              )}
             </div>
           </div>
 

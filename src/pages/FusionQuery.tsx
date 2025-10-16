@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo, useCallback, useRef } from 'react'
-import { Download, Info, Loader2, Eye, EyeOff, Radiation, ChevronDown, ChevronUp } from 'lucide-react'
+import { Download, Info, Loader2, Eye, EyeOff, Radiation, ChevronDown, ChevronUp, GripVertical } from 'lucide-react'
 import { useSearchParams, Link } from 'react-router-dom'
 import type { FusionReaction, QueryFilter, Nuclide, Element, AtomicRadiiData, HeatmapMode, HeatmapMetrics } from '../types'
 import { useDatabase } from '../contexts/DatabaseContext'
@@ -100,6 +100,10 @@ export default function FusionQuery() {
 
   const tableContainerRef = useRef<HTMLDivElement | null>(null)
   const [fusionViewportHeight, setFusionViewportHeight] = useState<number | null>(null)
+  const [userTableHeight, setUserTableHeight] = useState<number | null>(null)
+  const [isResizing, setIsResizing] = useState(false)
+  const resizeStartY = useRef<number>(0)
+  const resizeStartHeight = useRef<number>(0)
 
   const updateFusionViewportHeight = useCallback(() => {
     if (!tableContainerRef.current) return
@@ -144,6 +148,13 @@ export default function FusionQuery() {
   }, [fusionCompactRowHeight, fusionEstimatedRowHeight, results.length])
 
   const fusionListHeight = useMemo(() => {
+    // If user has manually resized, use their height (bounded by min/max)
+    if (userTableHeight !== null) {
+      const minHeight = 220
+      const maxHeight = fusionBaseListHeight
+      return Math.max(minHeight, Math.min(userTableHeight, maxHeight))
+    }
+
     // For small result sets, don't enforce a minimum height
     if (results.length <= SMALL_RESULT_THRESHOLD && results.length > 0) {
       return fusionBaseListHeight
@@ -154,9 +165,10 @@ export default function FusionQuery() {
       return base
     }
     return Math.max(minHeight, Math.min(base, fusionViewportHeight))
-  }, [fusionBaseListHeight, fusionViewportHeight, results.length])
+  }, [fusionBaseListHeight, fusionViewportHeight, results.length, userTableHeight])
 
-  const fusionUsesScrollbar = fusionListHeight < fusionBaseListHeight
+  // Check if scrollbar is needed: list is shorter than content OR content needs virtualization
+  const fusionUsesScrollbar = fusionListHeight < fusionBaseListHeight || results.length > SMALL_RESULT_THRESHOLD
   const fusionHeaderPadding = !showBosonFermion && fusionUsesScrollbar ? SCROLLBAR_COMPENSATION : 0
   const [highlightedNuclide, setHighlightedNuclide] = useState<string | null>(null)
   const [pinnedNuclide, setPinnedNuclide] = useState(false)
@@ -397,6 +409,52 @@ export default function FusionQuery() {
     }
   }
 
+  // Table resize handlers
+  const handleResizeStart = useCallback((e: React.MouseEvent) => {
+    e.preventDefault()
+    setIsResizing(true)
+    resizeStartY.current = e.clientY
+    resizeStartHeight.current = userTableHeight ?? fusionListHeight
+  }, [fusionListHeight, userTableHeight])
+
+  const handleResizeMove = useCallback((e: MouseEvent) => {
+    if (!isResizing) return
+    const deltaY = e.clientY - resizeStartY.current
+    const newHeight = resizeStartHeight.current + deltaY
+    const minHeight = 220
+    const maxHeight = fusionBaseListHeight
+    setUserTableHeight(Math.max(minHeight, Math.min(newHeight, maxHeight)))
+  }, [isResizing, fusionBaseListHeight])
+
+  const handleResizeEnd = useCallback(() => {
+    setIsResizing(false)
+  }, [])
+
+  const handleResizeReset = useCallback(() => {
+    setUserTableHeight(null)
+  }, [])
+
+  // Reset user height when results change significantly
+  useEffect(() => {
+    setUserTableHeight(null)
+  }, [results.length, showBosonFermion])
+
+  // Add/remove mouse event listeners for resizing
+  useEffect(() => {
+    if (isResizing) {
+      document.addEventListener('mousemove', handleResizeMove)
+      document.addEventListener('mouseup', handleResizeEnd)
+      document.body.style.cursor = 'ns-resize'
+      document.body.style.userSelect = 'none'
+      return () => {
+        document.removeEventListener('mousemove', handleResizeMove)
+        document.removeEventListener('mouseup', handleResizeEnd)
+        document.body.style.cursor = ''
+        document.body.style.userSelect = ''
+      }
+    }
+  }, [isResizing, handleResizeMove, handleResizeEnd])
+
   const exportToCSV = () => {
     if (results.length === 0) return
 
@@ -621,7 +679,7 @@ export default function FusionQuery() {
             <div className="flex items-center justify-between mb-4">
               <div className="flex-1">
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-                  Heatmap Visualization
+                  Element Heatmap
                 </h3>
                 <p className="text-sm text-gray-600 dark:text-gray-400">
                   Visualize which elements appear most frequently in the query results. The color intensity represents the selected metric value, with darker/more intense colors indicating higher values.
@@ -1176,6 +1234,18 @@ export default function FusionQuery() {
                 )}
               </div>
             </div>
+
+            {/* Resize Handle - only show for virtualized tables with many results */}
+            {results.length > SMALL_RESULT_THRESHOLD && (
+              <div
+                className="flex items-center justify-center py-1 cursor-ns-resize hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors border-t border-gray-200 dark:border-gray-700"
+                onMouseDown={handleResizeStart}
+                onDoubleClick={handleResizeReset}
+                title="Drag to resize table height (double-click to reset)"
+              >
+                <GripVertical className="w-4 h-4 text-gray-400 dark:text-gray-500" />
+              </div>
+            )}
           </div>
 
           {/* Nuclides Summary */}
