@@ -445,6 +445,7 @@ export default function TwoToTwoQuery() {
             availableElements={elements}
             selectedElements={selectedElement2}
             onSelectionChange={setSelectedElement2}
+            align="center"
           />
 
           {/* Output Element 1 Selection (E3) */}
@@ -453,6 +454,7 @@ export default function TwoToTwoQuery() {
             availableElements={elements}
             selectedElements={selectedOutputElement3}
             onSelectionChange={setSelectedOutputElement3}
+            align="center"
           />
 
           {/* Output Element 2 Selection (E4) */}
