@@ -31,6 +31,10 @@ export interface VirtualizedListProps<T> {
    * Optional class name passed to the scrollable list container.
    */
   className?: string
+  /**
+   * Accessible label applied to the underlying virtualized grid.
+   */
+  ariaLabel?: string
 }
 
 /**
@@ -47,6 +51,7 @@ export function VirtualizedList<T>({
   children,
   onRegisterSizeReset,
   className,
+  ariaLabel,
 }: VirtualizedListProps<T>) {
   const listRef = useRef<List>(null)
 
@@ -116,7 +121,7 @@ export function VirtualizedList<T>({
   return (
     <div className={containerClassName} style={{ height }}>
       <AutoSizer disableHeight>
-        {({ width }: { width: number }) => (
+        {({ width }: { width: number}) => (
           <List
             ref={listRef}
             width={width}
@@ -126,7 +131,7 @@ export function VirtualizedList<T>({
             deferredMeasurementCache={cache ?? undefined}
             overscanRowCount={overscanRowCount}
             rowRenderer={rowRenderer}
-            containerRole="list"
+            aria-label={ariaLabel}
             getRowHeight={undefined}
             tabIndex={-1}
           />

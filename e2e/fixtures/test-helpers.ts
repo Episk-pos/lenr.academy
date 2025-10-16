@@ -70,8 +70,8 @@ export async function setTheme(page: Page, theme: 'light' | 'dark') {
 export async function acceptPrivacyConsent(page: Page) {
   await page.context().addInitScript(() => {
     localStorage.setItem('lenr-analytics-consent', 'true');
-    // Also mark changelog as seen to prevent modal from appearing
-    localStorage.setItem('lenr-last-seen-version', 'v0.1.0-alpha.11');
+    // Disable changelog auto-launch (tests will open it explicitly if needed)
+    localStorage.setItem('lenr-changelog-disable-auto', 'true');
   });
 }
 

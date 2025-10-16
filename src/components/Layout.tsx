@@ -51,6 +51,7 @@ export default function Layout({ children }: LayoutProps) {
   const currentVersionKey = versionInfo.fullVersion
   const currentDisplayVersion = versionInfo.displayVersion
   const releaseTag = versionInfo.isRelease ? versionInfo.version : null
+  const shouldBypassAutoChangelog = typeof navigator !== 'undefined' && navigator.webdriver === true
 
   const CHANGELOG_SEEN_KEY = 'lenr-changelog-last-seen'
   const RELEASES_URL = 'https://github.com/Episk-pos/lenr.academy/releases'
@@ -158,6 +159,12 @@ export default function Layout({ children }: LayoutProps) {
   useEffect(() => {
     if (!currentVersionKey) return
 
+    const autoChangelogDisabled = localStorage.getItem('lenr-changelog-disable-auto') === 'true'
+    if (shouldBypassAutoChangelog || autoChangelogDisabled) {
+      localStorage.setItem(CHANGELOG_SEEN_KEY, currentVersionKey)
+      return
+    }
+
     const lastSeen = localStorage.getItem(CHANGELOG_SEEN_KEY)
 
     if (versionInfo.isRelease) {
@@ -169,7 +176,7 @@ export default function Layout({ children }: LayoutProps) {
     } else if (!lastSeen) {
       localStorage.setItem(CHANGELOG_SEEN_KEY, currentVersionKey)
     }
-  }, [CHANGELOG_SEEN_KEY, currentDisplayVersion, currentVersionKey, openChangelog, releaseTag, versionInfo.isRelease])
+  }, [CHANGELOG_SEEN_KEY, currentDisplayVersion, currentVersionKey, openChangelog, releaseTag, shouldBypassAutoChangelog, versionInfo.isRelease])
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
