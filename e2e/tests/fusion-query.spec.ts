@@ -85,16 +85,10 @@ test.describe('Fusion Query Page', () => {
     );
 
     // Verify results are within range (if results are shown)
-    const resultsTable = page.getByRole('region', { name: /Fusion reaction results/i });
-    if (await resultsTable.isVisible()) {
-      // Check that MeV column values are within range
-      const mevCells = page.locator('tbody tr td:has-text("MeV")');
-      const count = await mevCells.count();
-
-      if (count > 0) {
-        // At least verify table exists with results
-        await expect(page.getByRole('region', { name: /Fusion reaction results/i }).locator('div[class*="grid"][class*="border-b"]').first()).toBeVisible();
-      }
+    const resultsRegion = page.getByRole('region', { name: /Fusion reaction results/i });
+    if (await resultsRegion.isVisible()) {
+      // At least verify results region exists with results
+      await expect(resultsRegion.locator('div[class*="grid"][class*="border-b"]').first()).toBeVisible();
     }
   });
 
@@ -276,7 +270,7 @@ test.describe('Fusion Query Page', () => {
 
       // Query auto-executes when limit changes - wait for results
       await page.waitForFunction(
-        () => document.querySelector('table tbody') !== null,
+        () => document.querySelector('[role="region"][aria-label="Fusion reaction results"] div[class*="grid"][class*="border-b"]') !== null,
         { timeout: 10000 }
       );
 
@@ -330,13 +324,13 @@ test.describe('Fusion Query Page', () => {
       { timeout: 10000 }
     );
 
-    // Look for radioactivity indicators (radiation icon SVG) in table cells
+    // Look for radioactivity indicators (radiation icon SVG) in result rows
     // The Radiation icon from lucide-react should appear next to radioactive isotopes
-    const radiationIcons = page.locator('tbody tr td svg[class*="lucide"]');
+    const resultsRegion = page.getByRole('region', { name: /Fusion reaction results/i });
 
-    // Just verify that the results table is visible and functional
+    // Just verify that the results region is visible and functional with rows
     // (Not all queries will return radioactive isotopes)
-    await expect(page.locator('table tbody tr').first()).toBeVisible();
+    await expect(resultsRegion.locator('div[class*="grid"][class*="border-b"]').first()).toBeVisible();
   });
 
   test('should show radioactivity indicators in nuclide summary cards', async ({ page }) => {
@@ -621,8 +615,9 @@ test.describe('Fusion Query Page', () => {
     // Verify D-2 is pinned
     await expect(d2Card).toHaveClass(/ring-2.*ring-blue-400/);
 
-    // Get all result rows
-    const allRows = page.getByRole('region', { name: /Fusion reaction results/i }).locator('div[class*="grid"][class*="border-b"]');
+    // Get all result rows (skip header rows by excluding rows with uppercase text class)
+    const resultsRegion = page.getByRole('region', { name: /Fusion reaction results/i });
+    const allRows = resultsRegion.locator('div[class*="grid"][class*="border-b"]:not([class*="uppercase"])');
     const rowCount = await allRows.count();
     expect(rowCount).toBeGreaterThan(0);
 
