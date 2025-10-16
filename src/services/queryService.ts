@@ -9,6 +9,9 @@ import type {
   Element,
   AtomicRadiiData,
   DecayData,
+  HeatmapMetrics,
+  ReactionType,
+  Reaction,
 } from '../types';
 
 /**
@@ -194,19 +197,22 @@ export function queryFusion(db: Database, filter: QueryFilter): QueryResult<Fusi
 
   const whereClause = buildWhereClause(filter, 'fusion');
   const orderClause = buildOrderClause(filter);
-  const limit = Math.min(filter.limit || 100, 1000);
+
+  // Handle unlimited queries (filter.limit === undefined means no limit)
+  const hasLimit = filter.limit !== undefined;
+  const limit = hasLimit ? Math.min(filter.limit, 1000) : undefined;
 
   // First, count total matching rows
   const countSql = `SELECT COUNT(*) as total FROM FusionAll ${whereClause}`;
   const countResult = db.exec(countSql);
   const totalCount = (countResult[0]?.values[0]?.[0] as number) || 0;
 
-  // Then, fetch limited results
+  // Then, fetch results (limited or unlimited)
   const sql = `
     SELECT * FROM FusionAll
     ${whereClause}
     ${orderClause}
-    LIMIT ${limit}
+    ${limit !== undefined ? `LIMIT ${limit}` : ''}
   `;
 
   const results = db.exec(sql);
@@ -253,19 +259,22 @@ export function queryFission(db: Database, filter: QueryFilter): QueryResult<Fis
 
   const whereClause = buildWhereClause(filter, 'fission');
   const orderClause = buildOrderClause(filter);
-  const limit = Math.min(filter.limit || 100, 1000);
+
+  // Handle unlimited queries (filter.limit === undefined means no limit)
+  const hasLimit = filter.limit !== undefined;
+  const limit = hasLimit ? Math.min(filter.limit, 1000) : undefined;
 
   // First, count total matching rows
   const countSql = `SELECT COUNT(*) as total FROM FissionAll ${whereClause}`;
   const countResult = db.exec(countSql);
   const totalCount = (countResult[0]?.values[0]?.[0] as number) || 0;
 
-  // Then, fetch limited results
+  // Then, fetch results (limited or unlimited)
   const sql = `
     SELECT * FROM FissionAll
     ${whereClause}
     ${orderClause}
-    LIMIT ${limit}
+    ${limit !== undefined ? `LIMIT ${limit}` : ''}
   `;
 
   const results = db.exec(sql);
@@ -311,19 +320,22 @@ export function queryTwoToTwo(db: Database, filter: QueryFilter): QueryResult<Tw
 
   const whereClause = buildWhereClause(filter, 'twotwo');
   const orderClause = buildOrderClause(filter);
-  const limit = Math.min(filter.limit || 100, 1000);
+
+  // Handle unlimited queries (filter.limit === undefined means no limit)
+  const hasLimit = filter.limit !== undefined;
+  const limit = hasLimit ? Math.min(filter.limit, 1000) : undefined;
 
   // First, count total matching rows
   const countSql = `SELECT COUNT(*) as total FROM TwoToTwoAll ${whereClause}`;
   const countResult = db.exec(countSql);
   const totalCount = (countResult[0]?.values[0]?.[0] as number) || 0;
 
-  // Then, fetch limited results
+  // Then, fetch results (limited or unlimited)
   const sql = `
     SELECT * FROM TwoToTwoAll
     ${whereClause}
     ${orderClause}
-    LIMIT ${limit}
+    ${limit !== undefined ? `LIMIT ${limit}` : ''}
   `;
 
   const results = db.exec(sql);
@@ -1018,4 +1030,78 @@ export function getAllDecays(
   }
 
   return { decays, totalCount };
+}
+
+/**
+ * Calculate heatmap metrics from reaction results
+ * Returns frequency, energy, and diversity maps for all elements in results
+ */
+export function calculateHeatmapMetrics(
+  reactions: Reaction[],
+  reactionType: ReactionType
+): HeatmapMetrics {
+  const frequency = new Map<string, number>();
+  const energy = new Map<string, number>();
+  const diversity = new Map<string, Set<string>>();
+
+  reactions.forEach((r) => {
+    let elements: string[] = [];
+
+    // Extract element symbols based on reaction type
+    if (reactionType === 'fusion') {
+      const fusion = r as FusionReaction;
+      elements = [fusion.E1, fusion.E2, fusion.E];
+    } else if (reactionType === 'fission') {
+      const fission = r as FissionReaction;
+      elements = [fission.E, fission.E1, fission.E2];
+    } else { // twotwo
+      const twotwo = r as TwoToTwoReaction;
+      elements = [twotwo.E1, twotwo.E2, twotwo.E3, twotwo.E4];
+    }
+
+    // Update metrics for each element in the reaction
+    elements.forEach((element) => {
+      // Frequency: count how many reactions this element appears in
+      frequency.set(element, (frequency.get(element) || 0) + 1);
+
+      // Energy: accumulate total MeV from reactions involving this element
+      energy.set(element, (energy.get(element) || 0) + r.MeV);
+
+      // Diversity: track unique isotopes for each element
+      if (!diversity.has(element)) {
+        diversity.set(element, new Set<string>());
+      }
+
+      // Add isotope signatures for diversity calculation
+      if (reactionType === 'fusion') {
+        const fusion = r as FusionReaction;
+        if (fusion.E1 === element) diversity.get(element)!.add(`${fusion.E1}-${fusion.A1}`);
+        if (fusion.E2 === element) diversity.get(element)!.add(`${fusion.E2}-${fusion.A2}`);
+        if (fusion.E === element) diversity.get(element)!.add(`${fusion.E}-${fusion.A}`);
+      } else if (reactionType === 'fission') {
+        const fission = r as FissionReaction;
+        if (fission.E === element) diversity.get(element)!.add(`${fission.E}-${fission.A}`);
+        if (fission.E1 === element) diversity.get(element)!.add(`${fission.E1}-${fission.A1}`);
+        if (fission.E2 === element) diversity.get(element)!.add(`${fission.E2}-${fission.A2}`);
+      } else { // twotwo
+        const twotwo = r as TwoToTwoReaction;
+        if (twotwo.E1 === element) diversity.get(element)!.add(`${twotwo.E1}-${twotwo.A1}`);
+        if (twotwo.E2 === element) diversity.get(element)!.add(`${twotwo.E2}-${twotwo.A2}`);
+        if (twotwo.E3 === element) diversity.get(element)!.add(`${twotwo.E3}-${twotwo.A3}`);
+        if (twotwo.E4 === element) diversity.get(element)!.add(`${twotwo.E4}-${twotwo.A4}`);
+      }
+    });
+  });
+
+  // Convert diversity Sets to counts
+  const diversityMap = new Map<string, number>();
+  diversity.forEach((isotopes, element) => {
+    diversityMap.set(element, isotopes.size);
+  });
+
+  return {
+    frequency,
+    energy,
+    diversity: diversityMap,
+  };
 }

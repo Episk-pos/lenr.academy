@@ -1,8 +1,9 @@
 import { Radiation } from 'lucide-react'
-import type { Element } from '../types'
+import type { Element, HeatmapMode } from '../types'
 import { useDatabase } from '../contexts/DatabaseContext'
 import { hasOnlyRadioactiveIsotopes } from '../services/queryService'
 import { SPECIAL_PARTICLES } from '../constants/specialParticles'
+import { useTheme } from '../contexts/ThemeContext'
 
 interface PeriodicTableProps {
   availableElements: Element[]
@@ -10,6 +11,10 @@ interface PeriodicTableProps {
   onElementClick: (symbol: string) => void
   selectedParticle?: string | null
   onParticleClick?: (particleId: string) => void
+  // Heatmap props
+  heatmapData?: Map<string, number>
+  heatmapMode?: HeatmapMode
+  showHeatmap?: boolean
 }
 
 const HYDROGEN_ISOTOPES = [
@@ -161,14 +166,91 @@ const SPECIAL_PARTICLES_BY_GROUP = SPECIAL_PARTICLES.reduce<Record<number, typeo
   return acc
 }, {})
 
+/**
+ * Calculate heatmap background color for an element
+ * Returns gradient colors from light → dark based on metric intensity
+ */
+function getHeatmapColor(
+  symbol: string,
+  heatmapData: Map<string, number> | undefined,
+  showHeatmap: boolean,
+  isDarkMode: boolean
+): string {
+  if (!showHeatmap || !heatmapData || !heatmapData.has(symbol)) {
+    return 'transparent'
+  }
+
+  const value = heatmapData.get(symbol) || 0
+  const maxValue = Math.max(...Array.from(heatmapData.values()))
+
+  if (maxValue === 0) return 'transparent'
+
+  // Calculate intensity (0-1 scale)
+  const intensity = value / maxValue
+
+  // Light mode: blue gradient (light-blue-50 → blue-900)
+  // Dark mode: green gradient (green-900/10 → green-400)
+  if (isDarkMode) {
+    // Green gradient for dark mode
+    if (intensity < 0.2) return 'rgba(20, 83, 45, 0.1)'  // green-900/10
+    if (intensity < 0.4) return 'rgba(20, 83, 45, 0.2)'  // green-900/20
+    if (intensity < 0.6) return 'rgba(34, 197, 94, 0.2)' // green-500/20
+    if (intensity < 0.8) return 'rgba(34, 197, 94, 0.4)' // green-500/40
+    return 'rgba(74, 222, 128, 0.6)'                      // green-400/60
+  } else {
+    // Blue gradient for light mode
+    if (intensity < 0.2) return 'rgb(239, 246, 255)'  // blue-50
+    if (intensity < 0.4) return 'rgb(219, 234, 254)'  // blue-100
+    if (intensity < 0.6) return 'rgb(191, 219, 254)'  // blue-200
+    if (intensity < 0.8) return 'rgb(147, 197, 253)'  // blue-300
+    return 'rgb(96, 165, 250)'                         // blue-400
+  }
+}
+
+/**
+ * Get tooltip text for heatmap metric
+ */
+function getHeatmapTooltip(
+  symbol: string,
+  heatmapData: Map<string, number> | undefined,
+  heatmapMode: HeatmapMode,
+  baseTitle: string
+): string {
+  if (!heatmapData || !heatmapData.has(symbol)) {
+    return baseTitle
+  }
+
+  const value = heatmapData.get(symbol) || 0
+  let metricLabel = ''
+
+  switch (heatmapMode) {
+    case 'frequency':
+      metricLabel = `${value} reactions`
+      break
+    case 'energy':
+      metricLabel = `${value.toFixed(2)} MeV total`
+      break
+    case 'diversity':
+      metricLabel = `${value} unique isotopes`
+      break
+  }
+
+  return `${baseTitle}\n${metricLabel}`
+}
+
 export default function PeriodicTable({
   availableElements,
   selectedElement,
   onElementClick,
   selectedParticle = null,
-  onParticleClick
+  onParticleClick,
+  heatmapData,
+  heatmapMode = 'frequency',
+  showHeatmap = false
 }: PeriodicTableProps) {
   const { db } = useDatabase()
+  const { theme } = useTheme()
+  const isDarkMode = theme === 'dark'
   const availableSymbols = new Set(availableElements.map(el => el.E))
 
   if (availableSymbols.has('H')) {
@@ -260,6 +342,12 @@ export default function PeriodicTable({
     const isPurelyRadioactive = db && isAvailable ? hasOnlyRadioactiveIsotopes(db, cellData.Z) : false
     const isHydrogenCell = cellData.symbol === 'H'
 
+    // Get heatmap background color
+    // In heatmap mode, color all elements that have data (even if not selectable)
+    // In selector mode, only color available/selectable elements
+    const heatmapBgColor = getHeatmapColor(cellData.symbol, heatmapData, showHeatmap, isDarkMode)
+    const hasHeatmap = heatmapBgColor !== 'transparent'
+
     const buttonClassName = `
       aspect-square relative
       flex flex-col items-center justify-center font-medium rounded border
@@ -273,9 +361,14 @@ export default function PeriodicTable({
     `
 
     const buttonTitle = isAvailable
-      ? isPurelyRadioactive
-        ? `${cellData.symbol} (Z=${cellData.Z}) - No stable isotopes`
-        : `${cellData.symbol} (Z=${cellData.Z})`
+      ? getHeatmapTooltip(
+          cellData.symbol,
+          heatmapData,
+          heatmapMode,
+          isPurelyRadioactive
+            ? `${cellData.symbol} (Z=${cellData.Z}) - No stable isotopes`
+            : `${cellData.symbol} (Z=${cellData.Z})`
+        )
       : `${cellData.symbol} - Not available`
 
     const buttonContent = (
@@ -298,6 +391,7 @@ export default function PeriodicTable({
           disabled={!isAvailable}
           className={buttonClassName}
           title={buttonTitle}
+          style={!isSelected && hasHeatmap ? { backgroundColor: heatmapBgColor } : undefined}
         >
           {buttonContent}
         </button>
@@ -311,6 +405,7 @@ export default function PeriodicTable({
           disabled={!isAvailable}
           className={buttonClassName}
           title={buttonTitle}
+          style={!isSelected && hasHeatmap ? { backgroundColor: heatmapBgColor } : undefined}
         >
           {buttonContent}
         </button>
@@ -318,6 +413,14 @@ export default function PeriodicTable({
           {HYDROGEN_ISOTOPES.map(isotope => {
             const isotopeAvailable = availableSymbols.has(isotope.symbol)
             const isotopeSelected = selectedElement === isotope.symbol
+
+            // Get heatmap colors for hydrogen isotopes
+            const isotopeBgColor = getHeatmapColor(isotope.symbol, heatmapData, showHeatmap, isDarkMode)
+            const isotopeHasHeatmap = isotopeBgColor !== 'transparent'
+
+            const isotopeTooltip = isotopeAvailable
+              ? getHeatmapTooltip(isotope.symbol, heatmapData, heatmapMode, `${isotope.label} - hydrogen isotope`)
+              : `${isotope.label} - hydrogen isotope`
 
             return (
               <button
@@ -333,7 +436,8 @@ export default function PeriodicTable({
                       : 'bg-gray-100 dark:bg-gray-900 text-gray-400 dark:text-gray-600 border-gray-200 dark:border-gray-800 cursor-not-allowed'
                   }
                 `}
-                title={`${isotope.label} - hydrogen isotope`}
+                title={isotopeTooltip}
+                style={!isotopeSelected && isotopeHasHeatmap ? { backgroundColor: isotopeBgColor } : undefined}
               >
                 {isotope.symbol}
               </button>

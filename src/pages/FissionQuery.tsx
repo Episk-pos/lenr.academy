@@ -458,18 +458,20 @@ export default function FissionQuery() {
             <Info className="w-4 h-4 text-gray-500 dark:text-gray-400" />
             <span className="text-sm font-medium text-gray-700 dark:text-gray-300">SQL Preview:</span>
           </div>
-          <code className="text-xs text-gray-600 dark:text-gray-400 block font-mono whitespace-pre-wrap">
-            SELECT * FROM FissionAll
-            {(selectedElement.length > 0 || selectedOutputElement1.length > 0 || selectedOutputElement2.length > 0 || filter.minMeV !== undefined || filter.maxMeV !== undefined) && ' WHERE '}
-            {selectedElement.length > 0 && `E IN (${selectedElement.map(e => `'${e}'`).join(', ')})`}
-            {selectedElement.length > 0 && (selectedOutputElement1.length > 0 || selectedOutputElement2.length > 0) && ' AND '}
-            {selectedOutputElement1.length > 0 && `E1 IN (${selectedOutputElement1.map(e => `'${e}'`).join(', ')})`}
-            {selectedOutputElement1.length > 0 && selectedOutputElement2.length > 0 && ' AND '}
-            {selectedOutputElement2.length > 0 && `E2 IN (${selectedOutputElement2.map(e => `'${e}'`).join(', ')})`}
-            {(selectedElement.length > 0 || selectedOutputElement1.length > 0 || selectedOutputElement2.length > 0) && filter.minMeV !== undefined && ' AND '}
-            {filter.minMeV !== undefined && `MeV >= ${filter.minMeV}`}
-            {filter.maxMeV !== undefined && ` AND MeV <= ${filter.maxMeV}`}
-            {` ORDER BY MeV ${filter.orderDirection?.toUpperCase()} LIMIT ${filter.limit || 100}`}
+          <code className="text-xs text-gray-600 dark:text-gray-400 block font-mono break-all">
+            {[
+              'SELECT * FROM FissionAll',
+              (selectedElement.length > 0 || selectedOutputElement1.length > 0 || selectedOutputElement2.length > 0 || filter.minMeV !== undefined || filter.maxMeV !== undefined) && ' WHERE ',
+              selectedElement.length > 0 && `E IN (${selectedElement.map(e => `'${e}'`).join(', ')})`,
+              selectedElement.length > 0 && (selectedOutputElement1.length > 0 || selectedOutputElement2.length > 0) && ' AND ',
+              selectedOutputElement1.length > 0 && `E1 IN (${selectedOutputElement1.map(e => `'${e}'`).join(', ')})`,
+              selectedOutputElement1.length > 0 && selectedOutputElement2.length > 0 && ' AND ',
+              selectedOutputElement2.length > 0 && `E2 IN (${selectedOutputElement2.map(e => `'${e}'`).join(', ')})`,
+              (selectedElement.length > 0 || selectedOutputElement1.length > 0 || selectedOutputElement2.length > 0) && filter.minMeV !== undefined && ' AND ',
+              filter.minMeV !== undefined && `MeV >= ${filter.minMeV}`,
+              filter.maxMeV !== undefined && ` AND MeV <= ${filter.maxMeV}`,
+              ` ORDER BY MeV ${filter.orderDirection?.toUpperCase()} LIMIT ${filter.limit || 100}`
+            ].filter(Boolean).join('').replace(/\s+/g, ' ').trim()};
           </code>
         </div>
       </div>

@@ -496,20 +496,22 @@ export default function TwoToTwoQuery() {
             <Info className="w-4 h-4 text-gray-500 dark:text-gray-400" />
             <span className="text-sm font-medium text-gray-700 dark:text-gray-300">SQL Preview:</span>
           </div>
-          <code className="text-xs text-gray-600 dark:text-gray-400 block font-mono whitespace-pre-wrap">
-            SELECT * FROM TwoToTwoAll
-            {(selectedElement1.length > 0 || selectedElement2.length > 0 || selectedOutputElement3.length > 0 || selectedOutputElement4.length > 0 || filter.minMeV !== undefined || filter.maxMeV !== undefined) && ' WHERE '}
-            {selectedElement1.length > 0 && `E1 IN (${selectedElement1.map(e => `'${e}'`).join(', ')})`}
-            {selectedElement1.length > 0 && (selectedElement2.length > 0 || selectedOutputElement3.length > 0 || selectedOutputElement4.length > 0) && ' AND '}
-            {selectedElement2.length > 0 && `E2 IN (${selectedElement2.map(e => `'${e}'`).join(', ')})`}
-            {selectedElement2.length > 0 && (selectedOutputElement3.length > 0 || selectedOutputElement4.length > 0) && ' AND '}
-            {selectedOutputElement3.length > 0 && `E3 IN (${selectedOutputElement3.map(e => `'${e}'`).join(', ')})`}
-            {selectedOutputElement3.length > 0 && selectedOutputElement4.length > 0 && ' AND '}
-            {selectedOutputElement4.length > 0 && `E4 IN (${selectedOutputElement4.map(e => `'${e}'`).join(', ')})`}
-            {(selectedElement1.length > 0 || selectedElement2.length > 0 || selectedOutputElement3.length > 0 || selectedOutputElement4.length > 0) && filter.minMeV !== undefined && ' AND '}
-            {filter.minMeV !== undefined && `MeV >= ${filter.minMeV}`}
-            {filter.maxMeV !== undefined && ` AND MeV <= ${filter.maxMeV}`}
-            {` ORDER BY MeV ${filter.orderDirection?.toUpperCase()} LIMIT ${filter.limit || 100}`}
+          <code className="text-xs text-gray-600 dark:text-gray-400 block font-mono break-all">
+            {[
+              'SELECT * FROM TwoToTwoAll',
+              (selectedElement1.length > 0 || selectedElement2.length > 0 || selectedOutputElement3.length > 0 || selectedOutputElement4.length > 0 || filter.minMeV !== undefined || filter.maxMeV !== undefined) && ' WHERE ',
+              selectedElement1.length > 0 && `E1 IN (${selectedElement1.map(e => `'${e}'`).join(', ')})`,
+              selectedElement1.length > 0 && (selectedElement2.length > 0 || selectedOutputElement3.length > 0 || selectedOutputElement4.length > 0) && ' AND ',
+              selectedElement2.length > 0 && `E2 IN (${selectedElement2.map(e => `'${e}'`).join(', ')})`,
+              selectedElement2.length > 0 && (selectedOutputElement3.length > 0 || selectedOutputElement4.length > 0) && ' AND ',
+              selectedOutputElement3.length > 0 && `E3 IN (${selectedOutputElement3.map(e => `'${e}'`).join(', ')})`,
+              selectedOutputElement3.length > 0 && selectedOutputElement4.length > 0 && ' AND ',
+              selectedOutputElement4.length > 0 && `E4 IN (${selectedOutputElement4.map(e => `'${e}'`).join(', ')})`,
+              (selectedElement1.length > 0 || selectedElement2.length > 0 || selectedOutputElement3.length > 0 || selectedOutputElement4.length > 0) && filter.minMeV !== undefined && ' AND ',
+              filter.minMeV !== undefined && `MeV >= ${filter.minMeV}`,
+              filter.maxMeV !== undefined && ` AND MeV <= ${filter.maxMeV}`,
+              ` ORDER BY MeV ${filter.orderDirection?.toUpperCase()} LIMIT ${filter.limit || 100}`
+            ].filter(Boolean).join('').replace(/\s+/g, ' ').trim()};
           </code>
         </div>
       </div>

@@ -1,11 +1,12 @@
 import { useState, useEffect, useMemo } from 'react'
-import { Download, Info, Loader2, Eye, EyeOff, Radiation } from 'lucide-react'
+import { Download, Info, Loader2, Eye, EyeOff, Radiation, ChevronDown, ChevronUp } from 'lucide-react'
 import { useSearchParams, Link } from 'react-router-dom'
-import type { FusionReaction, QueryFilter, Nuclide, Element, AtomicRadiiData } from '../types'
+import type { FusionReaction, QueryFilter, Nuclide, Element, AtomicRadiiData, HeatmapMode, HeatmapMetrics } from '../types'
 import { useDatabase } from '../contexts/DatabaseContext'
-import { queryFusion, getAllElements, getElementBySymbol, getNuclideBySymbol, getAtomicRadii, getFusionSqlPreview } from '../services/queryService'
+import { queryFusion, getAllElements, getElementBySymbol, getNuclideBySymbol, getAtomicRadii, getFusionSqlPreview, calculateHeatmapMetrics } from '../services/queryService'
 import { normalizeElementSymbol } from '../utils/formatUtils'
 import PeriodicTableSelector from '../components/PeriodicTableSelector'
+import PeriodicTable from '../components/PeriodicTable'
 import ElementDetailsCard from '../components/ElementDetailsCard'
 import NuclideDetailsCard from '../components/NuclideDetailsCard'
 import DatabaseLoadingCard from '../components/DatabaseLoadingCard'
@@ -102,6 +103,12 @@ export default function FusionQuery() {
   const [selectedElementRadii, setSelectedElementRadii] = useState<AtomicRadiiData | null>(null)
   const [hasInitializedFromUrl, setHasInitializedFromUrl] = useState(false)
 
+  // Heatmap state
+  const [showHeatmap, setShowHeatmap] = useState(false)
+  const [heatmapMode, setHeatmapMode] = useState<HeatmapMode>('frequency')
+  const [useAllResultsForHeatmap, setUseAllResultsForHeatmap] = useState(false)
+  const [allResults, setAllResults] = useState<FusionReaction[]>([])
+
   const queryFilter = useMemo<QueryFilter>(() => {
     const filterWithSelections: QueryFilter = {
       ...filter,
@@ -113,6 +120,26 @@ export default function FusionQuery() {
   }, [filter, selectedElement1, selectedElement2, selectedOutputElement])
 
   const sqlPreview = useMemo(() => getFusionSqlPreview(queryFilter), [queryFilter])
+
+  // Calculate heatmap metrics from results (either limited or all)
+  const heatmapMetrics = useMemo<HeatmapMetrics>(() => {
+    const dataToUse = useAllResultsForHeatmap ? allResults : results
+    console.log('Heatmap recalculating:', {
+      useAllResultsForHeatmap,
+      resultsLength: results.length,
+      allResultsLength: allResults.length,
+      totalCount,
+      usingDataLength: dataToUse.length
+    })
+    if (dataToUse.length === 0) {
+      return {
+        frequency: new Map(),
+        energy: new Map(),
+        diversity: new Map()
+      }
+    }
+    return calculateHeatmapMetrics(dataToUse, 'fusion')
+  }, [results, allResults, useAllResultsForHeatmap])
 
   // Load elements when database is ready
   useEffect(() => {
@@ -280,6 +307,15 @@ export default function FusionQuery() {
       setExecutionTime(result.executionTime)
       setTotalCount(result.totalCount)
       setShowResults(true)
+
+      // Also fetch unlimited results for heatmap if toggle is enabled
+      if (useAllResultsForHeatmap && result.totalCount > result.reactions.length) {
+        const unlimitedQuery = { ...queryFilter, limit: undefined }
+        const unlimitedResult = queryFusion(db, unlimitedQuery)
+        setAllResults(unlimitedResult.reactions)
+      } else if (!useAllResultsForHeatmap) {
+        setAllResults([]) // Clear allResults if toggle is off
+      }
     } catch (error) {
       console.error('Query failed:', error)
       alert(`Query failed: ${error instanceof Error ? error.message : 'Unknown error'}`)
@@ -476,8 +512,8 @@ export default function FusionQuery() {
             <Info className="w-4 h-4 text-gray-500 dark:text-gray-400" />
             <span className="text-sm font-medium text-gray-700 dark:text-gray-300">SQL Preview:</span>
           </div>
-          <code className="text-xs text-gray-600 dark:text-gray-400 block font-mono whitespace-pre-wrap">
-            {`${sqlPreview};`}
+          <code className="text-xs text-gray-600 dark:text-gray-400 block font-mono break-all">
+            {sqlPreview.replace(/\s+/g, ' ').trim()};
           </code>
         </div>
       </div>
@@ -485,6 +521,125 @@ export default function FusionQuery() {
       {/* Results */}
       {showResults && (
         <div className="space-y-6">
+          {/* Heatmap Visualization */}
+          <div className="card p-6">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex-1">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+                  Heatmap Visualization
+                </h3>
+                <p className="text-sm text-gray-600 dark:text-gray-400">
+                  Visualize which elements appear most frequently in the query results. The color intensity represents the selected metric value, with darker/more intense colors indicating higher values.
+                </p>
+              </div>
+              <button
+                onClick={() => setShowHeatmap(!showHeatmap)}
+                className="btn btn-secondary p-2 ml-4"
+                title={showHeatmap ? 'Collapse periodic table' : 'Expand periodic table'}
+                aria-label={showHeatmap ? 'Collapse periodic table' : 'Expand periodic table'}
+              >
+                <ChevronDown className={`w-5 h-5 transition-transform duration-200 ${showHeatmap ? 'rotate-180' : ''}`} />
+              </button>
+            </div>
+
+            <div className={`transition-all duration-300 ease-in-out overflow-hidden ${showHeatmap ? 'max-h-[2000px] opacity-100' : 'max-h-0 opacity-0'}`}>
+              <div className="pt-4">
+                {/* Metric Selector and Explanation on same row */}
+                <div className="flex flex-col md:flex-row gap-4 mb-4">
+                  {/* Metric Selector - Stacked label and input */}
+                  <div className="flex flex-col gap-1 md:min-w-[140px]">
+                    <label className="text-xs font-medium text-gray-700 dark:text-gray-300">
+                      Metric:
+                    </label>
+                    <select
+                      value={heatmapMode}
+                      onChange={(e) => setHeatmapMode(e.target.value as HeatmapMode)}
+                      className="input px-3 py-2 text-sm"
+                      title="Select heatmap metric"
+                    >
+                      <option value="frequency">Frequency</option>
+                      <option value="energy">Energy</option>
+                      <option value="diversity">Diversity</option>
+                    </select>
+                  </div>
+
+                  {/* Metric Explanation */}
+                  <div className="flex-1 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-md border border-blue-200 dark:border-blue-800">
+                    <p className="text-sm text-blue-900 dark:text-blue-100">
+                      {heatmapMode === 'frequency' && (
+                        <>
+                          <strong>Frequency:</strong> Shows how many times each element appears across {useAllResultsForHeatmap ? `all ${totalCount.toLocaleString()} matching` : results.length.toLocaleString()} reactions (as input or output).
+                          Elements that appear in more reactions have darker colors.
+                        </>
+                      )}
+                      {heatmapMode === 'energy' && (
+                        <>
+                          <strong>Energy:</strong> Shows the total energy (MeV) from all reactions involving each element.
+                          Elements with higher total energy output have darker colors.
+                        </>
+                      )}
+                      {heatmapMode === 'diversity' && (
+                        <>
+                          <strong>Diversity:</strong> Shows how many unique isotopes of each element appear in the results.
+                          Elements with more isotopic variety have darker colors.
+                        </>
+                      )}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Toggle for using all results */}
+                {results.length < totalCount && (
+                  <div className="mb-4">
+                    <label className="flex items-center gap-3 cursor-pointer">
+                      <span className="text-sm text-gray-700 dark:text-gray-300">
+                        Use all {totalCount.toLocaleString()} matching results
+                        {totalCount > 1000 && <span className="text-gray-500 dark:text-gray-400"> (may be slow)</span>}
+                      </span>
+                      <button
+                        type="button"
+                        role="switch"
+                        aria-checked={useAllResultsForHeatmap}
+                        onClick={() => {
+                          const newValue = !useAllResultsForHeatmap
+                          setUseAllResultsForHeatmap(newValue)
+                          // Re-run query to fetch unlimited results if toggled on
+                          if (newValue && db) {
+                            const unlimitedQuery = { ...queryFilter, limit: undefined }
+                            const unlimitedResult = queryFusion(db, unlimitedQuery)
+                            setAllResults(unlimitedResult.reactions)
+                          } else {
+                            setAllResults([])
+                          }
+                        }}
+                        className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 ${
+                          useAllResultsForHeatmap
+                            ? 'bg-blue-600'
+                            : 'bg-gray-200 dark:bg-gray-700'
+                        }`}
+                      >
+                        <span
+                          className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                            useAllResultsForHeatmap ? 'translate-x-6' : 'translate-x-1'
+                          }`}
+                        />
+                      </button>
+                    </label>
+                  </div>
+                )}
+
+                <PeriodicTable
+                  availableElements={resultElements}
+                  selectedElement={null}
+                  onElementClick={() => {}}
+                  heatmapData={heatmapMetrics[heatmapMode]}
+                  heatmapMode={heatmapMode}
+                  showHeatmap={showHeatmap}
+                />
+              </div>
+            </div>
+          </div>
+
           {/* Results Table */}
           <div className="card p-6">
             <div className="flex justify-between items-center mb-4">
@@ -502,7 +657,7 @@ export default function FusionQuery() {
                   )}
                 </p>
               </div>
-              <div className="flex gap-2">
+              <div className="flex flex-wrap gap-2">
                 <button
                   onClick={() => setShowBosonFermion(!showBosonFermion)}
                   className="btn btn-secondary px-4 py-2 text-sm"

@@ -3,6 +3,7 @@
 export type NeutrinoType = 'none' | 'left' | 'right';
 export type BosonFermionType = 'b' | 'f';
 export type ReactionType = 'fusion' | 'fission' | 'twotwo';
+export type HeatmapMode = 'frequency' | 'energy' | 'diversity';
 
 export interface Nuclide {
   id: number;
@@ -197,6 +198,12 @@ export interface QueryResult<T = Reaction> {
   executionTime: number;
   rowCount: number;
   totalCount: number;  // Total matching rows without limit
+}
+
+export interface HeatmapMetrics {
+  frequency: Map<string, number>;  // Element symbol → count of reaction appearances
+  energy: Map<string, number>;     // Element symbol → total MeV from reactions
+  diversity: Map<string, number>;  // Element symbol → count of unique isotopes
 }
 
 export interface CascadeParameters {
