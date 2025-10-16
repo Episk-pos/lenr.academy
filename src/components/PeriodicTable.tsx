@@ -1,5 +1,5 @@
 import { Radiation } from 'lucide-react'
-import type { Element, HeatmapMode } from '../types'
+import type { Element, HeatmapMode, HeatmapMetrics } from '../types'
 import { useDatabase } from '../contexts/DatabaseContext'
 import { hasOnlyRadioactiveIsotopes } from '../services/queryService'
 import { SPECIAL_PARTICLES } from '../constants/specialParticles'
@@ -15,6 +15,7 @@ interface PeriodicTableProps {
   heatmapData?: Map<string, number>
   heatmapMode?: HeatmapMode
   showHeatmap?: boolean
+  heatmapMetrics?: HeatmapMetrics  // Full metrics including input/output ratio
 }
 
 const HYDROGEN_ISOTOPES = [
@@ -22,7 +23,7 @@ const HYDROGEN_ISOTOPES = [
   { symbol: 'T', label: 'Tritium (3H)' }
 ]
 
-const ISOTOPE_BUTTON_COMMON = 'grid place-items-center rounded border border-dashed text-xs font-semibold leading-none px-1.5 py-1 transition-all duration-150 min-w-[2rem] min-h-[2rem]';
+const ISOTOPE_BUTTON_COMMON = 'grid place-items-center rounded border border-dashed text-xs font-semibold leading-none px-1.5 py-1 transition-all duration-500 min-w-[2rem] min-h-[2rem]';
 
 // Standard periodic table layout (Period, Group) for each element by atomic number
 const ELEMENT_POSITIONS: Record<number, { period: number; group: number }> = {
@@ -167,13 +168,21 @@ const SPECIAL_PARTICLES_BY_GROUP = SPECIAL_PARTICLES.reduce<Record<number, typeo
 }, {})
 
 /**
+ * Linear interpolation helper
+ */
+function lerp(start: number, end: number, t: number): number {
+  return Math.round(start + (end - start) * t)
+}
+
+/**
  * Calculate heatmap background color for an element
- * Returns gradient colors from light → dark based on metric intensity
- * Uses continuous gradient with 32 levels for fine color differentiation
+ * Color indicates input vs output role: blue (pure input) → teal (balanced) → green (pure output)
+ * Intensity indicates the metric value (frequency/energy/diversity)
  */
 function getHeatmapColor(
   symbol: string,
   heatmapData: Map<string, number> | undefined,
+  inputOutputRatio: Map<string, { inputCount: number; outputCount: number; ratio: number }> | undefined,
   showHeatmap: boolean,
   isDarkMode: boolean
 ): string {
@@ -186,28 +195,36 @@ function getHeatmapColor(
 
   if (maxValue === 0) return 'transparent'
 
-  // Calculate intensity (0-1 scale)
+  // Calculate intensity (0-1 scale) from metric value
   const intensity = value / maxValue
 
-  // 32-level gradient for very fine color differentiation
-  // Light mode: blue gradient (light blue → deep blue)
-  // Dark mode: green gradient (dim green → bright green)
+  // Get input/output ratio (0 = pure input, 0.5 = balanced, 1 = pure output)
+  const ratioData = inputOutputRatio?.get(symbol)
+  const ratio = ratioData?.ratio ?? 0.5 // Default to balanced if no ratio data
+
+  // Tailwind color values for consistency
+  const blue = { r: 37, g: 99, b: 235 }  // blue-600
+  const green = { r: 22, g: 163, b: 74 } // green-600
+
+  // Blend colors based on input/output ratio
+  const baseR = lerp(blue.r, green.r, ratio)
+  const baseG = lerp(blue.g, green.g, ratio)
+  const baseB = lerp(blue.b, green.b, ratio)
+
+  // For dark mode, reduce saturation and add transparency
   if (isDarkMode) {
-    // Green gradient for dark mode with 32 distinct levels
-    // Using HSL interpolation for smoother, more perceptible transitions
-    // hsl(140, 60%, 20%) at 0 → hsl(140, 80%, 65%) at 1
-    const hue = 140
-    const saturation = 60 + (intensity * 20) // 60% → 80%
-    const lightness = 20 + (intensity * 45)  // 20% → 65%
-    const alpha = 0.3 + (intensity * 0.6)    // 0.3 → 0.9 for better visibility
-    return `hsla(${hue}, ${saturation}%, ${lightness}%, ${alpha})`
+    // Darken the color and add transparency for dark mode
+    const r = Math.round(baseR * 0.6)
+    const g = Math.round(baseG * 0.6)
+    const b = Math.round(baseB * 0.6)
+    const alpha = 0.3 + (intensity * 0.5)  // 0.3 → 0.8 based on intensity
+    return `rgba(${r}, ${g}, ${b}, ${alpha})`
   } else {
-    // Blue gradient for light mode with 32 distinct levels
-    // Using RGB interpolation with exponential scaling for better perceptual uniformity
-    // From light blue rgb(240, 245, 255) to deep blue rgb(20, 60, 180)
-    const r = Math.round(240 - (intensity ** 0.8) * 220)
-    const g = Math.round(245 - (intensity ** 0.8) * 185)
-    const b = Math.round(255 - (intensity ** 0.8) * 75)
+    // Light mode: Blend with white based on inverse intensity (lighter = less intense)
+    const white = 255
+    const r = lerp(baseR, white, 1 - (intensity ** 0.7))
+    const g = lerp(baseG, white, 1 - (intensity ** 0.7))
+    const b = lerp(baseB, white, 1 - (intensity ** 0.7))
     return `rgb(${r}, ${g}, ${b})`
   }
 }
@@ -251,12 +268,14 @@ export default function PeriodicTable({
   onParticleClick,
   heatmapData,
   heatmapMode = 'frequency',
-  showHeatmap = false
+  showHeatmap = false,
+  heatmapMetrics
 }: PeriodicTableProps) {
   const { db } = useDatabase()
   const { theme } = useTheme()
   const isDarkMode = theme === 'dark'
   const availableSymbols = new Set(availableElements.map(el => el.E))
+  console.log("availableElements: ", availableElements)
 
   if (availableSymbols.has('H')) {
     availableSymbols.add('D')
@@ -344,37 +363,38 @@ export default function PeriodicTable({
 
     const isSelected = selectedElement === cellData.symbol
     const isAvailable = cellData.isAvailable
-    const isPurelyRadioactive = db && isAvailable ? hasOnlyRadioactiveIsotopes(db, cellData.Z) : false
+    const isPurelyRadioactive = db ? hasOnlyRadioactiveIsotopes(db, cellData.Z) : false
     const isHydrogenCell = cellData.symbol === 'H'
 
     // Get heatmap background color - show heatmap for ALL elements with data, not just available ones
-    const heatmapBgColor = getHeatmapColor(cellData.symbol, heatmapData, showHeatmap, isDarkMode)
+    const heatmapBgColor = getHeatmapColor(cellData.symbol, heatmapData, heatmapMetrics?.inputOutputRatio, showHeatmap, isDarkMode)
     const hasHeatmap = heatmapBgColor !== 'transparent'
+
+    // Element is clickable if it's either:
+    // 1. Available in the limited results (displayed in table), OR
+    // 2. Has heatmap data (meaning it appears in unlimited results used for heatmap)
+    const isClickable = isAvailable || hasHeatmap
 
     const buttonClassName = `
       aspect-square relative
       flex flex-col items-center justify-center font-medium rounded border
-      transition-all duration-150
+      transition-all duration-500
       ${isSelected
         ? 'bg-blue-500 text-white border-blue-600 ring-2 ring-blue-400 shadow-md'
-        : isAvailable
+        : isClickable
           ? 'bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600 hover:bg-blue-50 dark:hover:bg-blue-900/30 hover:border-blue-400 cursor-pointer'
-          : hasHeatmap
-            ? 'text-gray-900 dark:text-gray-100 border-gray-400 dark:border-gray-500 cursor-not-allowed'
-            : 'bg-gray-100 dark:bg-gray-900 text-gray-400 dark:text-gray-600 border-gray-200 dark:border-gray-800 cursor-not-allowed'
+          : 'bg-gray-100 dark:bg-gray-900 text-gray-400 dark:text-gray-600 border-gray-200 dark:border-gray-800 cursor-not-allowed'
       }
     `
 
-    const buttonTitle = isAvailable
-      ? getHeatmapTooltip(
-          cellData.symbol,
-          heatmapData,
-          heatmapMode,
-          isPurelyRadioactive
-            ? `${cellData.symbol} (Z=${cellData.Z}) - No stable isotopes`
-            : `${cellData.symbol} (Z=${cellData.Z})`
-        )
-      : `${cellData.symbol} - Not available`
+    const buttonTitle = getHeatmapTooltip(
+      cellData.symbol,
+      heatmapData,
+      heatmapMode,
+      isPurelyRadioactive
+        ? `${cellData.symbol} (Z=${cellData.Z}) - No stable isotopes`
+        : `${cellData.symbol} (Z=${cellData.Z})`
+    )
 
     const buttonContent = (
       <>
@@ -392,11 +412,11 @@ export default function PeriodicTable({
       return (
         <button
           key={key}
-          onClick={() => isAvailable && onElementClick(cellData.symbol)}
-          disabled={!isAvailable}
+          onClick={() => isClickable && onElementClick(cellData.symbol)}
+          disabled={!isClickable}
           className={buttonClassName}
           title={buttonTitle}
-          style={!isSelected && hasHeatmap ? { backgroundColor: heatmapBgColor, borderColor: hasHeatmap && !isAvailable ? 'rgb(156, 163, 175)' : undefined } : undefined}
+          style={!isSelected && hasHeatmap ? { backgroundColor: heatmapBgColor, borderColor: hasHeatmap && !isClickable ? 'rgb(156, 163, 175)' : undefined } : undefined}
         >
           {buttonContent}
         </button>
@@ -406,11 +426,11 @@ export default function PeriodicTable({
     return (
       <div key={key} className="relative inline-flex">
         <button
-          onClick={() => isAvailable && onElementClick(cellData.symbol)}
-          disabled={!isAvailable}
+          onClick={() => isClickable && onElementClick(cellData.symbol)}
+          disabled={!isClickable}
           className={buttonClassName}
           title={buttonTitle}
-          style={!isSelected && hasHeatmap ? { backgroundColor: heatmapBgColor, borderColor: hasHeatmap && !isAvailable ? 'rgb(156, 163, 175)' : undefined } : undefined}
+          style={!isSelected && hasHeatmap ? { backgroundColor: heatmapBgColor, borderColor: hasHeatmap && !isClickable ? 'rgb(156, 163, 175)' : undefined } : undefined}
         >
           {buttonContent}
         </button>
@@ -420,23 +440,26 @@ export default function PeriodicTable({
             const isotopeSelected = selectedElement === isotope.symbol
 
             // Get heatmap colors for hydrogen isotopes
-            const isotopeBgColor = getHeatmapColor(isotope.symbol, heatmapData, showHeatmap, isDarkMode)
+            const isotopeBgColor = getHeatmapColor(isotope.symbol, heatmapData, heatmapMetrics?.inputOutputRatio, showHeatmap, isDarkMode)
             const isotopeHasHeatmap = isotopeBgColor !== 'transparent'
 
-            const isotopeTooltip = isotopeAvailable
-              ? getHeatmapTooltip(isotope.symbol, heatmapData, heatmapMode, `${isotope.label} - hydrogen isotope`)
-              : `${isotope.label} - hydrogen isotope`
+            // Isotope is clickable if it's either:
+            // 1. Available in the limited results (displayed in table), OR
+            // 2. Has heatmap data (meaning it appears in unlimited results used for heatmap)
+            const isotopeClickable = isotopeAvailable || isotopeHasHeatmap
+
+            const isotopeTooltip = getHeatmapTooltip(isotope.symbol, heatmapData, heatmapMode, `${isotope.label} - hydrogen isotope`)
 
             return (
               <button
                 key={isotope.symbol}
-                onClick={() => isotopeAvailable && onElementClick(isotope.symbol)}
-                disabled={!isotopeAvailable}
+                onClick={() => isotopeClickable && onElementClick(isotope.symbol)}
+                disabled={!isotopeClickable}
                 className={`
                   ${ISOTOPE_BUTTON_COMMON}
                   ${isotopeSelected
                     ? 'bg-blue-500 text-white border-blue-600 ring-1 ring-blue-300 shadow'
-                    : isotopeAvailable
+                    : isotopeClickable
                       ? 'bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600 hover:bg-blue-50 dark:hover:bg-blue-900/30 hover:border-blue-400 cursor-pointer'
                       : 'bg-gray-100 dark:bg-gray-900 text-gray-400 dark:text-gray-600 border-gray-200 dark:border-gray-800 cursor-not-allowed'
                   }

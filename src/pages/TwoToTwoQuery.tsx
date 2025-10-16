@@ -74,7 +74,8 @@ export default function TwoToTwoQuery() {
 
   const getInitialLimit = () => {
     const param = searchParams.get('limit')
-    return param ? parseInt(param) : DEFAULT_LIMIT
+    // Support limit=0 for unlimited, otherwise default to DEFAULT_LIMIT
+    return param !== null ? parseInt(param) : DEFAULT_LIMIT
   }
 
   const [filter, setFilter] = useState<QueryFilter>({
@@ -144,44 +145,6 @@ export default function TwoToTwoQuery() {
   const twoTwoEstimatedRowHeight = useMemo(() => (showBosonFermion ? 110 : 92), [showBosonFermion])
   const twoTwoCompactRowHeight = useMemo(() => (showBosonFermion ? 92 : 82), [showBosonFermion])
 
-  const twoTwoBaseListHeight = useMemo(() => {
-    if (results.length === 0) {
-      return 160
-    }
-    if (results.length <= SMALL_RESULT_THRESHOLD) {
-      // For small result sets, use exact height without padding
-      return results.length * twoTwoCompactRowHeight
-    }
-    const preferred = results.length * twoTwoEstimatedRowHeight
-    const min = Math.max(twoTwoEstimatedRowHeight * Math.min(results.length, 4), 280)
-    const max = 640
-    return Math.min(max, Math.max(min, preferred))
-  }, [results.length, twoTwoCompactRowHeight, twoTwoEstimatedRowHeight])
-
-  const twoTwoListHeight = useMemo(() => {
-    // If user has manually resized, use their height (bounded by min/max)
-    if (userTableHeight !== null) {
-      const minHeight = 220
-      const maxHeight = twoTwoBaseListHeight
-      return Math.max(minHeight, Math.min(userTableHeight, maxHeight))
-    }
-
-    // For small result sets, don't enforce a minimum height or viewport constraint
-    if (results.length <= SMALL_RESULT_THRESHOLD && results.length > 0) {
-      return twoTwoBaseListHeight
-    }
-    const minHeight = 220
-    const base = Math.max(minHeight, twoTwoBaseListHeight)
-    if (twoTwoViewportHeight == null) {
-      return base
-    }
-    return Math.max(minHeight, Math.min(base, twoTwoViewportHeight))
-  }, [twoTwoBaseListHeight, twoTwoViewportHeight, results.length, userTableHeight])
-
-  // Check if scrollbar is needed: list is shorter than content OR content needs virtualization
-  const twoTwoUsesScrollbar = twoTwoListHeight < twoTwoBaseListHeight || results.length > SMALL_RESULT_THRESHOLD
-  const twoTwoHeaderPadding = !showBosonFermion && twoTwoUsesScrollbar ? SCROLLBAR_COMPENSATION : 0
-
   const [highlightedNuclide, setHighlightedNuclide] = useState<string | null>(null)
   const [pinnedNuclide, setPinnedNuclide] = useState(false)
   const [highlightedElement, setHighlightedElement] = useState<string | null>(null)
@@ -192,7 +155,7 @@ export default function TwoToTwoQuery() {
   const [hasInitializedFromUrl, setHasInitializedFromUrl] = useState(false)
 
   // Heatmap state
-  const [showHeatmap, setShowHeatmap] = useState(false)
+  const [showHeatmap, setShowHeatmap] = useState(true)
   const [heatmapMode, setHeatmapMode] = useState<HeatmapMode>('frequency')
   const [useAllResultsForHeatmap, setUseAllResultsForHeatmap] = useState(false)
   const [allResults, setAllResults] = useState<TwoToTwoReaction[]>([])
@@ -213,6 +176,30 @@ export default function TwoToTwoQuery() {
     return calculateHeatmapMetrics(dataToUse, 'twotwo')
   }, [results, allResults, useAllResultsForHeatmap])
 
+  // Helper function to check if a reaction contains a specific nuclide
+  const reactionContainsNuclide = useCallback((reaction: TwoToTwoReaction, nuclide: string) => {
+    const [element, mass] = nuclide.split('-')
+    const A = parseInt(mass)
+    return (
+      (reaction.E1 === element && reaction.A1 === A) ||
+      (reaction.E2 === element && reaction.A2 === A) ||
+      (reaction.E3 === element && reaction.A3 === A) ||
+      (reaction.E4 === element && reaction.A4 === A)
+    )
+  }, [])
+
+  // Helper function to check if a reaction contains a specific element
+  const reactionContainsElement = useCallback((reaction: TwoToTwoReaction, element: string) => {
+    // Normalize both the reaction element symbols and the search element to handle D/T → H mapping
+    const normalizedElement = normalizeElementSymbol(element)
+    return (
+      normalizeElementSymbol(reaction.E1) === normalizedElement ||
+      normalizeElementSymbol(reaction.E2) === normalizedElement ||
+      normalizeElementSymbol(reaction.E3) === normalizedElement ||
+      normalizeElementSymbol(reaction.E4) === normalizedElement
+    )
+  }, [])
+
   // Filter nuclides to only show those of the pinned element
   const filteredNuclides = useMemo(() => {
     if (!pinnedElement || !highlightedElement) {
@@ -222,6 +209,65 @@ export default function TwoToTwoQuery() {
     const normalizedElement = normalizeElementSymbol(highlightedElement)
     return nuclides.filter(nuc => normalizeElementSymbol(nuc.E) === normalizedElement)
   }, [nuclides, pinnedElement, highlightedElement])
+
+  // Filter reactions to only show those containing the pinned element/nuclide
+  const filteredResults = useMemo(() => {
+    // If nuclide is pinned, filter by nuclide
+    if (pinnedNuclide && highlightedNuclide) {
+      return results.filter(reaction => reactionContainsNuclide(reaction, highlightedNuclide))
+    }
+    // If only element is pinned, filter by element
+    if (pinnedElement && highlightedElement) {
+      return results.filter(reaction => reactionContainsElement(reaction, highlightedElement))
+    }
+    // No filtering
+    return results
+  }, [results, pinnedElement, highlightedElement, pinnedNuclide, highlightedNuclide, reactionContainsNuclide, reactionContainsElement])
+
+  // Calculate base height for filtered results
+  const filteredBaseListHeight = useMemo(() => {
+    if (filteredResults.length === 0) {
+      return 160
+    }
+    if (filteredResults.length <= SMALL_RESULT_THRESHOLD) {
+      // For small result sets, use exact height without padding
+      return filteredResults.length * twoTwoCompactRowHeight
+    }
+    const preferred = filteredResults.length * twoTwoEstimatedRowHeight
+    const min = Math.max(twoTwoEstimatedRowHeight * Math.min(filteredResults.length, 4), 280)
+    const max = 640
+    return Math.min(max, Math.max(min, preferred))
+  }, [filteredResults.length, twoTwoCompactRowHeight, twoTwoEstimatedRowHeight])
+
+  // Calculate actual height for filtered results
+  const filteredListHeight = useMemo(() => {
+    // If user has manually resized, use their height (bounded by min/max)
+    if (userTableHeight !== null) {
+      const minHeight = 220
+      const maxHeight = filteredBaseListHeight
+      return Math.max(minHeight, Math.min(userTableHeight, maxHeight))
+    }
+
+    // For small result sets, don't enforce a minimum height or viewport constraint
+    if (filteredResults.length <= SMALL_RESULT_THRESHOLD && filteredResults.length > 0) {
+      return filteredBaseListHeight
+    }
+    const minHeight = 220
+    const base = Math.max(minHeight, filteredBaseListHeight)
+    if (twoTwoViewportHeight == null) {
+      return base
+    }
+    return Math.max(minHeight, Math.min(base, twoTwoViewportHeight))
+  }, [filteredBaseListHeight, twoTwoViewportHeight, filteredResults.length, userTableHeight])
+
+  // Check if scrollbar is needed: list is shorter than content OR filtered content needs virtualization
+  const twoTwoUsesScrollbar = useMemo(() => {
+    return filteredListHeight < filteredBaseListHeight || filteredResults.length > SMALL_RESULT_THRESHOLD
+  }, [filteredListHeight, filteredBaseListHeight, filteredResults.length])
+
+  const twoTwoHeaderPadding = useMemo(() => {
+    return !showBosonFermion && twoTwoUsesScrollbar ? SCROLLBAR_COMPENSATION : 0
+  }, [showBosonFermion, twoTwoUsesScrollbar])
 
   // Load elements when database is ready
   useEffect(() => {
@@ -347,9 +393,8 @@ export default function TwoToTwoQuery() {
       params.set('neutrino', filter.neutrinoTypes?.join(',') || '')
     }
 
-    if (filter.limit !== DEFAULT_LIMIT) {
-      params.set('limit', filter.limit?.toString() || DEFAULT_LIMIT.toString())
-    }
+    // Always set limit parameter explicitly (including default 100)
+    params.set('limit', filter.limit?.toString() || DEFAULT_LIMIT.toString())
 
     // Add pinned element/nuclide state
     if (pinnedElement && highlightedElement) {
@@ -448,17 +493,17 @@ export default function TwoToTwoQuery() {
     e.preventDefault()
     setIsResizing(true)
     resizeStartY.current = e.clientY
-    resizeStartHeight.current = userTableHeight ?? twoTwoListHeight
-  }, [twoTwoListHeight, userTableHeight])
+    resizeStartHeight.current = userTableHeight ?? filteredListHeight
+  }, [filteredListHeight, userTableHeight])
 
   const handleResizeMove = useCallback((e: MouseEvent) => {
     if (!isResizing) return
     const deltaY = e.clientY - resizeStartY.current
     const newHeight = resizeStartHeight.current + deltaY
     const minHeight = 220
-    const maxHeight = twoTwoBaseListHeight
+    const maxHeight = filteredBaseListHeight
     setUserTableHeight(Math.max(minHeight, Math.min(newHeight, maxHeight)))
-  }, [isResizing, twoTwoBaseListHeight])
+  }, [isResizing, filteredBaseListHeight])
 
   const handleResizeEnd = useCallback(() => {
     setIsResizing(false)
@@ -488,30 +533,6 @@ export default function TwoToTwoQuery() {
       }
     }
   }, [isResizing, handleResizeMove, handleResizeEnd])
-
-  // Helper function to check if a reaction contains a specific nuclide
-  const reactionContainsNuclide = (reaction: TwoToTwoReaction, nuclide: string) => {
-    const [element, mass] = nuclide.split('-')
-    const A = parseInt(mass)
-    return (
-      (reaction.E1 === element && reaction.A1 === A) ||
-      (reaction.E2 === element && reaction.A2 === A) ||
-      (reaction.E3 === element && reaction.A3 === A) ||
-      (reaction.E4 === element && reaction.A4 === A)
-    )
-  }
-
-  // Helper function to check if a reaction contains a specific element
-  const reactionContainsElement = (reaction: TwoToTwoReaction, element: string) => {
-    // Normalize both the reaction element symbols and the search element to handle D/T → H mapping
-    const normalizedElement = normalizeElementSymbol(element)
-    return (
-      normalizeElementSymbol(reaction.E1) === normalizedElement ||
-      normalizeElementSymbol(reaction.E2) === normalizedElement ||
-      normalizeElementSymbol(reaction.E3) === normalizedElement ||
-      normalizeElementSymbol(reaction.E4) === normalizedElement
-    )
-  }
 
   if (dbLoading) {
     return <DatabaseLoadingCard downloadProgress={downloadProgress} />
@@ -646,8 +667,12 @@ export default function TwoToTwoQuery() {
                 <input
                   type="number"
                   className="input"
-                  value={filter.limit || 100}
-                  onChange={(e) => setFilter({...filter, limit: parseInt(e.target.value) || 100})}
+                  value={filter.limit ?? 100}
+                  onChange={(e) => {
+                    const val = e.target.value
+                    setFilter({...filter, limit: val === '' ? 100 : parseInt(val)})
+                  }}
+                  min={0}
                   max={1000}
                 />
                 <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Maximum 1000 rows</p>
@@ -761,30 +786,50 @@ export default function TwoToTwoQuery() {
                     <p className="text-sm text-blue-900 dark:text-blue-100">
                       {heatmapMode === 'frequency' && (
                         <>
-                          <strong>Frequency:</strong> Shows how many times each element appears across {useAllResultsForHeatmap ? `all ${totalCount.toLocaleString()} matching` : results.length.toLocaleString()} reactions (as input or output).
-                          Elements that appear in more reactions have darker colors.
+                          Number of times each element appears across {useAllResultsForHeatmap ? `all ${totalCount.toLocaleString()} matching` : results.length.toLocaleString()} reactions (as input or output).
+                          Higher frequency = darker color.
                         </>
                       )}
                       {heatmapMode === 'energy' && (
                         <>
-                          <strong>Energy:</strong> Shows the total energy (MeV) from all reactions involving each element.
-                          Elements with higher total energy output have darker colors.
+                          Total energy (MeV) from all reactions involving each element.
+                          Higher total energy = darker color.
                         </>
                       )}
                       {heatmapMode === 'diversity' && (
                         <>
-                          <strong>Diversity:</strong> Shows how many unique isotopes of each element appear in the results.
-                          Elements with more isotopic variety have darker colors.
+                          Number of unique isotopes of each element appearing in the results.
+                          More isotopic variety = darker color.
                         </>
                       )}
                     </p>
                   </div>
                 </div>
 
-                {/* Toggle for using all results */}
-                {results.length < totalCount && (
-                  <div className="mb-4">
-                    <label className="flex items-center gap-3 cursor-pointer">
+                {/* Color Legend */}
+                <div className="mb-4 p-3 bg-gray-50 dark:bg-gray-800 rounded-md border border-gray-200 dark:border-gray-700">
+                  <div className="flex items-center gap-3">
+                    <span className="text-xs font-medium text-gray-700 dark:text-gray-300 whitespace-nowrap">Element Role:</span>
+                    <div className="flex items-center gap-2 flex-1 min-w-0">
+                      <span className="text-xs text-gray-600 dark:text-gray-400 whitespace-nowrap">Input</span>
+                      <div className="flex-1 min-w-[60px] h-4 rounded" style={{
+                        background: 'linear-gradient(to right, rgb(37, 99, 235), rgb(29, 131, 155), rgb(22, 163, 74))'
+                      }}></div>
+                      <span className="text-xs text-gray-600 dark:text-gray-400 whitespace-nowrap">Output</span>
+                    </div>
+                    <span className="text-xs text-gray-500 dark:text-gray-400">• Intensity shows metric value</span>
+                  </div>
+                </div>
+
+                {/* Toggle for using all results + button to show all in table */}
+                <div className={`mb-4 flex flex-col sm:flex-row sm:items-center gap-3 transition-all duration-500 ease-in-out overflow-hidden ${
+                  filter.limit && filter.limit > 0 && totalCount > filter.limit
+                    ? 'max-h-40 opacity-100'
+                    : 'max-h-0 opacity-0 mb-0'
+                }`}>
+                  {filter.limit && filter.limit > 0 && totalCount > filter.limit && (
+                    <>
+                      <label className="flex items-center gap-3 cursor-pointer">
                       <span className="text-sm text-gray-700 dark:text-gray-300">
                         Use all {totalCount.toLocaleString()} matching results
                         {totalCount > 1000 && <span className="text-gray-500 dark:text-gray-400"> (may be slow)</span>}
@@ -827,8 +872,21 @@ export default function TwoToTwoQuery() {
                         />
                       </button>
                     </label>
-                  </div>
-                )}
+                    <button
+                      onClick={() => {
+                        // Set limit to 0 for unlimited AND enable heatmap toggle
+                        setFilter({...filter, limit: 0})
+                        setUseAllResultsForHeatmap(true)
+                      }}
+                      disabled={filter.limit === 0}
+                      className="btn btn-secondary px-4 py-2 text-sm whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed"
+                      title={filter.limit === 0 ? "Already showing all results" : "Remove limit and show all matching reactions in table"}
+                    >
+                      Show All in Table →
+                    </button>
+                    </>
+                  )}
+                </div>
 
                 <PeriodicTable
                   availableElements={resultElements}
@@ -836,18 +894,23 @@ export default function TwoToTwoQuery() {
                   onElementClick={(symbol) => {
                     // Toggle pin state if clicking same element, otherwise pin new element
                     if (pinnedElement && highlightedElement === symbol) {
-                      // Unpinning element
+                      // Unpinning element - also unpin any child nuclide
                       setPinnedElement(false)
                       setHighlightedElement(null)
+                      setPinnedNuclide(false)
+                      setHighlightedNuclide(null)
                     } else {
-                      // Pinning element
+                      // Pinning element - unpin any previously pinned nuclide
                       setPinnedElement(true)
                       setHighlightedElement(symbol)
+                      setPinnedNuclide(false)
+                      setHighlightedNuclide(null)
                     }
                   }}
                   heatmapData={heatmapMetrics[heatmapMode]}
                   heatmapMode={heatmapMode}
                   showHeatmap={showHeatmap}
+                  heatmapMetrics={heatmapMetrics}
                 />
               </div>
             </div>
@@ -857,14 +920,19 @@ export default function TwoToTwoQuery() {
             <div className="flex justify-between items-center mb-4">
               <div>
                 <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
-                  {results.length === totalCount
-                    ? `Showing all ${totalCount.toLocaleString()} matching reactions`
-                    : `Showing ${results.length.toLocaleString()} of ${totalCount.toLocaleString()} matching reactions`
-                  }
+                  {pinnedNuclide && highlightedNuclide ? (
+                    `Showing ${filteredResults.length.toLocaleString()} of ${results.length.toLocaleString()} reactions containing ${highlightedNuclide}`
+                  ) : pinnedElement && highlightedElement ? (
+                    `Showing ${filteredResults.length.toLocaleString()} of ${results.length.toLocaleString()} reactions containing ${highlightedElement}`
+                  ) : results.length === totalCount ? (
+                    `Showing all ${totalCount.toLocaleString()} matching reactions`
+                  ) : (
+                    `Showing ${results.length.toLocaleString()} of ${totalCount.toLocaleString()} matching reactions`
+                  )}
                 </h2>
                 <p className="text-sm text-gray-500 dark:text-gray-400">
                   Query executed in {executionTime.toFixed(2)}ms
-                  {results.length < totalCount && (
+                  {filter.limit && filter.limit > 0 && totalCount > filter.limit && (
                     <span className="ml-2">• Increase limit to see more results</span>
                   )}
                 </p>
@@ -958,9 +1026,9 @@ export default function TwoToTwoQuery() {
                   <div className="p-6 text-center text-sm text-gray-500 dark:text-gray-400">
                     Run a query to view two-to-two reactions.
                   </div>
-                ) : results.length <= SMALL_RESULT_THRESHOLD ? (
+                ) : filteredResults.length <= SMALL_RESULT_THRESHOLD ? (
                   <div style={{ paddingRight: twoTwoHeaderPadding }}>
-                    {results.map((reaction) => {
+                    {filteredResults.map((reaction) => {
                         const activeNuclide = pinnedNuclide ? highlightedNuclide : highlightedNuclide
                         const activeElement = pinnedElement ? highlightedElement : highlightedElement
                         const nuclideMatch = !activeNuclide || reactionContainsNuclide(reaction, activeNuclide)
@@ -1158,9 +1226,9 @@ export default function TwoToTwoQuery() {
                 ) : (
                   <div style={{ paddingRight: twoTwoHeaderPadding }}>
                     <VirtualizedList
-                      items={results}
+                      items={filteredResults}
                       estimatedRowHeight={twoTwoEstimatedRowHeight}
-                      height={twoTwoListHeight}
+                      height={filteredListHeight}
                       overscanRowCount={6}
                       className="relative"
                       ariaLabel="Two-to-two reaction results"
@@ -1364,7 +1432,7 @@ export default function TwoToTwoQuery() {
                 )}
 
                 {/* Resize Handle - only show for virtualized tables with many results */}
-                {results.length > SMALL_RESULT_THRESHOLD && (
+                {filteredResults.length > SMALL_RESULT_THRESHOLD && (
                   <div
                     className="flex items-center justify-center py-1 cursor-ns-resize hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors border-t border-gray-200 dark:border-gray-700"
                     onMouseDown={handleResizeStart}
@@ -1403,10 +1471,14 @@ export default function TwoToTwoQuery() {
                   onMouseLeave={() => !pinnedNuclide && setHighlightedNuclide(null)}
                   onClick={() => {
                     if (pinnedNuclide && highlightedNuclide === nuclideId) {
-                      // Unpinning nuclide only - do NOT unpin parent element
-                      // This allows element to remain pinned independently
+                      // Unpinning nuclide
                       setPinnedNuclide(false)
                       setHighlightedNuclide(null)
+                      // If heatmap is closed, also unpin the element since user can't interact with it
+                      if (!showHeatmap) {
+                        setPinnedElement(false)
+                        setHighlightedElement(null)
+                      }
                     } else {
                       // Pinning nuclide - also pin its parent element
                       const [elementSymbol] = nuclideId.split('-')

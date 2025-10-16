@@ -204,6 +204,7 @@ export interface HeatmapMetrics {
   frequency: Map<string, number>;  // Element symbol → count of reaction appearances
   energy: Map<string, number>;     // Element symbol → total MeV from reactions
   diversity: Map<string, number>;  // Element symbol → count of unique isotopes
+  inputOutputRatio: Map<string, { inputCount: number; outputCount: number; ratio: number }>; // Element symbol → input/output counts and ratio (0=pure input, 1=pure output)
 }
 
 export interface CascadeParameters {
