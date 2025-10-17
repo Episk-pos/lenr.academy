@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { X } from 'lucide-react'
+import { loadUmamiScript } from '../utils/analytics'
 
 const ANALYTICS_CONSENT_KEY = 'lenr-analytics-consent'
 const EXIT_ANIMATION_MS = 250
@@ -49,11 +50,15 @@ export default function PrivacyBanner({ className = '' }: PrivacyBannerProps) {
     }
   }, [])
 
-  const handleAccept = () => {
+  const handleAccept = async () => {
     localStorage.setItem(ANALYTICS_CONSENT_KEY, 'accepted')
     setIsVisible(false)
-    // Reload to enable analytics
-    window.location.reload()
+    // Load analytics script dynamically (no page reload needed)
+    try {
+      await loadUmamiScript()
+    } catch (error) {
+      console.error('Failed to load analytics:', error)
+    }
   }
 
   const handleOptOut = () => {
