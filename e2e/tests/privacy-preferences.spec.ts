@@ -92,8 +92,8 @@ test.describe('Privacy Preferences Page', () => {
     // Should show confirmation
     await expect(page.getByText(/your.*preference has been saved/i)).toBeVisible();
 
-    // Should show reload message
-    await expect(page.getByText(/to apply your changes.*reload/i)).toBeVisible();
+    // Should NOT show reload message (analytics loads dynamically now)
+    await expect(page.getByText(/to apply your error reporting changes.*reload/i)).not.toBeVisible();
 
     // Check localStorage was updated
     const consent = await page.evaluate(() => {
@@ -126,14 +126,14 @@ test.describe('Privacy Preferences Page', () => {
     expect(consent).toBe('declined');
   });
 
-  test('should reload page when clicking reload button', async ({ page }) => {
+  test('should reload page when clicking reload button (error reporting only)', async ({ page }) => {
     await page.goto('/privacy');
     await acceptMeteredWarningIfPresent(page);
     await waitForDatabaseReady(page);
 
-    // Enable analytics
-    const enableButton = page.getByRole('button', { name: /enable analytics/i });
-    await enableButton.click();
+    // Enable error reporting to trigger reload message
+    const enableErrorReportingButton = page.getByRole('button', { name: /enable error reporting/i });
+    await enableErrorReportingButton.click();
 
     // Click reload button
     const reloadButton = page.getByRole('button', { name: /reload page now/i });
@@ -164,20 +164,26 @@ test.describe('Privacy Preferences Page', () => {
     await expect(page.getByText(/analytics enabled/i)).toBeVisible();
   });
 
-  test('should load Umami script after enabling analytics with reload', async ({ page }) => {
+  test('should load Umami script dynamically after enabling analytics (no reload needed)', async ({ page }) => {
     await page.goto('/privacy');
     await acceptMeteredWarningIfPresent(page);
     await waitForDatabaseReady(page);
 
+    // Verify Umami script is NOT loaded yet
+    let hasUmamiScript = await page.evaluate(() => {
+      const scripts = Array.from(document.querySelectorAll('script'));
+      return scripts.some(script => script.src.includes('umami'));
+    });
+    expect(hasUmamiScript).toBe(false);
+
     // Enable analytics
     await page.getByRole('button', { name: /enable analytics/i }).click();
 
-    // Reload to trigger script loading
-    await page.reload();
-    await waitForDatabaseReady(page);
+    // Wait a moment for script loading
+    await page.waitForTimeout(1000);
 
-    // Check if Umami script is loaded
-    const hasUmamiScript = await page.evaluate(() => {
+    // Check if Umami script is loaded dynamically (no reload needed!)
+    hasUmamiScript = await page.evaluate(() => {
       const scripts = Array.from(document.querySelectorAll('script'));
       return scripts.some(script => script.src.includes('umami'));
     });
@@ -344,5 +350,77 @@ test.describe('Privacy Preferences - Accessibility', () => {
     // Enable/disable buttons should have clear names
     await expect(page.getByRole('button', { name: /enable analytics/i })).toBeVisible();
     await expect(page.getByRole('button', { name: /disable analytics/i })).toBeVisible();
+  });
+});
+
+test.describe('Privacy Banner - Dynamic Script Loading', () => {
+  test.beforeEach(async ({ page }) => {
+    await page.goto('/');
+    await clearAllStorage(page);
+  });
+
+  test('should load Umami script dynamically when accepting via banner (no reload)', async ({ page }) => {
+    await page.goto('/');
+    await acceptMeteredWarningIfPresent(page);
+    await waitForDatabaseReady(page);
+
+    // Banner should be visible
+    const banner = page.locator('[data-testid="analytics-banner"]');
+    await expect(banner).toBeVisible();
+
+    // Verify Umami script is NOT loaded yet
+    let hasUmamiScript = await page.evaluate(() => {
+      const scripts = Array.from(document.querySelectorAll('script'));
+      return scripts.some(script => script.src.includes('umami'));
+    });
+    expect(hasUmamiScript).toBe(false);
+
+    // Accept analytics via banner
+    const acceptButton = banner.getByRole('button', { name: /accept/i });
+    await acceptButton.click();
+
+    // Banner should disappear
+    await expect(banner).not.toBeVisible();
+
+    // Wait a moment for script loading
+    await page.waitForTimeout(1000);
+
+    // Check if Umami script is loaded dynamically (no reload!)
+    hasUmamiScript = await page.evaluate(() => {
+      const scripts = Array.from(document.querySelectorAll('script'));
+      return scripts.some(script => script.src.includes('umami'));
+    });
+
+    expect(hasUmamiScript).toBe(true);
+
+    // Verify localStorage was updated
+    const consent = await page.evaluate(() => {
+      return localStorage.getItem('lenr-analytics-consent');
+    });
+    expect(consent).toBe('accepted');
+  });
+
+  test('should not reload page when accepting analytics via banner', async ({ page }) => {
+    await page.goto('/');
+    await acceptMeteredWarningIfPresent(page);
+    await waitForDatabaseReady(page);
+
+    // Get the current navigation entry count to detect page reload
+    const initialTimestamp = await page.evaluate(() => performance.now());
+
+    // Accept analytics via banner
+    const banner = page.locator('[data-testid="analytics-banner"]');
+    const acceptButton = banner.getByRole('button', { name: /accept/i });
+    await acceptButton.click();
+
+    // Wait a moment
+    await page.waitForTimeout(500);
+
+    // Check that page didn't reload (timestamp should be continuous)
+    const currentTimestamp = await page.evaluate(() => performance.now());
+
+    // If page reloaded, performance.now() would reset to near 0
+    // If it didn't reload, it should be at least initialTimestamp + 500ms
+    expect(currentTimestamp).toBeGreaterThan(initialTimestamp + 400);
   });
 });
