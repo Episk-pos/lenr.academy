@@ -121,8 +121,11 @@ test.describe('Heatmap Metrics Calculation', () => {
     await page.goto('/twotwo?e1=D&e2=Ni&e3=C');
     await waitForDatabaseReady(page);
 
-    // Wait for the "Showing all X matching reactions" text which confirms query executed
-    await page.waitForSelector('text=/Showing .* matching reactions/', { timeout: 15000 });
+    // Wait for query to execute - table rows will appear
+    await page.waitForFunction(
+      () => document.querySelector('table tbody tr') !== null,
+      { timeout: 10000 }
+    );
 
     // Verify nuclides appear in two-to-two results (Elements card was removed, only Nuclides remain)
     const nuclideSection = page.getByText('Nuclides Appearing in Results');

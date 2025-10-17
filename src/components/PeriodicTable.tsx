@@ -275,7 +275,6 @@ export default function PeriodicTable({
   const { theme } = useTheme()
   const isDarkMode = theme === 'dark'
   const availableSymbols = new Set(availableElements.map(el => el.E))
-  console.log("availableElements: ", availableElements)
 
   if (availableSymbols.has('H')) {
     availableSymbols.add('D')
