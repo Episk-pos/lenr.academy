@@ -15,6 +15,9 @@ import CascadesAll from './pages/CascadesAll'
 import PrivacyPreferences from './pages/PrivacyPreferences'
 import SentryTest from './pages/SentryTest'
 import DatabaseErrorCard from './components/DatabaseErrorCard'
+import PWAUpdatePrompt from './components/PWAUpdatePrompt'
+import PWAInstallPrompt from './components/PWAInstallPrompt'
+import OfflineIndicator from './components/OfflineIndicator'
 
 function App() {
   return (
@@ -71,6 +74,11 @@ function App() {
         <DatabaseProvider>
           <Router>
             <LayoutProvider>
+              {/* PWA Components */}
+              <PWAUpdatePrompt />
+              <OfflineIndicator />
+              <PWAInstallPrompt />
+
               <Layout>
                 <Routes>
                 <Route path="/" element={<Home />} />
