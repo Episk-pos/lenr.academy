@@ -172,7 +172,8 @@ export default function FusionQuery() {
       return {
         frequency: new Map(),
         energy: new Map(),
-        diversity: new Map()
+        diversity: new Map(),
+        inputOutputRatio: new Map()
       }
     }
     return calculateHeatmapMetrics(dataToUse, 'fusion')

@@ -8,7 +8,7 @@
 
 import { useState, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch'
+import { TransformWrapper, TransformComponent, type ReactZoomPanPinchContentRef } from 'react-zoom-pan-pinch'
 import { ZoomIn, ZoomOut, Maximize2 } from 'lucide-react'
 import type { DecayChainNode } from '../types'
 import { expandHalfLifeUnit } from '../utils/formatUtils'
@@ -222,7 +222,7 @@ export default function DecayChainDiagram({ root, maxHeight = 600, showWrapper =
         doubleClick={{ disabled: false, mode: 'zoomIn' }}
         panning={{ velocityDisabled: false }}
       >
-        {({ zoomIn, zoomOut, resetTransform }) => (
+        {({ zoomIn, zoomOut, resetTransform }: ReactZoomPanPinchContentRef) => (
           <>
             {/* Zoom Controls */}
             <div className={minimal

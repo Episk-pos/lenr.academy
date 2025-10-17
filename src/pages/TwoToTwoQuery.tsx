@@ -170,7 +170,8 @@ export default function TwoToTwoQuery() {
       return {
         frequency: new Map(),
         energy: new Map(),
-        diversity: new Map()
+        diversity: new Map(),
+        inputOutputRatio: new Map()
       }
     }
     return calculateHeatmapMetrics(dataToUse, 'twotwo')

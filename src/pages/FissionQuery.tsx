@@ -159,7 +159,8 @@ export default function FissionQuery() {
       return {
         frequency: new Map(),
         energy: new Map(),
-        diversity: new Map()
+        diversity: new Map(),
+        inputOutputRatio: new Map()
       }
     }
     return calculateHeatmapMetrics(dataToUse, 'fission')
