@@ -121,18 +121,15 @@ test.describe('Heatmap Metrics Calculation', () => {
     await page.goto('/twotwo?e1=D&e2=Ni&e3=C');
     await waitForDatabaseReady(page);
 
-    // Wait for query to execute - table rows will appear
+    // Wait for query to execute - look for results region instead of table rows
     await page.waitForFunction(
-      () => document.querySelector('table tbody tr') !== null,
+      () => document.querySelector('[role="region"][aria-label="Two-to-Two reaction results"]') !== null,
       { timeout: 10000 }
     );
 
-    // Verify nuclides appear in two-to-two results (Elements card was removed, only Nuclides remain)
+    // Verify nuclides appear in two-to-two results
     const nuclideSection = page.getByText('Nuclides Appearing in Results');
-    await nuclideSection.scrollIntoViewIfNeeded();
-    const isVisible = await nuclideSection.isVisible();
-
-    expect(isVisible).toBe(true);
+    await expect(nuclideSection).toBeVisible({ timeout: 10000 });
   });
 
   test('should filter nuclides when element is pinned', async ({ page }) => {
@@ -162,8 +159,8 @@ test.describe('Heatmap Metrics Calculation', () => {
     await page.waitForTimeout(500);
 
     // Find and click an available element (e.g., Carbon)
-    // Use getByRole to be more specific about finding exactly "C"
-    const carbonButton = page.getByRole('button', { name: /^6\s+C$/ }).first();
+    // The heatmap periodic table button, not the selector
+    const carbonButton = page.getByRole('button', { name: /^6\s+C$/ }).nth(1);
     await carbonButton.click();
 
     // Wait for the nuclides list to update
@@ -209,7 +206,7 @@ test.describe('Heatmap Metrics Calculation', () => {
     expect(toggleText).toContain('Collapse');
 
     // Also verify periodic table elements are visible
-    const carbonButton = page.getByRole('button', { name: /^6\s+C$/ });
+    const carbonButton = page.getByRole('button', { name: /^6\s+C$/ }).nth(1);
     await expect(carbonButton).toBeVisible();
 
     // Verify the element is pinned (look for the filter message)
