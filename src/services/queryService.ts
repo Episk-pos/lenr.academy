@@ -9,6 +9,9 @@ import type {
   Element,
   AtomicRadiiData,
   DecayData,
+  HeatmapMetrics,
+  ReactionType,
+  Reaction,
 } from '../types';
 
 /**
@@ -194,19 +197,22 @@ export function queryFusion(db: Database, filter: QueryFilter): QueryResult<Fusi
 
   const whereClause = buildWhereClause(filter, 'fusion');
   const orderClause = buildOrderClause(filter);
-  const limit = Math.min(filter.limit || 100, 1000);
+
+  // Handle unlimited queries (filter.limit === 0 means no limit)
+  const hasLimit = filter.limit !== undefined && filter.limit > 0;
+  const limit = hasLimit ? Math.min(filter.limit!, 1000) : undefined;
 
   // First, count total matching rows
   const countSql = `SELECT COUNT(*) as total FROM FusionAll ${whereClause}`;
   const countResult = db.exec(countSql);
   const totalCount = (countResult[0]?.values[0]?.[0] as number) || 0;
 
-  // Then, fetch limited results
+  // Then, fetch results (limited or unlimited)
   const sql = `
     SELECT * FROM FusionAll
     ${whereClause}
     ${orderClause}
-    LIMIT ${limit}
+    ${limit !== undefined ? `LIMIT ${limit}` : ''}
   `;
 
   const results = db.exec(sql);
@@ -253,19 +259,22 @@ export function queryFission(db: Database, filter: QueryFilter): QueryResult<Fis
 
   const whereClause = buildWhereClause(filter, 'fission');
   const orderClause = buildOrderClause(filter);
-  const limit = Math.min(filter.limit || 100, 1000);
+
+  // Handle unlimited queries (filter.limit === 0 means no limit)
+  const hasLimit = filter.limit !== undefined && filter.limit > 0;
+  const limit = hasLimit ? Math.min(filter.limit!, 1000) : undefined;
 
   // First, count total matching rows
   const countSql = `SELECT COUNT(*) as total FROM FissionAll ${whereClause}`;
   const countResult = db.exec(countSql);
   const totalCount = (countResult[0]?.values[0]?.[0] as number) || 0;
 
-  // Then, fetch limited results
+  // Then, fetch results (limited or unlimited)
   const sql = `
     SELECT * FROM FissionAll
     ${whereClause}
     ${orderClause}
-    LIMIT ${limit}
+    ${limit !== undefined ? `LIMIT ${limit}` : ''}
   `;
 
   const results = db.exec(sql);
@@ -311,19 +320,22 @@ export function queryTwoToTwo(db: Database, filter: QueryFilter): QueryResult<Tw
 
   const whereClause = buildWhereClause(filter, 'twotwo');
   const orderClause = buildOrderClause(filter);
-  const limit = Math.min(filter.limit || 100, 1000);
+
+  // Handle unlimited queries (filter.limit === 0 means no limit)
+  const hasLimit = filter.limit !== undefined && filter.limit > 0;
+  const limit = hasLimit ? Math.min(filter.limit!, 1000) : undefined;
 
   // First, count total matching rows
   const countSql = `SELECT COUNT(*) as total FROM TwoToTwoAll ${whereClause}`;
   const countResult = db.exec(countSql);
   const totalCount = (countResult[0]?.values[0]?.[0] as number) || 0;
 
-  // Then, fetch limited results
+  // Then, fetch results (limited or unlimited)
   const sql = `
     SELECT * FROM TwoToTwoAll
     ${whereClause}
     ${orderClause}
-    LIMIT ${limit}
+    ${limit !== undefined ? `LIMIT ${limit}` : ''}
   `;
 
   const results = db.exec(sql);
@@ -432,6 +444,7 @@ function getUniqueElements(db: Database, reactions: any[], type: string): Elemen
   reactions.forEach((r) => {
     if (type === 'fusion') {
       elementSet.add(r.E1);
+      elementSet.add(r.E2);
       elementSet.add(r.E);
     } else if (type === 'fission') {
       elementSet.add(r.E);
@@ -1018,4 +1031,125 @@ export function getAllDecays(
   }
 
   return { decays, totalCount };
+}
+
+/**
+ * Calculate heatmap metrics from reaction results
+ * Returns frequency, energy, diversity, and input/output ratio maps for all elements in results
+ */
+export function calculateHeatmapMetrics(
+  reactions: Reaction[],
+  reactionType: ReactionType
+): HeatmapMetrics {
+  const frequency = new Map<string, number>();
+  const energy = new Map<string, number>();
+  const diversity = new Map<string, Set<string>>();
+  const inputCounts = new Map<string, number>();
+  const outputCounts = new Map<string, number>();
+
+  reactions.forEach((r) => {
+    // Track inputs and outputs separately based on reaction type
+    if (reactionType === 'fusion') {
+      const fusion = r as FusionReaction;
+
+      // Inputs: E1, E2
+      inputCounts.set(fusion.E1, (inputCounts.get(fusion.E1) || 0) + 1);
+      inputCounts.set(fusion.E2, (inputCounts.get(fusion.E2) || 0) + 1);
+
+      // Output: E
+      outputCounts.set(fusion.E, (outputCounts.get(fusion.E) || 0) + 1);
+
+      // Update overall frequency, energy, and diversity
+      const elements = [fusion.E1, fusion.E2, fusion.E];
+      elements.forEach((element) => {
+        frequency.set(element, (frequency.get(element) || 0) + 1);
+        energy.set(element, (energy.get(element) || 0) + r.MeV);
+
+        if (!diversity.has(element)) {
+          diversity.set(element, new Set<string>());
+        }
+        if (fusion.E1 === element) diversity.get(element)!.add(`${fusion.E1}-${fusion.A1}`);
+        if (fusion.E2 === element) diversity.get(element)!.add(`${fusion.E2}-${fusion.A2}`);
+        if (fusion.E === element) diversity.get(element)!.add(`${fusion.E}-${fusion.A}`);
+      });
+
+    } else if (reactionType === 'fission') {
+      const fission = r as FissionReaction;
+
+      // Input: E
+      inputCounts.set(fission.E, (inputCounts.get(fission.E) || 0) + 1);
+
+      // Outputs: E1, E2
+      outputCounts.set(fission.E1, (outputCounts.get(fission.E1) || 0) + 1);
+      outputCounts.set(fission.E2, (outputCounts.get(fission.E2) || 0) + 1);
+
+      // Update overall frequency, energy, and diversity
+      const elements = [fission.E, fission.E1, fission.E2];
+      elements.forEach((element) => {
+        frequency.set(element, (frequency.get(element) || 0) + 1);
+        energy.set(element, (energy.get(element) || 0) + r.MeV);
+
+        if (!diversity.has(element)) {
+          diversity.set(element, new Set<string>());
+        }
+        if (fission.E === element) diversity.get(element)!.add(`${fission.E}-${fission.A}`);
+        if (fission.E1 === element) diversity.get(element)!.add(`${fission.E1}-${fission.A1}`);
+        if (fission.E2 === element) diversity.get(element)!.add(`${fission.E2}-${fission.A2}`);
+      });
+
+    } else { // twotwo
+      const twotwo = r as TwoToTwoReaction;
+
+      // Inputs: E1, E2
+      inputCounts.set(twotwo.E1, (inputCounts.get(twotwo.E1) || 0) + 1);
+      inputCounts.set(twotwo.E2, (inputCounts.get(twotwo.E2) || 0) + 1);
+
+      // Outputs: E3, E4
+      outputCounts.set(twotwo.E3, (outputCounts.get(twotwo.E3) || 0) + 1);
+      outputCounts.set(twotwo.E4, (outputCounts.get(twotwo.E4) || 0) + 1);
+
+      // Update overall frequency, energy, and diversity
+      const elements = [twotwo.E1, twotwo.E2, twotwo.E3, twotwo.E4];
+      elements.forEach((element) => {
+        frequency.set(element, (frequency.get(element) || 0) + 1);
+        energy.set(element, (energy.get(element) || 0) + r.MeV);
+
+        if (!diversity.has(element)) {
+          diversity.set(element, new Set<string>());
+        }
+        if (twotwo.E1 === element) diversity.get(element)!.add(`${twotwo.E1}-${twotwo.A1}`);
+        if (twotwo.E2 === element) diversity.get(element)!.add(`${twotwo.E2}-${twotwo.A2}`);
+        if (twotwo.E3 === element) diversity.get(element)!.add(`${twotwo.E3}-${twotwo.A3}`);
+        if (twotwo.E4 === element) diversity.get(element)!.add(`${twotwo.E4}-${twotwo.A4}`);
+      });
+    }
+  });
+
+  // Convert diversity Sets to counts
+  const diversityMap = new Map<string, number>();
+  diversity.forEach((isotopes, element) => {
+    diversityMap.set(element, isotopes.size);
+  });
+
+  // Calculate input/output ratios
+  const inputOutputRatio = new Map<string, { inputCount: number; outputCount: number; ratio: number }>();
+  const allElements = new Set([...inputCounts.keys(), ...outputCounts.keys()]);
+
+  allElements.forEach(element => {
+    const inputCount = inputCounts.get(element) || 0;
+    const outputCount = outputCounts.get(element) || 0;
+    const total = inputCount + outputCount;
+
+    // Ratio: 0 = pure input (blue), 1 = pure output (green)
+    const ratio = total > 0 ? outputCount / total : 0.5;
+
+    inputOutputRatio.set(element, { inputCount, outputCount, ratio });
+  });
+
+  return {
+    frequency,
+    energy,
+    diversity: diversityMap,
+    inputOutputRatio,
+  };
 }

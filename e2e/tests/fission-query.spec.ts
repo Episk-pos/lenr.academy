@@ -26,7 +26,7 @@ test.describe('Fission Query Page', () => {
     await page.getByRole('button', { name: /selected.*Zr/i }).click();
 
     // Wait for periodic table to appear and select Nickel
-    const ni = page.getByRole('button', { name: /^28\s+Ni$/i });
+    const ni = page.getByRole('button', { name: /^28\s+Ni$/i }).first();
     await ni.waitFor({ state: 'visible', timeout: 5000 });
     await ni.click();
 
@@ -44,7 +44,7 @@ test.describe('Fission Query Page', () => {
   test('should filter by output elements', async ({ page }) => {
     // Select input element
     await page.getByRole('button', { name: /selected.*Zr/i }).click();
-    const ni = page.getByRole('button', { name: /^28\s+Ni$/i });
+    const ni = page.getByRole('button', { name: /^28\s+Ni$/i }).first();
     await ni.waitFor({ state: 'visible', timeout: 5000 });
     await ni.click();
 
@@ -58,7 +58,7 @@ test.describe('Fission Query Page', () => {
   test('should filter by energy range', async ({ page }) => {
     // Select element - Iron
     await page.getByRole('button', { name: /selected.*Zr/i }).click();
-    const fe = page.getByRole('button', { name: /^26\s+Fe$/i });
+    const fe = page.getByRole('button', { name: /^26\s+Fe$/i }).first();
     await fe.waitFor({ state: 'visible', timeout: 5000 });
     await fe.click();
 
@@ -82,7 +82,7 @@ test.describe('Fission Query Page', () => {
   test('should display fission reaction details', async ({ page }) => {
     // Execute a query - select Copper
     await page.getByRole('button', { name: /selected.*Zr/i }).click();
-    const cu = page.getByRole('button', { name: /^29\s+Cu$/i });
+    const cu = page.getByRole('button', { name: /^29\s+Cu$/i }).first();
     await cu.waitFor({ state: 'visible', timeout: 5000 });
     await cu.click();
 
@@ -104,7 +104,7 @@ test.describe('Fission Query Page', () => {
   test('should export fission results', async ({ page }) => {
     // Execute query - select Nickel
     await page.getByRole('button', { name: /selected.*Zr/i }).click();
-    const ni = page.getByRole('button', { name: /^28\s+Ni$/i });
+    const ni = page.getByRole('button', { name: /^28\s+Ni$/i }).first();
     await ni.waitFor({ state: 'visible', timeout: 5000 });
     await ni.click();
 
@@ -126,7 +126,7 @@ test.describe('Fission Query Page', () => {
   test('should handle no results for invalid combinations', async ({ page }) => {
     // Select Hydrogen which likely has no fission reactions
     await page.getByRole('button', { name: /selected.*Zr/i }).click();
-    const h = page.getByRole('button', { name: /^1\s+H$/i });
+    const h = page.getByRole('button', { name: /^1\s+H$/i }).first();
     await h.waitFor({ state: 'visible', timeout: 5000 });
     await h.click();
 
@@ -157,54 +157,71 @@ test.describe('Fission Query Page', () => {
   });
 
   test('should allow both element and nuclide to be pinned simultaneously', async ({ page }) => {
-    // Wait for default query results to load
+    // Wait for default query results to load (Zr fission)
     await waitForReactionResults(page, 'fission');
 
-    // Click an element card from "Elements Appearing in Results"
-    const elementCard = page.locator('text=Elements Appearing in Results').locator('..').locator('div[class*="cursor-pointer"]').first();
-    await elementCard.click();
+    // Expand the heatmap to access the periodic table
+    const heatmapToggle = page.locator('button[title*="periodic table"]').first();
+    await heatmapToggle.scrollIntoViewIfNeeded();
+    const isHeatmapExpanded = await heatmapToggle.getAttribute('title').then(t => t?.includes('Collapse'));
+    if (!isHeatmapExpanded) {
+      await heatmapToggle.click();
+      await page.waitForTimeout(500); // Wait for expansion animation
+    }
 
-    // Verify element is pinned (has ring-2 ring-blue-400 class)
-    await expect(elementCard).toHaveClass(/ring-2.*ring-blue-400/);
+    // Click an element in the heatmap (e.g., Calcium which appears in Zr fission results)
+    const caButton = page.getByRole('button', { name: /^20\s+Ca$/ }).first();
+    await caButton.click();
+
+    // Verify element details card is visible (indicates pinned)
+    await expect(page.getByText(/Atomic Number.*20/).first()).toBeVisible();
 
     // Click a nuclide card from "Nuclides Appearing in Results"
-    const nuclideCard = page.locator('text=Nuclides Appearing in Results').locator('..').locator('div[class*="cursor-pointer"]').first();
-    await nuclideCard.click();
+    const nuclideCards = page.locator('text=Nuclides Appearing in Results').locator('..').locator('div[class*="cursor-pointer"]');
+    const firstNuclideCard = nuclideCards.first();
+    await firstNuclideCard.scrollIntoViewIfNeeded();
+    await firstNuclideCard.click();
 
     // Verify nuclide is now pinned
-    await expect(nuclideCard).toHaveClass(/ring-2.*ring-blue-400/);
+    await expect(firstNuclideCard).toHaveClass(/ring-2.*ring-blue-400/);
 
-    // Verify element is STILL pinned (both can be pinned simultaneously)
-    await expect(elementCard).toHaveClass(/ring-2.*ring-blue-400/);
+    // Verify Calcium element is STILL pinned (both can be pinned simultaneously)
+    await expect(page.getByText(/Atomic Number.*20/).first()).toBeVisible();
 
-    // Click element again to unpin it
-    await elementCard.click();
+    // Click Calcium button again to unpin it
+    await caButton.click();
 
-    // Verify element is no longer pinned
-    await expect(elementCard).not.toHaveClass(/ring-2.*ring-blue-400/);
+    // Verify Calcium element details card is no longer visible (unpinned)
+    await expect(page.getByText(/Atomic Number.*20/).first()).not.toBeVisible();
 
-    // Verify nuclide is STILL pinned
-    await expect(nuclideCard).toHaveClass(/ring-2.*ring-blue-400/);
+    // Verify nuclide is ALSO unpinned (both element and nuclide can be unpinned together)
+    await expect(firstNuclideCard).not.toHaveClass(/ring-2.*ring-blue-400/);
   });
 
   test('should persist pinned element in URL with pinE parameter', async ({ page }) => {
-    // Wait for default query results to load
+    // Wait for default query results to load (Zr fission)
     await waitForReactionResults(page, 'fission');
 
-    // Click an element card from "Elements Appearing in Results"
-    const elementCard = page.locator('text=Elements Appearing in Results').locator('..').locator('div[class*="cursor-pointer"]').first();
-    await elementCard.click();
+    // Expand the heatmap to access the periodic table
+    const heatmapToggle = page.locator('button[title*="periodic table"]').first();
+    await heatmapToggle.scrollIntoViewIfNeeded();
+    const isHeatmapExpanded = await heatmapToggle.getAttribute('title').then(t => t?.includes('Collapse'));
+    if (!isHeatmapExpanded) {
+      await heatmapToggle.click();
+      await page.waitForTimeout(500); // Wait for expansion animation
+    }
 
-    // Verify element is pinned
-    await expect(elementCard).toHaveClass(/ring-2.*ring-blue-400/);
+    // Click an element in the heatmap (e.g., Calcium)
+    const caButton = page.getByRole('button', { name: /^20\s+Ca$/ }).first();
+    await caButton.click();
 
-    // Get the element symbol from the card
-    const elementSymbol = await elementCard.locator('div.font-bold').first().textContent();
+    // Verify element details card is visible (indicates pinned)
+    await expect(page.getByText(/Atomic Number.*20/).first()).toBeVisible();
 
     // URL should contain pinE parameter with the element symbol
     await page.waitForTimeout(500);
     const url = page.url();
-    expect(url).toContain(`pinE=${elementSymbol}`);
+    expect(url).toContain(`pinE=Ca`);
   });
 
   test('should persist pinned nuclide in URL with pinN parameter', async ({ page }) => {
@@ -235,26 +252,16 @@ test.describe('Fission Query Page', () => {
     // Wait for results to load
     await waitForReactionResults(page, 'fission');
 
-    // Wait for "Elements Appearing in Results" section to be visible
-    await page.locator('text=Elements Appearing in Results').waitFor({ state: 'visible', timeout: 10000 });
-
-    // Scroll section into view
-    await page.locator('text=Elements Appearing in Results').scrollIntoViewIfNeeded();
-
     // Wait a moment for URL initialization to process
     await page.waitForTimeout(1000);
 
-    // Find the Calcium element card by looking for the "Calcium" element name text
-    // This will be in an element card with class cursor-pointer
-    // Use .first() because "Calcium" also appears in the ElementDetailsCard heading
-    const caCard = page.getByText('Calcium').locator('..').first();
-
-    // Verify Calcium card exists and is pinned
-    await expect(caCard).toBeVisible();
-    await expect(caCard).toHaveClass(/ring-2.*ring-blue-400/);
-
-    // Verify element details card is visible
+    // Verify element details card is visible (indicates Calcium is pinned)
     await expect(page.getByText(/Atomic Number.*20/).first()).toBeVisible();
+    await expect(page.getByText(/Calcium/).first()).toBeVisible();
+
+    // Verify URL still contains pinE=Ca
+    const url = page.url();
+    expect(url).toContain('pinE=Ca');
   });
 
   test('should restore both pinned element and nuclide from URL', async ({ page }) => {
@@ -265,25 +272,23 @@ test.describe('Fission Query Page', () => {
     // Wait for results to load
     await waitForReactionResults(page, 'fission');
 
-    // Wait for sections to be visible
-    await page.locator('text=Elements Appearing in Results').waitFor({ state: 'visible', timeout: 10000 });
+    // Wait for Nuclides section to be visible
     await page.locator('text=Nuclides Appearing in Results').waitFor({ state: 'visible', timeout: 10000 });
 
-    // Scroll sections into view
-    await page.locator('text=Elements Appearing in Results').scrollIntoViewIfNeeded();
+    // Scroll section into view
     await page.locator('text=Nuclides Appearing in Results').scrollIntoViewIfNeeded();
 
     // Wait for URL initialization
     await page.waitForTimeout(1000);
 
-    // Find both cards using element/nuclide names
-    const caCard = page.getByText('Calcium').locator('..').first();
-    // For nuclide cards, need to go up to the cursor-pointer div (not just immediate parent)
+    // Verify element is pinned (element details card visible)
+    await expect(page.getByText(/Atomic Number.*20/).first()).toBeVisible();
+    await expect(page.getByText(/Calcium/).first()).toBeVisible();
+
+    // Find the Ca-48 nuclide card
     const ca48Card = page.locator('div.cursor-pointer:has-text("Ca-48")').first();
 
-    // Verify both are pinned
-    await expect(caCard).toBeVisible();
-    await expect(caCard).toHaveClass(/ring-2.*ring-blue-400/);
+    // Verify nuclide is pinned
     await expect(ca48Card).toBeVisible();
     await expect(ca48Card).toHaveClass(/ring-2.*ring-blue-400/);
   });
@@ -305,30 +310,47 @@ test.describe('Fission Query Page', () => {
     // Wait for default query results to load (Zr fission)
     await waitForReactionResults(page, 'fission');
 
-    // Pin a nuclide (e.g., Ca-48)
+    // Scroll to and wait for nuclides section to be visible
+    await page.locator('text=Nuclides Appearing in Results').waitFor({ state: 'visible', timeout: 10000 });
+    await page.locator('text=Nuclides Appearing in Results').scrollIntoViewIfNeeded();
+    await page.waitForTimeout(500);
+
+    // Pin a nuclide (use first available instead of assuming Ca-48 exists)
     const nuclideCards = page.locator('text=Nuclides Appearing in Results').locator('..').locator('div[class*="cursor-pointer"]');
-    const ca48Card = nuclideCards.filter({ hasText: 'Ca-48' }).first();
-    await ca48Card.click();
+    const firstNuclideCard = nuclideCards.first();
 
-    // Verify Ca-48 is pinned
-    await expect(ca48Card).toHaveClass(/ring-2.*ring-blue-400/);
+    // Get nuclide text for verification
+    const nuclideText = await firstNuclideCard.locator('span.font-semibold').first().textContent();
+    const elementSymbol = nuclideText?.split('-')[0] || '';
 
-    // Now pin a DIFFERENT element (e.g., Cr - Chromium)
-    const elementCards = page.locator('text=Elements Appearing in Results').locator('..').locator('div[class*="cursor-pointer"]');
-    const crCard = elementCards.filter({ hasText: 'Chromium' }).first();
-    await crCard.click();
+    await firstNuclideCard.click();
 
-    // Verify Chromium is pinned
-    await expect(crCard).toHaveClass(/ring-2.*ring-blue-400/);
+    // Verify nuclide is pinned
+    await expect(firstNuclideCard).toHaveClass(/ring-2.*ring-blue-400/);
 
-    // Verify Ca-48 is NO LONGER pinned (regression check)
-    await expect(ca48Card).not.toHaveClass(/ring-2.*ring-blue-400/);
+    // Now pin a DIFFERENT element via heatmap (e.g., Chromium - Z=24)
+    const heatmapToggle = page.locator('button[title*="periodic table"]').first();
+    await heatmapToggle.scrollIntoViewIfNeeded();
+    const isHeatmapExpanded = await heatmapToggle.getAttribute('title').then(t => t?.includes('Collapse'));
+    if (!isHeatmapExpanded) {
+      await heatmapToggle.click();
+      await page.waitForTimeout(500); // Wait for expansion animation
+    }
 
-    // URL should only contain pinE=Cr, not pinN=Ca-48
+    const crButton = page.getByRole('button', { name: /^24\s+Cr$/ }).first();
+    await crButton.click();
+
+    // Verify Chromium is pinned (element details card visible)
+    await expect(page.getByText(/Atomic Number.*24/).first()).toBeVisible();
+
+    // Verify first nuclide is NO LONGER pinned (regression check)
+    await expect(firstNuclideCard).not.toHaveClass(/ring-2.*ring-blue-400/);
+
+    // URL should only contain pinE=Cr, not the nuclide identifier
     await page.waitForTimeout(500);
     const url = page.url();
     expect(url).toContain('pinE=Cr');
-    expect(url).not.toContain('pinN=Ca-48');
+    expect(url).not.toContain(`pinN=${nuclideText}`);
   });
 
   test('should have clickable links to element-data page for nuclides in results table', async ({ page }) => {

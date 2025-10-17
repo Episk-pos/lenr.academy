@@ -97,9 +97,10 @@ test.describe('Fusion Query Page', () => {
     const neutrinoFilters = page.getByLabel(/neutrino/i);
 
     // Uncheck some neutrino types if they exist
-    const noneCheckbox = page.getByLabel(/none/i);
-    if (await noneCheckbox.isVisible().catch(() => false)) {
-      await noneCheckbox.uncheck();
+    // Click the label text instead of the checkbox input, as it's more accessible and has the click handler
+    const noneLabel = page.getByText('None', { exact: true });
+    if (await noneLabel.isVisible().catch(() => false)) {
+      await noneLabel.click({ force: true });
     }
 
     // Query auto-executes when filters change - wait for results
@@ -283,38 +284,71 @@ test.describe('Fusion Query Page', () => {
     }
   });
 
-  test('should allow both element and nuclide to be pinned simultaneously', async ({ page }) => {
-    // Wait for default query results to load
+  test('should handle element and nuclide pinning behavior correctly', async ({ page }) => {
+    // Test behavior A: Given nothing is pinned, when I pin a nuclide, its element should be pinned
     await page.waitForFunction(
       () => document.querySelector('[role="region"][aria-label="Fusion reaction results"]') !== null,
       { timeout: 10000 }
     );
 
-    // Click an element card from "Elements Appearing in Results"
-    const elementCard = page.locator('text=Elements Appearing in Results').locator('..').locator('div[class*="cursor-pointer"]').first();
-    await elementCard.click();
+    // Scroll to and wait for nuclides section to be visible
+    await page.locator('text=Nuclides Appearing in Results').waitFor({ state: 'visible', timeout: 10000 });
+    await page.locator('text=Nuclides Appearing in Results').scrollIntoViewIfNeeded();
+    await page.waitForTimeout(500);
 
-    // Verify element is pinned (has ring-2 ring-blue-400 class)
-    await expect(elementCard).toHaveClass(/ring-2.*ring-blue-400/);
+    // Pin the first available nuclide from default H+C,O results
+    const nuclideCards = page.locator('text=Nuclides Appearing in Results').locator('..').locator('div[class*="cursor-pointer"]');
+    const firstNuclideCard = nuclideCards.first();
 
-    // Click a nuclide card from "Nuclides Appearing in Results"
-    const nuclideCard = page.locator('text=Nuclides Appearing in Results').locator('..').locator('div[class*="cursor-pointer"]').first();
-    await nuclideCard.click();
+    // Get the nuclide text to extract element symbol (e.g., "C-13" → "C", "O-16" → "O")
+    const nuclideText = await firstNuclideCard.locator('span.font-semibold').first().textContent();
+    const elementSymbol = nuclideText?.split('-')[0] || '';
 
-    // Verify nuclide is now pinned
-    await expect(nuclideCard).toHaveClass(/ring-2.*ring-blue-400/);
+    await firstNuclideCard.click();
 
-    // Verify element is STILL pinned (both can be pinned simultaneously)
-    await expect(elementCard).toHaveClass(/ring-2.*ring-blue-400/);
+    // Verify nuclide is pinned
+    await expect(firstNuclideCard).toHaveClass(/ring-2.*ring-blue-400/);
 
-    // Click element again to unpin it
-    await elementCard.click();
+    // Verify element is ALSO pinned (element details card visible - check for any atomic number)
+    await expect(page.getByText(/Atomic Number/).first()).toBeVisible();
 
-    // Verify element is no longer pinned
-    await expect(elementCard).not.toHaveClass(/ring-2.*ring-blue-400/);
+    // Test behavior B: Given a nuclide and element are pinned, when I pin a different element, the nuclide should be unpinned
+    // Expand the heatmap to access the periodic table
+    const heatmapToggle = page.locator('button[title*="periodic table"]').first();
+    await heatmapToggle.scrollIntoViewIfNeeded();
+    const isHeatmapExpanded = await heatmapToggle.getAttribute('title').then(t => t?.includes('Collapse'));
+    if (!isHeatmapExpanded) {
+      await heatmapToggle.click();
+      await page.waitForTimeout(500); // Wait for expansion animation
+    }
 
-    // Verify nuclide is STILL pinned
-    await expect(nuclideCard).toHaveClass(/ring-2.*ring-blue-400/);
+    // Click a different element in the heatmap periodic table (choose one that's different from the first nuclide's element)
+    // Default H+C,O results will have nuclides from H, C, O, N, etc. Pick Nitrogen (N) as it's likely different
+    const nitrogenButton = page.getByRole('button', { name: /^7\s+N$/ }).first();
+    await nitrogenButton.click();
+
+    // Verify Nitrogen element is now pinned (element details card shows Atomic Number 7)
+    await expect(page.getByText(/Atomic Number.*7/).first()).toBeVisible();
+
+    // Verify first nuclide is NO LONGER pinned (behavior B)
+    await expect(firstNuclideCard).not.toHaveClass(/ring-2.*ring-blue-400/);
+
+    // Test behavior C: Given a pinned element (via heatmap), when pinning a nuclide then unpinning it, element stays pinned if heatmap is open
+    // Pin a nitrogen nuclide (find one in the nuclides list)
+    const nitrogenNuclideCard = nuclideCards.filter({ hasText: 'N-' }).first();
+    await nitrogenNuclideCard.click();
+
+    // Verify nitrogen nuclide is pinned
+    await expect(nitrogenNuclideCard).toHaveClass(/ring-2.*ring-blue-400/);
+
+    // Unpin nitrogen nuclide
+    await nitrogenNuclideCard.click();
+
+    // Verify nuclide is unpinned
+    await expect(nitrogenNuclideCard).not.toHaveClass(/ring-2.*ring-blue-400/);
+
+    // Verify Nitrogen element is STILL pinned (heatmap is open, so element stays pinned)
+    await expect(page.getByText(/Atomic Number.*7/).first()).toBeVisible();
   });
 
   test('should display radioactivity indicators for unstable isotopes in results', async ({ page }) => {
@@ -363,20 +397,26 @@ test.describe('Fusion Query Page', () => {
       { timeout: 10000 }
     );
 
-    // Click an element card from "Elements Appearing in Results"
-    const elementCard = page.locator('text=Elements Appearing in Results').locator('..').locator('div[class*="cursor-pointer"]').first();
-    await elementCard.click();
+    // Expand the heatmap to access the periodic table
+    const heatmapToggle = page.locator('button[title*="periodic table"]').first();
+    await heatmapToggle.scrollIntoViewIfNeeded();
+    const isHeatmapExpanded = await heatmapToggle.getAttribute('title').then(t => t?.includes('Collapse'));
+    if (!isHeatmapExpanded) {
+      await heatmapToggle.click();
+      await page.waitForTimeout(500); // Wait for expansion animation
+    }
 
-    // Verify element is pinned
-    await expect(elementCard).toHaveClass(/ring-2.*ring-blue-400/);
+    // Click an element in the heatmap periodic table (Carbon)
+    const carbonButton = page.getByRole('button', { name: /^6\s+C$/ }).first();
+    await carbonButton.click();
 
-    // Get the element symbol from the card
-    const elementSymbol = await elementCard.locator('div.font-bold').first().textContent();
+    // Verify element details card is visible (indicates element is pinned)
+    await expect(page.getByText(/Atomic Number.*6/).first()).toBeVisible();
 
     // URL should contain pinE parameter with the element symbol
     await page.waitForTimeout(500); // Wait for URL update
     const url = page.url();
-    expect(url).toContain(`pinE=${elementSymbol}`);
+    expect(url).toContain('pinE=C');
   });
 
   test('should persist pinned nuclide in URL with pinN parameter', async ({ page }) => {
@@ -413,24 +453,21 @@ test.describe('Fusion Query Page', () => {
       { timeout: 10000 }
     );
 
-    // Wait for "Elements Appearing in Results" section to be visible
-    await page.locator('text=Elements Appearing in Results').waitFor({ state: 'visible', timeout: 10000 });
+    // Wait for heatmap section to be visible (should auto-expand with pinE parameter)
+    const heatmapSection = page.locator('h3:has-text("Element Heatmap")');
+    await heatmapSection.scrollIntoViewIfNeeded();
+    await page.waitForTimeout(2000); // Wait for auto-expansion effect
 
-    // Scroll section into view
-    await page.locator('text=Elements Appearing in Results').scrollIntoViewIfNeeded();
+    // Verify heatmap is expanded (look for periodic table elements)
+    const lithiumButton = page.getByRole('button', { name: /^3\s+Li$/ });
+    await expect(lithiumButton).toBeVisible();
 
-    // Wait for URL initialization
-    await page.waitForTimeout(1000);
-
-    // Find the Lithium element card
-    const liCard = page.getByText('Lithium').locator('..').first();
-
-    // Verify Lithium is pinned (has ring-2 ring-blue-400 class)
-    await expect(liCard).toBeVisible();
-    await expect(liCard).toHaveClass(/ring-2.*ring-blue-400/);
-
-    // Verify element details card is visible
+    // Verify element details card is visible (indicates Li is pinned)
     await expect(page.getByText(/Atomic Number.*3/).first()).toBeVisible();
+
+    // Verify URL still contains pinE=Li
+    const url = page.url();
+    expect(url).toContain('pinE=Li');
   });
 
   test('should restore pinned nuclide from URL on page load', async ({ page }) => {
@@ -475,24 +512,24 @@ test.describe('Fusion Query Page', () => {
       { timeout: 10000 }
     );
 
-    // Wait for sections to be visible
-    await page.locator('text=Elements Appearing in Results').waitFor({ state: 'visible', timeout: 10000 });
+    // Wait for heatmap section to be visible (should auto-expand with pinE parameter)
+    const heatmapSection = page.locator('h3:has-text("Element Heatmap")');
+    await heatmapSection.scrollIntoViewIfNeeded();
+    await page.waitForTimeout(2000); // Wait for auto-expansion effect
+
+    // Verify heatmap is expanded
+    const lithiumButton = page.getByRole('button', { name: /^3\s+Li$/ });
+    await expect(lithiumButton).toBeVisible();
+
+    // Wait for nuclides section
     await page.locator('text=Nuclides Appearing in Results').waitFor({ state: 'visible', timeout: 10000 });
-
-    // Scroll sections into view
-    await page.locator('text=Elements Appearing in Results').scrollIntoViewIfNeeded();
     await page.locator('text=Nuclides Appearing in Results').scrollIntoViewIfNeeded();
-
-    // Wait for URL initialization
     await page.waitForTimeout(1000);
 
-    // Find both cards
-    const liCard = page.getByText('Lithium').locator('..').first();
+    // Find the Li-6 nuclide card
     const li6Card = page.locator('div.cursor-pointer:has-text("Li-6")').first();
 
-    // Verify both are pinned
-    await expect(liCard).toBeVisible();
-    await expect(liCard).toHaveClass(/ring-2.*ring-blue-400/);
+    // Verify nuclide is pinned
     await expect(li6Card).toBeVisible();
     await expect(li6Card).toHaveClass(/ring-2.*ring-blue-400/);
 
@@ -512,27 +549,21 @@ test.describe('Fusion Query Page', () => {
       { timeout: 10000 }
     );
 
-    // Wait for "Elements Appearing in Results" section to be visible
-    await page.locator('text=Elements Appearing in Results').waitFor({ state: 'visible', timeout: 10000 });
+    // Wait for heatmap section to be visible (should auto-expand with pinE parameter)
+    const heatmapSection = page.locator('h3:has-text("Element Heatmap")');
+    await heatmapSection.scrollIntoViewIfNeeded();
+    await page.waitForTimeout(2000); // Wait for auto-expansion effect
 
-    // Scroll section into view
-    await page.locator('text=Elements Appearing in Results').scrollIntoViewIfNeeded();
+    // Verify heatmap is expanded and element details card is visible
+    const lithiumButton = page.getByRole('button', { name: /^3\s+Li$/ });
+    await expect(lithiumButton).toBeVisible();
+    await expect(page.getByText(/Atomic Number.*3/).first()).toBeVisible();
 
-    // Wait for URL initialization
-    await page.waitForTimeout(1000);
+    // Click lithium in heatmap to unpin
+    await lithiumButton.click();
 
-    // Find the Lithium element card
-    const liCard = page.getByText('Lithium').locator('..').first();
-
-    // Verify it's pinned
-    await expect(liCard).toBeVisible();
-    await expect(liCard).toHaveClass(/ring-2.*ring-blue-400/);
-
-    // Click to unpin
-    await liCard.click();
-
-    // Verify it's no longer pinned
-    await expect(liCard).not.toHaveClass(/ring-2.*ring-blue-400/);
+    // Verify element details card is no longer visible
+    await expect(page.getByText(/Atomic Number.*3/).first()).not.toBeVisible();
 
     // URL should not contain pinE parameter
     await page.waitForTimeout(500); // Wait for URL update
@@ -566,30 +597,47 @@ test.describe('Fusion Query Page', () => {
       { timeout: 10000 }
     );
 
-    // Pin a nuclide (e.g., C-13 from default H+C,O results)
+    // Scroll to and wait for nuclides section to be visible
+    await page.locator('text=Nuclides Appearing in Results').waitFor({ state: 'visible', timeout: 10000 });
+    await page.locator('text=Nuclides Appearing in Results').scrollIntoViewIfNeeded();
+    await page.waitForTimeout(500);
+
+    // Pin the first available nuclide from default H+C,O results
     const nuclideCards = page.locator('text=Nuclides Appearing in Results').locator('..').locator('div[class*="cursor-pointer"]');
-    const c13Card = nuclideCards.filter({ hasText: 'C-13' }).first();
-    await c13Card.click();
+    const firstNuclideCard = nuclideCards.first();
 
-    // Verify C-13 is pinned
-    await expect(c13Card).toHaveClass(/ring-2.*ring-blue-400/);
+    // Get nuclide identifier for URL checking
+    const nuclideText = await firstNuclideCard.locator('span.font-semibold').first().textContent();
 
-    // Now pin a DIFFERENT element (e.g., Oxygen)
-    const elementCards = page.locator('text=Elements Appearing in Results').locator('..').locator('div[class*="cursor-pointer"]');
-    const oxygenCard = elementCards.filter({ hasText: 'Oxygen' }).first();
-    await oxygenCard.click();
+    await firstNuclideCard.click();
 
-    // Verify Oxygen is pinned
-    await expect(oxygenCard).toHaveClass(/ring-2.*ring-blue-400/);
+    // Verify nuclide is pinned
+    await expect(firstNuclideCard).toHaveClass(/ring-2.*ring-blue-400/);
 
-    // Verify C-13 is NO LONGER pinned (regression check)
-    await expect(c13Card).not.toHaveClass(/ring-2.*ring-blue-400/);
+    // Expand the heatmap to access the periodic table
+    const heatmapToggle = page.locator('button[title*="periodic table"]').first();
+    await heatmapToggle.scrollIntoViewIfNeeded();
+    const isHeatmapExpanded = await heatmapToggle.getAttribute('title').then(t => t?.includes('Collapse'));
+    if (!isHeatmapExpanded) {
+      await heatmapToggle.click();
+      await page.waitForTimeout(500); // Wait for expansion animation
+    }
 
-    // URL should only contain pinE=O, not pinN=C-13
+    // Now pin a DIFFERENT element via heatmap (e.g., Nitrogen)
+    const nitrogenButton = page.getByRole('button', { name: /^7\s+N$/ }).first();
+    await nitrogenButton.click();
+
+    // Verify Nitrogen element details card is visible (indicates pinned)
+    await expect(page.getByText(/Atomic Number.*7/).first()).toBeVisible();
+
+    // Verify first nuclide is NO LONGER pinned (regression check)
+    await expect(firstNuclideCard).not.toHaveClass(/ring-2.*ring-blue-400/);
+
+    // URL should only contain pinE=N, not the nuclide identifier
     await page.waitForTimeout(500);
     const url = page.url();
-    expect(url).toContain('pinE=O');
-    expect(url).not.toContain('pinN=C-13');
+    expect(url).toContain('pinE=N');
+    expect(url).not.toContain(`pinN=${nuclideText}`);
   });
 
   test('should highlight rows containing D-2 when D-2 is pinned (D/T nuclide pinning regression)', async ({ page }) => {

@@ -1,11 +1,12 @@
 import { useState, useEffect, useMemo, useCallback, useRef } from 'react'
-import { Download, Info, Loader2, Eye, EyeOff, Radiation } from 'lucide-react'
+import { Download, Info, Loader2, Eye, EyeOff, Radiation, ChevronDown, GripVertical } from 'lucide-react'
 import { useSearchParams, Link } from 'react-router-dom'
-import type { FusionReaction, QueryFilter, Nuclide, Element, AtomicRadiiData } from '../types'
+import type { FusionReaction, QueryFilter, Nuclide, Element, AtomicRadiiData, HeatmapMode, HeatmapMetrics } from '../types'
 import { useDatabase } from '../contexts/DatabaseContext'
-import { queryFusion, getAllElements, getElementBySymbol, getNuclideBySymbol, getAtomicRadii, getFusionSqlPreview } from '../services/queryService'
+import { queryFusion, getAllElements, getElementBySymbol, getNuclideBySymbol, getAtomicRadii, getFusionSqlPreview, calculateHeatmapMetrics } from '../services/queryService'
 import { normalizeElementSymbol } from '../utils/formatUtils'
 import PeriodicTableSelector from '../components/PeriodicTableSelector'
+import PeriodicTable from '../components/PeriodicTable'
 import ElementDetailsCard from '../components/ElementDetailsCard'
 import NuclideDetailsCard from '../components/NuclideDetailsCard'
 import DatabaseLoadingCard from '../components/DatabaseLoadingCard'
@@ -66,7 +67,8 @@ export default function FusionQuery() {
 
   const getInitialLimit = () => {
     const param = searchParams.get('limit')
-    return param ? parseInt(param) : DEFAULT_LIMIT
+    // Support limit=0 for unlimited, otherwise default to DEFAULT_LIMIT
+    return param !== null ? parseInt(param) : DEFAULT_LIMIT
   }
 
   const [filter, setFilter] = useState<QueryFilter>({
@@ -99,6 +101,10 @@ export default function FusionQuery() {
 
   const tableContainerRef = useRef<HTMLDivElement | null>(null)
   const [fusionViewportHeight, setFusionViewportHeight] = useState<number | null>(null)
+  const [userTableHeight, setUserTableHeight] = useState<number | null>(null)
+  const [isResizing, setIsResizing] = useState(false)
+  const resizeStartY = useRef<number>(0)
+  const resizeStartHeight = useRef<number>(0)
 
   const updateFusionViewportHeight = useCallback(() => {
     if (!tableContainerRef.current) return
@@ -128,35 +134,7 @@ export default function FusionQuery() {
 
   const fusionEstimatedRowHeight = useMemo(() => (showBosonFermion ? 96 : 82), [showBosonFermion])
   const fusionCompactRowHeight = useMemo(() => (showBosonFermion ? 76 : 68), [showBosonFermion])
-  const fusionBaseListHeight = useMemo(() => {
-    if (results.length === 0) {
-      return 160
-    }
-    if (results.length <= SMALL_RESULT_THRESHOLD) {
-      // For small result sets, skip virtualization - no fixed height needed
-      return results.length * fusionCompactRowHeight
-    }
-    const preferred = results.length * fusionEstimatedRowHeight
-    const min = Math.max(fusionEstimatedRowHeight * Math.min(results.length, 4), 260)
-    const max = 640
-    return Math.min(max, Math.max(min, preferred))
-  }, [fusionCompactRowHeight, fusionEstimatedRowHeight, results.length])
 
-  const fusionListHeight = useMemo(() => {
-    // For small result sets, don't enforce a minimum height
-    if (results.length <= SMALL_RESULT_THRESHOLD && results.length > 0) {
-      return fusionBaseListHeight
-    }
-    const minHeight = 220
-    const base = Math.max(minHeight, fusionBaseListHeight)
-    if (fusionViewportHeight == null) {
-      return base
-    }
-    return Math.max(minHeight, Math.min(base, fusionViewportHeight))
-  }, [fusionBaseListHeight, fusionViewportHeight, results.length])
-
-  const fusionUsesScrollbar = fusionListHeight < fusionBaseListHeight
-  const fusionHeaderPadding = !showBosonFermion && fusionUsesScrollbar ? SCROLLBAR_COMPENSATION : 0
   const [highlightedNuclide, setHighlightedNuclide] = useState<string | null>(null)
   const [pinnedNuclide, setPinnedNuclide] = useState(false)
   const [highlightedElement, setHighlightedElement] = useState<string | null>(null)
@@ -165,6 +143,15 @@ export default function FusionQuery() {
   const [selectedNuclideDetails, setSelectedNuclideDetails] = useState<Nuclide | null>(null)
   const [selectedElementRadii, setSelectedElementRadii] = useState<AtomicRadiiData | null>(null)
   const [hasInitializedFromUrl, setHasInitializedFromUrl] = useState(false)
+
+  // Heatmap state
+  const [showHeatmap, setShowHeatmap] = useState(true)
+  const [heatmapMode, setHeatmapMode] = useState<HeatmapMode>('frequency')
+  const [useAllResultsForHeatmap, setUseAllResultsForHeatmap] = useState(false)
+  const [allResults, setAllResults] = useState<FusionReaction[]>([])
+
+  // Filters visibility state (collapsed by default)
+  const [showFilters, setShowFilters] = useState(false)
 
   const queryFilter = useMemo<QueryFilter>(() => {
     const filterWithSelections: QueryFilter = {
@@ -177,6 +164,111 @@ export default function FusionQuery() {
   }, [filter, selectedElement1, selectedElement2, selectedOutputElement])
 
   const sqlPreview = useMemo(() => getFusionSqlPreview(queryFilter), [queryFilter])
+
+  // Calculate heatmap metrics from results (either limited or all)
+  const heatmapMetrics = useMemo<HeatmapMetrics>(() => {
+    const dataToUse = useAllResultsForHeatmap ? allResults : results
+    if (dataToUse.length === 0) {
+      return {
+        frequency: new Map(),
+        energy: new Map(),
+        diversity: new Map(),
+        inputOutputRatio: new Map()
+      }
+    }
+    return calculateHeatmapMetrics(dataToUse, 'fusion')
+  }, [results, allResults, useAllResultsForHeatmap])
+
+  // Helper function to check if a reaction contains a specific nuclide
+  const reactionContainsNuclide = useCallback((reaction: FusionReaction, nuclide: string) => {
+    const [element, mass] = nuclide.split('-')
+    const A = parseInt(mass)
+    return (
+      (reaction.E1 === element && reaction.A1 === A) ||
+      (reaction.E2 === element && reaction.A2 === A) ||
+      (reaction.E === element && reaction.A === A)
+    )
+  }, [])
+
+  // Helper function to check if a reaction contains a specific element
+  const reactionContainsElement = useCallback((reaction: FusionReaction, element: string) => {
+    // Normalize both the reaction element symbols and the search element to handle D/T → H mapping
+    const normalizedElement = normalizeElementSymbol(element)
+    return (
+      normalizeElementSymbol(reaction.E1) === normalizedElement ||
+      normalizeElementSymbol(reaction.E2) === normalizedElement ||
+      normalizeElementSymbol(reaction.E) === normalizedElement
+    )
+  }, [])
+
+  // Filter nuclides to only show those of the pinned element
+  const filteredNuclides = useMemo(() => {
+    if (!pinnedElement || !highlightedElement) {
+      return nuclides
+    }
+    // Filter to only show nuclides of the highlighted/pinned element
+    const normalizedElement = normalizeElementSymbol(highlightedElement)
+    return nuclides.filter(nuc => normalizeElementSymbol(nuc.E) === normalizedElement)
+  }, [nuclides, pinnedElement, highlightedElement])
+
+  // Filter reactions to only show those containing the pinned element/nuclide
+  const filteredResults = useMemo(() => {
+    // If nuclide is pinned, filter by nuclide
+    if (pinnedNuclide && highlightedNuclide) {
+      return results.filter(reaction => reactionContainsNuclide(reaction, highlightedNuclide))
+    }
+    // If only element is pinned, filter by element
+    if (pinnedElement && highlightedElement) {
+      return results.filter(reaction => reactionContainsElement(reaction, highlightedElement))
+    }
+    // No filtering
+    return results
+  }, [results, pinnedElement, highlightedElement, pinnedNuclide, highlightedNuclide, reactionContainsNuclide, reactionContainsElement])
+
+  // Calculate base height for filtered results
+  const filteredBaseListHeight = useMemo(() => {
+    if (filteredResults.length === 0) {
+      return 160
+    }
+    if (filteredResults.length <= SMALL_RESULT_THRESHOLD) {
+      // For small result sets, skip virtualization - no fixed height needed
+      return filteredResults.length * fusionCompactRowHeight
+    }
+    const preferred = filteredResults.length * fusionEstimatedRowHeight
+    const min = Math.max(fusionEstimatedRowHeight * Math.min(filteredResults.length, 4), 260)
+    const max = 640
+    return Math.min(max, Math.max(min, preferred))
+  }, [fusionCompactRowHeight, fusionEstimatedRowHeight, filteredResults.length])
+
+  // Calculate actual height for filtered results
+  const filteredListHeight = useMemo(() => {
+    // If user has manually resized, use their height (bounded by min/max)
+    if (userTableHeight !== null) {
+      const minHeight = 220
+      const maxHeight = filteredBaseListHeight
+      return Math.max(minHeight, Math.min(userTableHeight, maxHeight))
+    }
+
+    // For small result sets, don't enforce a minimum height
+    if (filteredResults.length <= SMALL_RESULT_THRESHOLD && filteredResults.length > 0) {
+      return filteredBaseListHeight
+    }
+    const minHeight = 220
+    const base = Math.max(minHeight, filteredBaseListHeight)
+    if (fusionViewportHeight == null) {
+      return base
+    }
+    return Math.max(minHeight, Math.min(base, fusionViewportHeight))
+  }, [filteredBaseListHeight, fusionViewportHeight, filteredResults.length, userTableHeight])
+
+  // Check if scrollbar is needed: list is shorter than content OR filtered content needs virtualization
+  const fusionUsesScrollbar = useMemo(() => {
+    return filteredListHeight < filteredBaseListHeight || filteredResults.length > SMALL_RESULT_THRESHOLD
+  }, [filteredListHeight, filteredBaseListHeight, filteredResults.length])
+
+  const fusionHeaderPadding = useMemo(() => {
+    return !showBosonFermion && fusionUsesScrollbar ? SCROLLBAR_COMPENSATION : 0
+  }, [showBosonFermion, fusionUsesScrollbar])
 
   // Load elements when database is ready
   useEffect(() => {
@@ -198,19 +290,22 @@ export default function FusionQuery() {
     // Only initialize if we have URL params and nothing is currently pinned
     // This prevents re-pinning on every results change
     if (pinN && !pinnedNuclide && nuclides.some(nuc => `${nuc.E}-${nuc.A}` === pinN)) {
-      // Pinning nuclide from URL - also pin its parent element
+      // Pinning nuclide from URL - also pin its parent element and expand heatmap
       const [elementSymbol] = pinN.split('-')
       setHighlightedNuclide(pinN)
       setPinnedNuclide(true)
       setHighlightedElement(normalizeElementSymbol(elementSymbol))
       setPinnedElement(true)
+      setShowHeatmap(true) // Auto-expand heatmap when loading with pinned state
       setHasInitializedFromUrl(true)
-    } else if (pinE && !pinnedElement && resultElements.some(el => el.E === pinE)) {
-      // Only pin element if no nuclide is being pinned
+    } else if (pinE && !pinnedElement) {
+      // Pin element from URL and expand heatmap (regardless of whether it's in results)
+      // The element might be an input that doesn't appear in outputs, so we don't check resultElements
       setHighlightedElement(pinE)
       setPinnedElement(true)
+      setShowHeatmap(true) // Auto-expand heatmap when loading with pinned state
       setHasInitializedFromUrl(true)
-    } else if (!pinE && !pinN) {
+    } else {
       // No URL params to initialize from
       setHasInitializedFromUrl(true)
     }
@@ -294,9 +389,8 @@ export default function FusionQuery() {
       params.set('neutrino', filter.neutrinoTypes?.join(',') || '')
     }
 
-    if (filter.limit !== DEFAULT_LIMIT) {
-      params.set('limit', filter.limit?.toString() || DEFAULT_LIMIT.toString())
-    }
+    // Always set limit parameter explicitly (including default 100)
+    params.set('limit', filter.limit?.toString() || DEFAULT_LIMIT.toString())
 
     // Add pinned element/nuclide state
     if (pinnedElement && highlightedElement) {
@@ -336,6 +430,7 @@ export default function FusionQuery() {
 
     try {
       const result = queryFusion(db, queryFilter)
+      console.log("result: ", result)
 
       setResults(result.reactions)
       setNuclides(result.nuclides)
@@ -344,6 +439,15 @@ export default function FusionQuery() {
       setExecutionTime(result.executionTime)
       setTotalCount(result.totalCount)
       setShowResults(true)
+
+      // Also fetch unlimited results for heatmap if toggle is enabled
+      if (useAllResultsForHeatmap && result.totalCount > result.reactions.length) {
+        const unlimitedQuery = { ...queryFilter, limit: undefined }
+        const unlimitedResult = queryFusion(db, unlimitedQuery)
+        setAllResults(unlimitedResult.reactions)
+      } else if (!useAllResultsForHeatmap) {
+        setAllResults([]) // Clear allResults if toggle is off
+      }
     } catch (error) {
       console.error('Query failed:', error)
       alert(`Query failed: ${error instanceof Error ? error.message : 'Unknown error'}`)
@@ -351,6 +455,52 @@ export default function FusionQuery() {
       setIsQuerying(false)
     }
   }
+
+  // Table resize handlers
+  const handleResizeStart = useCallback((e: React.MouseEvent) => {
+    e.preventDefault()
+    setIsResizing(true)
+    resizeStartY.current = e.clientY
+    resizeStartHeight.current = userTableHeight ?? filteredListHeight
+  }, [filteredListHeight, userTableHeight])
+
+  const handleResizeMove = useCallback((e: MouseEvent) => {
+    if (!isResizing) return
+    const deltaY = e.clientY - resizeStartY.current
+    const newHeight = resizeStartHeight.current + deltaY
+    const minHeight = 220
+    const maxHeight = filteredBaseListHeight
+    setUserTableHeight(Math.max(minHeight, Math.min(newHeight, maxHeight)))
+  }, [isResizing, filteredBaseListHeight])
+
+  const handleResizeEnd = useCallback(() => {
+    setIsResizing(false)
+  }, [])
+
+  const handleResizeReset = useCallback(() => {
+    setUserTableHeight(null)
+  }, [])
+
+  // Reset user height when results change significantly
+  useEffect(() => {
+    setUserTableHeight(null)
+  }, [results.length, showBosonFermion])
+
+  // Add/remove mouse event listeners for resizing
+  useEffect(() => {
+    if (isResizing) {
+      document.addEventListener('mousemove', handleResizeMove)
+      document.addEventListener('mouseup', handleResizeEnd)
+      document.body.style.cursor = 'ns-resize'
+      document.body.style.userSelect = 'none'
+      return () => {
+        document.removeEventListener('mousemove', handleResizeMove)
+        document.removeEventListener('mouseup', handleResizeEnd)
+        document.body.style.cursor = ''
+        document.body.style.userSelect = ''
+      }
+    }
+  }, [isResizing, handleResizeMove, handleResizeEnd])
 
   const exportToCSV = () => {
     if (results.length === 0) return
@@ -369,28 +519,6 @@ export default function FusionQuery() {
     a.href = url
     a.download = `fusion_reactions_${Date.now()}.csv`
     a.click()
-  }
-
-  // Helper function to check if a reaction contains a specific nuclide
-  const reactionContainsNuclide = (reaction: FusionReaction, nuclide: string) => {
-    const [element, mass] = nuclide.split('-')
-    const A = parseInt(mass)
-    return (
-      (reaction.E1 === element && reaction.A1 === A) ||
-      (reaction.E2 === element && reaction.A2 === A) ||
-      (reaction.E === element && reaction.A === A)
-    )
-  }
-
-  // Helper function to check if a reaction contains a specific element
-  const reactionContainsElement = (reaction: FusionReaction, element: string) => {
-    // Normalize both the reaction element symbols and the search element to handle D/T → H mapping
-    const normalizedElement = normalizeElementSymbol(element)
-    return (
-      normalizeElementSymbol(reaction.E1) === normalizedElement ||
-      normalizeElementSymbol(reaction.E2) === normalizedElement ||
-      normalizeElementSymbol(reaction.E) === normalizedElement
-    )
   }
 
   if (dbLoading) {
@@ -412,7 +540,8 @@ export default function FusionQuery() {
       <div className="card p-6 mb-6">
         <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">Query Parameters</h2>
 
-        <div className="grid md:grid-cols-3 gap-6">
+        {/* Input/Output Selectors (always visible) */}
+        <div className="grid md:grid-cols-3 gap-6 mb-6">
           {/* Input Element 1 Selection (E1) */}
           <PeriodicTableSelector
             label="Input Element 1 (E1)"
@@ -438,110 +567,135 @@ export default function FusionQuery() {
             onSelectionChange={setSelectedOutputElement}
             align="right"
           />
+        </div>
 
-          {/* MeV Range */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Energy Range (MeV)
-            </label>
-            <div className="flex gap-2">
-              <input
-                type="number"
-                placeholder="Min"
-                className="input flex-1"
-                value={filter.minMeV || ''}
-                onChange={(e) => setFilter({...filter, minMeV: e.target.value ? parseFloat(e.target.value) : undefined})}
-              />
-              <input
-                type="number"
-                placeholder="Max"
-                className="input flex-1"
-                value={filter.maxMeV || ''}
-                onChange={(e) => setFilter({...filter, maxMeV: e.target.value ? parseFloat(e.target.value) : undefined})}
-              />
-            </div>
+        {/* Additional Filters (collapsible) */}
+        <div className="border-t pt-4">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-base font-medium text-gray-900 dark:text-white">
+              Additional Filters
+            </h3>
+            <button
+              onClick={() => setShowFilters(!showFilters)}
+              className="btn btn-secondary p-2"
+              title={showFilters ? 'Collapse filters' : 'Expand filters'}
+              aria-label={showFilters ? 'Collapse filters' : 'Expand filters'}
+            >
+              <ChevronDown className={`w-5 h-5 transition-transform duration-200 ${showFilters ? 'rotate-180' : ''}`} />
+            </button>
           </div>
 
-          {/* Neutrino Type */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Neutrino Involvement
-            </label>
-            <div className="space-y-2">
-              {['none', 'left', 'right'].map(type => (
-                <label key={type} className="flex items-center">
-                  <input
-                    type="checkbox"
-                    checked={filter.neutrinoTypes?.includes(type as any)}
-                    onChange={(e) => {
-                      const types = filter.neutrinoTypes || []
-                      if (e.target.checked) {
-                        setFilter({...filter, neutrinoTypes: [...types, type as any]})
-                      } else {
-                        setFilter({...filter, neutrinoTypes: types.filter(t => t !== type)})
-                      }
-                    }}
-                    className="mr-2"
-                  />
-                  <span className="text-sm capitalize">{type}</span>
+          <div className={`transition-all duration-300 ease-in-out overflow-hidden ${showFilters ? 'max-h-[500px] opacity-100' : 'max-h-0 opacity-0'}`}>
+            <div className="grid md:grid-cols-3 gap-6">
+              {/* MeV Range */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Energy Range (MeV)
                 </label>
-              ))}
-            </div>
-          </div>
+                <div className="flex gap-2">
+                  <input
+                    type="number"
+                    placeholder="Min"
+                    className="input flex-1"
+                    value={filter.minMeV || ''}
+                    onChange={(e) => setFilter({...filter, minMeV: e.target.value ? parseFloat(e.target.value) : undefined})}
+                  />
+                  <input
+                    type="number"
+                    placeholder="Max"
+                    className="input flex-1"
+                    value={filter.maxMeV || ''}
+                    onChange={(e) => setFilter({...filter, maxMeV: e.target.value ? parseFloat(e.target.value) : undefined})}
+                  />
+                </div>
+              </div>
 
-          {/* Result Limit */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Result Limit
-            </label>
-            <input
-              type="number"
-              className="input"
-              value={filter.limit || 100}
-              onChange={(e) => setFilter({...filter, limit: parseInt(e.target.value) || 100})}
-              max={1000}
-            />
-            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Maximum 1000 rows</p>
+              {/* Neutrino Type */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Neutrino Involvement
+                </label>
+                <div className="space-y-2">
+                  {['none', 'left', 'right'].map(type => (
+                    <label key={type} className="flex items-center">
+                      <input
+                        type="checkbox"
+                        checked={filter.neutrinoTypes?.includes(type as any)}
+                        onChange={(e) => {
+                          const types = filter.neutrinoTypes || []
+                          if (e.target.checked) {
+                            setFilter({...filter, neutrinoTypes: [...types, type as any]})
+                          } else {
+                            setFilter({...filter, neutrinoTypes: types.filter(t => t !== type)})
+                          }
+                        }}
+                        className="mr-2"
+                      />
+                      <span className="text-sm capitalize">{type}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+
+              {/* Result Limit */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Result Limit
+                </label>
+                <input
+                  type="number"
+                  className="input"
+                  value={filter.limit ?? 100}
+                  onChange={(e) => {
+                    const val = e.target.value
+                    setFilter({...filter, limit: val === '' ? 100 : parseInt(val)})
+                  }}
+                  min={0}
+                  max={1000}
+                />
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Maximum 1000 rows</p>
+              </div>
+            </div>
           </div>
         </div>
 
-        {/* Action Buttons */}
-        <div className="flex gap-3 mt-6">
-          <button
-            onClick={() => {
-              setFilter({
-                elements: [],
-                minMeV: undefined,
-                maxMeV: undefined,
-                neutrinoTypes: DEFAULT_NEUTRINO_TYPES as any[],
-                limit: DEFAULT_LIMIT,
-                orderBy: 'MeV',
-                orderDirection: 'desc'
-              })
-              setSelectedElement1(DEFAULT_ELEMENT1)
-              setSelectedElement2(DEFAULT_ELEMENT2)
-              setSelectedOutputElement(DEFAULT_OUTPUT_ELEMENT)
-            }}
-            className="btn btn-secondary px-6 py-2"
-          >
-            Reset Filters
-          </button>
-          {isQuerying && (
-            <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
-              <Loader2 className="w-4 h-4 animate-spin" />
-              <span className="text-sm">Querying...</span>
+        {/* SQL Preview with Reset Filters Button */}
+        <div className="px-4 bg-gray-50 dark:bg-gray-800 rounded-md">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-2">
+            <div className="flex items-center gap-2">
+              <Info className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+              <span className="text-sm font-medium text-gray-700 dark:text-gray-300">SQL Preview:</span>
             </div>
-          )}
-        </div>
-
-        {/* SQL Preview */}
-        <div className="mt-4 p-4 bg-gray-50 dark:bg-gray-800 rounded-md">
-          <div className="flex items-center gap-2 mb-2">
-            <Info className="w-4 h-4 text-gray-500 dark:text-gray-400" />
-            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">SQL Preview:</span>
+            <div className="flex items-center gap-3">
+              {isQuerying && (
+                <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  <span className="text-sm">Querying...</span>
+                </div>
+              )}
+              <button
+                onClick={() => {
+                  setFilter({
+                    elements: [],
+                    minMeV: undefined,
+                    maxMeV: undefined,
+                    neutrinoTypes: DEFAULT_NEUTRINO_TYPES as any[],
+                    limit: DEFAULT_LIMIT,
+                    orderBy: 'MeV',
+                    orderDirection: 'desc'
+                  })
+                  setSelectedElement1(DEFAULT_ELEMENT1)
+                  setSelectedElement2(DEFAULT_ELEMENT2)
+                  setSelectedOutputElement(DEFAULT_OUTPUT_ELEMENT)
+                }}
+                className="btn btn-secondary px-4 py-1.5 text-sm whitespace-nowrap"
+              >
+                Reset Filters
+              </button>
+            </div>
           </div>
-          <code className="text-xs text-gray-600 dark:text-gray-400 block font-mono whitespace-pre-wrap">
-            {`${sqlPreview};`}
+          <code className="text-xs text-gray-600 dark:text-gray-400 block font-mono break-all">
+            {sqlPreview.replace(/\s+/g, ' ').trim()};
           </code>
         </div>
       </div>
@@ -549,24 +703,198 @@ export default function FusionQuery() {
       {/* Results */}
       {showResults && (
         <div className="space-y-6">
+          {/* Heatmap Visualization */}
+          <div className="card p-6">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex-1">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+                  Element Heatmap
+                </h3>
+                <p className="text-sm text-gray-600 dark:text-gray-400">
+                  Visualize which elements appear most frequently in the query results. The color intensity represents the selected metric value, with darker/more intense colors indicating higher values.
+                </p>
+              </div>
+              <button
+                onClick={() => setShowHeatmap(!showHeatmap)}
+                className="btn btn-secondary p-2 ml-4"
+                title={showHeatmap ? 'Collapse periodic table' : 'Expand periodic table'}
+                aria-label={showHeatmap ? 'Collapse periodic table' : 'Expand periodic table'}
+              >
+                <ChevronDown className={`w-5 h-5 transition-transform duration-200 ${showHeatmap ? 'rotate-180' : ''}`} />
+              </button>
+            </div>
+
+            <div className={`transition-all duration-300 ease-in-out overflow-hidden ${showHeatmap ? 'max-h-[2000px] opacity-100' : 'max-h-0 opacity-0'}`}>
+              <div className="pt-4">
+                {/* Metric Selector and Explanation on same row */}
+                <div className="flex flex-col md:flex-row gap-4 mb-4">
+                  {/* Metric Selector - Stacked label and input */}
+                  <div className="flex flex-col gap-1 md:min-w-[140px]">
+                    <label htmlFor="heatmap-metric-selector" className="text-xs font-medium text-gray-700 dark:text-gray-300">
+                      Metric:
+                    </label>
+                    <select
+                      id="heatmap-metric-selector"
+                      value={heatmapMode}
+                      onChange={(e) => setHeatmapMode(e.target.value as HeatmapMode)}
+                      className="input px-3 py-2 text-sm"
+                      aria-label="Select heatmap metric"
+                    >
+                      <option value="frequency">Frequency</option>
+                      <option value="energy">Energy</option>
+                      <option value="diversity">Diversity</option>
+                    </select>
+                  </div>
+
+                  {/* Metric Explanation */}
+                  <div className="flex-1 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-md border border-blue-200 dark:border-blue-800">
+                    <p className="text-sm text-blue-900 dark:text-blue-100">
+                      {heatmapMode === 'frequency' && (
+                        <>
+                          Number of times each element appears across {useAllResultsForHeatmap ? `all ${totalCount.toLocaleString()} matching` : results.length.toLocaleString()} reactions (as input or output).
+                          Higher frequency = darker color.
+                        </>
+                      )}
+                      {heatmapMode === 'energy' && (
+                        <>
+                          Total energy (MeV) from all reactions involving each element.
+                          Higher total energy = darker color.
+                        </>
+                      )}
+                      {heatmapMode === 'diversity' && (
+                        <>
+                          Number of unique isotopes of each element appearing in the results.
+                          More isotopic variety = darker color.
+                        </>
+                      )}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Color Legend */}
+                <div className="mb-4 p-3 bg-gray-50 dark:bg-gray-800 rounded-md border border-gray-200 dark:border-gray-700">
+                  <div className="flex items-center gap-3">
+                    <span className="text-xs font-medium text-gray-700 dark:text-gray-300 whitespace-nowrap">Element Role:</span>
+                    <div className="flex items-center gap-2 flex-1 min-w-0">
+                      <span className="text-xs text-gray-600 dark:text-gray-400 whitespace-nowrap">Input</span>
+                      <div className="flex-1 min-w-[60px] h-4 rounded" style={{
+                        background: 'linear-gradient(to right, rgb(37, 99, 235), rgb(29, 131, 155), rgb(22, 163, 74))'
+                      }}></div>
+                      <span className="text-xs text-gray-600 dark:text-gray-400 whitespace-nowrap">Output</span>
+                    </div>
+                    <span className="text-xs text-gray-500 dark:text-gray-400">• Intensity shows metric value</span>
+                  </div>
+                </div>
+
+                {/* Toggle for using all results + button to show all in table */}
+                <div className={`mb-4 flex flex-col sm:flex-row sm:items-center gap-3 transition-all duration-500 ease-in-out overflow-hidden ${
+                  filter.limit && filter.limit > 0 && totalCount > filter.limit
+                    ? 'max-h-40 opacity-100'
+                    : 'max-h-0 opacity-0 mb-0'
+                }`}>
+                  {filter.limit && filter.limit > 0 && totalCount > filter.limit && (
+                    <>
+                      <label className="flex items-center gap-3 cursor-pointer">
+                      <span className="text-sm text-gray-700 dark:text-gray-300">
+                        Use all {totalCount.toLocaleString()} matching results
+                        {totalCount > 1000 && <span className="text-gray-500 dark:text-gray-400"> (may be slow)</span>}
+                      </span>
+                      <button
+                        type="button"
+                        role="switch"
+                        aria-checked={useAllResultsForHeatmap}
+                        onClick={() => {
+                          const newValue = !useAllResultsForHeatmap
+                          setUseAllResultsForHeatmap(newValue)
+                          // Re-run query to fetch unlimited results if toggled on
+                          if (newValue && db) {
+                            const unlimitedQuery = { ...queryFilter, limit: undefined }
+                            const unlimitedResult = queryFusion(db, unlimitedQuery)
+                            setAllResults(unlimitedResult.reactions)
+                          } else {
+                            setAllResults([])
+                          }
+                        }}
+                        className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 ${
+                          useAllResultsForHeatmap
+                            ? 'bg-blue-600'
+                            : 'bg-gray-200 dark:bg-gray-700'
+                        }`}
+                      >
+                        <span
+                          className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                            useAllResultsForHeatmap ? 'translate-x-6' : 'translate-x-1'
+                          }`}
+                        />
+                      </button>
+                    </label>
+                      <button
+                        onClick={() => {
+                          // Set limit to 0 for unlimited AND enable heatmap toggle
+                          setFilter({...filter, limit: 0})
+                          setUseAllResultsForHeatmap(true)
+                        }}
+                        disabled={filter.limit === 0}
+                        className="btn btn-secondary px-4 py-2 text-sm whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed"
+                        title={filter.limit === 0 ? "Already showing all results" : "Remove limit and show all matching reactions in table"}
+                      >
+                        Show All in Table →
+                      </button>
+                    </>
+                  )}
+                </div>
+
+                <PeriodicTable
+                  availableElements={resultElements}
+                  selectedElement={highlightedElement}
+                  onElementClick={(symbol) => {
+                    // Toggle pin state if clicking same element, otherwise pin new element
+                    if (pinnedElement && highlightedElement === symbol) {
+                      // Unpinning element - also unpin any child nuclide
+                      setPinnedElement(false)
+                      setHighlightedElement(null)
+                      setPinnedNuclide(false)
+                      setHighlightedNuclide(null)
+                    } else {
+                      // Pinning element - unpin any previously pinned nuclide
+                      setPinnedElement(true)
+                      setHighlightedElement(symbol)
+                      setPinnedNuclide(false)
+                      setHighlightedNuclide(null)
+                    }
+                  }}
+                  heatmapData={heatmapMetrics[heatmapMode]}
+                  heatmapMode={heatmapMode}
+                  showHeatmap={showHeatmap}
+                  heatmapMetrics={heatmapMetrics}
+                />
+              </div>
+            </div>
+          </div>
+
           {/* Results Table */}
           <div className="card p-6">
             <div className="flex justify-between items-center mb-4">
               <div>
                 <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
-                  {results.length === totalCount
-                    ? `Showing all ${totalCount.toLocaleString()} matching reactions`
-                    : `Showing ${results.length.toLocaleString()} of ${totalCount.toLocaleString()} matching reactions`
-                  }
+                  {pinnedNuclide && highlightedNuclide ? (
+                    `Showing ${filteredResults.length.toLocaleString()} of ${totalCount.toLocaleString()} reactions containing ${highlightedNuclide}`
+                  ) : pinnedElement && highlightedElement ? (
+                    `Showing ${filteredResults.length.toLocaleString()} of ${totalCount.toLocaleString()} reactions containing ${highlightedElement}`
+                  ) : results.length === totalCount ? (
+                    `Showing all ${totalCount.toLocaleString()} matching reactions`
+                  ) : (
+                    `Showing ${results.length.toLocaleString()} of ${totalCount.toLocaleString()} matching reactions`
+                  )}
                 </h2>
                 <p className="text-sm text-gray-500 dark:text-gray-400">
                   Query executed in {executionTime.toFixed(2)}ms
-                  {results.length < totalCount && (
+                  {filter.limit && filter.limit > 0 && totalCount > filter.limit && (
                     <span className="ml-2">• Increase limit to see more results</span>
                   )}
                 </p>
               </div>
-              <div className="flex gap-2">
+              <div className="flex flex-wrap gap-2">
                 <button
                   onClick={() => setShowBosonFermion(!showBosonFermion)}
                   className="btn btn-secondary px-4 py-2 text-sm"
@@ -645,19 +973,13 @@ export default function FusionQuery() {
                   </div>
                 </div>
 
-                {results.length === 0 ? (
+                {filteredResults.length === 0 ? (
                   <div className="p-6 text-center text-sm text-gray-500 dark:text-gray-400">
-                    Run a query to view fusion reactions.
+                    {results.length === 0 ? 'Run a query to view fusion reactions.' : 'No reactions match the selected filter.'}
                   </div>
-                ) : results.length <= SMALL_RESULT_THRESHOLD ? (
+                ) : filteredResults.length <= SMALL_RESULT_THRESHOLD ? (
                   <div style={{ paddingRight: fusionHeaderPadding }}>
-                    {results.map((reaction, index) => {
-                      const activeNuclide = pinnedNuclide ? highlightedNuclide : highlightedNuclide
-                      const activeElement = pinnedElement ? highlightedElement : highlightedElement
-                      const nuclideMatch = !activeNuclide || reactionContainsNuclide(reaction, activeNuclide)
-                      const elementMatch = !activeElement || reactionContainsElement(reaction, activeElement)
-                      const isDesaturated = (activeNuclide && !nuclideMatch) || (activeElement && !elementMatch)
-
+                    {filteredResults.map((reaction, index) => {
                       const isE1Radioactive = radioactiveNuclides.has(`${reaction.Z1}-${reaction.A1}`)
                       const isE2Radioactive = radioactiveNuclides.has(`${reaction.Z2}-${reaction.A2}`)
                       const isOutputRadioactive = radioactiveNuclides.has(`${reaction.Z}-${reaction.A}`)
@@ -665,9 +987,7 @@ export default function FusionQuery() {
                       return (
                         <div
                           key={index}
-                          className={`grid border-b border-gray-200 dark:border-gray-700 transition-colors duration-150 ${
-                            isDesaturated ? 'opacity-30 grayscale' : 'hover:bg-gray-50 dark:hover:bg-gray-800/60'
-                          }`}
+                          className="grid border-b border-gray-200 dark:border-gray-700 transition-colors duration-150 hover:bg-gray-50 dark:hover:bg-gray-800/60"
                           style={{ gridTemplateColumns: fusionColumnTemplate, borderLeft: 'none', borderRight: 'none' }}
                         >
                           <div className="px-3 py-3 bg-blue-50 dark:bg-blue-900/20 text-center">
@@ -811,29 +1131,21 @@ export default function FusionQuery() {
                 ) : (
                   <div style={{ paddingRight: fusionHeaderPadding }}>
                     <VirtualizedList
-                      items={results}
+                      items={filteredResults}
                       estimatedRowHeight={fusionEstimatedRowHeight}
-                      height={fusionListHeight}
+                      height={filteredListHeight}
                       overscanRowCount={4}
                       className="fusion-results-list"
                       ariaLabel="Fusion reactions list"
                     >
                       {(reaction) => {
-                        const activeNuclide = pinnedNuclide ? highlightedNuclide : highlightedNuclide
-                        const activeElement = pinnedElement ? highlightedElement : highlightedElement
-                        const nuclideMatch = !activeNuclide || reactionContainsNuclide(reaction, activeNuclide)
-                        const elementMatch = !activeElement || reactionContainsElement(reaction, activeElement)
-                        const isDesaturated = (activeNuclide && !nuclideMatch) || (activeElement && !elementMatch)
-
                         const isE1Radioactive = radioactiveNuclides.has(`${reaction.Z1}-${reaction.A1}`)
                         const isE2Radioactive = radioactiveNuclides.has(`${reaction.Z2}-${reaction.A2}`)
                         const isOutputRadioactive = radioactiveNuclides.has(`${reaction.Z}-${reaction.A}`)
 
                         return (
                           <div
-                            className={`grid border-b border-gray-200 dark:border-gray-700 transition-colors duration-150 ${
-                              isDesaturated ? 'opacity-30 grayscale' : 'hover:bg-gray-50 dark:hover:bg-gray-800/60'
-                            }`}
+                            className="grid border-b border-gray-200 dark:border-gray-700 transition-colors duration-150 hover:bg-gray-50 dark:hover:bg-gray-800/60"
                             style={{ gridTemplateColumns: fusionColumnTemplate, borderLeft: 'none', borderRight: 'none' }}
                           >
                             <div className="px-3 py-3 bg-blue-50 dark:bg-blue-900/20 text-center">
@@ -978,15 +1290,27 @@ export default function FusionQuery() {
                 )}
               </div>
             </div>
+
+            {/* Resize Handle - only show for virtualized tables with many results */}
+            {filteredResults.length > SMALL_RESULT_THRESHOLD && (
+              <div
+                className="flex items-center justify-center py-1 cursor-ns-resize hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors border-t border-gray-200 dark:border-gray-700"
+                onMouseDown={handleResizeStart}
+                onDoubleClick={handleResizeReset}
+                title="Drag to resize table height (double-click to reset)"
+              >
+                <GripVertical className="w-4 h-4 text-gray-400 dark:text-gray-500" />
+              </div>
+            )}
           </div>
 
           {/* Nuclides Summary */}
           <div className="card p-6">
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-              Nuclides Appearing in Results ({nuclides.length})
+              Nuclides Appearing in Results ({filteredNuclides.length}{pinnedElement && highlightedElement ? ` of ${nuclides.length} - showing ${highlightedElement} isotopes` : ''})
             </h3>
             <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-2">
-              {nuclides.map(nuc => {
+              {filteredNuclides.map(nuc => {
                 const nuclideId = `${nuc.E}-${nuc.A}`
                 const isActive = highlightedNuclide === nuclideId
                 const isPinned = pinnedNuclide && highlightedNuclide === nuclideId
@@ -1006,10 +1330,14 @@ export default function FusionQuery() {
                   onMouseLeave={() => !pinnedNuclide && setHighlightedNuclide(null)}
                   onClick={() => {
                     if (pinnedNuclide && highlightedNuclide === nuclideId) {
-                      // Unpinning nuclide only - do NOT unpin parent element
-                      // This allows element to remain pinned independently
+                      // Unpinning nuclide
                       setPinnedNuclide(false)
                       setHighlightedNuclide(null)
+                      // If heatmap is closed, also unpin the element since user can't interact with it
+                      if (!showHeatmap) {
+                        setPinnedElement(false)
+                        setHighlightedElement(null)
+                      }
                     } else {
                       // Pinning nuclide - also pin its parent element
                       const [elementSymbol] = nuclideId.split('-')
@@ -1029,59 +1357,6 @@ export default function FusionQuery() {
                     )}
                   </div>
                   <div className="text-xs text-gray-500 dark:text-gray-400">Z={nuc.Z}</div>
-                </div>
-                )
-              })}
-            </div>
-          </div>
-
-          {/* Elements Summary */}
-          <div className="card p-6">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-              Elements Appearing in Results ({resultElements.length})
-            </h3>
-            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-2">
-              {resultElements.map(el => {
-                const elementId = el.E
-                const isActive = highlightedElement === elementId
-                const isPinned = pinnedElement && highlightedElement === elementId
-                const isDesaturated = highlightedElement && highlightedElement !== elementId
-
-                return (
-                <div
-                  key={el.Z}
-                  className={`px-3 py-2 rounded border cursor-pointer transition-all duration-200 ${
-                    isPinned ? 'bg-blue-100 dark:bg-blue-900/50 border-blue-400 dark:border-blue-600 ring-2 ring-blue-400' :
-                    isActive ? 'bg-blue-50 dark:bg-blue-900/30 border-blue-300 dark:border-blue-700' :
-                    isDesaturated ? 'bg-blue-50 dark:bg-blue-900/30 border-blue-200 dark:border-blue-800 opacity-40' :
-                    'bg-blue-50 dark:bg-blue-900/30 border-blue-200 dark:border-blue-800 hover:bg-blue-100 dark:hover:bg-blue-900/40'
-                  }`}
-                  onMouseEnter={() => !pinnedElement && setHighlightedElement(elementId)}
-                  onMouseLeave={() => !pinnedElement && setHighlightedElement(null)}
-                  onClick={() => {
-                    if (pinnedElement && highlightedElement === elementId) {
-                      // Unpinning element only - do NOT unpin child nuclides
-                      // This allows nuclides to remain pinned independently
-                      setPinnedElement(false)
-                      setHighlightedElement(null)
-                    } else {
-                      // Pinning element (without selecting a specific nuclide)
-                      // If a nuclide from a DIFFERENT element is pinned, unpin it first
-                      if (pinnedNuclide && highlightedNuclide) {
-                        const [nuclideParentElement] = highlightedNuclide.split('-')
-                        if (normalizeElementSymbol(nuclideParentElement) !== elementId) {
-                          setPinnedNuclide(false)
-                          setHighlightedNuclide(null)
-                        }
-                      }
-                      setPinnedElement(true)
-                      setHighlightedElement(elementId)
-                    }
-                  }}
-                >
-                  <div className="font-bold text-lg text-blue-900 dark:text-blue-200">{el.E}</div>
-                  <div className="text-xs text-blue-700 dark:text-blue-300">{el.EName}</div>
-                  <div className="text-xs text-blue-600 dark:text-blue-400">Z={el.Z}</div>
                 </div>
                 )
               })}
