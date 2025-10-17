@@ -220,3 +220,28 @@ export interface CascadeParameters {
   excludeMelted: boolean;
   excludeBoiledOff: boolean;
 }
+
+// Decay chain types for multi-generation radioactive decay visualization
+export interface DecayChainNode {
+  nuclide: { Z: number; A: number; E: string };
+  decayMode?: string;                  // Decay mode that led to this nuclide (e.g., 'A', 'B-', 'EC')
+  branchingRatio?: number;             // Percentage of parent decays that lead to this daughter (0-100)
+  halfLife?: number;                   // Half-life numeric value
+  halfLifeUnits?: string;              // Half-life units (s, m, h, d, y)
+  logHalfLife?: number;                // Log₁₀ half-life in years
+  children: DecayChainNode[];          // Daughter nuclides
+  depth: number;                       // Generation depth from root (0 = root)
+  isStable: boolean;                   // True if LHL > 9 (half-life > 1 billion years)
+}
+
+export interface DecayChainResult {
+  root: DecayChainNode;                           // Root nuclide node
+  totalGenerations: number;                       // Maximum depth of the tree
+  branchCount: number;                            // Total number of decay branches
+  terminalNuclides: Array<{                       // Leaf nodes of the tree
+    Z: number;
+    A: number;
+    E: string;
+    isStable: boolean;
+  }>;
+}
