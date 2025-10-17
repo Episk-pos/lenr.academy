@@ -188,8 +188,8 @@ test.describe('Mobile Navigation', () => {
     // Wait for sidebar to open
     await page.waitForTimeout(300);
 
-    // Get the sidebar container (the one with flex flex-col)
-    const sidebar = page.locator('div.fixed.inset-y-0.left-0').first();
+    // Get the sidebar container (the one with flex flex-col and fixed left-0)
+    const sidebar = page.locator('div.fixed.left-0.flex.w-64.flex-col').first();
     await expect(sidebar).toBeVisible();
 
     // Verify the sidebar container has overflow-hidden
