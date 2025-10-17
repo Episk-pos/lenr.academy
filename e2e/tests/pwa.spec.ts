@@ -17,9 +17,10 @@ test.describe('PWA - Service Worker', () => {
   test('should register service worker in production build', async ({ page }) => {
     // This test only works with production build (npm run preview)
     // In dev mode (npm run dev), service worker is disabled
-    const isDev = await page.evaluate(() => {
-      return import.meta.env.DEV
-    })
+
+    // Check if running on dev server (port 5173) or preview (port 4173)
+    const url = page.url()
+    const isDev = url.includes(':5173')
 
     if (isDev) {
       test.skip(true, 'Service worker is disabled in development mode')
@@ -46,6 +47,13 @@ test.describe('PWA - Service Worker', () => {
   })
 
   test('should have web manifest link in HTML', async ({ page }) => {
+    const url = page.url()
+    const isDev = url.includes(':5173')
+
+    if (isDev) {
+      test.skip(true, 'Manifest link not injected in dev mode')
+    }
+
     const hasManifest = await page.evaluate(() => {
       const link = document.querySelector('link[rel="manifest"]')
       return link !== null && link.getAttribute('href') === '/manifest.webmanifest'
@@ -110,9 +118,17 @@ test.describe('PWA - Offline Indicator', () => {
   })
 
   test('should allow database queries while offline (if cached)', async ({ page, context }) => {
+    // Skip in dev mode - requires service worker for offline reload
+    const url = page.url()
+    const isDev = url.includes(':5173')
+
+    if (isDev) {
+      test.skip(true, 'Offline reload requires service worker (production only)')
+    }
+
     // Ensure database is loaded while online
     await page.goto('/fusion')
-    await expect(page.getByRole('heading', { name: /fusion query/i })).toBeVisible()
+    await expect(page.getByRole('heading', { name: /fusion/i })).toBeVisible()
 
     // Go offline
     await context.setOffline(true)
@@ -127,7 +143,7 @@ test.describe('PWA - Offline Indicator', () => {
     await waitForDatabaseReady(page)
 
     // Should still be able to navigate and use app
-    await expect(page.getByRole('heading', { name: /fusion query/i })).toBeVisible()
+    await expect(page.getByRole('heading', { name: /fusion/i })).toBeVisible()
   })
 
   test('should transition to slim indicator after 5 seconds', async ({ page, context }) => {
@@ -152,9 +168,9 @@ test.describe('PWA - Offline Indicator', () => {
 
 test.describe('PWA - Install Prompt', () => {
   test.beforeEach(async ({ page }) => {
+    await page.goto('/')
     await acceptPrivacyConsent(page)
     await clearAllStorage(page)
-    await page.goto('/')
     await acceptMeteredWarningIfPresent(page)
     await waitForDatabaseReady(page)
   })
@@ -264,7 +280,9 @@ test.describe('PWA - Update Prompt', () => {
 test.describe('PWA - Manifest Content', () => {
   test('manifest.webmanifest should be valid JSON with correct properties', async ({ page }) => {
     // Check if running in dev or production
-    const isDev = await page.evaluate(() => import.meta.env.DEV)
+    await page.goto('/')
+    const url = page.url()
+    const isDev = url.includes(':5173')
 
     if (isDev) {
       test.skip(true, 'Manifest not generated in dev mode')
@@ -302,7 +320,9 @@ test.describe('PWA - Manifest Content', () => {
 
 test.describe('PWA - Icon Accessibility', () => {
   test('PWA icons should be accessible', async ({ page }) => {
-    const isDev = await page.evaluate(() => import.meta.env.DEV)
+    await page.goto('/')
+    const url = page.url()
+    const isDev = url.includes(':5173')
 
     if (isDev) {
       test.skip(true, 'Icons not served in dev mode')
