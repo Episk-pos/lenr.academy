@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Shield, CheckCircle, XCircle, RefreshCw, Bug } from 'lucide-react'
+import { loadUmamiScript } from '../utils/analytics'
 
 const ANALYTICS_CONSENT_KEY = 'lenr-analytics-consent'
 const ERROR_REPORTING_CONSENT_KEY = 'lenr-error-reporting-consent'
@@ -19,18 +20,23 @@ export default function PrivacyPreferences() {
     setErrorReportingConsent(errorCurrent)
   }, [])
 
-  const handleConsentChange = (newConsent: 'accepted' | 'declined') => {
+  const handleConsentChange = async (newConsent: 'accepted' | 'declined') => {
     const oldConsent = consent
     localStorage.setItem(ANALYTICS_CONSENT_KEY, newConsent)
     setConsent(newConsent)
     setHasChanged(true)
 
-    // Show reload message if we're changing to 'accepted' (analytics needs page reload to load)
+    // Load analytics script dynamically if enabling (no reload needed)
     if (newConsent === 'accepted' && oldConsent !== 'accepted') {
-      setShowReloadMessage(true)
-    } else {
-      setShowReloadMessage(false)
+      try {
+        await loadUmamiScript()
+      } catch (error) {
+        console.error('Failed to load analytics:', error)
+      }
     }
+
+    // No reload needed for analytics changes anymore
+    // Keep reload message state for error reporting only
   }
 
   const handleErrorReportingChange = (newConsent: 'accepted' | 'declined') => {
@@ -64,11 +70,11 @@ export default function PrivacyPreferences() {
         </p>
       </div>
 
-      {/* Reload Message - shown when any changes require reload */}
+      {/* Reload Message - shown when error reporting changes require reload */}
       {showReloadMessage && (
         <div className="mb-6 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
           <p className="text-sm text-blue-800 dark:text-blue-300 mb-3">
-            To apply your changes, please reload the page.
+            To apply your error reporting changes, please reload the page.
           </p>
           <button
             onClick={handleReload}
