@@ -6,6 +6,7 @@ import {
   fetchMetadata,
   requestPersistentStorage,
   type CachedDatabase,
+  type DatabaseMetadata,
 } from './dbCache';
 
 let db: Database | null = null;
@@ -74,6 +75,7 @@ async function downloadDatabaseWithProgress(
 /**
  * Initialize the SQL.js database with Parkhomov tables
  * Supports caching and background updates
+ * OFFLINE-FIRST: Checks IndexedDB cache before attempting network requests
  */
 export async function initDatabase(
   onProgress?: ProgressCallback,
@@ -90,16 +92,10 @@ export async function initDatabase(
     locateFile: (file) => `/${file}`,
   });
 
-  // Try to load from cache first
+  // OFFLINE-FIRST: Try to load from cache FIRST, before any network requests
   let cachedDB: CachedDatabase | null = null;
-  let metadata;
 
   try {
-    // Fetch metadata to check version
-    metadata = await fetchMetadata();
-    console.log(`📡 Server database version: ${metadata.version}`);
-
-    // Check cache
     cachedDB = await getCachedDB();
     if (cachedDB) {
       console.log(`💾 Found cached database version: ${cachedDB.version}`);
@@ -109,22 +105,42 @@ export async function initDatabase(
       currentVersion = cachedDB.version;
       console.log('✅ Loaded database from cache');
 
-      // Check if update is available
-      if (metadata.version !== cachedDB.version) {
-        console.log(`🔄 Update available: ${cachedDB.version} → ${metadata.version}`);
-        if (onUpdateAvailable) {
-          onUpdateAvailable(metadata.version);
+      // Background: Try to check for updates (don't block if offline)
+      try {
+        const metadata = await fetchMetadata();
+        console.log(`📡 Server database version: ${metadata.version}`);
+
+        // Check if update is available
+        if (metadata.version !== cachedDB.version) {
+          console.log(`🔄 Update available: ${cachedDB.version} → ${metadata.version}`);
+          if (onUpdateAvailable) {
+            onUpdateAvailable(metadata.version);
+          }
+          // Background update will be handled by DatabaseContext
         }
-        // Background update will be handled by DatabaseContext
+      } catch (metadataError) {
+        // Offline or network error - that's OK, we already have cached database
+        console.log('ℹ️ Could not check for updates (offline?), using cached version');
       }
 
       return db;
     }
-  } catch (error) {
-    console.warn('Failed to check cache or metadata:', error);
+  } catch (cacheError) {
+    console.warn('Failed to check cache:', cacheError);
   }
 
-  // No cache - download database (first-time user)
+  // No cache - need to download database (first-time user or cache cleared)
+  console.log('📥 No cached database found, downloading...');
+
+  // Try to fetch metadata first to get version info
+  let metadata: DatabaseMetadata | undefined;
+  try {
+    metadata = await fetchMetadata();
+    console.log(`📡 Server database version: ${metadata.version}`);
+  } catch (metadataError) {
+    console.warn('⚠️ Could not fetch metadata (offline?), proceeding with download...');
+  }
+
   try {
     console.log('⬇️ Downloading Parkhomov database...');
     const data = await downloadDatabaseWithProgress(onProgress);
@@ -144,12 +160,24 @@ export async function initDatabase(
       };
       await setCachedDB(cached);
       currentVersion = metadata.version;
+    } else {
+      // No metadata, but cache anyway with unknown version
+      const cached: CachedDatabase = {
+        version: 'unknown',
+        data,
+        size: data.length,
+        downloadedAt: Date.now(),
+      };
+      await setCachedDB(cached);
+      currentVersion = 'unknown';
     }
 
     return db;
-  } catch (error) {
-    console.error('Failed to load database:', error);
-    // Fallback: create empty database with sample data
+  } catch (downloadError) {
+    console.error('❌ Failed to download database:', downloadError);
+
+    // Final fallback: create empty database with sample data
+    console.log('📝 Creating fallback database with sample data...');
     db = new SQL.Database();
     createTables(db);
     populateSampleData(db);

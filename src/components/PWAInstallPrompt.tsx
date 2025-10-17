@@ -7,7 +7,8 @@ interface BeforeInstallPromptEvent extends Event {
   userChoice: Promise<{ outcome: 'accepted' | 'dismissed' }>
 }
 
-const INSTALL_DISMISSED_KEY = 'lenr-pwa-install-dismissed'
+const INSTALL_SNOOZED_KEY = 'lenr-pwa-install-snoozed-until'
+const SNOOZE_DURATION_MS = 7 * 24 * 60 * 60 * 1000 // 7 days in milliseconds
 
 /**
  * PWA Install Prompt Component
@@ -15,19 +16,27 @@ const INSTALL_DISMISSED_KEY = 'lenr-pwa-install-dismissed'
  * Shows a banner prompting users to install the app on their device.
  * - Chrome/Edge: Uses beforeinstallprompt API
  * - iOS Safari: Shows manual installation instructions
+ * - Dismissal snoozes for 7 days
  */
 export default function PWAInstallPrompt() {
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null)
   const [isIOS, setIsIOS] = useState(false)
   const [isStandalone, setIsStandalone] = useState(false)
-  const [isDismissed, setIsDismissed] = useState(false)
+  const [isSnoozed, setIsSnoozed] = useState(false)
+  const [isAnimatingOut, setIsAnimatingOut] = useState(false)
 
   useEffect(() => {
-    // Check if already dismissed
-    const dismissed = localStorage.getItem(INSTALL_DISMISSED_KEY)
-    if (dismissed === 'true') {
-      setIsDismissed(true)
-      return
+    // Check if snoozed
+    const snoozedUntil = localStorage.getItem(INSTALL_SNOOZED_KEY)
+    if (snoozedUntil) {
+      const snoozedUntilDate = new Date(snoozedUntil)
+      if (new Date() < snoozedUntilDate) {
+        setIsSnoozed(true)
+        return
+      } else {
+        // Snooze period expired, clear the flag
+        localStorage.removeItem(INSTALL_SNOOZED_KEY)
+      }
     }
 
     // Detect iOS
@@ -74,25 +83,36 @@ export default function PWAInstallPrompt() {
   }
 
   const handleDismiss = () => {
-    localStorage.setItem(INSTALL_DISMISSED_KEY, 'true')
-    setIsDismissed(true)
+    setIsAnimatingOut(true)
+
+    // Wait for animation to complete before updating state
+    setTimeout(() => {
+      const snoozeUntil = new Date(Date.now() + SNOOZE_DURATION_MS)
+      localStorage.setItem(INSTALL_SNOOZED_KEY, snoozeUntil.toISOString())
+      setIsSnoozed(true)
+      setIsAnimatingOut(false)
+    }, 300) // Match animation duration
   }
 
   // Don't show if:
   // - Already installed
-  // - User dismissed
+  // - User snoozed
   // - No install prompt available (iOS without manual prompt, or not supported)
-  if (isStandalone || isDismissed || (!deferredPrompt && !isIOS)) {
+  if (isStandalone || isSnoozed || (!deferredPrompt && !isIOS)) {
     return null
   }
 
   return (
-    <div
-      className="fixed bottom-4 left-4 right-4 md:left-auto md:right-4 md:max-w-md z-40 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-xl"
-      role="dialog"
-      aria-label="Install app prompt"
-      data-testid="pwa-install-prompt"
-    >
+    <>
+      <div
+        className="fixed bottom-4 left-4 right-4 md:left-auto md:right-4 md:max-w-md z-40 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-xl"
+        role="dialog"
+        aria-label="Install app prompt"
+        data-testid="pwa-install-prompt"
+        style={{
+          animation: isAnimatingOut ? 'slideDown 0.3s ease-out forwards' : 'slideUp 0.3s ease-out'
+        }}
+      >
       <div className="p-4">
         <div className="flex items-start gap-3">
           <div className="flex-shrink-0 w-10 h-10 bg-primary-100 dark:bg-primary-900/30 rounded-lg flex items-center justify-center">
@@ -145,6 +165,29 @@ export default function PWAInstallPrompt() {
           </button>
         </div>
       </div>
-    </div>
+      </div>
+      <style>{`
+        @keyframes slideUp {
+          from {
+            opacity: 0;
+            transform: translateY(100%);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+        @keyframes slideDown {
+          from {
+            opacity: 1;
+            transform: translateY(0);
+          }
+          to {
+            opacity: 0;
+            transform: translateY(100%);
+          }
+        }
+      `}</style>
+    </>
   )
 }

@@ -129,6 +129,25 @@ test.describe('PWA - Offline Indicator', () => {
     // Should still be able to navigate and use app
     await expect(page.getByRole('heading', { name: /fusion query/i })).toBeVisible()
   })
+
+  test('should transition to slim indicator after 5 seconds', async ({ page, context }) => {
+    // Go offline
+    await context.setOffline(true)
+
+    // Wait for offline indicator to appear with full text
+    const offlineIndicator = page.getByTestId('offline-indicator')
+    await expect(offlineIndicator).toBeVisible({ timeout: 5000 })
+    await expect(offlineIndicator).toContainText(/you're offline/i)
+    await expect(offlineIndicator).toContainText(/database/i)
+
+    // Wait for transition to slim indicator (5 seconds + buffer)
+    await page.waitForTimeout(5500)
+
+    // Indicator should still be visible but with different text
+    await expect(offlineIndicator).toBeVisible()
+    // Should show "Offline" but not the full message
+    await expect(offlineIndicator).toContainText(/offline/i)
+  })
 })
 
 test.describe('PWA - Install Prompt', () => {

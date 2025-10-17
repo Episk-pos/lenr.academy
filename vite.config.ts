@@ -12,7 +12,7 @@ export default defineConfig({
 
     // PWA plugin for service worker and manifest generation
     VitePWA({
-      registerType: 'prompt', // Manual update prompt
+      registerType: 'autoUpdate', // Auto-update on page load/refresh
       includeAssets: ['**/*.{png,svg,ico,wasm}'],
       manifest: {
         name: 'LENR Academy',

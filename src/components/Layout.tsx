@@ -179,11 +179,24 @@ export default function Layout({ children }: LayoutProps) {
   }, [CHANGELOG_SEEN_KEY, currentDisplayVersion, currentVersionKey, openChangelog, releaseTag, shouldBypassAutoChangelog, versionInfo.isRelease])
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <div
+      className="min-h-screen bg-gray-50 dark:bg-gray-900"
+      style={{
+        paddingTop: 'var(--offline-banner-height, 0px)',
+        transition: 'padding-top 300ms ease-out'
+      }}
+    >
       {/* Mobile sidebar */}
       <div className={`fixed inset-0 z-50 lg:hidden ${sidebarOpen ? 'block' : 'hidden'}`}>
         <div className="fixed inset-0 bg-gray-600 bg-opacity-75" onClick={() => setSidebarOpen(false)} />
-        <div className="fixed inset-y-0 left-0 flex w-64 flex-col bg-white dark:bg-gray-800 overflow-hidden">
+        <div
+          className="fixed left-0 flex w-64 flex-col bg-white dark:bg-gray-800 overflow-hidden"
+          style={{
+            top: 'var(--offline-banner-height, 0px)',
+            bottom: 0,
+            transition: 'top 300ms ease-out'
+          }}
+        >
           <div className="flex items-center justify-between p-4 border-b dark:border-gray-700">
             <div className="flex items-center gap-2">
               <Atom className="w-6 h-6 text-primary-600" />
@@ -241,7 +254,14 @@ export default function Layout({ children }: LayoutProps) {
       </div>
 
       {/* Desktop sidebar */}
-      <div className={`hidden lg:fixed lg:inset-y-0 lg:flex lg:flex-col transition-all duration-300 ${desktopSidebarCollapsed ? 'lg:w-16' : 'lg:w-64'}`}>
+      <div
+        className={`hidden lg:fixed lg:flex lg:flex-col transition-all duration-300 ${desktopSidebarCollapsed ? 'lg:w-16' : 'lg:w-64'}`}
+        style={{
+          top: 'var(--offline-banner-height, 0px)',
+          bottom: 0,
+          transition: 'top 300ms ease-out, width 300ms'
+        }}
+      >
         <div className="flex flex-col flex-grow border-r border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 relative">
           {/* Collapse toggle button */}
           <button
