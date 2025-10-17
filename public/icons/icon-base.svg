@@ -1,0 +1,14 @@
+<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="512" height="512" fill="#3b82f6"/>
+
+  <!-- Infinity symbol with 30% horizontal padding -->
+  <g transform="translate(256, 256)">
+    <!-- Left loop -->
+    <circle cx="-80" cy="0" r="55" fill="none" stroke="#ffffff" stroke-width="38"/>
+    <!-- Right loop -->
+    <circle cx="80" cy="0" r="55" fill="none" stroke="#ffffff" stroke-width="38"/>
+    <!-- Center crossing -->
+    <path d="M -25 0 L 25 0" stroke="#ffffff" stroke-width="38" stroke-linecap="round"/>
+  </g>
+</svg>

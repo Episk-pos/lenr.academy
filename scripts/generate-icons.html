@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Generate PWA Icons</title>
+</head>
+<body>
+  <canvas id="canvas"></canvas>
+  <script>
+    const sizes = [
+      { name: 'icon-192.png', size: 192, maskable: false },
+      { name: 'icon-512.png', size: 512, maskable: false },
+      { name: 'apple-touch-icon.png', size: 180, maskable: false },
+      { name: 'icon-maskable-192.png', size: 192, maskable: true },
+      { name: 'icon-maskable-512.png', size: 512, maskable: true }
+    ];
+
+    function generateIcon(size, maskable) {
+      const canvas = document.getElementById('canvas');
+      canvas.width = size;
+      canvas.height = size;
+      const ctx = canvas.getContext('2d');
+
+      // Background
+      ctx.fillStyle = '#3b82f6'; // Primary blue
+      ctx.fillRect(0, 0, size, size);
+
+      // Calculate infinity symbol dimensions with more horizontal padding
+      const padding = maskable ? size * 0.3 : size * 0.25; // More X padding
+      const width = size - (padding * 2);
+      const height = width * 0.5; // Height is 50% of width for infinity symbol
+      const centerX = size / 2;
+      const centerY = size / 2;
+
+      // Draw infinity symbol (∞)
+      ctx.strokeStyle = '#ffffff';
+      ctx.lineWidth = size * 0.08;
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+
+      // Infinity symbol using two circles connected
+      const radius = height / 2;
+      const loopOffset = width / 4;
+
+      ctx.beginPath();
+
+      // Left loop
+      ctx.arc(centerX - loopOffset, centerY, radius, 0, Math.PI * 2);
+
+      // Right loop
+      ctx.moveTo(centerX + loopOffset + radius, centerY);
+      ctx.arc(centerX + loopOffset, centerY, radius, 0, Math.PI * 2);
+
+      ctx.stroke();
+
+      // Fill the loops
+      ctx.fillStyle = '#ffffff';
+      ctx.fill();
+
+      return canvas.toDataURL('image/png');
+    }
+
+    // Generate all icons
+    console.log('Generating icons...');
+    sizes.forEach(({ name, size, maskable }) => {
+      const dataUrl = generateIcon(size, maskable);
+      console.log(`Generated ${name}`);
+
+      // Create download link
+      const link = document.createElement('a');
+      link.download = name;
+      link.href = dataUrl;
+      link.textContent = `Download ${name}`;
+      link.style.display = 'block';
+      link.style.margin = '10px';
+      document.body.appendChild(link);
+    });
+
+    console.log('All icons generated! Click links to download.');
+  </script>
+</body>
+</html>
