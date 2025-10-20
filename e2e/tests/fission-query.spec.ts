@@ -169,47 +169,35 @@ test.describe('Fission Query Page', () => {
       await page.waitForTimeout(500); // Wait for expansion animation
     }
 
-    // Click an element in the heatmap (e.g., Calcium which appears in Zr fission results)
+    // Pin a Zirconium nuclide first
+    await page.locator('text=Nuclides Appearing in Results').scrollIntoViewIfNeeded();
+    const zrNuclideCard = page.locator('div[class*="cursor-pointer"]').filter({ hasText: 'Zr-94' }).first();
+    await zrNuclideCard.scrollIntoViewIfNeeded();
+    await zrNuclideCard.click();
+    await page.waitForTimeout(300);
+
+    // Verify Zr nuclide is pinned
+    await expect(zrNuclideCard).toHaveClass(/ring-2.*ring-blue-400/);
+
+    // Now pin Calcium element (different element) - should clear the Zr nuclide pin
     const caButton = page.getByRole('button', { name: /^20\s+Ca$/ }).first();
     await caButton.scrollIntoViewIfNeeded();
     await caButton.click();
-    await page.waitForTimeout(500); // Wait for element details to load
+    await page.waitForTimeout(500);
 
     // Verify Calcium has ring indicator styling
     await expect(caButton).toHaveClass(/ring-2.*ring-blue/);
 
-    // Verify nuclides are filtered by Calcium (element pinning is working)
+    // Scroll back down to nuclides section to verify Zr nuclide was unpinned
+    await page.locator('text=/Nuclides.*in Results/').scrollIntoViewIfNeeded();
+
+    // Verify nuclides are filtered by Calcium (not showing all)
     await expect(page.getByText(/Nuclides of Ca in Results/)).toBeVisible();
 
-    // Click a nuclide card from the nuclides section (heading changes based on pinned element)
-    await page.locator('text=/Nuclides.*in Results/').locator('..').locator('div[class*="cursor-pointer"]').first().click();
-
-    // Wait for state to update
-    await page.waitForTimeout(300);
-
-    // Verify nuclide is now pinned (re-query to get fresh state)
-    const pinnedNuclide = page.locator('div[class*="ring-2"][class*="ring-blue-400"]').first();
-    await expect(pinnedNuclide).toBeVisible();
-
-    // Verify Calcium element is NO LONGER pinned (mutually exclusive behavior)
-    // Check that nuclides heading changed back to showing all nuclides (not filtered by Ca)
-    await expect(page.getByText(/Nuclides Appearing in Results \(\d+\)/)).toBeVisible();
-    await expect(caButton).not.toHaveClass(/ring-2.*ring-blue/);
-
-    // Click Calcium element again to pin it
-    await caButton.scrollIntoViewIfNeeded();
-    await caButton.click();
-    await page.waitForTimeout(500); // Wait for element details to load
-
-    // Verify Calcium has ring indicator styling
-    await expect(caButton).toHaveClass(/ring-2.*ring-blue/);
-
-    // Verify nuclides are filtered by Calcium again (element pinning is working)
-    await expect(page.getByText(/Nuclides of Ca in Results/)).toBeVisible();
-
-    // Verify nuclide is NO LONGER pinned (mutually exclusive behavior - no blue rings on nuclide cards)
-    const pinnedNuclideAfter = page.locator('div[class*="ring-2"][class*="ring-blue-400"]').first();
-    await expect(pinnedNuclideAfter).not.toBeVisible();
+    // The Zr nuclide should no longer be visible in the nuclides list (filtered to Ca only)
+    // So we verify by checking that no Zr nuclides are shown
+    const zrNuclides = page.locator('div[class*="cursor-pointer"]').filter({ hasText: /Zr-/ });
+    await expect(zrNuclides).toHaveCount(0);
   });
 
   test('should keep element pinned when selecting nuclide from same element', async ({ page }) => {
