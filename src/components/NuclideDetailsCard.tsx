@@ -288,6 +288,53 @@ export default function NuclideDetailsCard({ nuclide, onClose }: NuclideDetailsC
           </dl>
         </div>
 
+        {(typeof nuclide.pcaNCrust === 'number' || typeof nuclide.ppmNCrust === 'number' || typeof nuclide.ppmNSolar === 'number') && (
+          <div className="min-w-0">
+            <h3 className="font-semibold text-gray-900 dark:text-white mb-3 text-sm uppercase tracking-wide">
+              Natural Abundance
+            </h3>
+            <dl className="space-y-2 text-sm overflow-hidden">
+              {typeof nuclide.pcaNCrust === 'number' && !isNaN(nuclide.pcaNCrust) && (
+                <div className="flex justify-between gap-2">
+                  <dt className="text-gray-600 dark:text-gray-400 flex-shrink-0">Isotopic %:</dt>
+                  <dd className="font-medium text-gray-900 dark:text-gray-100 text-right truncate">
+                    {nuclide.pcaNCrust.toFixed(2)}%
+                  </dd>
+                </div>
+              )}
+              {typeof nuclide.ppmNCrust === 'number' && !isNaN(nuclide.ppmNCrust) && (
+                <div className="flex justify-between gap-2">
+                  <dt className="text-gray-600 dark:text-gray-400 flex-shrink-0">Earth's Crust:</dt>
+                  <dd className="font-medium text-gray-900 dark:text-gray-100 text-right truncate">
+                    {nuclide.ppmNCrust >= 1000
+                      ? `${(nuclide.ppmNCrust / 1000).toFixed(2)} g/kg`
+                      : nuclide.ppmNCrust >= 1
+                      ? `${nuclide.ppmNCrust.toFixed(2)} ppm`
+                      : `${(nuclide.ppmNCrust * 1000).toFixed(2)} ppb`
+                    }
+                  </dd>
+                </div>
+              )}
+              {typeof nuclide.ppmNSolar === 'number' && !isNaN(nuclide.ppmNSolar) && (
+                <div className="flex justify-between gap-2">
+                  <dt className="text-gray-600 dark:text-gray-400 flex-shrink-0">Solar System:</dt>
+                  <dd className="font-medium text-gray-900 dark:text-gray-100 text-right truncate">
+                    {nuclide.ppmNSolar >= 1000
+                      ? `${(nuclide.ppmNSolar / 1000).toFixed(2)} g/kg`
+                      : nuclide.ppmNSolar >= 1
+                      ? `${nuclide.ppmNSolar.toFixed(2)} ppm`
+                      : `${(nuclide.ppmNSolar * 1000).toFixed(2)} ppb`
+                    }
+                  </dd>
+                </div>
+              )}
+            </dl>
+            <div className="mt-3 p-2 bg-green-50 dark:bg-green-900/20 rounded text-xs text-green-700 dark:text-green-300">
+              Isotopic % is relative to all isotopes of {nuclide.E}
+            </div>
+          </div>
+        )}
+
         {typeof nuclide.logHalfLife === 'number' && !isNaN(nuclide.logHalfLife) && (
           <div className="min-w-0">
             <h3 className="font-semibold text-gray-900 dark:text-white mb-3 text-sm uppercase tracking-wide">

@@ -1032,7 +1032,7 @@ export default function ShowElementData() {
       }
       newParams.delete('particle')
 
-      setSearchParams(newParams, { replace: true })
+      setSearchParams(newParams) // Push new history entry for browser back/forward
     }
   }
 

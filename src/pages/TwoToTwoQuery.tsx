@@ -1488,15 +1488,22 @@ export default function TwoToTwoQuery() {
                   onMouseLeave={() => !pinnedNuclide && setHighlightedNuclide(null)}
                   onClick={() => {
                     if (pinnedNuclide && highlightedNuclide === nuclideId) {
-                      // Unpinning nuclide
+                      // Unpinning nuclide - also unpin element if it's pinned
                       setPinnedNuclide(false)
                       setHighlightedNuclide(null)
+                      if (pinnedElement) {
+                        setPinnedElement(false)
+                        setHighlightedElement(null)
+                      }
                     } else {
-                      // Pinning nuclide - clear element pinning (mutually exclusive)
+                      // Pinning nuclide
                       setPinnedNuclide(true)
                       setHighlightedNuclide(nuclideId)
-                      setPinnedElement(false)
-                      setHighlightedElement(null)
+                      // Only clear element pinning if the nuclide is from a different element
+                      if (pinnedElement && highlightedElement !== nuc.E) {
+                        setPinnedElement(false)
+                        setHighlightedElement(null)
+                      }
                     }
                   }}
                 >
