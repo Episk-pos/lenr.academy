@@ -336,25 +336,32 @@ test.describe('Fusion Query Page', () => {
     const pinnedNuclides = updatedNuclideCards.locator('.ring-2.ring-blue-400');
     await expect(pinnedNuclides).toHaveCount(0);
 
-    // Test C: Pin a nuclide again - should clear element pin
-    const nitrogenNuclideCard = updatedNuclideCards.filter({ hasText: 'N-' }).first();
-    await nitrogenNuclideCard.scrollIntoViewIfNeeded();
-    await nitrogenNuclideCard.click();
-
-    // Verify nitrogen nuclide is pinned
-    await expect(nitrogenNuclideCard).toHaveClass(/ring-2.*ring-blue-400/);
-
-    // Scroll back up to heatmap to verify element is NO LONGER pinned
+    // Test C: Pin a nuclide from a DIFFERENT element - should clear element pin (mutual exclusivity across elements)
+    // First unpin Nitrogen to see all nuclides
     await nitrogenButton.scrollIntoViewIfNeeded();
+    await nitrogenButton.click();
+    await page.waitForTimeout(300);
 
-    // Verify element blue ring removed (not checking ElementDetailsCard which has a bug)
-    await expect(nitrogenButton).not.toHaveClass(/ring-2.*ring-blue/);
+    // Find and click any nuclide that is NOT nitrogen (first nuclide in list)
+    await page.locator('text=Nuclides Appearing in Results').scrollIntoViewIfNeeded();
+    const firstNuclideCard2 = page.locator('div[class*="cursor-pointer"]').first();
+    await firstNuclideCard2.scrollIntoViewIfNeeded();
+    await firstNuclideCard2.click();
+    await page.waitForTimeout(300);
 
-    // Verify heading changed back to "Nuclides Appearing in Results" (element pin cleared)
-    await expect(page.getByText(/Nuclides Appearing in Results \(/)).toBeVisible();
+    // Verify nuclide is pinned
+    await expect(firstNuclideCard2).toHaveClass(/ring-2.*ring-blue-400/);
 
-    // Verify nuclide details card is visible
-    await expect(page.getByText(/Mass Number/).first()).toBeVisible();
+    // Now pin Nitrogen element again - should clear the nuclide pin ONLY if it's from a different element
+    await nitrogenButton.scrollIntoViewIfNeeded();
+    await nitrogenButton.click();
+    await page.waitForTimeout(500);
+
+    // Verify nitrogen element is pinned
+    await expect(nitrogenButton).toHaveClass(/ring-2.*ring-blue/);
+
+    // Verify nuclides list is filtered by Nitrogen
+    await expect(page.getByText(/Nuclides of N in Results/)).toBeVisible();
   });
 
   test('should display radioactivity indicators for unstable isotopes in results', async ({ page }) => {
