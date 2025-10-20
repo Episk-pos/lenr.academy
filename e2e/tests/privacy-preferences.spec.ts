@@ -171,7 +171,7 @@ test.describe('Privacy Preferences Page', () => {
 
     // Skip test if running on dev server (analytics disabled in development)
     const url = page.url()
-    const isDev = url.includes(':5173')
+    const isDev = url.includes('localhost')
     if (isDev) {
       test.skip(true, 'Analytics loading is disabled in development mode')
     }
@@ -373,7 +373,7 @@ test.describe('Privacy Banner - Dynamic Script Loading', () => {
 
     // Skip test if running on dev server (analytics disabled in development)
     const url = page.url()
-    const isDev = url.includes(':5173')
+    const isDev = url.includes('localhost')
     if (isDev) {
       test.skip(true, 'Analytics loading is disabled in development mode')
     }

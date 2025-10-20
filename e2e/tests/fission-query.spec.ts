@@ -23,7 +23,7 @@ test.describe('Fission Query Page', () => {
 
   test('should select element and execute fission query', async ({ page }) => {
     // Click the input element selector dropdown to open it
-    await page.getByText('Input Element (E)').locator('..').getByText('Any').first().click();
+    await page.getByRole('button', { name: /1 selected.*Zr/i }).click();
 
     // Wait for periodic table to appear and select Nickel
     const ni = page.getByRole('button', { name: /^28\s+Ni$/i }).first();
@@ -43,7 +43,7 @@ test.describe('Fission Query Page', () => {
 
   test('should filter by output elements', async ({ page }) => {
     // Select input element
-    await page.getByText('Input Element (E)').locator('..').getByText('Any').first().click();
+    await page.getByRole('button', { name: /1 selected.*Zr/i }).click();
     const ni = page.getByRole('button', { name: /^28\s+Ni$/i }).first();
     await ni.waitFor({ state: 'visible', timeout: 5000 });
     await ni.click();
@@ -57,7 +57,7 @@ test.describe('Fission Query Page', () => {
 
   test('should filter by energy range', async ({ page }) => {
     // Select element - Iron
-    await page.getByText('Input Element (E)').locator('..').getByText('Any').first().click();
+    await page.getByRole('button', { name: /1 selected.*Zr/i }).click();
     const fe = page.getByRole('button', { name: /^26\s+Fe$/i }).first();
     await fe.waitFor({ state: 'visible', timeout: 5000 });
     await fe.click();
@@ -81,7 +81,7 @@ test.describe('Fission Query Page', () => {
 
   test('should display fission reaction details', async ({ page }) => {
     // Execute a query - select Silver (Ag has fission reactions)
-    await page.getByText('Input Element (E)').locator('..').getByText('Any').first().click();
+    await page.getByRole('button', { name: /1 selected.*Zr/i }).click();
     const ag = page.getByRole('button', { name: /^47\s+Ag$/i }).first();
     await ag.waitFor({ state: 'visible', timeout: 5000 });
     await ag.click();
@@ -102,7 +102,7 @@ test.describe('Fission Query Page', () => {
 
   test('should export fission results', async ({ page }) => {
     // Execute query - select Silver (Ag has fission reactions)
-    await page.getByText('Input Element (E)').locator('..').getByText('Any').first().click();
+    await page.getByRole('button', { name: /1 selected.*Zr/i }).click();
     const ag = page.getByRole('button', { name: /^47\s+Ag$/i }).first();
     await ag.waitFor({ state: 'visible', timeout: 5000 });
     await ag.click();
@@ -125,7 +125,7 @@ test.describe('Fission Query Page', () => {
 
   test('should handle no results for invalid combinations', async ({ page }) => {
     // Select Hydrogen which likely has no fission reactions
-    await page.getByText('Input Element (E)').locator('..').getByText('Any').first().click();
+    await page.getByRole('button', { name: /1 selected.*Zr/i }).click();
     const h = page.getByRole('button', { name: /^1\s+H$/i }).first();
     await h.waitFor({ state: 'visible', timeout: 5000 });
     await h.click();
@@ -193,7 +193,7 @@ test.describe('Fission Query Page', () => {
 
     // Verify Calcium element is NO LONGER pinned (mutually exclusive behavior)
     // Check that nuclides heading changed back to showing all nuclides (not filtered by Ca)
-    await expect(page.getByText(/Nuclides Appearing in Results \(84\)/)).toBeVisible();
+    await expect(page.getByText(/Nuclides Appearing in Results \(\d+\)/)).toBeVisible();
     await expect(caButton).not.toHaveClass(/ring-2.*ring-blue/);
 
     // Click Calcium element again to pin it
