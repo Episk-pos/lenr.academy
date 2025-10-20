@@ -1,10 +1,9 @@
 import { useState, useEffect, useMemo, useCallback, useRef } from 'react'
 import { Download, Info, Loader2, Eye, EyeOff, Radiation, ChevronDown, GripVertical } from 'lucide-react'
 import { useSearchParams, Link } from 'react-router-dom'
-import type { TwoToTwoReaction, QueryFilter, Element, Nuclide, AtomicRadiiData, HeatmapMode, HeatmapMetrics } from '../types'
+import type { TwoToTwoReaction, QueryFilter, Element, Nuclide, HeatmapMode, HeatmapMetrics, AtomicRadiiData } from '../types'
 import { useDatabase } from '../contexts/DatabaseContext'
-import { queryTwoToTwo, getAllElements, getElementBySymbol, getNuclideBySymbol, getAtomicRadii, calculateHeatmapMetrics } from '../services/queryService'
-import { normalizeElementSymbol } from '../utils/formatUtils'
+import { queryTwoToTwo, getAllElements, getNuclideBySymbol, getElementBySymbol, getAtomicRadii, calculateHeatmapMetrics } from '../services/queryService'
 import PeriodicTableSelector from '../components/PeriodicTableSelector'
 import PeriodicTable from '../components/PeriodicTable'
 import ElementDetailsCard from '../components/ElementDetailsCard'
@@ -147,10 +146,10 @@ export default function TwoToTwoQuery() {
 
   const [highlightedNuclide, setHighlightedNuclide] = useState<string | null>(null)
   const [pinnedNuclide, setPinnedNuclide] = useState(false)
+  const [selectedNuclideDetails, setSelectedNuclideDetails] = useState<Nuclide | null>(null)
   const [highlightedElement, setHighlightedElement] = useState<string | null>(null)
   const [pinnedElement, setPinnedElement] = useState(false)
   const [selectedElementDetails, setSelectedElementDetails] = useState<Element | null>(null)
-  const [selectedNuclideDetails, setSelectedNuclideDetails] = useState<Nuclide | null>(null)
   const [selectedElementRadii, setSelectedElementRadii] = useState<AtomicRadiiData | null>(null)
   const [hasInitializedFromUrl, setHasInitializedFromUrl] = useState(false)
 
@@ -191,39 +190,30 @@ export default function TwoToTwoQuery() {
 
   // Helper function to check if a reaction contains a specific element
   const reactionContainsElement = useCallback((reaction: TwoToTwoReaction, element: string) => {
-    // Normalize both the reaction element symbols and the search element to handle D/T → H mapping
-    const normalizedElement = normalizeElementSymbol(element)
-    return (
-      normalizeElementSymbol(reaction.E1) === normalizedElement ||
-      normalizeElementSymbol(reaction.E2) === normalizedElement ||
-      normalizeElementSymbol(reaction.E3) === normalizedElement ||
-      normalizeElementSymbol(reaction.E4) === normalizedElement
-    )
+    return reaction.E1 === element || reaction.E2 === element || reaction.E3 === element || reaction.E4 === element
   }, [])
 
-  // Filter nuclides to only show those of the pinned element
+  // Filter nuclides by pinned element if applicable
   const filteredNuclides = useMemo(() => {
-    if (!pinnedElement || !highlightedElement) {
-      return nuclides
+    if (pinnedElement && highlightedElement) {
+      return nuclides.filter(nuc => nuc.E === highlightedElement)
     }
-    // Filter to only show nuclides of the highlighted/pinned element
-    const normalizedElement = normalizeElementSymbol(highlightedElement)
-    return nuclides.filter(nuc => normalizeElementSymbol(nuc.E) === normalizedElement)
+    return nuclides
   }, [nuclides, pinnedElement, highlightedElement])
 
-  // Filter reactions to only show those containing the pinned element/nuclide
+  // Filter reactions - mutually exclusive element/nuclide filtering
   const filteredResults = useMemo(() => {
     // If nuclide is pinned, filter by nuclide
     if (pinnedNuclide && highlightedNuclide) {
       return results.filter(reaction => reactionContainsNuclide(reaction, highlightedNuclide))
     }
-    // If only element is pinned, filter by element
+    // If element is pinned, filter by element
     if (pinnedElement && highlightedElement) {
       return results.filter(reaction => reactionContainsElement(reaction, highlightedElement))
     }
     // No filtering
     return results
-  }, [results, pinnedElement, highlightedElement, pinnedNuclide, highlightedNuclide, reactionContainsNuclide, reactionContainsElement])
+  }, [results, pinnedNuclide, highlightedNuclide, pinnedElement, highlightedElement, reactionContainsNuclide, reactionContainsElement])
 
   // Calculate base height for filtered results
   const filteredBaseListHeight = useMemo(() => {
@@ -292,67 +282,74 @@ export default function TwoToTwoQuery() {
     const pinE = searchParams.get('pinE')
     const pinN = searchParams.get('pinN')
 
-    // Only initialize if we have URL params and nothing is currently pinned
+    // Only initialize if we have URL param and nothing is currently pinned
     // This prevents re-pinning on every results change
-    if (pinN && !pinnedNuclide && nuclides.some(nuc => `${nuc.E}-${nuc.A}` === pinN)) {
-      // Pinning nuclide from URL - also pin its parent element and expand heatmap
-      const [elementSymbol] = pinN.split('-')
-      setHighlightedNuclide(pinN)
-      setPinnedNuclide(true)
-      setHighlightedElement(normalizeElementSymbol(elementSymbol))
-      setPinnedElement(true)
-      setShowHeatmap(true) // Auto-expand heatmap when loading with pinned state
-      setHasInitializedFromUrl(true)
-    } else if (pinE && !pinnedElement) {
-      // Pin element from URL and expand heatmap (regardless of whether it's in results)
+    if (pinE && !pinnedElement && resultElements.some(el => el.E === pinE)) {
+      // Pinning element from URL - expand heatmap
       setHighlightedElement(pinE)
       setPinnedElement(true)
       setShowHeatmap(true) // Auto-expand heatmap when loading with pinned state
       setHasInitializedFromUrl(true)
+
+      // Clear pinE/pinN params from URL now that we've used them
+      const newParams = new URLSearchParams(searchParams)
+      newParams.delete('pinE')
+      newParams.delete('pinN')
+      setSearchParams(newParams, { replace: true })
+    } else if (pinN && !pinnedNuclide && nuclides.some(nuc => `${nuc.E}-${nuc.A}` === pinN)) {
+      // Pinning nuclide from URL - expand heatmap
+      setHighlightedNuclide(pinN)
+      setPinnedNuclide(true)
+      setShowHeatmap(true) // Auto-expand heatmap when loading with pinned state
+      setHasInitializedFromUrl(true)
+
+      // Clear pinE/pinN params from URL now that we've used them
+      const newParams = new URLSearchParams(searchParams)
+      newParams.delete('pinE')
+      newParams.delete('pinN')
+      setSearchParams(newParams, { replace: true })
     } else {
       // No URL params to initialize from
       setHasInitializedFromUrl(true)
     }
-  }, [showResults, isInitialized, resultElements, nuclides, hasInitializedFromUrl, searchParams, pinnedElement, pinnedNuclide])
+  }, [showResults, isInitialized, resultElements, nuclides, hasInitializedFromUrl, searchParams, pinnedElement, pinnedNuclide, setSearchParams])
 
   // Fetch element or nuclide details when pinned
   useEffect(() => {
     if (!db) {
       setSelectedElementDetails(null)
-      setSelectedNuclideDetails(null)
       setSelectedElementRadii(null)
+      setSelectedNuclideDetails(null)
       return
     }
 
     // Fetch element details if pinned
     if (pinnedElement && highlightedElement) {
       const elementDetails = getElementBySymbol(db, highlightedElement)
+      const radiiData = getAtomicRadii(db, highlightedElement)
       setSelectedElementDetails(elementDetails)
-      if (elementDetails) {
-        const radiiData = getAtomicRadii(db, elementDetails.Z)
-        setSelectedElementRadii(radiiData)
-      } else {
-        setSelectedElementRadii(null)
-      }
-    } else {
-      setSelectedElementDetails(null)
-      setSelectedElementRadii(null)
+      setSelectedElementRadii(radiiData)
+      setSelectedNuclideDetails(null)
     }
-
     // Fetch nuclide details if pinned
-    if (pinnedNuclide && highlightedNuclide) {
+    else if (pinnedNuclide && highlightedNuclide) {
       const [elementSymbol, massStr] = highlightedNuclide.split('-')
       const massNumber = parseInt(massStr)
       const nuclideDetails = getNuclideBySymbol(db, elementSymbol, massNumber)
       setSelectedNuclideDetails(nuclideDetails)
+      setSelectedElementDetails(null)
+      setSelectedElementRadii(null)
     } else {
+      setSelectedElementDetails(null)
+      setSelectedElementRadii(null)
       setSelectedNuclideDetails(null)
     }
   }, [db, pinnedElement, highlightedElement, pinnedNuclide, highlightedNuclide])
 
   // Update URL when filters change
   useEffect(() => {
-    if (!isInitialized) return
+    // Don't update URL until after initialization has processed pinE/pinN params
+    if (!isInitialized || !hasInitializedFromUrl) return
 
     const params = new URLSearchParams()
 
@@ -397,29 +394,11 @@ export default function TwoToTwoQuery() {
     // Always set limit parameter explicitly (including default 100)
     params.set('limit', filter.limit?.toString() || DEFAULT_LIMIT.toString())
 
-    // Add pinned element/nuclide state
-    if (pinnedElement && highlightedElement) {
-      params.set('pinE', highlightedElement)
-    } else if (!showResults) {
-      // Preserve existing pinE parameter during initial load until pinning logic runs
-      const existingPinE = searchParams.get('pinE')
-      if (existingPinE) {
-        params.set('pinE', existingPinE)
-      }
-    }
-
-    if (pinnedNuclide && highlightedNuclide) {
-      params.set('pinN', highlightedNuclide)
-    } else if (!showResults) {
-      // Preserve existing pinN parameter during initial load until pinning logic runs
-      const existingPinN = searchParams.get('pinN')
-      if (existingPinN) {
-        params.set('pinN', existingPinN)
-      }
-    }
+    // Note: pinE/pinN params are NOT preserved here
+    // They are used only for initial page load, then immediately cleared by the initialization effect
 
     setSearchParams(params, { replace: true })
-  }, [selectedElement1, selectedElement2, selectedOutputElement3, selectedOutputElement4, filter.minMeV, filter.maxMeV, filter.neutrinoTypes, filter.limit, pinnedElement, highlightedElement, pinnedNuclide, highlightedNuclide, isInitialized, showResults, searchParams])
+  }, [selectedElement1, selectedElement2, selectedOutputElement3, selectedOutputElement4, filter.minMeV, filter.maxMeV, filter.neutrinoTypes, filter.limit, isInitialized, hasInitializedFromUrl, searchParams])
 
   // Auto-execute query when filters change
   useEffect(() => {
@@ -893,15 +872,12 @@ export default function TwoToTwoQuery() {
                   availableElements={resultElements}
                   selectedElement={highlightedElement}
                   onElementClick={(symbol) => {
-                    // Toggle pin state if clicking same element, otherwise pin new element
                     if (pinnedElement && highlightedElement === symbol) {
-                      // Unpinning element - also unpin any child nuclide
+                      // Unpinning element
                       setPinnedElement(false)
                       setHighlightedElement(null)
-                      setPinnedNuclide(false)
-                      setHighlightedNuclide(null)
                     } else {
-                      // Pinning element - unpin any previously pinned nuclide
+                      // Pinning element - clear nuclide pinning (mutually exclusive)
                       setPinnedElement(true)
                       setHighlightedElement(symbol)
                       setPinnedNuclide(false)
@@ -1031,10 +1007,8 @@ export default function TwoToTwoQuery() {
                   <div style={{ paddingRight: twoTwoHeaderPadding }}>
                     {filteredResults.map((reaction) => {
                         const activeNuclide = pinnedNuclide ? highlightedNuclide : highlightedNuclide
-                        const activeElement = pinnedElement ? highlightedElement : highlightedElement
                         const nuclideMatch = !activeNuclide || reactionContainsNuclide(reaction, activeNuclide)
-                        const elementMatch = !activeElement || reactionContainsElement(reaction, activeElement)
-                        const isDesaturated = (activeNuclide && !nuclideMatch) || (activeElement && !elementMatch)
+                        const isDesaturated = activeNuclide && !nuclideMatch
 
                         const isE1Radioactive = radioactiveNuclides.has(`${reaction.Z1}-${reaction.A1}`)
                         const isE2Radioactive = radioactiveNuclides.has(`${reaction.Z2}-${reaction.A2}`)
@@ -1236,10 +1210,8 @@ export default function TwoToTwoQuery() {
                     >
                       {(reaction) => {
                         const activeNuclide = pinnedNuclide ? highlightedNuclide : highlightedNuclide
-                        const activeElement = pinnedElement ? highlightedElement : highlightedElement
                         const nuclideMatch = !activeNuclide || reactionContainsNuclide(reaction, activeNuclide)
-                        const elementMatch = !activeElement || reactionContainsElement(reaction, activeElement)
-                        const isDesaturated = (activeNuclide && !nuclideMatch) || (activeElement && !elementMatch)
+                        const isDesaturated = activeNuclide && !nuclideMatch
 
                         const isE1Radioactive = radioactiveNuclides.has(`${reaction.Z1}-${reaction.A1}`)
                         const isE2Radioactive = radioactiveNuclides.has(`${reaction.Z2}-${reaction.A2}`)
@@ -1447,9 +1419,13 @@ export default function TwoToTwoQuery() {
             </div>
           </div>
           {/* Nuclides Summary */}
-          <div className="card p-6">
+          <div className="p-0 xs:p-4 sm:p-6 xs:overflow-hidden xs:rounded-lg xs:border xs:border-gray-200 xs:dark:border-gray-700 xs:bg-white xs:dark:bg-gray-800 xs:text-gray-950 xs:dark:text-gray-50 xs:shadow-sm">
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-              Nuclides Appearing in Results ({filteredNuclides.length}{pinnedElement && highlightedElement ? ` of ${nuclides.length} - showing ${highlightedElement} isotopes` : ''})
+              {pinnedElement && highlightedElement ? (
+                <>Nuclides of {highlightedElement} in Results ({filteredNuclides.length} of {nuclides.length})</>
+              ) : (
+                <>Nuclides Appearing in Results ({filteredNuclides.length})</>
+              )}
             </h3>
             <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-2">
               {filteredNuclides.map(nuc => {
@@ -1475,18 +1451,12 @@ export default function TwoToTwoQuery() {
                       // Unpinning nuclide
                       setPinnedNuclide(false)
                       setHighlightedNuclide(null)
-                      // If heatmap is closed, also unpin the element since user can't interact with it
-                      if (!showHeatmap) {
-                        setPinnedElement(false)
-                        setHighlightedElement(null)
-                      }
                     } else {
-                      // Pinning nuclide - also pin its parent element
-                      const [elementSymbol] = nuclideId.split('-')
+                      // Pinning nuclide - clear element pinning (mutually exclusive)
                       setPinnedNuclide(true)
                       setHighlightedNuclide(nuclideId)
-                      setPinnedElement(true)
-                      setHighlightedElement(normalizeElementSymbol(elementSymbol))
+                      setPinnedElement(false)
+                      setHighlightedElement(null)
                     }
                   }}
                 >
@@ -1506,36 +1476,30 @@ export default function TwoToTwoQuery() {
           </div>
 
           {/* Details Section */}
-          {(selectedElementDetails || selectedNuclideDetails) ? (
-            <div className="space-y-6">
-              {selectedElementDetails && (
-                <ElementDetailsCard
-                  element={selectedElementDetails}
-                  atomicRadii={selectedElementRadii}
-                  onClose={() => {
-                    setPinnedElement(false)
-                    setHighlightedElement(null)
-                  }}
-                />
-              )}
-              {selectedNuclideDetails && (
-                <NuclideDetailsCard
-                  nuclide={selectedNuclideDetails}
-                  onClose={() => {
-                    // Unpin nuclide only, keep element pinned
-                    setPinnedNuclide(false)
-                    setHighlightedNuclide(null)
-                  }}
-                />
-              )}
-            </div>
+          {selectedElementDetails && selectedElementRadii ? (
+            <ElementDetailsCard
+              element={selectedElementDetails}
+              radii={selectedElementRadii}
+              onClose={() => {
+                setPinnedElement(false)
+                setHighlightedElement(null)
+              }}
+            />
+          ) : selectedNuclideDetails ? (
+            <NuclideDetailsCard
+              nuclide={selectedNuclideDetails}
+              onClose={() => {
+                setPinnedNuclide(false)
+                setHighlightedNuclide(null)
+              }}
+            />
           ) : (
             <div className="card p-6">
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
                 Details
               </h3>
               <div className="text-center py-8 text-gray-500 dark:text-gray-400">
-                <p className="text-sm">Click on a nuclide or element above to see detailed properties</p>
+                <p className="text-sm">Click on an element in the periodic table or a nuclide above to see detailed properties</p>
               </div>
             </div>
           )}
