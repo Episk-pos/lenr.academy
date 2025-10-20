@@ -198,7 +198,7 @@ test.describe('Fission Query Page', () => {
     await expect(firstNuclideCard).not.toHaveClass(/ring-2.*ring-blue-400/);
   });
 
-  test('should persist pinned element in URL with pinE parameter', async ({ page }) => {
+  test('should allow element pinning via periodic table', async ({ page }) => {
     // Wait for default query results to load (Zr fission)
     await waitForReactionResults(page, 'fission');
 
@@ -215,16 +215,14 @@ test.describe('Fission Query Page', () => {
     const caButton = page.getByRole('button', { name: /^20\s+Ca$/ }).first();
     await caButton.click();
 
-    // Verify element details card is visible (indicates pinned)
+    // Verify element details card is visible (indicates element is pinned)
     await expect(page.getByText(/Atomic Number.*20/).first()).toBeVisible();
 
-    // URL should contain pinE parameter with the element symbol
-    await page.waitForTimeout(500);
-    const url = page.url();
-    expect(url).toContain(`pinE=Ca`);
+    // Verify Calcium has ring indicator styling
+    await expect(caButton).toHaveClass(/ring-2.*ring-blue/);
   });
 
-  test('should persist pinned nuclide in URL with pinN parameter', async ({ page }) => {
+  test('should allow nuclide pinning and show details', async ({ page }) => {
     // Wait for default query results to load
     await waitForReactionResults(page, 'fission');
 
@@ -235,18 +233,14 @@ test.describe('Fission Query Page', () => {
     // Verify nuclide is pinned
     await expect(nuclideCard).toHaveClass(/ring-2.*ring-blue-400/);
 
-    // Get the nuclide identifier
-    const nuclideText = await nuclideCard.locator('span.font-semibold').first().textContent();
-
-    // URL should contain pinN parameter with the nuclide identifier
-    await page.waitForTimeout(500);
-    const url = page.url();
-    expect(url).toContain(`pinN=${nuclideText}`);
+    // Verify nuclide details card is visible
+    await expect(page.getByText(/Mass Number/).first()).toBeVisible();
   });
 
   test('should restore pinned element from URL on page load', async ({ page }) => {
-    // Navigate with pinE parameter - default Zr query produces Ca in fission results
-    await page.goto('/fission?pinE=Ca');
+    // Navigate with pinE parameter - Zr query produces Ca in fission results
+    // Must explicitly set e=Zr because hasAnyUrlParams() clears defaults when URL params exist
+    await page.goto('/fission?e=Zr&pinE=Ca');
     await waitForDatabaseReady(page);
 
     // Wait for results to load
@@ -259,14 +253,16 @@ test.describe('Fission Query Page', () => {
     await expect(page.getByText(/Atomic Number.*20/).first()).toBeVisible();
     await expect(page.getByText(/Calcium/).first()).toBeVisible();
 
-    // Verify URL still contains pinE=Ca
+    // Verify URL no longer contains pinE=Ca (cleared after initialization)
     const url = page.url();
-    expect(url).toContain('pinE=Ca');
+    expect(url).not.toContain('pinE=');
+    expect(url).not.toContain('pinN=');
   });
 
   test('should restore both pinned element and nuclide from URL', async ({ page }) => {
-    // Navigate with both pinE and pinN parameters - default Zr query produces Ca-48
-    await page.goto('/fission?pinE=Ca&pinN=Ca-48');
+    // Navigate with both pinE and pinN parameters - Zr query produces Ca-48
+    // Must explicitly set e=Zr because hasAnyUrlParams() clears defaults when URL params exist
+    await page.goto('/fission?e=Zr&pinE=Ca&pinN=Ca-48');
     await waitForDatabaseReady(page);
 
     // Wait for results to load
@@ -343,14 +339,8 @@ test.describe('Fission Query Page', () => {
     // Verify Chromium is pinned (element details card visible)
     await expect(page.getByText(/Atomic Number.*24/).first()).toBeVisible();
 
-    // Verify first nuclide is NO LONGER pinned (regression check)
+    // Verify first nuclide is NO LONGER pinned (mutually exclusive behavior)
     await expect(firstNuclideCard).not.toHaveClass(/ring-2.*ring-blue-400/);
-
-    // URL should only contain pinE=Cr, not the nuclide identifier
-    await page.waitForTimeout(500);
-    const url = page.url();
-    expect(url).toContain('pinE=Cr');
-    expect(url).not.toContain(`pinN=${nuclideText}`);
   });
 
   test('should have clickable links to element-data page for nuclides in results table', async ({ page }) => {

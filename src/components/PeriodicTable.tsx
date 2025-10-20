@@ -379,7 +379,7 @@ export default function PeriodicTable({
       flex flex-col items-center justify-center font-medium rounded border
       transition-all duration-500
       ${isSelected
-        ? 'bg-blue-500 text-white border-blue-600 ring-2 ring-blue-400 shadow-md'
+        ? 'ring-2 ring-blue-500 dark:ring-blue-400 ring-offset-2 dark:ring-offset-gray-900 shadow-md border-blue-500 dark:border-blue-400'
         : isClickable
           ? 'bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600 hover:bg-blue-50 dark:hover:bg-blue-900/30 hover:border-blue-400 cursor-pointer'
           : 'bg-gray-100 dark:bg-gray-900 text-gray-400 dark:text-gray-600 border-gray-200 dark:border-gray-800 cursor-not-allowed'
@@ -415,7 +415,7 @@ export default function PeriodicTable({
           disabled={!isClickable}
           className={buttonClassName}
           title={buttonTitle}
-          style={!isSelected && hasHeatmap ? { backgroundColor: heatmapBgColor, borderColor: hasHeatmap && !isClickable ? 'rgb(156, 163, 175)' : undefined } : undefined}
+          style={hasHeatmap ? { backgroundColor: heatmapBgColor, borderColor: hasHeatmap && !isClickable ? 'rgb(156, 163, 175)' : undefined } : undefined}
         >
           {buttonContent}
         </button>
@@ -429,7 +429,7 @@ export default function PeriodicTable({
           disabled={!isClickable}
           className={buttonClassName}
           title={buttonTitle}
-          style={!isSelected && hasHeatmap ? { backgroundColor: heatmapBgColor, borderColor: hasHeatmap && !isClickable ? 'rgb(156, 163, 175)' : undefined } : undefined}
+          style={hasHeatmap ? { backgroundColor: heatmapBgColor, borderColor: hasHeatmap && !isClickable ? 'rgb(156, 163, 175)' : undefined } : undefined}
         >
           {buttonContent}
         </button>
@@ -457,14 +457,14 @@ export default function PeriodicTable({
                 className={`
                   ${ISOTOPE_BUTTON_COMMON}
                   ${isotopeSelected
-                    ? 'bg-blue-500 text-white border-blue-600 ring-1 ring-blue-300 shadow'
+                    ? 'ring-2 ring-blue-500 dark:ring-blue-400 ring-offset-1 shadow border-blue-500 dark:border-blue-400'
                     : isotopeClickable
                       ? 'bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600 hover:bg-blue-50 dark:hover:bg-blue-900/30 hover:border-blue-400 cursor-pointer'
                       : 'bg-gray-100 dark:bg-gray-900 text-gray-400 dark:text-gray-600 border-gray-200 dark:border-gray-800 cursor-not-allowed'
                   }
                 `}
                 title={isotopeTooltip}
-                style={!isotopeSelected && isotopeHasHeatmap ? { backgroundColor: isotopeBgColor } : undefined}
+                style={isotopeHasHeatmap ? { backgroundColor: isotopeBgColor } : undefined}
               >
                 {isotope.symbol}
               </button>
@@ -510,7 +510,7 @@ export default function PeriodicTable({
             <span className="flex items-center gap-1">
               <span className="inline-flex items-center justify-center rounded border border-dashed border-gray-300 dark:border-gray-600 px-1.5 py-1 text-xs font-semibold leading-none">D</span>
               <span className="inline-flex items-center justify-center rounded border border-dashed border-gray-300 dark:border-gray-600 px-1.5 py-1 text-xs font-semibold leading-none">T</span>
-              <span>= Hydrogen isotopes (selectable)</span>
+              <span>= Hydrogen isotopes</span>
             </span>
           </div>
         </div>
