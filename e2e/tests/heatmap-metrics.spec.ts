@@ -170,8 +170,8 @@ test.describe('Heatmap Metrics Calculation', () => {
     await page.waitForTimeout(500);
 
     // Verify nuclides are filtered
-    const filteredText = await page.locator('h3:has-text("Nuclides Appearing in Results")').textContent();
-    expect(filteredText).toContain('showing C isotopes');
+    const filteredText = await page.locator('h3:has-text("Nuclides")').textContent();
+    expect(filteredText).toContain('Nuclides of C in Results');
 
     // Extract filtered count
     const filteredMatch = filteredText?.match(/\((\d+) of (\d+)/);
@@ -213,8 +213,8 @@ test.describe('Heatmap Metrics Calculation', () => {
     await expect(carbonButton).toBeVisible();
 
     // Verify the element is pinned (look for the filter message)
-    const nuclidesHeader = await page.locator('h3:has-text("Nuclides Appearing in Results")').textContent();
-    expect(nuclidesHeader).toContain('showing C isotopes');
+    const nuclidesHeader = await page.locator('h3:has-text("Nuclides")').textContent();
+    expect(nuclidesHeader).toContain('Nuclides of C in Results');
   });
 
   test('should color elements with heatmap data even if not selectable', async ({ page }) => {

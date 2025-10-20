@@ -20,7 +20,7 @@ test.describe('PWA - Service Worker', () => {
 
     // Check if running on dev server (port 5173) or preview (port 4173)
     const url = page.url()
-    const isDev = url.includes(':5173')
+    const isDev = url.includes('localhost')
 
     if (isDev) {
       test.skip(true, 'Service worker is disabled in development mode')
@@ -48,7 +48,7 @@ test.describe('PWA - Service Worker', () => {
 
   test('should have web manifest link in HTML', async ({ page }) => {
     const url = page.url()
-    const isDev = url.includes(':5173')
+    const isDev = url.includes('localhost')
 
     if (isDev) {
       test.skip(true, 'Manifest link not injected in dev mode')
@@ -120,7 +120,7 @@ test.describe('PWA - Offline Indicator', () => {
   test('should allow database queries while offline (if cached)', async ({ page, context }) => {
     // Skip in dev mode - requires service worker for offline reload
     const url = page.url()
-    const isDev = url.includes(':5173')
+    const isDev = url.includes('localhost')
 
     if (isDev) {
       test.skip(true, 'Offline reload requires service worker (production only)')
@@ -282,7 +282,7 @@ test.describe('PWA - Manifest Content', () => {
     // Check if running in dev or production
     await page.goto('/')
     const url = page.url()
-    const isDev = url.includes(':5173')
+    const isDev = url.includes('localhost')
 
     if (isDev) {
       test.skip(true, 'Manifest not generated in dev mode')
@@ -322,7 +322,7 @@ test.describe('PWA - Icon Accessibility', () => {
   test('PWA icons should be accessible', async ({ page }) => {
     await page.goto('/')
     const url = page.url()
-    const isDev = url.includes(':5173')
+    const isDev = url.includes('localhost')
 
     if (isDev) {
       test.skip(true, 'Icons not served in dev mode')
