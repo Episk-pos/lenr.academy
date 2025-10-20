@@ -896,16 +896,18 @@ export default function FissionQuery() {
 
                 {/* Color Legend */}
                 <div className="mb-4 p-3 bg-gray-50 dark:bg-gray-800 rounded-md border border-gray-200 dark:border-gray-700">
-                  <div className="flex items-center gap-3">
-                    <span className="text-xs font-medium text-gray-700 dark:text-gray-300 whitespace-nowrap">Element Role:</span>
-                    <div className="flex items-center gap-2 flex-1 min-w-0">
-                      <span className="text-xs text-gray-600 dark:text-gray-400 whitespace-nowrap">Input</span>
-                      <div className="flex-1 min-w-[60px] h-4 rounded" style={{
-                        background: 'linear-gradient(to right, rgb(37, 99, 235), rgb(29, 131, 155), rgb(22, 163, 74))'
-                      }}></div>
-                      <span className="text-xs text-gray-600 dark:text-gray-400 whitespace-nowrap">Output</span>
+                  <div className="flex flex-col md:flex-row md:items-center gap-2 md:gap-3">
+                    <div className="flex items-center gap-3 flex-1 min-w-0">
+                      <span className="text-xs font-medium text-gray-700 dark:text-gray-300 whitespace-nowrap">Element Role:</span>
+                      <div className="flex items-center gap-2 flex-1 min-w-0">
+                        <span className="text-xs text-gray-600 dark:text-gray-400 whitespace-nowrap">Input</span>
+                        <div className="flex-1 min-w-[60px] h-4 rounded" style={{
+                          background: 'linear-gradient(to right, rgb(37, 99, 235), rgb(29, 131, 155), rgb(22, 163, 74))'
+                        }}></div>
+                        <span className="text-xs text-gray-600 dark:text-gray-400 whitespace-nowrap">Output</span>
+                      </div>
                     </div>
-                    <span className="text-xs text-gray-500 dark:text-gray-400">• Intensity shows metric value</span>
+                    <span className="text-xs text-gray-500 dark:text-gray-400 text-center md:text-left md:whitespace-nowrap">• Intensity shows metric value</span>
                   </div>
                 </div>
 
