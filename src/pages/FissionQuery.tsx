@@ -13,7 +13,7 @@ import DatabaseErrorCard from '../components/DatabaseErrorCard'
 import { VirtualizedList } from '../components/VirtualizedList'
 
 // Default values
-const DEFAULT_ELEMENT: string[] = ['Zr']
+const DEFAULT_ELEMENT: string[] = []
 const DEFAULT_OUTPUT_ELEMENT1: string[] = []
 const DEFAULT_OUTPUT_ELEMENT2: string[] = []
 const DEFAULT_NEUTRINO_TYPES = ['none', 'left', 'right']

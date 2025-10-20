@@ -14,8 +14,8 @@ import { VirtualizedList } from '../components/VirtualizedList'
 
 // Default values
 const DEFAULT_ELEMENT1 = ['D']
-const DEFAULT_ELEMENT2 = ['Ni', 'Li', 'Al', 'B', 'N']
-const DEFAULT_OUTPUT_ELEMENT3 = ['C']
+const DEFAULT_ELEMENT2: string[] = []
+const DEFAULT_OUTPUT_ELEMENT3: string[] = []
 const DEFAULT_OUTPUT_ELEMENT4: string[] = []
 const DEFAULT_NEUTRINO_TYPES = ['none', 'left', 'right']
 const DEFAULT_LIMIT = 100
