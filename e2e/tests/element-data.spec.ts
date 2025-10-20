@@ -248,22 +248,34 @@ test.describe('Element Data Page', () => {
   });
 
   test('should support browser back/forward with URL state', async ({ page }) => {
-    // Navigate to Fe
-    await page.goto('/element-data?Z=26');
+    // Start at element-data page (will default to H, Z=1)
+    await page.goto('/element-data');
     await waitForDatabaseReady(page);
-    await expect(page.getByRole('heading', { name: /Iron/i })).toBeVisible();
 
-    // Navigate to Cu
-    await page.goto('/element-data?Z=29');
-    await waitForDatabaseReady(page);
-    await expect(page.getByRole('heading', { name: /Copper/i })).toBeVisible();
+    // Click on Iron (Fe) in the periodic table to create first history entry
+    const feButton = page.getByRole('button', { name: /^26\s+Fe$/i });
+    await feButton.waitFor({ state: 'visible', timeout: 5000 });
+    await feButton.click();
 
-    // Go back - wait for React to re-render with Iron data
+    // Verify Iron heading is visible and URL updated
+    await expect(page).toHaveURL(/Z=26/);
+    await expect(page.getByRole('heading', { name: /Iron/i })).toBeVisible({ timeout: 5000 });
+
+    // Click on Copper (Cu) in the periodic table to create second history entry
+    const cuButton = page.getByRole('button', { name: /^29\s+Cu$/i });
+    await cuButton.waitFor({ state: 'visible', timeout: 5000 });
+    await cuButton.click();
+
+    // Verify Copper heading is visible and URL updated
+    await expect(page).toHaveURL(/Z=29/);
+    await expect(page.getByRole('heading', { name: /Copper/i })).toBeVisible({ timeout: 5000 });
+
+    // Go back - should return to Iron (testing browser history with React Router)
     await page.goBack();
     await expect(page).toHaveURL(/Z=26/);
     await expect(page.getByRole('heading', { name: /Iron/i })).toBeVisible({ timeout: 10000 });
 
-    // Go forward - wait for React to re-render with Copper data
+    // Go forward - should return to Copper
     await page.goForward();
     await expect(page).toHaveURL(/Z=29/);
     await expect(page.getByRole('heading', { name: /Copper/i })).toBeVisible({ timeout: 10000 });
