@@ -255,37 +255,6 @@ const allElementNames: Record<number, string> = {
 
   // Render a single element cell
   const renderCell = (period: number, group: number) => {
-    if (period === 2) {
-      if (group === 3) {
-        return (
-          <div
-            key="particle-row"
-            className="periodic-particle-band"
-            style={{ gridColumn: '3 / 13' }}
-          >
-            <div className="periodic-particle-grid">
-              {Array.from({ length: 10 }, (_, idx) => {
-                const groupNumber = idx + 3
-                const particle = SPECIAL_PARTICLES_BY_GROUP[groupNumber]
-                if (!particle) {
-                  return <div key={groupNumber} className="periodic-particle-spacer" />
-                }
-                return (
-                  <div key={groupNumber} className="periodic-particle-cell-wrapper">
-                    {renderParticleButton(particle)}
-                  </div>
-                )
-              })}
-            </div>
-          </div>
-        )
-      }
-
-      if (group > 3 && group < 13) {
-        return null
-      }
-    }
-
     const key = `${period}-${group}`
     const cellData = elementsByPosition[key]
 
@@ -423,7 +392,7 @@ const allElementNames: Record<number, string> = {
           inset-x-4 top-20 sm:inset-x-auto sm:top-auto sm:mt-2
           max-h-[calc(100vh-6rem)] sm:max-h-none overflow-y-auto sm:overflow-visible
           bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-lg p-4
-          w-auto sm:w-full sm:min-w-[600px] lg:min-w-[800px]
+          w-auto sm:w-full sm:min-w-[650px] lg:min-w-[800px]
           ${align === 'right' ? 'sm:right-0' : align === 'center' ? 'sm:left-1/2 sm:-translate-x-1/2' : ''}
         `}>
           <div className="mb-3 flex justify-between items-center">
@@ -439,12 +408,15 @@ const allElementNames: Record<number, string> = {
           </div>
 
           {/* Main periodic table (periods 1-7, excluding lanthanides/actinides) */}
-          <div className="periodic-table-grid mb-4">
-            {[1, 2, 3, 4, 5, 6, 7].map(period => (
-              <div key={period} className="periodic-row">
-                {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18].map(group => {
+          <div className="relative mb-4">
+            <div className="periodic-row">
+              {[1, 2, 3, 4, 5, 6, 7].map(period =>
+                [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18].map(group => {
                   // Skip groups 3-12 for periods 1-3 (they don't have elements there)
                   if (period === 1 && group >= 3 && group <= 12) {
+                    return <div key={`${period}-${group}`} className="periodic-cell-empty" />
+                  }
+                  if (period === 2 && group >= 3 && group <= 12) {
                     return <div key={`${period}-${group}`} className="periodic-cell-empty" />
                   }
                   if (period === 3 && group >= 3 && group <= 12) {
@@ -463,9 +435,35 @@ const allElementNames: Record<number, string> = {
                   }
 
                   return renderCell(period, group)
-                })}
-              </div>
-            ))}
+                })
+              )}
+            </div>
+
+            {/* Particle overlay - positioned to appear in period 2, columns 3-12 */}
+            <div
+              className="absolute pointer-events-none"
+              style={{
+                top: 'calc((28px + 2px) * 1 + 2px)', // After period 1 (min-height 28px from CSS) + gaps
+                left: 'calc((28px + 2px) * 2 + 2px)', // After columns 1-2 + gaps
+                width: 'calc((28px + 2px) * 10)', // Span 10 columns
+                display: 'flex',
+                justifyContent: 'center',
+                gap: '2px',
+              }}
+            >
+              {Array.from({ length: 10 }, (_, idx) => {
+                const groupNumber = idx + 3
+                const particle = SPECIAL_PARTICLES_BY_GROUP[groupNumber]
+                if (!particle) {
+                  return <div key={groupNumber} style={{ flex: 1 }} />
+                }
+                return (
+                  <div key={groupNumber} style={{ flex: 1, display: 'flex', justifyContent: 'center' }} className="pointer-events-auto">
+                    {renderParticleButton(particle)}
+                  </div>
+                )
+              })}
+            </div>
           </div>
 
           {/* Lanthanides */}
@@ -529,7 +527,6 @@ const allElementNames: Record<number, string> = {
           display: flex;
           align-items: flex-end;
           justify-content: center;
-          padding: 2px 0;
           pointer-events: none;
         }
 
@@ -546,7 +543,6 @@ const allElementNames: Record<number, string> = {
           display: flex;
           justify-content: center;
           align-items: flex-end;
-          padding-bottom: 6px;
         }
 
         .periodic-particle-cell {
@@ -557,19 +553,37 @@ const allElementNames: Record<number, string> = {
         }
 
         .periodic-particle-button {
-          width: 24px;
-          height: 24px;
+          width: 20px;
+          height: 20px;
           border: 1px dashed rgba(59, 130, 246, 0.6);
-          border-radius: 10px;
+          border-radius: 6px;
           display: inline-flex;
           align-items: center;
           justify-content: center;
-          font-size: 0.75rem;
+          font-size: 0.65rem;
           font-weight: 600;
           background: rgba(255, 255, 255, 0.8);
           color: rgba(59, 130, 246, 0.9);
           transition: all 0.15s ease;
           cursor: pointer;
+        }
+
+        @media (min-width: 640px) {
+          .periodic-particle-button {
+            width: 24px;
+            height: 24px;
+            border-radius: 8px;
+            font-size: 0.75rem;
+          }
+        }
+
+        @media (min-width: 1024px) {
+          .periodic-particle-button {
+            width: 28px;
+            height: 28px;
+            border-radius: 10px;
+            font-size: 0.8rem;
+          }
         }
 
         .dark .periodic-particle-button {
@@ -601,10 +615,22 @@ const allElementNames: Record<number, string> = {
 
         .periodic-particle-label {
           text-transform: uppercase;
-          font-size: 0.6rem;
+          font-size: 0.5rem;
           color: #6b7280;
           text-align: center;
           line-height: 1;
+        }
+
+        @media (min-width: 640px) {
+          .periodic-particle-label {
+            font-size: 0.55rem;
+          }
+        }
+
+        @media (min-width: 1024px) {
+          .periodic-particle-label {
+            font-size: 0.6rem;
+          }
         }
 
         .dark .periodic-particle-label {
@@ -633,15 +659,30 @@ const allElementNames: Record<number, string> = {
 
         .periodic-cell-radiation {
           position: absolute;
-          top: 1px;
-          right: 1px;
-          padding: 1px;
+          top: 0;
+          right: 0;
+          padding: 0.5px;
+        }
+
+        @media (min-width: 640px) {
+          .periodic-cell-radiation {
+            top: 1px;
+            right: 1px;
+            padding: 1px;
+          }
         }
 
         .periodic-cell-radiation-icon {
-          width: 8px;
-          height: 8px;
+          width: 6px;
+          height: 6px;
           color: #dc2626;
+        }
+
+        @media (min-width: 640px) {
+          .periodic-cell-radiation-icon {
+            width: 8px;
+            height: 8px;
+          }
         }
 
         .dark .periodic-cell-radiation-icon {
@@ -748,16 +789,35 @@ const allElementNames: Record<number, string> = {
         .periodic-cell-isotope-base {
           display: grid;
           place-items: center;
-          min-width: 22px;
-          min-height: 22px;
-          padding: 2px 6px;
+          min-width: 18px;
+          min-height: 18px;
+          padding: 2px 4px;
           border: 1px dashed #d1d5db;
-          border-radius: 6px;
+          border-radius: 4px;
           background: #ffffff;
-          font-size: 13px;
+          font-size: 11px;
           font-weight: 600;
           cursor: pointer;
           transition: all 0.15s ease;
+        }
+
+        @media (min-width: 640px) {
+          .periodic-cell-isotope-base {
+            min-width: 22px;
+            min-height: 22px;
+            padding: 2px 6px;
+            border-radius: 6px;
+            font-size: 13px;
+          }
+        }
+
+        @media (min-width: 1024px) {
+          .periodic-cell-isotope-base {
+            min-width: 26px;
+            min-height: 26px;
+            padding: 3px 7px;
+            font-size: 14px;
+          }
         }
 
         .periodic-cell-isotope-base:hover:not(.periodic-cell-isotope-disabled) {
