@@ -134,15 +134,15 @@ export default function TwoToTwoQuery() {
 
   const twoTwoColumnTemplate = useMemo(() => {
     if (showBosonFermion) {
-      return 'repeat(4, minmax(150px, 1fr)) repeat(10, minmax(120px, 0.9fr))'
+      return 'repeat(4, minmax(60px, 1fr)) repeat(10, minmax(60px, 0.9fr))'
     }
-    return 'repeat(4, minmax(170px, 1fr)) minmax(140px, 1fr) minmax(140px, 1fr)'
+    return 'repeat(4, minmax(85px, 1fr)) minmax(60px, 1fr) minmax(60px, 1fr)'
   }, [showBosonFermion])
 
-  const twoTwoMinWidth = useMemo(() => (showBosonFermion ? 1800 : 960), [showBosonFermion])
+  const twoTwoMinWidth = useMemo(() => (showBosonFermion ? 1000 : 428), [showBosonFermion])
 
-  const twoTwoEstimatedRowHeight = useMemo(() => (showBosonFermion ? 110 : 92), [showBosonFermion])
-  const twoTwoCompactRowHeight = useMemo(() => (showBosonFermion ? 92 : 82), [showBosonFermion])
+  const twoTwoEstimatedRowHeight = useMemo(() => (showBosonFermion ? 80 : 70), [showBosonFermion])
+  const twoTwoCompactRowHeight = useMemo(() => (showBosonFermion ? 70 : 62), [showBosonFermion])
 
   const [highlightedNuclide, setHighlightedNuclide] = useState<string | null>(null)
   const [pinnedNuclide, setPinnedNuclide] = useState(false)
@@ -706,7 +706,7 @@ export default function TwoToTwoQuery() {
               </button>
             </div>
           </div>
-          <code className="text-xs text-gray-600 dark:text-gray-400 block font-mono break-all">
+          <code className="text-[10px] sm:text-xs text-gray-600 dark:text-gray-400 block font-mono break-all">
             {[
               'SELECT * FROM TwoToTwoAll',
               (selectedElement1.length > 0 || selectedElement2.length > 0 || selectedOutputElement3.length > 0 || selectedOutputElement4.length > 0 || filter.minMeV !== undefined || filter.maxMeV !== undefined) && ' WHERE ',
@@ -801,11 +801,11 @@ export default function TwoToTwoQuery() {
                     <div className="flex items-center gap-3 flex-1 min-w-0">
                       <span className="text-xs font-medium text-gray-700 dark:text-gray-300 whitespace-nowrap">Element Role:</span>
                       <div className="flex items-center gap-2 flex-1 min-w-0">
-                        <span className="text-xs text-gray-600 dark:text-gray-400 whitespace-nowrap">Input</span>
+                        <span className="text-[10px] sm:text-xs text-gray-600 dark:text-gray-400 whitespace-nowrap">Input</span>
                         <div className="flex-1 min-w-[60px] h-4 rounded" style={{
                           background: 'linear-gradient(to right, rgb(37, 99, 235), rgb(29, 131, 155), rgb(22, 163, 74))'
                         }}></div>
-                        <span className="text-xs text-gray-600 dark:text-gray-400 whitespace-nowrap">Output</span>
+                        <span className="text-[10px] sm:text-xs text-gray-600 dark:text-gray-400 whitespace-nowrap">Output</span>
                       </div>
                     </div>
                     <span className="text-xs text-gray-500 dark:text-gray-400 text-center md:text-left md:whitespace-nowrap">• Intensity shows metric value</span>
@@ -947,11 +947,11 @@ export default function TwoToTwoQuery() {
 
             <div
               ref={tableContainerRef}
-              className="table-container -mx-6 sm:mx-0 rounded-b-none"
+              className="overflow-auto -mx-6 sm:mx-0"
               role="region"
               aria-label="Two-to-two reaction results"
             >
-              <div className="min-w-full" style={{ minWidth: twoTwoMinWidth }}>
+              <div className="w-fit min-w-full border border-gray-200 dark:border-gray-700 rounded-b-none rounded-t-none sm:rounded-t-lg" >
                 <div
                   className="sticky top-0 z-[5]"
                   style={{ paddingRight: twoTwoHeaderPadding }}
@@ -967,7 +967,7 @@ export default function TwoToTwoQuery() {
                       Outputs
                     </div>
                     <div className="px-3 py-2 text-center">Energy (MeV)</div>
-                    <div className="px-3 py-2 text-center">Neutrino</div>
+                    <div className="px-1 py-2 sm:px-3 text-center">Neutrino</div>
                     {showBosonFermion && (
                       <>
                         <div className="px-3 py-2 text-center bg-purple-50 dark:bg-purple-900/30 col-span-2">
@@ -994,7 +994,7 @@ export default function TwoToTwoQuery() {
                     <div className="px-3 py-2 text-center bg-green-50 dark:bg-green-900/30">Output 1</div>
                     <div className="px-3 py-2 text-center bg-green-50 dark:bg-green-900/30">Output 2</div>
                     <div className="px-3 py-2 text-center">Energy</div>
-                    <div className="px-3 py-2 text-center">Neutrino</div>
+                    <div className="px-1 py-2 sm:px-3 text-center">Neutrino</div>
                     {showBosonFermion && (
                       <>
                         <div className="px-3 py-2 text-center">Nuclear</div>
@@ -1033,11 +1033,11 @@ export default function TwoToTwoQuery() {
                             }`}
                             style={{ gridTemplateColumns: twoTwoColumnTemplate }}
                           >
-                          <div className="px-3 py-3 bg-blue-50 dark:bg-blue-900/20 text-center">
+                          <div className="px-1 py-1.5 sm:px-3 sm:py-3 bg-blue-50 dark:bg-blue-900/20 text-center">
                             <div className="flex items-center justify-center gap-1">
                               <Link
                                 to={`/element-data?Z=${reaction.Z1}&A=${reaction.A1}`}
-                                className="font-semibold text-base hover:underline text-blue-600 dark:text-blue-400"
+                                className="font-semibold text-sm sm:text-base hover:underline text-blue-600 dark:text-blue-400"
                               >
                                 {reaction.E1}-{reaction.A1}
                               </Link>
@@ -1047,13 +1047,13 @@ export default function TwoToTwoQuery() {
                                 </span>
                               )}
                             </div>
-                            <div className="text-xs text-gray-600 dark:text-gray-400">(Z={reaction.Z1})</div>
+                            <div className="text-[10px] sm:text-xs text-gray-600 dark:text-gray-400">(Z={reaction.Z1})</div>
                           </div>
-                          <div className="px-3 py-3 bg-blue-50 dark:bg-blue-900/20 text-center">
+                          <div className="px-1 py-1.5 sm:px-3 sm:py-3 bg-blue-50 dark:bg-blue-900/20 text-center">
                             <div className="flex items-center justify-center gap-1">
                               <Link
                                 to={`/element-data?Z=${reaction.Z2}&A=${reaction.A2}`}
-                                className="font-semibold text-base hover:underline text-blue-600 dark:text-blue-400"
+                                className="font-semibold text-sm sm:text-base hover:underline text-blue-600 dark:text-blue-400"
                               >
                                 {reaction.E2}-{reaction.A2}
                               </Link>
@@ -1063,13 +1063,13 @@ export default function TwoToTwoQuery() {
                                 </span>
                               )}
                             </div>
-                            <div className="text-xs text-gray-600 dark:text-gray-400">(Z={reaction.Z2})</div>
+                            <div className="text-[10px] sm:text-xs text-gray-600 dark:text-gray-400">(Z={reaction.Z2})</div>
                           </div>
-                          <div className="px-3 py-3 bg-green-50 dark:bg-green-900/20 text-center">
+                          <div className="px-1 py-1.5 sm:px-3 sm:py-3 bg-green-50 dark:bg-green-900/20 text-center">
                             <div className="flex items-center justify-center gap-1">
                               <Link
                                 to={`/element-data?Z=${reaction.Z3}&A=${reaction.A3}`}
-                                className="font-semibold text-base hover:underline text-green-600 dark:text-green-400"
+                                className="font-semibold text-sm sm:text-base hover:underline text-green-600 dark:text-green-400"
                               >
                                 {reaction.E3}-{reaction.A3}
                               </Link>
@@ -1079,13 +1079,13 @@ export default function TwoToTwoQuery() {
                                 </span>
                               )}
                             </div>
-                            <div className="text-xs text-gray-600 dark:text-gray-400">(Z={reaction.Z3})</div>
+                            <div className="text-[10px] sm:text-xs text-gray-600 dark:text-gray-400">(Z={reaction.Z3})</div>
                           </div>
-                          <div className="px-3 py-3 bg-green-50 dark:bg-green-900/20 text-center">
+                          <div className="px-1 py-1.5 sm:px-3 sm:py-3 bg-green-50 dark:bg-green-900/20 text-center">
                             <div className="flex items-center justify-center gap-1">
                               <Link
                                 to={`/element-data?Z=${reaction.Z4}&A=${reaction.A4}`}
-                                className="font-semibold text-base hover:underline text-green-600 dark:text-green-400"
+                                className="font-semibold text-sm sm:text-base hover:underline text-green-600 dark:text-green-400"
                               >
                                 {reaction.E4}-{reaction.A4}
                               </Link>
@@ -1095,12 +1095,12 @@ export default function TwoToTwoQuery() {
                                 </span>
                               )}
                             </div>
-                            <div className="text-xs text-gray-600 dark:text-gray-400">(Z={reaction.Z4})</div>
+                            <div className="text-[10px] sm:text-xs text-gray-600 dark:text-gray-400">(Z={reaction.Z4})</div>
                           </div>
-                          <div className="px-3 py-3 text-center">
+                          <div className="px-1 py-1.5 sm:px-3 sm:py-3 text-center">
                             <span className="font-semibold text-green-600 dark:text-green-300">{reaction.MeV.toFixed(2)}</span>
                           </div>
-                          <div className="px-3 py-3 text-center">
+                          <div className="px-1 py-1.5 sm:px-3 sm:py-3 text-center">
                             <span
                               className={`px-2 py-1 rounded-full text-xs font-medium ${
                                 reaction.neutrino === 'none'
@@ -1115,7 +1115,7 @@ export default function TwoToTwoQuery() {
                           </div>
                           {showBosonFermion && (
                             <>
-                              <div className="px-3 py-3 text-center">
+                              <div className="px-1 py-1.5 sm:px-3 sm:py-3 text-center">
                                 <span
                                   className={`px-2 py-1 rounded-full text-xs font-medium ${
                                     reaction.nBorF1 === 'b'
@@ -1126,7 +1126,7 @@ export default function TwoToTwoQuery() {
                                   {reaction.nBorF1 === 'b' ? 'Boson' : 'Fermion'}
                                 </span>
                               </div>
-                              <div className="px-3 py-3 text-center">
+                              <div className="px-1 py-1.5 sm:px-3 sm:py-3 text-center">
                                 <span
                                   className={`px-2 py-1 rounded-full text-xs font-medium ${
                                     reaction.aBorF1 === 'b'
@@ -1137,7 +1137,7 @@ export default function TwoToTwoQuery() {
                                   {reaction.aBorF1 === 'b' ? 'Boson' : 'Fermion'}
                                 </span>
                               </div>
-                              <div className="px-3 py-3 text-center">
+                              <div className="px-1 py-1.5 sm:px-3 sm:py-3 text-center">
                                 <span
                                   className={`px-2 py-1 rounded-full text-xs font-medium ${
                                     reaction.nBorF2 === 'b'
@@ -1148,7 +1148,7 @@ export default function TwoToTwoQuery() {
                                   {reaction.nBorF2 === 'b' ? 'Boson' : 'Fermion'}
                                 </span>
                               </div>
-                              <div className="px-3 py-3 text-center">
+                              <div className="px-1 py-1.5 sm:px-3 sm:py-3 text-center">
                                 <span
                                   className={`px-2 py-1 rounded-full text-xs font-medium ${
                                     reaction.aBorF2 === 'b'
@@ -1159,7 +1159,7 @@ export default function TwoToTwoQuery() {
                                   {reaction.aBorF2 === 'b' ? 'Boson' : 'Fermion'}
                                 </span>
                               </div>
-                              <div className="px-3 py-3 text-center">
+                              <div className="px-1 py-1.5 sm:px-3 sm:py-3 text-center">
                                 <span
                                   className={`px-2 py-1 rounded-full text-xs font-medium ${
                                     reaction.nBorF3 === 'b'
@@ -1170,7 +1170,7 @@ export default function TwoToTwoQuery() {
                                   {reaction.nBorF3 === 'b' ? 'Boson' : 'Fermion'}
                                 </span>
                               </div>
-                              <div className="px-3 py-3 text-center">
+                              <div className="px-1 py-1.5 sm:px-3 sm:py-3 text-center">
                                 <span
                                   className={`px-2 py-1 rounded-full text-xs font-medium ${
                                     reaction.aBorF3 === 'b'
@@ -1181,7 +1181,7 @@ export default function TwoToTwoQuery() {
                                   {reaction.aBorF3 === 'b' ? 'Boson' : 'Fermion'}
                                 </span>
                               </div>
-                              <div className="px-3 py-3 text-center">
+                              <div className="px-1 py-1.5 sm:px-3 sm:py-3 text-center">
                                 <span
                                   className={`px-2 py-1 rounded-full text-xs font-medium ${
                                     reaction.nBorF4 === 'b'
@@ -1192,7 +1192,7 @@ export default function TwoToTwoQuery() {
                                   {reaction.nBorF4 === 'b' ? 'Boson' : 'Fermion'}
                                 </span>
                               </div>
-                              <div className="px-3 py-3 text-center">
+                              <div className="px-1 py-1.5 sm:px-3 sm:py-3 text-center">
                                 <span
                                   className={`px-2 py-1 rounded-full text-xs font-medium ${
                                     reaction.aBorF4 === 'b'
@@ -1236,11 +1236,11 @@ export default function TwoToTwoQuery() {
                             }`}
                             style={{ gridTemplateColumns: twoTwoColumnTemplate }}
                           >
-                          <div className="px-3 py-3 bg-blue-50 dark:bg-blue-900/20 text-center">
+                          <div className="px-1 py-1.5 sm:px-3 sm:py-3 bg-blue-50 dark:bg-blue-900/20 text-center">
                             <div className="flex items-center justify-center gap-1">
                               <Link
                                 to={`/element-data?Z=${reaction.Z1}&A=${reaction.A1}`}
-                                className="font-semibold text-base hover:underline text-blue-600 dark:text-blue-400"
+                                className="font-semibold text-sm sm:text-base hover:underline text-blue-600 dark:text-blue-400"
                               >
                                 {reaction.E1}-{reaction.A1}
                               </Link>
@@ -1250,13 +1250,13 @@ export default function TwoToTwoQuery() {
                                 </span>
                               )}
                             </div>
-                            <div className="text-xs text-gray-600 dark:text-gray-400">(Z={reaction.Z1})</div>
+                            <div className="text-[10px] sm:text-xs text-gray-600 dark:text-gray-400">(Z={reaction.Z1})</div>
                           </div>
-                          <div className="px-3 py-3 bg-blue-50 dark:bg-blue-900/20 text-center">
+                          <div className="px-1 py-1.5 sm:px-3 sm:py-3 bg-blue-50 dark:bg-blue-900/20 text-center">
                             <div className="flex items-center justify-center gap-1">
                               <Link
                                 to={`/element-data?Z=${reaction.Z2}&A=${reaction.A2}`}
-                                className="font-semibold text-base hover:underline text-blue-600 dark:text-blue-400"
+                                className="font-semibold text-sm sm:text-base hover:underline text-blue-600 dark:text-blue-400"
                               >
                                 {reaction.E2}-{reaction.A2}
                               </Link>
@@ -1266,13 +1266,13 @@ export default function TwoToTwoQuery() {
                                 </span>
                               )}
                             </div>
-                            <div className="text-xs text-gray-600 dark:text-gray-400">(Z={reaction.Z2})</div>
+                            <div className="text-[10px] sm:text-xs text-gray-600 dark:text-gray-400">(Z={reaction.Z2})</div>
                           </div>
-                          <div className="px-3 py-3 bg-green-50 dark:bg-green-900/20 text-center">
+                          <div className="px-1 py-1.5 sm:px-3 sm:py-3 bg-green-50 dark:bg-green-900/20 text-center">
                             <div className="flex items-center justify-center gap-1">
                               <Link
                                 to={`/element-data?Z=${reaction.Z3}&A=${reaction.A3}`}
-                                className="font-semibold text-base hover:underline text-green-600 dark:text-green-400"
+                                className="font-semibold text-sm sm:text-base hover:underline text-green-600 dark:text-green-400"
                               >
                                 {reaction.E3}-{reaction.A3}
                               </Link>
@@ -1282,13 +1282,13 @@ export default function TwoToTwoQuery() {
                                 </span>
                               )}
                             </div>
-                            <div className="text-xs text-gray-600 dark:text-gray-400">(Z={reaction.Z3})</div>
+                            <div className="text-[10px] sm:text-xs text-gray-600 dark:text-gray-400">(Z={reaction.Z3})</div>
                           </div>
-                          <div className="px-3 py-3 bg-green-50 dark:bg-green-900/20 text-center">
+                          <div className="px-1 py-1.5 sm:px-3 sm:py-3 bg-green-50 dark:bg-green-900/20 text-center">
                             <div className="flex items-center justify-center gap-1">
                               <Link
                                 to={`/element-data?Z=${reaction.Z4}&A=${reaction.A4}`}
-                                className="font-semibold text-base hover:underline text-green-600 dark:text-green-400"
+                                className="font-semibold text-sm sm:text-base hover:underline text-green-600 dark:text-green-400"
                               >
                                 {reaction.E4}-{reaction.A4}
                               </Link>
@@ -1298,12 +1298,12 @@ export default function TwoToTwoQuery() {
                                 </span>
                               )}
                             </div>
-                            <div className="text-xs text-gray-600 dark:text-gray-400">(Z={reaction.Z4})</div>
+                            <div className="text-[10px] sm:text-xs text-gray-600 dark:text-gray-400">(Z={reaction.Z4})</div>
                           </div>
-                          <div className="px-3 py-3 text-center">
+                          <div className="px-1 py-1.5 sm:px-3 sm:py-3 text-center">
                             <span className="font-semibold text-green-600 dark:text-green-300">{reaction.MeV.toFixed(2)}</span>
                           </div>
-                          <div className="px-3 py-3 text-center">
+                          <div className="px-1 py-1.5 sm:px-3 sm:py-3 text-center">
                             <span
                               className={`px-2 py-1 rounded-full text-xs font-medium ${
                                 reaction.neutrino === 'none'
@@ -1318,7 +1318,7 @@ export default function TwoToTwoQuery() {
                           </div>
                           {showBosonFermion && (
                             <>
-                              <div className="px-3 py-3 text-center">
+                              <div className="px-1 py-1.5 sm:px-3 sm:py-3 text-center">
                                 <span
                                   className={`px-2 py-1 rounded-full text-xs font-medium ${
                                     reaction.nBorF1 === 'b'
@@ -1329,7 +1329,7 @@ export default function TwoToTwoQuery() {
                                   {reaction.nBorF1 === 'b' ? 'Boson' : 'Fermion'}
                                 </span>
                               </div>
-                              <div className="px-3 py-3 text-center">
+                              <div className="px-1 py-1.5 sm:px-3 sm:py-3 text-center">
                                 <span
                                   className={`px-2 py-1 rounded-full text-xs font-medium ${
                                     reaction.aBorF1 === 'b'
@@ -1340,7 +1340,7 @@ export default function TwoToTwoQuery() {
                                   {reaction.aBorF1 === 'b' ? 'Boson' : 'Fermion'}
                                 </span>
                               </div>
-                              <div className="px-3 py-3 text-center">
+                              <div className="px-1 py-1.5 sm:px-3 sm:py-3 text-center">
                                 <span
                                   className={`px-2 py-1 rounded-full text-xs font-medium ${
                                     reaction.nBorF2 === 'b'
@@ -1351,7 +1351,7 @@ export default function TwoToTwoQuery() {
                                   {reaction.nBorF2 === 'b' ? 'Boson' : 'Fermion'}
                                 </span>
                               </div>
-                              <div className="px-3 py-3 text-center">
+                              <div className="px-1 py-1.5 sm:px-3 sm:py-3 text-center">
                                 <span
                                   className={`px-2 py-1 rounded-full text-xs font-medium ${
                                     reaction.aBorF2 === 'b'
@@ -1362,7 +1362,7 @@ export default function TwoToTwoQuery() {
                                   {reaction.aBorF2 === 'b' ? 'Boson' : 'Fermion'}
                                 </span>
                               </div>
-                              <div className="px-3 py-3 text-center">
+                              <div className="px-1 py-1.5 sm:px-3 sm:py-3 text-center">
                                 <span
                                   className={`px-2 py-1 rounded-full text-xs font-medium ${
                                     reaction.nBorF3 === 'b'
@@ -1373,7 +1373,7 @@ export default function TwoToTwoQuery() {
                                   {reaction.nBorF3 === 'b' ? 'Boson' : 'Fermion'}
                                 </span>
                               </div>
-                              <div className="px-3 py-3 text-center">
+                              <div className="px-1 py-1.5 sm:px-3 sm:py-3 text-center">
                                 <span
                                   className={`px-2 py-1 rounded-full text-xs font-medium ${
                                     reaction.aBorF3 === 'b'
@@ -1384,7 +1384,7 @@ export default function TwoToTwoQuery() {
                                   {reaction.aBorF3 === 'b' ? 'Boson' : 'Fermion'}
                                 </span>
                               </div>
-                              <div className="px-3 py-3 text-center">
+                              <div className="px-1 py-1.5 sm:px-3 sm:py-3 text-center">
                                 <span
                                   className={`px-2 py-1 rounded-full text-xs font-medium ${
                                     reaction.nBorF4 === 'b'
@@ -1395,7 +1395,7 @@ export default function TwoToTwoQuery() {
                                   {reaction.nBorF4 === 'b' ? 'Boson' : 'Fermion'}
                                 </span>
                               </div>
-                              <div className="px-3 py-3 text-center">
+                              <div className="px-1 py-1.5 sm:px-3 sm:py-3 text-center">
                                 <span
                                   className={`px-2 py-1 rounded-full text-xs font-medium ${
                                     reaction.aBorF4 === 'b'

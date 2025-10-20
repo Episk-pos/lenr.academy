@@ -124,15 +124,15 @@ export default function FusionQuery() {
 
   const fusionColumnTemplate = useMemo(() => {
     if (showBosonFermion) {
-      return 'minmax(160px, 1fr) minmax(160px, 1fr) minmax(160px, 1fr) minmax(120px, 1fr) minmax(120px, 1fr) repeat(6, minmax(120px, 0.9fr))'
+      return 'minmax(85px, 1fr) minmax(85px, 1fr) minmax(85px, 1fr) minmax(100px, 1fr) minmax(100px, 1fr) repeat(6, minmax(70px, 0.9fr))'
     }
-    return 'minmax(180px, 1fr) minmax(180px, 1fr) minmax(180px, 1fr) minmax(140px, 0.8fr) minmax(140px, 0.8fr)'
+    return 'minmax(85px, 1fr) minmax(85px, 1fr) minmax(85px, 1fr) minmax(60px, 0.8fr) minmax(60px, 0.8fr)'
   }, [showBosonFermion])
 
-  const fusionMinWidth = useMemo(() => (showBosonFermion ? 1500 : 900), [showBosonFermion])
+  const fusionMinWidth = useMemo(() => (showBosonFermion ? 900 : 345), [showBosonFermion])
 
-  const fusionEstimatedRowHeight = useMemo(() => (showBosonFermion ? 96 : 82), [showBosonFermion])
-  const fusionCompactRowHeight = useMemo(() => (showBosonFermion ? 76 : 68), [showBosonFermion])
+  const fusionEstimatedRowHeight = useMemo(() => (showBosonFermion ? 70 : 60), [showBosonFermion])
+  const fusionCompactRowHeight = useMemo(() => (showBosonFermion ? 60 : 52), [showBosonFermion])
 
   const [highlightedNuclide, setHighlightedNuclide] = useState<string | null>(null)
   const [pinnedNuclide, setPinnedNuclide] = useState(false)
@@ -903,18 +903,18 @@ export default function FusionQuery() {
 
             <div
               ref={tableContainerRef}
-              className="table-container -mx-6 sm:mx-0 rounded-b-none"
+              className="overflow-auto -mx-6 sm:mx-0"
               role="region"
               aria-label="Fusion reaction results"
             >
-              <div className="min-w-full" style={{ minWidth: fusionMinWidth }}>
+              <div className="w-fit min-w-full border border-gray-200 dark:border-gray-700 rounded-b-none rounded-t-none sm:rounded-t-lg" >
                 <div
                   className="sticky top-0 z-[5]"
                   style={{ paddingRight: fusionHeaderPadding }}
                 >
                   <div
                     className="grid border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-sm font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-300"
-                    style={{ gridTemplateColumns: fusionColumnTemplate, borderLeft: 'none', borderRight: 'none' }}
+                    style={{ gridTemplateColumns: fusionColumnTemplate }}
                   >
                     <div className="px-3 py-2 text-center bg-blue-50 dark:bg-blue-900/30 col-span-2">
                       Inputs
@@ -922,8 +922,8 @@ export default function FusionQuery() {
                     <div className="px-3 py-2 text-center bg-green-50 dark:bg-green-900/30">
                       Output
                     </div>
-                    <div className="px-3 py-2 text-center">Energy (MeV)</div>
-                    <div className="px-3 py-2 text-center">Neutrino</div>
+                    <div className="px-1 py-2 sm:px-3 text-center">Energy (MeV)</div>
+                    <div className="px-1 py-2 sm:px-3 text-center">Neutrino</div>
                     {showBosonFermion && (
                       <>
                         <div className="px-3 py-2 text-center bg-purple-50 dark:bg-purple-900/30 col-span-2">
@@ -940,7 +940,7 @@ export default function FusionQuery() {
                   </div>
                   <div
                     className="grid border-b border-gray-200 dark:border-gray-700 bg-gray-100 dark:bg-gray-800/80 text-xs font-medium uppercase text-gray-500 dark:text-gray-400"
-                    style={{ gridTemplateColumns: fusionColumnTemplate, borderLeft: 'none', borderRight: 'none' }}
+                    style={{ gridTemplateColumns: fusionColumnTemplate }}
                   >
                     <div className="px-3 py-2 text-center bg-blue-50 dark:bg-blue-900/30">Input 1</div>
                     <div className="px-3 py-2 text-center bg-blue-50 dark:bg-blue-900/30">Input 2</div>
@@ -975,13 +975,13 @@ export default function FusionQuery() {
                         <div
                           key={index}
                           className="grid border-b border-gray-200 dark:border-gray-700 transition-colors duration-150 hover:bg-gray-50 dark:hover:bg-gray-800/60"
-                          style={{ gridTemplateColumns: fusionColumnTemplate, borderLeft: 'none', borderRight: 'none' }}
+                          style={{ gridTemplateColumns: fusionColumnTemplate }}
                         >
-                          <div className="px-3 py-3 bg-blue-50 dark:bg-blue-900/20 text-center">
+                          <div className="px-1 py-1.5 sm:px-3 sm:py-3 bg-blue-50 dark:bg-blue-900/20 text-center">
                             <div className="flex items-center justify-center gap-1">
                               <Link
                                 to={`/element-data?Z=${reaction.Z1}&A=${reaction.A1}`}
-                                className="font-semibold text-base hover:underline text-blue-600 dark:text-blue-400"
+                                className="font-semibold text-sm sm:text-base hover:underline text-blue-600 dark:text-blue-400"
                               >
                                 {reaction.E1}-{reaction.A1}
                               </Link>
@@ -991,13 +991,13 @@ export default function FusionQuery() {
                                 </span>
                               )}
                             </div>
-                            <div className="text-xs text-gray-600 dark:text-gray-400">(Z={reaction.Z1})</div>
+                            <div className="text-[10px] sm:text-xs text-gray-600 dark:text-gray-400">(Z={reaction.Z1})</div>
                           </div>
-                          <div className="px-3 py-3 bg-blue-50 dark:bg-blue-900/20 text-center">
+                          <div className="px-1 py-1.5 sm:px-3 sm:py-3 bg-blue-50 dark:bg-blue-900/20 text-center">
                             <div className="flex items-center justify-center gap-1">
                               <Link
                                 to={`/element-data?Z=${reaction.Z2}&A=${reaction.A2}`}
-                                className="font-semibold text-base hover:underline text-blue-600 dark:text-blue-400"
+                                className="font-semibold text-sm sm:text-base hover:underline text-blue-600 dark:text-blue-400"
                               >
                                 {reaction.E2}-{reaction.A2}
                               </Link>
@@ -1007,13 +1007,13 @@ export default function FusionQuery() {
                                 </span>
                               )}
                             </div>
-                            <div className="text-xs text-gray-600 dark:text-gray-400">(Z={reaction.Z2})</div>
+                            <div className="text-[10px] sm:text-xs text-gray-600 dark:text-gray-400">(Z={reaction.Z2})</div>
                           </div>
-                          <div className="px-3 py-3 bg-green-50 dark:bg-green-900/20 text-center">
+                          <div className="px-1 py-1.5 sm:px-3 sm:py-3 bg-green-50 dark:bg-green-900/20 text-center">
                             <div className="flex items-center justify-center gap-1">
                               <Link
                                 to={`/element-data?Z=${reaction.Z}&A=${reaction.A}`}
-                                className="font-semibold text-base hover:underline text-green-600 dark:text-green-400"
+                                className="font-semibold text-sm sm:text-base hover:underline text-green-600 dark:text-green-400"
                               >
                                 {reaction.E}-{reaction.A}
                               </Link>
@@ -1023,14 +1023,14 @@ export default function FusionQuery() {
                                 </span>
                               )}
                             </div>
-                            <div className="text-xs text-gray-600 dark:text-gray-400">(Z={reaction.Z})</div>
+                            <div className="text-[10px] sm:text-xs text-gray-600 dark:text-gray-400">(Z={reaction.Z})</div>
                           </div>
-                          <div className="px-3 py-3 text-center">
+                          <div className="px-1 py-1.5 sm:px-3 sm:py-3 text-center">
                             <span className="font-semibold text-green-600 dark:text-green-300">{reaction.MeV.toFixed(2)}</span>
                           </div>
-                          <div className="px-3 py-3 text-center">
+                          <div className="px-1 py-1.5 sm:px-3 sm:py-3 text-center">
                             <span
-                              className={`px-2 py-1 rounded-full text-xs font-medium ${
+                              className={`px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-full text-[10px] sm:text-xs font-medium ${
                                 reaction.neutrino === 'none'
                                   ? 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300'
                                   : reaction.neutrino === 'left'
@@ -1043,9 +1043,9 @@ export default function FusionQuery() {
                           </div>
                           {showBosonFermion && (
                             <>
-                              <div className="px-3 py-3 text-center">
+                              <div className="px-1 py-1.5 sm:px-3 sm:py-3 text-center">
                                 <span
-                                  className={`px-2 py-1 rounded-full text-xs font-medium ${
+                                  className={`px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-full text-[10px] sm:text-xs font-medium ${
                                     reaction.nBorF1 === 'b'
                                       ? 'bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300'
                                       : 'bg-orange-100 dark:bg-orange-900/40 text-orange-700 dark:text-orange-300'
@@ -1054,9 +1054,9 @@ export default function FusionQuery() {
                                   {reaction.nBorF1 === 'b' ? 'Boson' : 'Fermion'}
                                 </span>
                               </div>
-                              <div className="px-3 py-3 text-center">
+                              <div className="px-1 py-1.5 sm:px-3 sm:py-3 text-center">
                                 <span
-                                  className={`px-2 py-1 rounded-full text-xs font-medium ${
+                                  className={`px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-full text-[10px] sm:text-xs font-medium ${
                                     reaction.aBorF1 === 'b'
                                       ? 'bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300'
                                       : 'bg-orange-100 dark:bg-orange-900/40 text-orange-700 dark:text-orange-300'
@@ -1065,9 +1065,9 @@ export default function FusionQuery() {
                                   {reaction.aBorF1 === 'b' ? 'Boson' : 'Fermion'}
                                 </span>
                               </div>
-                              <div className="px-3 py-3 text-center">
+                              <div className="px-1 py-1.5 sm:px-3 sm:py-3 text-center">
                                 <span
-                                  className={`px-2 py-1 rounded-full text-xs font-medium ${
+                                  className={`px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-full text-[10px] sm:text-xs font-medium ${
                                     reaction.nBorF2 === 'b'
                                       ? 'bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300'
                                       : 'bg-orange-100 dark:bg-orange-900/40 text-orange-700 dark:text-orange-300'
@@ -1076,9 +1076,9 @@ export default function FusionQuery() {
                                   {reaction.nBorF2 === 'b' ? 'Boson' : 'Fermion'}
                                 </span>
                               </div>
-                              <div className="px-3 py-3 text-center">
+                              <div className="px-1 py-1.5 sm:px-3 sm:py-3 text-center">
                                 <span
-                                  className={`px-2 py-1 rounded-full text-xs font-medium ${
+                                  className={`px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-full text-[10px] sm:text-xs font-medium ${
                                     reaction.aBorF2 === 'b'
                                       ? 'bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300'
                                       : 'bg-orange-100 dark:bg-orange-900/40 text-orange-700 dark:text-orange-300'
@@ -1087,9 +1087,9 @@ export default function FusionQuery() {
                                   {reaction.aBorF2 === 'b' ? 'Boson' : 'Fermion'}
                                 </span>
                               </div>
-                              <div className="px-3 py-3 text-center">
+                              <div className="px-1 py-1.5 sm:px-3 sm:py-3 text-center">
                                 <span
-                                  className={`px-2 py-1 rounded-full text-xs font-medium ${
+                                  className={`px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-full text-[10px] sm:text-xs font-medium ${
                                     reaction.nBorF === 'b'
                                       ? 'bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300'
                                       : 'bg-orange-100 dark:bg-orange-900/40 text-orange-700 dark:text-orange-300'
@@ -1098,9 +1098,9 @@ export default function FusionQuery() {
                                   {reaction.nBorF === 'b' ? 'Boson' : 'Fermion'}
                                 </span>
                               </div>
-                              <div className="px-3 py-3 text-center">
+                              <div className="px-1 py-1.5 sm:px-3 sm:py-3 text-center">
                                 <span
-                                  className={`px-2 py-1 rounded-full text-xs font-medium ${
+                                  className={`px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-full text-[10px] sm:text-xs font-medium ${
                                     reaction.aBorF === 'b'
                                       ? 'bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300'
                                       : 'bg-orange-100 dark:bg-orange-900/40 text-orange-700 dark:text-orange-300'
@@ -1133,13 +1133,13 @@ export default function FusionQuery() {
                         return (
                           <div
                             className="grid border-b border-gray-200 dark:border-gray-700 transition-colors duration-150 hover:bg-gray-50 dark:hover:bg-gray-800/60"
-                            style={{ gridTemplateColumns: fusionColumnTemplate, borderLeft: 'none', borderRight: 'none' }}
+                            style={{ gridTemplateColumns: fusionColumnTemplate }}
                           >
-                            <div className="px-3 py-3 bg-blue-50 dark:bg-blue-900/20 text-center">
+                            <div className="px-1 py-1.5 sm:px-3 sm:py-3 bg-blue-50 dark:bg-blue-900/20 text-center">
                               <div className="flex items-center justify-center gap-1">
                                 <Link
                                   to={`/element-data?Z=${reaction.Z1}&A=${reaction.A1}`}
-                                  className="font-semibold text-base hover:underline text-blue-600 dark:text-blue-400"
+                                  className="font-semibold text-sm sm:text-base hover:underline text-blue-600 dark:text-blue-400"
                                 >
                                   {reaction.E1}-{reaction.A1}
                                 </Link>
@@ -1149,13 +1149,13 @@ export default function FusionQuery() {
                                   </span>
                                 )}
                               </div>
-                              <div className="text-xs text-gray-600 dark:text-gray-400">(Z={reaction.Z1})</div>
+                              <div className="text-[10px] sm:text-xs text-gray-600 dark:text-gray-400">(Z={reaction.Z1})</div>
                             </div>
-                            <div className="px-3 py-3 bg-blue-50 dark:bg-blue-900/20 text-center">
+                            <div className="px-1 py-1.5 sm:px-3 sm:py-3 bg-blue-50 dark:bg-blue-900/20 text-center">
                               <div className="flex items-center justify-center gap-1">
                                 <Link
                                   to={`/element-data?Z=${reaction.Z2}&A=${reaction.A2}`}
-                                  className="font-semibold text-base hover:underline text-blue-600 dark:text-blue-400"
+                                  className="font-semibold text-sm sm:text-base hover:underline text-blue-600 dark:text-blue-400"
                                 >
                                   {reaction.E2}-{reaction.A2}
                                 </Link>
@@ -1165,13 +1165,13 @@ export default function FusionQuery() {
                                   </span>
                                 )}
                               </div>
-                              <div className="text-xs text-gray-600 dark:text-gray-400">(Z={reaction.Z2})</div>
+                              <div className="text-[10px] sm:text-xs text-gray-600 dark:text-gray-400">(Z={reaction.Z2})</div>
                             </div>
-                            <div className="px-3 py-3 bg-green-50 dark:bg-green-900/20 text-center">
+                            <div className="px-1 py-1.5 sm:px-3 sm:py-3 bg-green-50 dark:bg-green-900/20 text-center">
                               <div className="flex items-center justify-center gap-1">
                                 <Link
                                   to={`/element-data?Z=${reaction.Z}&A=${reaction.A}`}
-                                  className="font-semibold text-base hover:underline text-green-600 dark:text-green-400"
+                                  className="font-semibold text-sm sm:text-base hover:underline text-green-600 dark:text-green-400"
                                 >
                                   {reaction.E}-{reaction.A}
                                 </Link>
@@ -1181,14 +1181,14 @@ export default function FusionQuery() {
                                   </span>
                                 )}
                               </div>
-                              <div className="text-xs text-gray-600 dark:text-gray-400">(Z={reaction.Z})</div>
+                              <div className="text-[10px] sm:text-xs text-gray-600 dark:text-gray-400">(Z={reaction.Z})</div>
                             </div>
-                            <div className="px-3 py-3 text-center">
+                            <div className="px-1 py-1.5 sm:px-3 sm:py-3 text-center">
                               <span className="font-semibold text-green-600 dark:text-green-300">{reaction.MeV.toFixed(2)}</span>
                             </div>
-                            <div className="px-3 py-3 text-center">
+                            <div className="px-1 py-1.5 sm:px-3 sm:py-3 text-center">
                               <span
-                                className={`px-2 py-1 rounded-full text-xs font-medium ${
+                                className={`px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-full text-[10px] sm:text-xs font-medium ${
                                   reaction.neutrino === 'none'
                                     ? 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300'
                                     : reaction.neutrino === 'left'
@@ -1201,9 +1201,9 @@ export default function FusionQuery() {
                             </div>
                             {showBosonFermion && (
                               <>
-                                <div className="px-3 py-3 text-center">
+                                <div className="px-1 py-1.5 sm:px-3 sm:py-3 text-center">
                                   <span
-                                    className={`px-2 py-1 rounded-full text-xs font-medium ${
+                                    className={`px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-full text-[10px] sm:text-xs font-medium ${
                                       reaction.nBorF1 === 'b'
                                         ? 'bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300'
                                         : 'bg-orange-100 dark:bg-orange-900/40 text-orange-700 dark:text-orange-300'
@@ -1212,9 +1212,9 @@ export default function FusionQuery() {
                                     {reaction.nBorF1 === 'b' ? 'Boson' : 'Fermion'}
                                   </span>
                                 </div>
-                                <div className="px-3 py-3 text-center">
+                                <div className="px-1 py-1.5 sm:px-3 sm:py-3 text-center">
                                   <span
-                                    className={`px-2 py-1 rounded-full text-xs font-medium ${
+                                    className={`px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-full text-[10px] sm:text-xs font-medium ${
                                       reaction.aBorF1 === 'b'
                                         ? 'bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300'
                                         : 'bg-orange-100 dark:bg-orange-900/40 text-orange-700 dark:text-orange-300'
@@ -1223,9 +1223,9 @@ export default function FusionQuery() {
                                     {reaction.aBorF1 === 'b' ? 'Boson' : 'Fermion'}
                                   </span>
                                 </div>
-                                <div className="px-3 py-3 text-center">
+                                <div className="px-1 py-1.5 sm:px-3 sm:py-3 text-center">
                                   <span
-                                    className={`px-2 py-1 rounded-full text-xs font-medium ${
+                                    className={`px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-full text-[10px] sm:text-xs font-medium ${
                                       reaction.nBorF2 === 'b'
                                         ? 'bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300'
                                         : 'bg-orange-100 dark:bg-orange-900/40 text-orange-700 dark:text-orange-300'
@@ -1234,9 +1234,9 @@ export default function FusionQuery() {
                                     {reaction.nBorF2 === 'b' ? 'Boson' : 'Fermion'}
                                   </span>
                                 </div>
-                                <div className="px-3 py-3 text-center">
+                                <div className="px-1 py-1.5 sm:px-3 sm:py-3 text-center">
                                   <span
-                                    className={`px-2 py-1 rounded-full text-xs font-medium ${
+                                    className={`px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-full text-[10px] sm:text-xs font-medium ${
                                       reaction.aBorF2 === 'b'
                                         ? 'bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300'
                                         : 'bg-orange-100 dark:bg-orange-900/40 text-orange-700 dark:text-orange-300'
@@ -1245,9 +1245,9 @@ export default function FusionQuery() {
                                     {reaction.aBorF2 === 'b' ? 'Boson' : 'Fermion'}
                                   </span>
                                 </div>
-                                <div className="px-3 py-3 text-center">
+                                <div className="px-1 py-1.5 sm:px-3 sm:py-3 text-center">
                                   <span
-                                    className={`px-2 py-1 rounded-full text-xs font-medium ${
+                                    className={`px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-full text-[10px] sm:text-xs font-medium ${
                                       reaction.nBorF === 'b'
                                         ? 'bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300'
                                         : 'bg-orange-100 dark:bg-orange-900/40 text-orange-700 dark:text-orange-300'
@@ -1256,9 +1256,9 @@ export default function FusionQuery() {
                                     {reaction.nBorF === 'b' ? 'Boson' : 'Fermion'}
                                   </span>
                                 </div>
-                                <div className="px-3 py-3 text-center">
+                                <div className="px-1 py-1.5 sm:px-3 sm:py-3 text-center">
                                   <span
-                                    className={`px-2 py-1 rounded-full text-xs font-medium ${
+                                    className={`px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-full text-[10px] sm:text-xs font-medium ${
                                       reaction.aBorF === 'b'
                                         ? 'bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300'
                                         : 'bg-orange-100 dark:bg-orange-900/40 text-orange-700 dark:text-orange-300'
