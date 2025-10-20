@@ -23,7 +23,7 @@ const HYDROGEN_ISOTOPES = [
   { symbol: 'T', label: 'Tritium (3H)' }
 ]
 
-const ISOTOPE_BUTTON_COMMON = 'grid place-items-center rounded border border-dashed text-xs font-semibold leading-none px-1.5 py-1 transition-all duration-500 min-w-[2rem] min-h-[2rem]';
+const ISOTOPE_BUTTON_COMMON = 'grid place-items-center rounded border border-dashed text-xs font-semibold leading-none px-1 py-0.5 sm:px-1.5 sm:py-1 transition-all duration-500 min-w-[1.5rem] min-h-[1.5rem] sm:min-w-[2rem] sm:min-h-[2rem]';
 
 // Standard periodic table layout (Period, Group) for each element by atomic number
 const ELEMENT_POSITIONS: Record<number, { period: number; group: number }> = {
@@ -300,12 +300,12 @@ export default function PeriodicTable({
     const isSelectedParticle = selectedParticle === particle.id
 
     return (
-      <div className="flex flex-col items-center gap-1 pb-2">
+      <div className="flex flex-col items-center gap-0.5">
         <button
           type="button"
           onClick={() => onParticleClick?.(particle.id)}
           className={`
-            w-8 h-8 rounded-[10px] border border-dashed transition-all duration-150 flex items-center justify-center text-sm font-semibold
+            w-6 h-6 sm:w-8 sm:h-8 rounded-[6px] sm:rounded-[10px] border border-dashed transition-all duration-150 flex items-center justify-center text-xs sm:text-sm font-semibold
             ${isSelectedParticle
               ? 'bg-blue-500/20 border-blue-500 text-blue-900 dark:text-blue-100 shadow-md'
               : 'bg-white/80 dark:bg-gray-800/80 border-blue-200/70 dark:border-blue-900/60 hover:bg-blue-100/60 dark:hover:bg-blue-900/40 hover:border-blue-400'}
@@ -314,7 +314,7 @@ export default function PeriodicTable({
         >
           {particle.displaySymbol}
         </button>
-        <span className="text-[0.55rem] uppercase tracking-wide text-gray-500 dark:text-gray-400 leading-none text-center">
+        <span className="text-[0.5rem] sm:text-[0.55rem] uppercase tracking-wide text-gray-500 dark:text-gray-400 leading-none text-center">
           {particle.name}
         </span>
       </div>
@@ -322,37 +322,6 @@ export default function PeriodicTable({
   }
 
   const renderCell = (period: number, group: number) => {
-    if (period === 2) {
-      if (group === 3) {
-        return (
-          <div
-            key={`particle-band-${period}`}
-            className="h-full flex items-end"
-            style={{ gridColumn: '3 / 13' }}
-          >
-            <div className="w-full grid grid-cols-10 gap-[2px] items-end">
-              {Array.from({ length: 10 }, (_, idx) => {
-                const groupNumber = idx + 3
-                const particle = SPECIAL_PARTICLES_BY_GROUP[groupNumber]
-                if (!particle) {
-                  return <div key={groupNumber} />
-                }
-                return (
-                  <div key={groupNumber} className="flex justify-center">
-                    {renderParticleButton(particle)}
-                  </div>
-                )
-              })}
-            </div>
-          </div>
-        )
-      }
-
-      if (group > 3 && group < 13) {
-        return null
-      }
-    }
-
     const key = `${period}-${group}`
     const cellData = elementsByPosition[key]
 
@@ -398,8 +367,8 @@ export default function PeriodicTable({
     const buttonContent = (
       <>
         {isPurelyRadioactive && (
-          <span className="absolute top-0 right-0 p-0.5">
-            <Radiation className={`w-2 h-2 ${isSelected ? 'text-red-200' : 'text-red-600 dark:text-red-400'}`} />
+          <span className="absolute top-0 right-0 p-px sm:p-0.5">
+            <Radiation className={`w-1.5 h-1.5 sm:w-2 sm:h-2 ${isSelected ? 'text-red-200' : 'text-red-600 dark:text-red-400'}`} />
           </span>
         )}
         <div className="text-[9px] leading-none">{cellData.Z}</div>
@@ -479,14 +448,45 @@ export default function PeriodicTable({
     <div className="card p-3 sm:p-6 overflow-x-auto">
       <div className="flex justify-start sm:justify-center">
         <div className="inline-block pr-3 sm:pr-6">
-        {/* Main periodic table grid (periods 1-7) */}
-        <div className="grid gap-0.5 sm:gap-1 mb-1 sm:mb-2" style={{ gridTemplateColumns: 'repeat(18, minmax(1.75rem, 3rem))' }}>
-          {[1, 2, 3, 4, 5, 6, 7].map(period => (
-            Array.from({ length: 18 }, (_, i) => {
-              const group = i + 1
-              return renderCell(period, group)
-            })
-          ))}
+        {/* Container for grid + particle overlay */}
+        <div className="relative">
+          {/* Main periodic table grid (periods 1-7) */}
+          <div className="grid gap-0.5 sm:gap-1 mb-1 sm:mb-2" style={{ gridTemplateColumns: 'repeat(18, minmax(1.75rem, 3rem))' }}>
+            {[1, 2, 3, 4, 5, 6, 7].map(period => (
+              Array.from({ length: 18 }, (_, i) => {
+                const group = i + 1
+                return renderCell(period, group)
+              })
+            ))}
+          </div>
+
+          {/* Particle overlay - positioned to appear in period 2, columns 3-12 */}
+          <div
+            className="absolute pointer-events-none"
+            style={{
+              // Mobile: 1.75rem cells + 0.5 gap (2px)
+              // Desktop (sm+): 3rem cells + 1 gap (4px)
+              top: 'calc((1.75rem + 2px) * 1 + 2px)',
+              left: 'calc((1.75rem + 2px) * 2 + 2px)',
+              width: 'calc((1.75rem + 2px) * 10)',
+              display: 'flex',
+              justifyContent: 'center',
+              gap: '2px',
+            }}
+          >
+            {Array.from({ length: 10 }, (_, idx) => {
+              const groupNumber = idx + 3
+              const particle = SPECIAL_PARTICLES_BY_GROUP[groupNumber]
+              if (!particle) {
+                return <div key={groupNumber} style={{ flex: 1 }} />
+              }
+              return (
+                <div key={groupNumber} style={{ flex: 1, display: 'flex', justifyContent: 'center' }} className="pointer-events-auto">
+                  {renderParticleButton(particle)}
+                </div>
+              )
+            })}
+          </div>
         </div>
 
         {/* Lanthanides (period 8) */}
