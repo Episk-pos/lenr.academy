@@ -468,17 +468,20 @@ export default function TwoToTwoQuery() {
     a.click()
   }
 
-  // Table resize handlers
-  const handleResizeStart = useCallback((e: React.MouseEvent) => {
+  // Table resize handlers (supporting both mouse and touch)
+  const handleResizeStart = useCallback((e: React.MouseEvent | React.TouchEvent) => {
     e.preventDefault()
     setIsResizing(true)
-    resizeStartY.current = e.clientY
+    const clientY = 'touches' in e ? e.touches[0].clientY : e.clientY
+    resizeStartY.current = clientY
     resizeStartHeight.current = userTableHeight ?? filteredListHeight
   }, [filteredListHeight, userTableHeight])
 
-  const handleResizeMove = useCallback((e: MouseEvent) => {
+  const handleResizeMove = useCallback((e: MouseEvent | TouchEvent) => {
     if (!isResizing) return
-    const deltaY = e.clientY - resizeStartY.current
+    e.preventDefault() // Prevent scrolling during resize
+    const clientY = 'touches' in e ? e.touches[0].clientY : e.clientY
+    const deltaY = clientY - resizeStartY.current
     const newHeight = resizeStartHeight.current + deltaY
     const minHeight = 220
     const maxHeight = filteredBaseListHeight
@@ -498,18 +501,24 @@ export default function TwoToTwoQuery() {
     setUserTableHeight(null)
   }, [results.length, showBosonFermion])
 
-  // Add/remove mouse event listeners for resizing
+  // Add/remove mouse and touch event listeners for resizing
   useEffect(() => {
     if (isResizing) {
       document.addEventListener('mousemove', handleResizeMove)
       document.addEventListener('mouseup', handleResizeEnd)
+      document.addEventListener('touchmove', handleResizeMove, { passive: false })
+      document.addEventListener('touchend', handleResizeEnd)
       document.body.style.cursor = 'ns-resize'
       document.body.style.userSelect = 'none'
+      document.body.style.touchAction = 'none'
       return () => {
         document.removeEventListener('mousemove', handleResizeMove)
         document.removeEventListener('mouseup', handleResizeEnd)
+        document.removeEventListener('touchmove', handleResizeMove)
+        document.removeEventListener('touchend', handleResizeEnd)
         document.body.style.cursor = ''
         document.body.style.userSelect = ''
+        document.body.style.touchAction = ''
       }
     }
   }, [isResizing, handleResizeMove, handleResizeEnd])
@@ -895,7 +904,7 @@ export default function TwoToTwoQuery() {
             </div>
           </div>
 
-          <div className="card p-6">
+          <div className="card p-6 pb-0 sm:pb-6">
             <div className="flex justify-between items-center mb-4">
               <div>
                 <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
@@ -938,13 +947,13 @@ export default function TwoToTwoQuery() {
 
             <div
               ref={tableContainerRef}
-              className="table-container -mx-6 sm:mx-0"
+              className="table-container -mx-6 sm:mx-0 rounded-b-none"
               role="region"
               aria-label="Two-to-two reaction results"
             >
               <div className="min-w-full" style={{ minWidth: twoTwoMinWidth }}>
                 <div
-                  className="sticky top-0 z-10"
+                  className="sticky top-0 z-[5]"
                   style={{ paddingRight: twoTwoHeaderPadding }}
                 >
                   <div
@@ -1405,21 +1414,50 @@ export default function TwoToTwoQuery() {
                     </VirtualizedList>
                   </div>
                 )}
-
-                {/* Resize Handle - only show for virtualized tables with many results */}
-                {filteredResults.length > SMALL_RESULT_THRESHOLD && (
-                  <div
-                    className="flex items-center justify-center py-1 cursor-ns-resize hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors border-t border-gray-200 dark:border-gray-700"
-                    onMouseDown={handleResizeStart}
-                    onDoubleClick={handleResizeReset}
-                    title="Drag to resize table height (double-click to reset)"
-                  >
-                    <GripVertical className="w-4 h-4 text-gray-400 dark:text-gray-500" />
-                  </div>
-                )}
               </div>
             </div>
+
+            {/* Resize Handle - always visible, disabled for small result sets */}
+            {filteredResults.length > 0 && (
+                  <div
+                    className={`-mx-6 sm:mx-0 flex items-center justify-center py-3 px-4 transition-all border-x border-b rounded-b-lg ${
+                      filteredResults.length <= SMALL_RESULT_THRESHOLD
+                        ? 'cursor-not-allowed opacity-40 bg-gray-100 dark:bg-gray-800/50 border-gray-200 dark:border-gray-700'
+                        : isResizing
+                        ? 'cursor-ns-resize bg-blue-100 dark:bg-blue-900/50 border-blue-500 dark:border-blue-500'
+                        : 'cursor-ns-resize bg-gray-100 dark:bg-gray-800/70 border-gray-300 dark:border-gray-600 hover:bg-blue-50 dark:hover:bg-blue-900/30 hover:border-blue-400 dark:hover:border-blue-500'
+                    }`}
+                    style={{ touchAction: filteredResults.length > SMALL_RESULT_THRESHOLD ? 'none' : 'auto' }}
+                    onMouseDown={filteredResults.length > SMALL_RESULT_THRESHOLD ? handleResizeStart : undefined}
+                    onTouchStart={filteredResults.length > SMALL_RESULT_THRESHOLD ? handleResizeStart : undefined}
+                    onDoubleClick={filteredResults.length > SMALL_RESULT_THRESHOLD ? handleResizeReset : undefined}
+                    title={
+                      filteredResults.length <= SMALL_RESULT_THRESHOLD
+                        ? 'Resize handle (disabled for small result sets)'
+                        : 'Drag to resize table height (double-click to reset)'
+                    }
+                  >
+                    <div className="flex flex-col gap-0.5">
+                      <div className={`h-0.5 w-8 rounded-full transition-colors ${
+                        filteredResults.length <= SMALL_RESULT_THRESHOLD
+                          ? 'bg-gray-300 dark:bg-gray-600'
+                          : isResizing ? 'bg-blue-500 dark:bg-blue-400' : 'bg-gray-400 dark:bg-gray-500'
+                      }`} />
+                      <div className={`h-0.5 w-8 rounded-full transition-colors ${
+                        filteredResults.length <= SMALL_RESULT_THRESHOLD
+                          ? 'bg-gray-300 dark:bg-gray-600'
+                          : isResizing ? 'bg-blue-500 dark:bg-blue-400' : 'bg-gray-400 dark:bg-gray-500'
+                      }`} />
+                      <div className={`h-0.5 w-8 rounded-full transition-colors ${
+                        filteredResults.length <= SMALL_RESULT_THRESHOLD
+                          ? 'bg-gray-300 dark:bg-gray-600'
+                          : isResizing ? 'bg-blue-500 dark:bg-blue-400' : 'bg-gray-400 dark:bg-gray-500'
+                      }`} />
+                    </div>
+                  </div>
+            )}
           </div>
+
           {/* Nuclides Summary */}
           <div className="p-0 xs:p-4 sm:p-6 xs:overflow-hidden xs:rounded-lg xs:border xs:border-gray-200 xs:dark:border-gray-700 xs:bg-white xs:dark:bg-gray-800 xs:text-gray-950 xs:dark:text-gray-50 xs:shadow-sm">
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
