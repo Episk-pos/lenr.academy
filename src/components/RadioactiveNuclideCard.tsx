@@ -136,7 +136,7 @@ export default function RadioactiveNuclideCard({ nuclideData, onClose }: Radioac
   }
 
   return (
-    <div className="card p-6 animate-fade-in border-2 border-amber-200 dark:border-amber-800 max-w-full overflow-hidden">
+    <div className="p-0 xs:p-4 sm:p-6 animate-fade-in max-w-full xs:overflow-hidden xs:rounded-lg xs:border-2 xs:border-amber-200 dark:xs:border-amber-800 xs:bg-white xs:dark:bg-gray-800 xs:text-gray-950 xs:dark:text-gray-50 xs:shadow-sm">
       <div className="flex items-start justify-between mb-4">
         <div>
           <h2 className="text-2xl font-bold mb-1 flex items-center gap-2">
@@ -173,7 +173,7 @@ export default function RadioactiveNuclideCard({ nuclideData, onClose }: Radioac
         </p>
       </div>
 
-      <div className="grid md:grid-cols-2 gap-6">
+      <div className="grid md:grid-cols-2 gap-2 xs:gap-4 sm:gap-6">
         <div>
           <h3 className="font-semibold text-gray-900 dark:text-white mb-3 text-sm uppercase tracking-wide">
             Nuclear Properties
@@ -236,21 +236,23 @@ export default function RadioactiveNuclideCard({ nuclideData, onClose }: Radioac
             </dl>
           </div>
         )}
+      </div>
 
-        {nuclideData.decayData.length > 0 && (
-          <div className="md:col-span-2">
-            <h3 className="font-semibold text-gray-900 dark:text-white mb-3 text-sm uppercase tracking-wide">
-              Radioactive Decay
-            </h3>
-            <div className="overflow-x-auto">
-              <table className="min-w-max text-xs border border-gray-200 dark:border-gray-700">
+      {/* Radioactive Decay Table - isolated container */}
+      {nuclideData.decayData.length > 0 && (
+        <div className="mt-4 xs:mt-6">
+          <h3 className="font-semibold text-gray-900 dark:text-white mb-3 text-sm uppercase tracking-wide">
+            Radioactive Decay
+          </h3>
+          <div className="overflow-x-auto">
+            <table className="w-full text-xs border border-gray-200 dark:border-gray-700">
                 <thead className="bg-gray-50 dark:bg-gray-800">
                   <tr>
-                    <th className="pl-6 pr-3 py-2 text-left font-medium text-gray-700 dark:text-gray-300">Decay Mode</th>
-                    <th className="px-3 py-2 text-left font-medium text-gray-700 dark:text-gray-300">Radiation</th>
-                    <th className="px-3 py-2 text-right font-medium text-gray-700 dark:text-gray-300">Energy (MeV)</th>
-                    <th className="px-3 py-2 text-right font-medium text-gray-700 dark:text-gray-300">Intensity (%)</th>
-                    <th className="pl-3 pr-6 py-2 text-left font-medium text-gray-700 dark:text-gray-300">Half-life</th>
+                    <th className="pl-3 pr-2 sm:pl-6 sm:pr-3 py-2 text-left font-medium text-gray-700 dark:text-gray-300">Decay Mode</th>
+                    <th className="px-2 sm:px-3 py-2 text-left font-medium text-gray-700 dark:text-gray-300">Radiation</th>
+                    <th className="px-2 sm:px-3 py-2 text-right font-medium text-gray-700 dark:text-gray-300">Energy (MeV)</th>
+                    <th className="px-2 sm:px-3 py-2 text-right font-medium text-gray-700 dark:text-gray-300">Intensity (%)</th>
+                    <th className="pl-2 pr-3 sm:pl-3 sm:pr-6 py-2 text-left font-medium text-gray-700 dark:text-gray-300">Half-life</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
@@ -263,7 +265,7 @@ export default function RadioactiveNuclideCard({ nuclideData, onClose }: Radioac
 
                     return (
                       <tr key={idx} className="hover:bg-gray-50 dark:hover:bg-gray-800/50">
-                        <td className="pl-6 pr-3 py-2">
+                        <td className="pl-3 pr-2 sm:pl-6 sm:pr-3 py-2">
                           <button
                             onClick={() => handleDecayClick(decay.decayMode)}
                             disabled={!hasDaughter}
@@ -281,14 +283,14 @@ export default function RadioactiveNuclideCard({ nuclideData, onClose }: Radioac
                             )}
                           </button>
                         </td>
-                        <td className="px-3 py-2 text-gray-900 dark:text-gray-100">{decay.radiationType}</td>
-                        <td className="px-3 py-2 text-right text-gray-900 dark:text-gray-100">
+                        <td className="px-2 sm:px-3 py-2 text-gray-900 dark:text-gray-100">{decay.radiationType}</td>
+                        <td className="px-2 sm:px-3 py-2 text-right text-gray-900 dark:text-gray-100">
                           {decay.energyKeV !== null ? (decay.energyKeV / 1000).toFixed(2) : '—'}
                         </td>
-                        <td className="px-3 py-2 text-right text-gray-900 dark:text-gray-100">
+                        <td className="px-2 sm:px-3 py-2 text-right text-gray-900 dark:text-gray-100">
                           {decay.intensity !== null ? decay.intensity.toFixed(1) : '—'}
                         </td>
-                        <td className="pl-3 pr-6 py-2 text-gray-900 dark:text-gray-100">
+                        <td className="pl-2 pr-3 sm:pl-3 sm:pr-6 py-2 text-gray-900 dark:text-gray-100">
                           {decay.halfLife !== null && decay.halfLifeUnits !== null
                             ? decay.halfLife >= 10000
                               ? `${decay.halfLife.toExponential(2)} ${expandHalfLifeUnit(decay.halfLifeUnits)}`
@@ -332,7 +334,7 @@ export default function RadioactiveNuclideCard({ nuclideData, onClose }: Radioac
 
                     return (
                       <tr key={idx + 4} className="hover:bg-gray-50 dark:hover:bg-gray-800/50 bg-gray-50/30 dark:bg-gray-800/20">
-                        <td className="pl-6 pr-3 py-2">
+                        <td className="pl-3 pr-2 sm:pl-6 sm:pr-3 py-2">
                           <button
                             onClick={() => handleDecayClick(decay.decayMode)}
                             disabled={!hasDaughter}
@@ -350,14 +352,14 @@ export default function RadioactiveNuclideCard({ nuclideData, onClose }: Radioac
                             )}
                           </button>
                         </td>
-                        <td className="px-3 py-2 text-gray-900 dark:text-gray-100">{decay.radiationType}</td>
-                        <td className="px-3 py-2 text-right text-gray-900 dark:text-gray-100">
+                        <td className="px-2 sm:px-3 py-2 text-gray-900 dark:text-gray-100">{decay.radiationType}</td>
+                        <td className="px-2 sm:px-3 py-2 text-right text-gray-900 dark:text-gray-100">
                           {decay.energyKeV !== null ? (decay.energyKeV / 1000).toFixed(2) : '—'}
                         </td>
-                        <td className="px-3 py-2 text-right text-gray-900 dark:text-gray-100">
+                        <td className="px-2 sm:px-3 py-2 text-right text-gray-900 dark:text-gray-100">
                           {decay.intensity !== null ? decay.intensity.toFixed(1) : '—'}
                         </td>
-                        <td className="pl-3 pr-6 py-2 text-gray-900 dark:text-gray-100">
+                        <td className="pl-2 pr-3 sm:pl-3 sm:pr-6 py-2 text-gray-900 dark:text-gray-100">
                           {decay.halfLife !== null && decay.halfLifeUnits !== null
                             ? decay.halfLife >= 10000
                               ? `${decay.halfLife.toExponential(2)} ${expandHalfLifeUnit(decay.halfLifeUnits)}`
@@ -370,9 +372,8 @@ export default function RadioactiveNuclideCard({ nuclideData, onClose }: Radioac
                 </tbody>
               </table>
             </div>
-          </div>
-        )}
-      </div>
+        </div>
+      )}
 
       {nuclideData.decayData.length > 0 && (
         <div className="mt-4 p-4 bg-amber-50 dark:bg-amber-900/20 rounded-lg">
