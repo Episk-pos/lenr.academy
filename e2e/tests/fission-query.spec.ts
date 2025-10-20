@@ -212,6 +212,59 @@ test.describe('Fission Query Page', () => {
     await expect(pinnedNuclideAfter).not.toBeVisible();
   });
 
+  test('should keep element pinned when selecting nuclide from same element', async ({ page }) => {
+    // Wait for default query results to load (Zr fission)
+    await waitForReactionResults(page, 'fission');
+
+    // Expand the heatmap to access the periodic table
+    const heatmapToggle = page.locator('button[title*="periodic table"]').first();
+    await heatmapToggle.scrollIntoViewIfNeeded();
+    const isHeatmapExpanded = await heatmapToggle.getAttribute('title').then(t => t?.includes('Collapse'));
+    if (!isHeatmapExpanded) {
+      await heatmapToggle.click();
+      await page.waitForTimeout(500); // Wait for expansion animation
+    }
+
+    // Pin Calcium element
+    const caButton = page.getByRole('button', { name: /^20\s+Ca$/ }).first();
+    await caButton.scrollIntoViewIfNeeded();
+    await caButton.click();
+    await page.waitForTimeout(500);
+
+    // Verify Calcium has ring indicator styling
+    await expect(caButton).toHaveClass(/ring-2.*ring-blue/);
+
+    // Verify nuclides are filtered by Calcium (element pinning is working)
+    await expect(page.getByText(/Nuclides of Ca in Results/)).toBeVisible();
+
+    // Now click a Calcium nuclide from the filtered nuclides list
+    const caNuclideCard = page.locator('text=/Nuclides.*in Results/').locator('..').locator('div[class*="cursor-pointer"]').first();
+    await caNuclideCard.click();
+    await page.waitForTimeout(300);
+
+    // Verify nuclide is now pinned
+    await expect(caNuclideCard).toHaveClass(/ring-2.*ring-blue-400/);
+
+    // Verify Calcium element is STILL pinned (element should remain pinned when selecting its own nuclide)
+    await expect(caButton).toHaveClass(/ring-2.*ring-blue/);
+
+    // Verify nuclides list is STILL filtered by Calcium (should not revert to showing all nuclides)
+    await expect(page.getByText(/Nuclides of Ca in Results/)).toBeVisible();
+
+    // Now unpin the nuclide by clicking it again
+    await caNuclideCard.click();
+    await page.waitForTimeout(300);
+
+    // Verify nuclide is no longer pinned
+    await expect(caNuclideCard).not.toHaveClass(/ring-2.*ring-blue-400/);
+
+    // Verify Calcium element is ALSO unpinned (unpinning nuclide should unpin element)
+    await expect(caButton).not.toHaveClass(/ring-2.*ring-blue/);
+
+    // Verify nuclides list reverted to showing all nuclides
+    await expect(page.getByText(/Nuclides Appearing in Results/)).toBeVisible();
+  });
+
   test('should allow element pinning via periodic table', async ({ page }) => {
     // Wait for default query results to load (Zr fission)
     await waitForReactionResults(page, 'fission');
