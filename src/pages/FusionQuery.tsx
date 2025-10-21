@@ -329,8 +329,10 @@ export default function FusionQuery() {
       const nuclideDetails = getNuclideBySymbol(db, elementSymbol, massNumber)
       setSelectedNuclideDetails(nuclideDetails)
       // Also fetch element details for the parent element
-      const elementDetails = getElementBySymbol(db, elementSymbol)
-      const radii = getAtomicRadii(db, elementSymbol)
+      // Map D and T to H for element properties lookup
+      const elementSymbolForLookup = (elementSymbol === 'D' || elementSymbol === 'T') ? 'H' : elementSymbol
+      const elementDetails = getElementBySymbol(db, elementSymbolForLookup)
+      const radii = elementDetails ? getAtomicRadii(db, elementDetails.Z) : null
       setSelectedElementDetails(elementDetails)
       setSelectedElementRadii(radii)
     } else if (pinnedElement && highlightedElement) {

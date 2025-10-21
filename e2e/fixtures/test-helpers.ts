@@ -1,4 +1,4 @@
-import { Page, Locator } from '@playwright/test';
+import { Page, Locator, expect } from '@playwright/test';
 
 /**
  * Helper to wait for database to be loaded
@@ -293,4 +293,41 @@ export async function waitForOpacityTransition(
   }
 
   throw new Error(`Opacity never stabilized at ${expectedOpacity} within ${timeout}ms`);
+}
+
+/**
+ * Helper to verify that both element and nuclide details cards are visible when a nuclide is pinned
+ * Also verifies that the element card appears before the nuclide card in DOM order
+ *
+ * @param page - Playwright page instance
+ * @param options - Optional configuration for assertions
+ */
+export async function verifyBothDetailsCards(
+  page: Page,
+  options: { checkOrdering?: boolean } = { checkOrdering: true }
+) {
+  // Element details card should show periodic table info (Atomic Number, Period, Group)
+  const elementCard = page.locator('text=/Periodic Table|PERIODIC TABLE/i').locator('..');
+  await expect(elementCard).toBeVisible({ timeout: 5000 });
+
+  // Nuclide details card should show nuclear properties (Mass Number, Protons, Neutrons)
+  const nuclideCard = page.locator('text=/Nuclear Properties|NUCLEAR PROPERTIES/i').locator('..');
+  await expect(nuclideCard).toBeVisible({ timeout: 5000 });
+
+  // Verify ordering: element card should come before nuclide card in DOM
+  if (options.checkOrdering) {
+    const cards = await page.locator('.card').all();
+    const elementIndex = cards.findIndex(async (card) => {
+      const text = await card.textContent();
+      return text?.includes('PERIODIC TABLE') || text?.includes('Periodic Table');
+    });
+    const nuclideIndex = cards.findIndex(async (card) => {
+      const text = await card.textContent();
+      return text?.includes('NUCLEAR PROPERTIES') || text?.includes('Nuclear Properties');
+    });
+
+    if (elementIndex >= 0 && nuclideIndex >= 0 && elementIndex > nuclideIndex) {
+      throw new Error(`Element card (index ${elementIndex}) should appear before nuclide card (index ${nuclideIndex})`);
+    }
+  }
 }

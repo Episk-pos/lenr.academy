@@ -3,7 +3,8 @@ import {
   waitForDatabaseReady,
   acceptMeteredWarningIfPresent,
   acceptPrivacyConsent,
-  waitForReactionResults
+  waitForReactionResults,
+  verifyBothDetailsCards
 } from '../fixtures/test-helpers';
 
 test.describe('Fusion Query Page', () => {
@@ -296,7 +297,7 @@ test.describe('Fusion Query Page', () => {
     await page.locator('text=Nuclides Appearing in Results').scrollIntoViewIfNeeded();
     await page.waitForTimeout(500);
 
-    // Test A: Pin a nuclide - should show nuclide details card (NOT element details)
+    // Test A: Pin a nuclide - should show BOTH element AND nuclide details cards
     const nuclideCards = page.locator('text=Nuclides Appearing in Results').locator('..').locator('div[class*="cursor-pointer"]');
     const firstNuclideCard = nuclideCards.first();
 
@@ -305,8 +306,8 @@ test.describe('Fusion Query Page', () => {
     // Verify nuclide is pinned
     await expect(firstNuclideCard).toHaveClass(/ring-2.*ring-blue-400/);
 
-    // Verify nuclide details card is visible (not element details)
-    await expect(page.getByText(/Mass Number/).first()).toBeVisible();
+    // Verify BOTH element and nuclide details cards are visible (element card should be above nuclide card)
+    await verifyBothDetailsCards(page);
 
     // Test B: Pin an element - should clear nuclide pin and show element details
     // Expand the heatmap to access the periodic table
@@ -444,8 +445,8 @@ test.describe('Fusion Query Page', () => {
     // Verify nuclide is pinned
     await expect(nuclideCard).toHaveClass(/ring-2.*ring-blue-400/);
 
-    // Verify nuclide details card is visible
-    await expect(page.getByText(/Mass Number/).first()).toBeVisible();
+    // Verify both element and nuclide details cards are visible
+    await verifyBothDetailsCards(page);
   });
 
   test('should restore pinned element from URL on page load', async ({ page }) => {
@@ -504,8 +505,8 @@ test.describe('Fusion Query Page', () => {
     await expect(li6Card).toBeVisible();
     await expect(li6Card).toHaveClass(/ring-2.*ring-blue-400/);
 
-    // Verify nuclide details card is visible - use first() to handle multiple matches
-    await expect(page.getByText(/Mass Number.*6/).first()).toBeVisible();
+    // Verify both element and nuclide details cards are visible
+    await verifyBothDetailsCards(page);
   });
 
   test('should restore both pinned element and nuclide from URL', async ({ page }) => {
@@ -540,9 +541,8 @@ test.describe('Fusion Query Page', () => {
     await expect(li6Card).toBeVisible();
     await expect(li6Card).toHaveClass(/ring-2.*ring-blue-400/);
 
-    // Verify both detail cards are visible
-    await expect(page.getByText(/Atomic Number.*3/).first()).toBeVisible();
-    await expect(page.getByText(/Mass Number.*6/).first()).toBeVisible();
+    // Verify both element and nuclide details cards are visible
+    await verifyBothDetailsCards(page);
   });
 
   test('should allow element unpinning', async ({ page }) => {

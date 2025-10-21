@@ -74,6 +74,19 @@ export function VirtualizedList<T>({
     }
   }, [cache, items])
 
+  // Handle window resize - clear cache and recompute when width changes
+  useEffect(() => {
+    if (!cache) return
+
+    const handleResize = () => {
+      cache.clearAll()
+      listRef.current?.recomputeRowHeights()
+    }
+
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [cache])
+
   useEffect(() => {
     if (!cache) return
     if (!onRegisterSizeReset) return

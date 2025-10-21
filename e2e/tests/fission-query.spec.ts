@@ -3,7 +3,8 @@ import {
   waitForDatabaseReady,
   acceptMeteredWarningIfPresent,
   acceptPrivacyConsent,
-  waitForReactionResults
+  waitForReactionResults,
+  verifyBothDetailsCards
 } from '../fixtures/test-helpers';
 
 test.describe('Fission Query Page', () => {
@@ -290,8 +291,8 @@ test.describe('Fission Query Page', () => {
     // Verify nuclide is pinned
     await expect(nuclideCard).toHaveClass(/ring-2.*ring-blue-400/);
 
-    // Verify nuclide details card is visible
-    await expect(page.getByText(/Mass Number/).first()).toBeVisible();
+    // Verify both element and nuclide details cards are visible
+    await verifyBothDetailsCards(page);
   });
 
   test('should restore pinned element from URL on page load', async ({ page }) => {

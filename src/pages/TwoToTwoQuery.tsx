@@ -336,8 +336,10 @@ export default function TwoToTwoQuery() {
       const nuclideDetails = getNuclideBySymbol(db, elementSymbol, massNumber)
       setSelectedNuclideDetails(nuclideDetails)
       // Also fetch element details for the parent element
-      const elementDetails = getElementBySymbol(db, elementSymbol)
-      const radiiData = getAtomicRadii(db, elementSymbol)
+      // Map D and T to H for element properties lookup
+      const elementSymbolForLookup = (elementSymbol === 'D' || elementSymbol === 'T') ? 'H' : elementSymbol
+      const elementDetails = getElementBySymbol(db, elementSymbolForLookup)
+      const radiiData = elementDetails ? getAtomicRadii(db, elementDetails.Z) : null
       setSelectedElementDetails(elementDetails)
       setSelectedElementRadii(radiiData)
     } else {

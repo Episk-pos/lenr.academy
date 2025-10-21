@@ -4,7 +4,8 @@ import {
   acceptMeteredWarningIfPresent,
   acceptPrivacyConsent,
   dismissChangelogIfPresent,
-  waitForReactionResults
+  waitForReactionResults,
+  verifyBothDetailsCards
 } from '../fixtures/test-helpers';
 
 test.describe('Two-to-Two Query Page', () => {
@@ -219,8 +220,8 @@ test.describe('Two-to-Two Query Page', () => {
     // Verify nuclide is pinned
     await expect(nuclideCard).toHaveClass(/ring-2.*ring-blue-400/);
 
-    // Verify nuclide details card is visible
-    await expect(page.getByText(/Mass Number/).first()).toBeVisible();
+    // Verify both element and nuclide details cards are visible
+    await verifyBothDetailsCards(page);
   });
 
   test('should allow nuclide pinning and show details', async ({ page }) => {
@@ -234,8 +235,8 @@ test.describe('Two-to-Two Query Page', () => {
     // Verify nuclide is pinned
     await expect(nuclideCard).toHaveClass(/ring-2.*ring-blue-400/);
 
-    // Verify nuclide details card is visible
-    await expect(page.getByText(/Mass Number/).first()).toBeVisible();
+    // Verify both element and nuclide details cards are visible
+    await verifyBothDetailsCards(page);
   });
 
   test('should restore pinned nuclide from URL on page load', async ({ page }) => {
