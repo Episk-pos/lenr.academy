@@ -225,6 +225,21 @@ test.describe('Accessibility', () => {
     await acceptMeteredWarningIfPresent(page);
     await waitForDatabaseReady(page);
 
+    // Select elements to generate results
+    const element1Button = page.getByRole('button', { name: /Any/i }).first();
+    await element1Button.click({ force: true });
+    const hydrogenE1 = page.getByRole('button', { name: /^1\s+H$/i }).first();
+    await hydrogenE1.waitFor({ state: 'visible', timeout: 5000 });
+    await hydrogenE1.click();
+    await page.keyboard.press('Escape');
+
+    const element2Button = page.getByRole('button', { name: /Any/i }).nth(1);
+    await element2Button.click({ force: true });
+    const carbonE2 = page.getByRole('button', { name: /^6\s+C$/i }).first();
+    await carbonE2.waitFor({ state: 'visible', timeout: 5000 });
+    await carbonE2.click();
+    await page.keyboard.press('Escape');
+
     // Wait for results region to be visible
     const resultsRegion = page.getByRole('region', { name: /fusion reaction results/i });
     await resultsRegion.waitFor({ state: 'visible', timeout: 10000 });
