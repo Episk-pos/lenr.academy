@@ -36,9 +36,9 @@ test.describe('Element Data Page', () => {
   });
 
   test('should load element from URL parameter Z', async ({ page }) => {
-    // Navigate with Z parameter (Iron = 26)
+    // Navigate with Z parameter (Iron = 26) - full page load
     await page.goto('/element-data?Z=26');
-    await waitForDatabaseReady(page);
+    await waitForDatabaseReady(page); // Full page load - need to wait for DB
 
     // Should show Iron data heading
     await expect(page.getByRole('heading', { name: /Iron \(Fe\)/i })).toBeVisible();
@@ -46,9 +46,9 @@ test.describe('Element Data Page', () => {
   });
 
   test('should load specific isotope from URL parameters Z and A', async ({ page }) => {
-    // Navigate with Z and A parameters (Iron-56)
+    // Navigate with Z and A parameters (Iron-56) - full page load
     await page.goto('/element-data?Z=26&A=56');
-    await waitForDatabaseReady(page);
+    await waitForDatabaseReady(page); // Full page load - need to wait for DB
 
     // Should show Fe-56 heading specifically
     await expect(page.getByRole('heading', { name: /Fe-56/i })).toBeVisible();
@@ -58,9 +58,9 @@ test.describe('Element Data Page', () => {
   });
 
   test('should display isotope table for element', async ({ page }) => {
-    // Select Carbon
+    // Select Carbon - full page load
     await page.goto('/element-data?Z=6');
-    await waitForDatabaseReady(page);
+    await waitForDatabaseReady(page); // Full page load - need to wait for DB
 
     // Should show Carbon heading
     await expect(page.getByRole('heading', { name: /Carbon \(C\)/i })).toBeVisible();
@@ -75,9 +75,9 @@ test.describe('Element Data Page', () => {
   });
 
   test('should show nuclide properties', async ({ page }) => {
-    // Navigate to specific isotope
+    // Navigate to specific isotope - full page load
     await page.goto('/element-data?Z=1&A=2'); // Deuterium
-    await waitForDatabaseReady(page);
+    await waitForDatabaseReady(page); // Full page load - need to wait for DB
 
     // Should show nuclide card with properties
     await expect(page.getByText(/binding energy/i)).toBeVisible();
@@ -92,18 +92,18 @@ test.describe('Element Data Page', () => {
   });
 
   test('should navigate between isotopes of same element', async ({ page }) => {
-    // Start with C-12
+    // Start with C-12 - full page load
     await page.goto('/element-data?Z=6&A=12');
-    await waitForDatabaseReady(page);
+    await waitForDatabaseReady(page); // Full page load - need to wait for DB
 
     // Should show C-12 heading
     await expect(page.getByRole('heading', { name: /C-12/i })).toBeVisible();
 
-    // Click on a different isotope (e.g., C-13 button)
+    // Click on a different isotope (e.g., C-13 button) - client-side navigation via React Router
     const c13Button = page.getByRole('button', { name: /C-13/i });
 
     if (await c13Button.isVisible().catch(() => false)) {
-      await c13Button.click();
+      await c13Button.click(); // Client-side navigation - no DB reload needed
 
       // URL should update
       await expect(page).toHaveURL(/A=13/);
@@ -114,9 +114,9 @@ test.describe('Element Data Page', () => {
   });
 
   test('should show element properties with correct units', async ({ page }) => {
-    // Navigate to a well-known element
+    // Navigate to a well-known element - full page load
     await page.goto('/element-data?Z=79'); // Gold
-    await waitForDatabaseReady(page);
+    await waitForDatabaseReady(page); // Full page load - need to wait for DB
 
     // Should show melting point with units
     const meltingPoint = page.getByText(/melting.*point/i);
@@ -132,9 +132,9 @@ test.describe('Element Data Page', () => {
   });
 
   test('should display atomic radii data', async ({ page }) => {
-    // Navigate to Gold (has all 4 radius types)
+    // Navigate to Gold (has all 4 radius types) - full page load
     await page.goto('/element-data?Z=79');
-    await waitForDatabaseReady(page);
+    await waitForDatabaseReady(page); // Full page load - need to wait for DB
 
     // Should show "Atomic Radii" heading
     await expect(page.getByText(/Atomic Radii \(pm\)/i)).toBeVisible();
@@ -155,9 +155,9 @@ test.describe('Element Data Page', () => {
   });
 
   test('should handle partial atomic radii data', async ({ page }) => {
-    // Navigate to Carbon (has 3 out of 4 radius types)
+    // Navigate to Carbon (has 3 out of 4 radius types) - full page load
     await page.goto('/element-data?Z=6');
-    await waitForDatabaseReady(page);
+    await waitForDatabaseReady(page); // Full page load - need to wait for DB
 
     // Should show "Atomic Radii (pm)" heading
     await expect(page.getByText(/Atomic Radii \(pm\)/i)).toBeVisible();
@@ -174,13 +174,14 @@ test.describe('Element Data Page', () => {
   });
 
   test('should update URL when selecting element', async ({ page }) => {
-    // Start at base page
+    // Start at base page - full page load
     await page.goto('/element-data');
-    await waitForDatabaseReady(page);
+    await waitForDatabaseReady(page); // Full page load - need to wait for DB
 
     // Select an element (Oxygen) - use exact match to avoid matching "118 Og"
+    // This is client-side navigation via React Router
     const oxygen = page.getByRole('button', { name: '8 O', exact: true });
-    await oxygen.click();
+    await oxygen.click(); // Client-side navigation - no DB reload needed
 
     // Wait for URL to update
     await page.waitForURL(/Z=8/, { timeout: 5000 });
@@ -190,9 +191,9 @@ test.describe('Element Data Page', () => {
   });
 
   test('should handle invalid Z parameter gracefully', async ({ page }) => {
-    // Navigate with invalid Z
+    // Navigate with invalid Z - full page load
     await page.goto('/element-data?Z=999');
-    await waitForDatabaseReady(page);
+    await waitForDatabaseReady(page); // Full page load - need to wait for DB
 
     // Should not crash - might show empty state or default view
     await expect(page.getByRole('heading', { name: /Element Data/i })).toBeVisible();
@@ -209,9 +210,9 @@ test.describe('Element Data Page', () => {
   });
 
   test('should handle invalid A parameter gracefully', async ({ page }) => {
-    // Navigate with valid Z but invalid A
+    // Navigate with valid Z but invalid A - full page load
     await page.goto('/element-data?Z=6&A=999');
-    await waitForDatabaseReady(page);
+    await waitForDatabaseReady(page); // Full page load - need to wait for DB
 
     // Should show element (Carbon) heading
     await expect(page.getByRole('heading', { name: /Carbon \(C\)/i })).toBeVisible();
@@ -221,9 +222,9 @@ test.describe('Element Data Page', () => {
   });
 
   test('should show stable vs unstable isotopes', async ({ page }) => {
-    // Navigate to element with both stable and unstable isotopes
+    // Navigate to element with both stable and unstable isotopes - full page load
     await page.goto('/element-data?Z=6'); // Carbon
-    await waitForDatabaseReady(page);
+    await waitForDatabaseReady(page); // Full page load - need to wait for DB
 
     // Should show nuclides section
     await expect(page.getByRole('heading', { name: /Nuclides.*of.*shown/i })).toBeVisible();
@@ -235,9 +236,9 @@ test.describe('Element Data Page', () => {
   });
 
   test('should display charts/graphs if available', async ({ page }) => {
-    // Navigate to element
+    // Navigate to element - full page load
     await page.goto('/element-data?Z=26'); // Iron
-    await waitForDatabaseReady(page);
+    await waitForDatabaseReady(page); // Full page load - need to wait for DB
 
     // Check for any charts (might use recharts for visualization)
     const svg = page.locator('svg');
@@ -248,23 +249,25 @@ test.describe('Element Data Page', () => {
   });
 
   test('should support browser back/forward with URL state', async ({ page }) => {
-    // Start at element-data page (will default to H, Z=1)
+    // Start at element-data page (will default to H, Z=1) - full page load
     await page.goto('/element-data');
-    await waitForDatabaseReady(page);
+    await waitForDatabaseReady(page); // Full page load - need to wait for DB
 
     // Click on Iron (Fe) in the periodic table to create first history entry
+    // This is client-side navigation via React Router
     const feButton = page.getByRole('button', { name: /^26\s+Fe$/i });
     await feButton.waitFor({ state: 'visible', timeout: 5000 });
-    await feButton.click();
+    await feButton.click(); // Client-side navigation - no DB reload needed
 
     // Verify Iron heading is visible and URL updated
     await expect(page).toHaveURL(/Z=26/);
     await expect(page.getByRole('heading', { name: /Iron/i })).toBeVisible({ timeout: 5000 });
 
     // Click on Copper (Cu) in the periodic table to create second history entry
+    // This is also client-side navigation
     const cuButton = page.getByRole('button', { name: /^29\s+Cu$/i });
     await cuButton.waitFor({ state: 'visible', timeout: 5000 });
-    await cuButton.click();
+    await cuButton.click(); // Client-side navigation - no DB reload needed
 
     // Verify Copper heading is visible and URL updated
     await expect(page).toHaveURL(/Z=29/);

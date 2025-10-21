@@ -42,80 +42,74 @@ test.describe('Navigation and Routing', () => {
     // Start at home
     await expect(page).toHaveURL('/');
 
-    // Click Fusion link
+    // Click Fusion link (client-side navigation - DB already loaded from beforeEach)
     await navigateToPage(page, 'Fusion');
-    await waitForDatabaseReady(page);
     await expect(page).toHaveURL(/\/fusion/);
     await expect(page.getByRole('heading', { name: /Fusion Reactions/i })).toBeVisible();
 
-    // Click Fission link
+    // Click Fission link (client-side navigation - no DB reload needed)
     await navigateToPage(page, 'Fission');
-    await waitForDatabaseReady(page);
     await expect(page).toHaveURL(/\/fission/);
     await expect(page.getByRole('heading', { name: /Fission Reactions/i })).toBeVisible();
 
-    // Click Element Data link
+    // Click Element Data link (client-side navigation - no DB reload needed)
     await navigateToPage(page, 'Element Data');
-    await waitForDatabaseReady(page);
     await expect(page).toHaveURL(/\/element-data/);
     await expect(page.getByRole('heading', { name: /Element Data/i })).toBeVisible();
   });
 
   test('should support browser back/forward navigation', async ({ page }) => {
-    // Navigate through pages
+    // Navigate through pages (page.goto triggers full page loads, but DB is cached in IndexedDB)
     await page.goto('/fusion');
-    await waitForDatabaseReady(page);
+    await waitForDatabaseReady(page); // Full page load - need to wait for DB
     await expect(page).toHaveURL(/\/fusion/);
 
     await page.goto('/fission');
-    await waitForDatabaseReady(page);
+    await waitForDatabaseReady(page); // Full page load - need to wait for DB
     await expect(page).toHaveURL(/\/fission/);
 
     await page.goto('/element-data');
-    await waitForDatabaseReady(page);
+    await waitForDatabaseReady(page); // Full page load - need to wait for DB
     await expect(page).toHaveURL(/\/element-data/);
 
-    // Go back
+    // Go back (browser history navigation - DB persists in memory, no reload needed)
     await page.goBack();
-    await waitForDatabaseReady(page);
     await expect(page).toHaveURL(/\/fission/);
     await expect(page.getByRole('heading', { name: /Fission Reactions/i })).toBeVisible();
 
-    // Go back again
+    // Go back again (browser history navigation - no DB reload needed)
     await page.goBack();
-    await waitForDatabaseReady(page);
     await expect(page).toHaveURL(/\/fusion/);
     await expect(page.getByRole('heading', { name: /Fusion Reactions/i })).toBeVisible();
 
-    // Go forward
+    // Go forward (browser history navigation - no DB reload needed)
     await page.goForward();
-    await waitForDatabaseReady(page);
     await expect(page).toHaveURL(/\/fission/);
     await expect(page.getByRole('heading', { name: /Fission Reactions/i })).toBeVisible();
   });
 
   test('should handle direct URL navigation', async ({ page }) => {
-    // Navigate directly to a specific page
+    // Navigate directly to a specific page (full page load - need DB wait)
     await page.goto('/twotwo');
-    await waitForDatabaseReady(page);
+    await waitForDatabaseReady(page); // Full page load - need to wait for DB
     await expect(page.getByRole('heading', { name: /Two-to-Two Reactions/i })).toBeVisible();
     await expect(page).toHaveURL(/\/twotwo/);
 
-    // Navigate to another page directly
+    // Navigate to another page directly (full page load - need DB wait)
     await page.goto('/all-tables');
-    await waitForDatabaseReady(page);
+    await waitForDatabaseReady(page); // Full page load - need to wait for DB
     await expect(page.getByRole('heading', { name: /All Tables/i })).toBeVisible();
     await expect(page).toHaveURL(/\/all-tables/);
   });
 
   test('should preserve URL query parameters', async ({ page }) => {
-    // Navigate with query parameters
+    // Navigate with query parameters (full page load)
     await page.goto('/element-data?Z=26');
     await expect(page).toHaveURL(/Z=26/);
 
-    // Navigate away and back
+    // Navigate away (full page load) and back (browser history - no reload)
     await page.goto('/fusion');
-    await page.goBack();
+    await page.goBack(); // Browser history navigation - no DB reload needed
 
     // Query params should be preserved
     await expect(page).toHaveURL(/Z=26/);

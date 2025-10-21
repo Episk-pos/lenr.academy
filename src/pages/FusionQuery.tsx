@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo, useCallback, useRef } from 'react'
-import { Download, Info, Loader2, Eye, EyeOff, Radiation, ChevronDown, GripVertical } from 'lucide-react'
+import { Download, Info, Loader2, Eye, EyeOff, Radiation, ChevronDown } from 'lucide-react'
 import { useSearchParams, Link } from 'react-router-dom'
 import type { FusionReaction, QueryFilter, Nuclide, Element, HeatmapMode, HeatmapMetrics, AtomicRadiiData } from '../types'
 import { useDatabase } from '../contexts/DatabaseContext'
@@ -128,8 +128,6 @@ export default function FusionQuery() {
     }
     return 'minmax(85px, 1fr) minmax(85px, 1fr) minmax(85px, 1fr) minmax(60px, 0.8fr) minmax(60px, 0.8fr)'
   }, [showBosonFermion])
-
-  const fusionMinWidth = useMemo(() => (showBosonFermion ? 900 : 345), [showBosonFermion])
 
   const fusionEstimatedRowHeight = useMemo(() => (showBosonFermion ? 70 : 60), [showBosonFermion])
   const fusionCompactRowHeight = useMemo(() => (showBosonFermion ? 60 : 52), [showBosonFermion])
@@ -336,7 +334,7 @@ export default function FusionQuery() {
     } else if (pinnedElement && highlightedElement) {
       // Fetch element details if pinned
       const elementDetails = getElementBySymbol(db, highlightedElement)
-      const radii = getAtomicRadii(db, highlightedElement)
+      const radii = elementDetails ? getAtomicRadii(db, elementDetails.Z) : null
       setSelectedElementDetails(elementDetails)
       setSelectedElementRadii(radii)
       // Clear nuclide details
@@ -1395,7 +1393,7 @@ export default function FusionQuery() {
           ) : selectedElementDetails ? (
             <ElementDetailsCard
               element={selectedElementDetails}
-              radii={selectedElementRadii}
+              atomicRadii={selectedElementRadii}
               onClose={() => {
                 setPinnedElement(false)
                 setHighlightedElement(null)

@@ -3,6 +3,21 @@ import { Page, Locator } from '@playwright/test';
 /**
  * Helper to wait for database to be loaded
  * The app shows a loading card while database initializes
+ *
+ * IMPORTANT: Only call this helper after operations that trigger a full page load!
+ *
+ * When to use:
+ * - After `page.goto()` - full page load requires DB initialization
+ * - After `page.reload()` - full page reload requires DB re-initialization
+ * - After navigating to a new browser context
+ *
+ * When NOT to use:
+ * - After `page.goBack()` / `page.goForward()` - browser history navigation preserves DB in memory
+ * - After clicking sidebar links via `navigateToPage()` - client-side React Router navigation
+ * - After clicking elements that trigger React Router navigation (URL changes without full page reload)
+ * - Between tests in the same describe block (beforeEach already handles initial load)
+ *
+ * Performance impact: Each unnecessary call adds 2-5 seconds of wait time to test execution!
  */
 export async function waitForDatabaseReady(page: Page, timeout = 60000) {
   // Wait for either the database to load or the metered connection warning
@@ -166,6 +181,9 @@ export async function waitForReactionResults(page: Page, queryType: 'fusion' | '
 
 /**
  * Helper to navigate using sidebar
+ *
+ * This performs client-side navigation via React Router (no full page reload).
+ * The database remains loaded in memory, so NO waitForDatabaseReady() call is needed after this.
  */
 export async function navigateToPage(page: Page, pageName: string) {
   // On mobile, might need to open sidebar first
