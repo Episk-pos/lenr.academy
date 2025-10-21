@@ -900,8 +900,10 @@ export default function TwoToTwoQuery() {
                   }}
                   heatmapData={heatmapMetrics[heatmapMode]}
                   heatmapMode={heatmapMode}
-                  showHeatmap={showHeatmap}
-                  heatmapMetrics={heatmapMetrics}
+                   showHeatmap={showHeatmap}
+                   hideLegend={true}
+                   hideCardContainer={true}
+                   heatmapMetrics={heatmapMetrics}
                 />
               </div>
             </div>

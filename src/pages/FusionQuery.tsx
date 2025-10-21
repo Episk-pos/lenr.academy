@@ -855,7 +855,9 @@ export default function FusionQuery() {
                   heatmapData={heatmapMetrics[heatmapMode]}
                   heatmapMode={heatmapMode}
                   showHeatmap={showHeatmap}
-                  heatmapMetrics={heatmapMetrics}
+                   heatmapMetrics={heatmapMetrics}
+                   hideLegend={true}
+                   hideCardContainer={true}
                 />
               </div>
             </div>

@@ -16,6 +16,9 @@ interface PeriodicTableProps {
   heatmapMode?: HeatmapMode
   showHeatmap?: boolean
   heatmapMetrics?: HeatmapMetrics  // Full metrics including input/output ratio
+  // Layout props
+  hideLegend?: boolean
+  hideCardContainer?: boolean
 }
 
 const HYDROGEN_ISOTOPES = [
@@ -269,7 +272,9 @@ export default function PeriodicTable({
   heatmapData,
   heatmapMode = 'frequency',
   showHeatmap = false,
-  heatmapMetrics
+  heatmapMetrics,
+  hideLegend = false,
+  hideCardContainer = false
 }: PeriodicTableProps) {
   const { db } = useDatabase()
   const { theme } = useTheme()
@@ -445,7 +450,7 @@ export default function PeriodicTable({
   }
 
   return (
-    <div className="card p-3 sm:p-6 overflow-x-auto">
+    <div className={`${hideCardContainer ? 'overflow-x-auto' : 'card p-3 sm:p-6 overflow-x-auto'}`}>
       <div className="flex justify-start sm:justify-center">
         <div className="inline-block pr-3 sm:pr-6">
         {/* Container for grid + particle overlay */}
@@ -500,20 +505,22 @@ export default function PeriodicTable({
         </div>
 
         {/* Legend */}
-        <div className="border-t border-gray-200 dark:border-gray-700 pt-3 mt-3">
-          <div className="flex items-center gap-2 text-xs text-gray-600 dark:text-gray-400">
-            <span className="flex items-center gap-1">
-              <span className="font-semibold">Legend:</span>
-              <Radiation className="w-3 h-3 text-red-600 dark:text-red-400" />
-              <span>= No stable isotopes (half-life &lt; 10⁹ years)</span>
-            </span>
-            <span className="flex items-center gap-1">
-              <span className="inline-flex items-center justify-center rounded border border-dashed border-gray-300 dark:border-gray-600 px-1.5 py-1 text-xs font-semibold leading-none">D</span>
-              <span className="inline-flex items-center justify-center rounded border border-dashed border-gray-300 dark:border-gray-600 px-1.5 py-1 text-xs font-semibold leading-none">T</span>
-              <span>= Hydrogen isotopes</span>
-            </span>
+        {!hideLegend && (
+          <div className="border-t border-gray-200 dark:border-gray-700 pt-3 mt-3">
+            <div className="flex items-center gap-2 text-xs text-gray-600 dark:text-gray-400">
+              <span className="flex items-center gap-1">
+                <span className="font-semibold">Legend:</span>
+                <Radiation className="w-3 h-3 text-red-600 dark:text-red-400" />
+                <span>= No stable isotopes (half-life &lt; 10⁹ years)</span>
+              </span>
+              <span className="flex items-center gap-1">
+                <span className="inline-flex items-center justify-center rounded border border-dashed border-gray-300 dark:border-gray-600 px-1.5 py-1 text-xs font-semibold leading-none">D</span>
+                <span className="inline-flex items-center justify-center rounded border border-dashed border-gray-300 dark:border-gray-600 px-1.5 py-1 text-xs font-semibold leading-none">T</span>
+                <span>= Hydrogen isotopes</span>
+              </span>
+            </div>
           </div>
-        </div>
+        )}
         </div>
       </div>
     </div>
