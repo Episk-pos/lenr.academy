@@ -1,7 +1,8 @@
 import { useState, useMemo, ReactNode, useRef, useEffect, useCallback, useLayoutEffect } from 'react'
-import { ChevronUp, ChevronDown, ChevronsUpDown, ChevronRight } from 'lucide-react'
+import { ChevronUp, ChevronDown, ChevronsUpDown, ChevronRight, Settings } from 'lucide-react'
 import { filterDataBySearch, SearchMetadata } from '../utils/searchUtils'
 import { VirtualizedList, VirtualizedSizeReset } from './VirtualizedList'
+import ColumnManager from './ColumnManager'
 
 export interface TableColumn<T> {
   key: string
@@ -10,6 +11,10 @@ export interface TableColumn<T> {
   filterable?: boolean
   render?: (value: any, row: T) => ReactNode
   className?: string
+  visible?: boolean
+  defaultVisible?: boolean
+  order?: number
+  category?: string
 }
 
 interface SortableTableProps<T> {
@@ -31,6 +36,11 @@ interface SortableTableProps<T> {
   minVisibleRows?: number
   virtualizationThreshold?: number
   expandedContentNoPadding?: boolean  // Skip padding/border wrapper for expanded content
+  // Column customization props
+  customizable?: boolean
+  onColumnsChange?: (columns: TableColumn<T>[]) => void
+  customizationTitle?: string
+  storageKey?: string
 }
 
 export default function SortableTable<T extends Record<string, any>>({
@@ -51,11 +61,18 @@ export default function SortableTable<T extends Record<string, any>>({
   autoFillHeightOffset = 160,
   minVisibleRows = 0,
   virtualizationThreshold = 0,
-  expandedContentNoPadding = false
+  expandedContentNoPadding = false,
+  // Column customization props
+  customizable = false,
+  onColumnsChange,
+  customizationTitle,
+  storageKey
 }: SortableTableProps<T>) {
   const [sortKey, setSortKey] = useState<string | null>(null)
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc')
   const [internalExpandedRows, setInternalExpandedRows] = useState<Set<string | number>>(new Set())
+  const [showColumnManager, setShowColumnManager] = useState(false)
+  const [currentColumns, setCurrentColumns] = useState<TableColumn<T>[]>(columns)
   const sizeResetRef = useRef<VirtualizedSizeReset | null>(null)
   const viewportRef = useRef<HTMLDivElement | null>(null)
   const [autoHeight, setAutoHeight] = useState<number | null>(null)
@@ -64,6 +81,22 @@ export default function SortableTable<T extends Record<string, any>>({
   const setExpandedRows = onExpandedRowsChange ?? setInternalExpandedRows
 
   const hasExpandedRows = expandedRows.size > 0
+
+  // Handle column changes
+  const handleColumnsChange = (newColumns: TableColumn<T>[]) => {
+    setCurrentColumns(newColumns)
+    onColumnsChange?.(newColumns)
+  }
+
+  // Get visible columns
+  const visibleColumns = useMemo(() => {
+    return currentColumns.filter(col => col.visible !== false)
+  }, [currentColumns])
+
+  // Update current columns when props change
+  useEffect(() => {
+    setCurrentColumns(columns)
+  }, [columns])
 
   const handleSort = (key: string) => {
     if (sortKey === key) {
@@ -98,7 +131,7 @@ export default function SortableTable<T extends Record<string, any>>({
     let result = [...data]
 
     if (searchTerm) {
-      result = filterDataBySearch(result, columns, searchTerm, searchMetadata)
+      result = filterDataBySearch(result, visibleColumns, searchTerm, searchMetadata)
     }
 
     if (sortKey && !searchTerm) {
@@ -122,7 +155,7 @@ export default function SortableTable<T extends Record<string, any>>({
     }
 
     return result
-  }, [data, sortKey, sortDirection, searchTerm, searchMetadata, columns])
+  }, [data, sortKey, sortDirection, searchTerm, searchMetadata, visibleColumns])
 
   const baseRowHeight = 40
   const estimatedRowHeight = useMemo(
@@ -131,10 +164,10 @@ export default function SortableTable<T extends Record<string, any>>({
   )
 
   const gridTemplateColumns = useMemo(() => {
-    return `repeat(${columns.length}, minmax(0, 1fr))`
-  }, [columns.length])
+    return `repeat(${visibleColumns.length}, minmax(0, 1fr))`
+  }, [visibleColumns.length])
 
-  const tableMinWidth = useMemo(() => Math.max(640, columns.length * 160), [columns.length])
+  const tableMinWidth = useMemo(() => Math.max(640, visibleColumns.length * 160), [visibleColumns.length])
 
   const shouldVirtualize = useMemo(() => {
     if (virtualizationThreshold <= 0) {
@@ -243,7 +276,7 @@ export default function SortableTable<T extends Record<string, any>>({
         onClick={handleRowClick}
         role="row"
       >
-        {columns.map((col, colIdx) => (
+        {visibleColumns.map((col, colIdx) => (
           <div key={col.key} className={`px-3 py-2 ${col.className || ''}`} role="cell">
             <div className="flex items-center gap-2">
               {renderExpandedContent && colIdx === 0 && (
@@ -332,37 +365,50 @@ export default function SortableTable<T extends Record<string, any>>({
       )}
       <div className="table-container" role="table">
         <div className="min-w-full" style={{ minWidth: tableMinWidth }}>
-          <div className="sticky top-0 z-10" role="rowgroup">
-            <div
-              className="grid bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 text-xs font-semibold uppercase tracking-wider text-gray-600 dark:text-gray-300"
-              style={{ gridTemplateColumns }}
-              role="row"
-            >
-              {columns.map((col) => (
-                <div
-                  key={col.key}
-                  role="columnheader"
-                  className={`px-3 py-2 flex items-center gap-2 ${col.sortable !== false ? 'cursor-pointer select-none hover:bg-gray-100 dark:hover:bg-gray-700' : ''} ${col.className || ''}`}
-                  onClick={() => col.sortable !== false && handleSort(col.key)}
-                >
-                  <span>{col.label}</span>
-                  {col.sortable !== false && (
-                    <span className="text-gray-400">
-                      {sortKey === col.key ? (
-                        sortDirection === 'asc' ? (
-                          <ChevronUp className="w-4 h-4" />
-                        ) : (
-                          <ChevronDown className="w-4 h-4" />
-                        )
+        <div className="sticky top-0 z-10" role="rowgroup">
+          <div
+            className={`grid bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 text-xs font-semibold uppercase tracking-wider text-gray-600 dark:text-gray-300 ${
+              customizable ? 'grid-cols-[repeat(auto-fit,minmax(120px,1fr))_40px]' : ''
+            }`}
+            style={!customizable ? { gridTemplateColumns } : undefined}
+            role="row"
+          >
+            {visibleColumns.map((col) => (
+              <div
+                key={col.key}
+                role="columnheader"
+                className={`px-3 py-2 flex items-center gap-2 ${col.sortable !== false ? 'cursor-pointer select-none hover:bg-gray-100 dark:hover:bg-gray-700' : ''} ${col.className || ''}`}
+                onClick={() => col.sortable !== false && handleSort(col.key)}
+              >
+                <span>{col.label}</span>
+                {col.sortable !== false && (
+                  <span className="text-gray-400">
+                    {sortKey === col.key ? (
+                      sortDirection === 'asc' ? (
+                        <ChevronUp className="w-4 h-4" />
                       ) : (
-                        <ChevronsUpDown className="w-4 h-4" />
-                      )}
-                    </span>
-                  )}
-                </div>
-              ))}
-            </div>
+                        <ChevronDown className="w-4 h-4" />
+                      )
+                    ) : (
+                      <ChevronsUpDown className="w-4 h-4" />
+                    )}
+                  </span>
+                )}
+              </div>
+            ))}
+            {customizable && (
+              <div className="px-3 py-2 flex items-center justify-end">
+                <button
+                  onClick={() => setShowColumnManager(true)}
+                  className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+                  title="Customize columns"
+                >
+                  <Settings className="w-4 h-4" />
+                </button>
+              </div>
+            )}
           </div>
+        </div>
 
           {sortedAndFilteredData.length === 0 ? (
             <div
@@ -395,6 +441,16 @@ export default function SortableTable<T extends Record<string, any>>({
           )}
         </div>
       </div>
+
+      {showColumnManager && (
+        <ColumnManager
+          columns={currentColumns}
+          onColumnsChange={handleColumnsChange}
+          onClose={() => setShowColumnManager(false)}
+          title={customizationTitle}
+          storageKey={storageKey}
+        />
+      )}
     </div>
   )
 }

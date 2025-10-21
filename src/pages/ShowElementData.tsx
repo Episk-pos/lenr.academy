@@ -191,6 +191,43 @@ export default function ShowElementData() {
   const [nuclidesExpandedRows, setNuclidesExpandedRows] = useState<Set<string | number>>(new Set())
   const [decaysExpandedRows, setDecaysExpandedRows] = useState<Set<string | number>>(new Set())
 
+  // Column customization state (per tab, localStorage-persisted)
+  const [elementsColumnsConfig, setElementsColumnsConfig] = useState<TableColumn<Element>[]>(() => {
+    try {
+      const saved = localStorage.getItem('lenr-columns-elements')
+      if (saved) {
+        return JSON.parse(saved)
+      }
+    } catch (e) {
+      console.error('Failed to load elements columns from localStorage:', e)
+    }
+    return elementsColumns
+  })
+
+  const [nuclidesColumnsConfig, setNuclidesColumnsConfig] = useState<TableColumn<Nuclide>[]>(() => {
+    try {
+      const saved = localStorage.getItem('lenr-columns-nuclides')
+      if (saved) {
+        return JSON.parse(saved)
+      }
+    } catch (e) {
+      console.error('Failed to load nuclides columns from localStorage:', e)
+    }
+    return nuclidesColumns
+  })
+
+  const [decaysColumnsConfig, setDecaysColumnsConfig] = useState<TableColumn<RadioactiveDecay>[]>(() => {
+    try {
+      const saved = localStorage.getItem('lenr-columns-decays')
+      if (saved) {
+        return JSON.parse(saved)
+      }
+    } catch (e) {
+      console.error('Failed to load decays columns from localStorage:', e)
+    }
+    return decaysColumns
+  })
+
   // Handler for decays table to ensure only one row is expanded at a time
   const handleDecaysExpandedRowsChange = (newExpandedRows: Set<string | number>) => {
     // If expanding a row, only keep the newly expanded one
@@ -1406,78 +1443,162 @@ export default function ShowElementData() {
     }
   ]
 
-  // Elements table columns
+  // Elements table columns with customization support
   const elementsColumns: TableColumn<Element>[] = [
-    { key: 'Z', label: 'Z', sortable: true },
+    { 
+      key: 'Z', 
+      label: 'Z', 
+      sortable: true,
+      visible: true,
+      defaultVisible: true,
+      order: 0,
+      category: 'basic'
+    },
     {
       key: 'E',
       label: 'Symbol',
       sortable: true,
+      visible: true,
+      defaultVisible: true,
+      order: 1,
+      category: 'basic',
       render: (val) => (
         <span className="px-2 py-1 rounded-full text-xs font-medium bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-gray-100">
           {val}
         </span>
       )
     },
-    { key: 'EName', label: 'Name', sortable: true },
-    { key: 'Period', label: 'Period', sortable: true },
-    { key: 'Group', label: 'Group', sortable: true },
+    { 
+      key: 'EName', 
+      label: 'Name', 
+      sortable: true,
+      visible: true,
+      defaultVisible: true,
+      order: 2,
+      category: 'basic'
+    },
+    { 
+      key: 'Period', 
+      label: 'Period', 
+      sortable: true,
+      visible: true,
+      defaultVisible: true,
+      order: 3,
+      category: 'periodic'
+    },
+    { 
+      key: 'Group', 
+      label: 'Group', 
+      sortable: true,
+      visible: true,
+      defaultVisible: true,
+      order: 4,
+      category: 'periodic'
+    },
     {
       key: 'AWeight',
       label: 'Atomic Weight',
       sortable: true,
+      visible: true,
+      defaultVisible: true,
+      order: 5,
+      category: 'physical',
       render: (val) => val != null ? Number(val).toFixed(3) : '-'
     },
     {
       key: 'Melting',
       label: 'Melting (K)',
       sortable: true,
+      visible: true,
+      defaultVisible: true,
+      order: 6,
+      category: 'thermal',
       render: (val) => val != null ? Number(val).toFixed(2) : '-'
     },
     {
       key: 'Boiling',
       label: 'Boiling (K)',
       sortable: true,
+      visible: true,
+      defaultVisible: true,
+      order: 7,
+      category: 'thermal',
       render: (val) => val != null ? Number(val).toFixed(2) : '-'
     },
     {
       key: 'STPDensity',
       label: 'Density (g/cm³)',
       sortable: true,
+      visible: true,
+      defaultVisible: true,
+      order: 8,
+      category: 'physical',
       render: (val) => val != null ? Number(val).toFixed(3) : '-'
     }
   ]
 
-  // Nuclides table columns
+  // Nuclides table columns with customization support
   const nuclidesColumns: TableColumn<Nuclide>[] = [
     {
       key: 'E',
       label: 'Element',
       sortable: true,
+      visible: true,
+      defaultVisible: true,
+      order: 0,
+      category: 'basic',
       render: (val) => (
         <span className="px-2 py-1 rounded-full text-xs font-medium bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-gray-100">
           {val}
         </span>
       )
     },
-    { key: 'Z', label: 'Z', sortable: true },
-    { key: 'A', label: 'A', sortable: true },
+    { 
+      key: 'Z', 
+      label: 'Z', 
+      sortable: true,
+      visible: true,
+      defaultVisible: true,
+      order: 1,
+      category: 'basic'
+    },
+    { 
+      key: 'A', 
+      label: 'A', 
+      sortable: true,
+      visible: true,
+      defaultVisible: true,
+      order: 2,
+      category: 'basic'
+    },
     {
       key: 'BE',
       label: 'Binding Energy (MeV)',
       sortable: true,
+      visible: true,
+      defaultVisible: true,
+      order: 3,
+      category: 'energy',
       render: (val) => val != null ? Number(val).toFixed(3) : '-'
     },
     {
       key: 'AMU',
       label: 'Mass (amu)',
       sortable: true,
+      visible: true,
+      defaultVisible: true,
+      order: 4,
+      category: 'physical',
       render: (val) => val != null ? Number(val).toFixed(6) : '-'
     },
     {
       key: 'nBorF',
       label: 'Nuclear',
       sortable: true,
+      visible: true,
+      defaultVisible: true,
+      order: 5,
+      category: 'quantum',
       render: (val) => (
         <span className={`px-2 py-1 rounded-full text-xs font-medium ${
           val === 'b'
@@ -1492,6 +1613,10 @@ export default function ShowElementData() {
       key: 'aBorF',
       label: 'Atomic',
       sortable: true,
+      visible: true,
+      defaultVisible: true,
+      order: 6,
+      category: 'quantum',
       render: (val) => (
         <span className={`px-2 py-1 rounded-full text-xs font-medium ${
           val === 'b'
@@ -1506,12 +1631,20 @@ export default function ShowElementData() {
       key: 'logHalfLife',
       label: 'log₁₀(Half-life)',
       sortable: true,
+      visible: true,
+      defaultVisible: true,
+      order: 7,
+      category: 'stability',
       render: (val) => val != null ? Number(val).toFixed(2) : '-'
     },
     {
       key: 'stability',
       label: 'Stability',
       sortable: false,
+      visible: true,
+      defaultVisible: true,
+      order: 8,
+      category: 'stability',
       render: (_, row) => {
         const isStable = typeof row.logHalfLife === 'number' && row.logHalfLife > 9
         const isRadioactive = radioactiveNuclides.has(`${row.Z}-${row.A}`)
@@ -1538,24 +1671,48 @@ export default function ShowElementData() {
     }
   ]
 
-  // Decays table columns
+  // Decays table columns with customization support
   const decaysColumns: TableColumn<RadioactiveDecay>[] = [
     {
       key: 'E',
       label: 'Element',
       sortable: true,
+      visible: true,
+      defaultVisible: true,
+      order: 0,
+      category: 'basic',
       render: (val) => (
         <span className="px-2 py-1 rounded-full text-xs font-medium bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-gray-100">
           {val}
         </span>
       )
     },
-    { key: 'Z', label: 'Z', sortable: true },
-    { key: 'A', label: 'A', sortable: true },
+    { 
+      key: 'Z', 
+      label: 'Z', 
+      sortable: true,
+      visible: true,
+      defaultVisible: true,
+      order: 1,
+      category: 'basic'
+    },
+    { 
+      key: 'A', 
+      label: 'A', 
+      sortable: true,
+      visible: true,
+      defaultVisible: true,
+      order: 2,
+      category: 'basic'
+    },
     {
       key: 'RDM',
       label: 'Decay Mode',
       sortable: true,
+      visible: true,
+      defaultVisible: true,
+      order: 3,
+      category: 'decay',
       render: (val) => val ? (
         <Tooltip content={getDecayModeTooltip(val)}>
           <span className="px-2 py-1 rounded-full text-xs font-medium bg-purple-100 dark:bg-purple-900/50 text-purple-700 dark:text-purple-300">
@@ -1568,6 +1725,10 @@ export default function ShowElementData() {
       key: 'RT',
       label: 'Radiation Type',
       sortable: true,
+      visible: true,
+      defaultVisible: true,
+      order: 4,
+      category: 'radiation',
       render: (val) => val ? (
         <Tooltip content={getRadiationTypeTooltip(val)}>
           <span className="px-2 py-1 rounded-full text-xs font-medium bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300">
@@ -1580,6 +1741,10 @@ export default function ShowElementData() {
       key: 'halfLife',
       label: 'Half-life',
       sortable: true,
+      visible: true,
+      defaultVisible: true,
+      order: 5,
+      category: 'decay',
       render: (val, row) => {
         if (val == null) return '-'
         const units = expandHalfLifeUnit(row.Units)
@@ -1590,12 +1755,20 @@ export default function ShowElementData() {
       key: 'DEKeV',
       label: 'Energy (keV)',
       sortable: true,
+      visible: true,
+      defaultVisible: true,
+      order: 6,
+      category: 'energy',
       render: (val) => val != null ? Number(val).toFixed(2) : '-'
     },
     {
       key: 'RI',
       label: 'Intensity (%)',
       sortable: true,
+      visible: true,
+      defaultVisible: true,
+      order: 7,
+      category: 'energy',
       render: (val) => val != null ? Number(val).toFixed(2) : '-'
     }
   ]
@@ -2018,7 +2191,7 @@ export default function ShowElementData() {
           <div className="card p-6">
             <SortableTable
               data={filteredElements}
-              columns={elementsColumns}
+              columns={elementsColumnsConfig}
               expandedRows={elementsExpandedRows}
               onExpandedRowsChange={setElementsExpandedRows}
               title="Elements Table"
@@ -2027,6 +2200,9 @@ export default function ShowElementData() {
               autoFillHeightOffset={80}
               minVisibleRows={10}
               virtualizationThreshold={10}
+              customizable
+              onColumnsChange={setElementsColumnsConfig}
+              storageKey="lenr-columns-elements"
               renderExpandedContent={(element) => (
                 <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                   <div>
@@ -2163,7 +2339,7 @@ export default function ShowElementData() {
           <div className="card p-6">
             <SortableTable
               data={filteredNuclides}
-              columns={nuclidesColumns}
+              columns={nuclidesColumnsConfig}
               expandedRows={nuclidesExpandedRows}
               onExpandedRowsChange={setNuclidesExpandedRows}
               title="Nuclides Table"
@@ -2172,6 +2348,9 @@ export default function ShowElementData() {
               autoFillHeightOffset={80}
               minVisibleRows={10}
               virtualizationThreshold={10}
+              customizable
+              onColumnsChange={setNuclidesColumnsConfig}
+              storageKey="lenr-columns-nuclides"
               renderExpandedContent={(nuclide) => {
                 const hasAbundance = (nuclide.pcaNCrust && nuclide.pcaNCrust > 0) || (nuclide.ppmNSolar && nuclide.ppmNSolar > 0)
                 const hasMagneticData = nuclide.SP || nuclide.MD || nuclide.Inova_MHz
@@ -2350,7 +2529,7 @@ export default function ShowElementData() {
           <div className="card p-6">
             <SortableTable
               data={filteredDecays}
-              columns={decaysColumns}
+              columns={decaysColumnsConfig}
               expandedRows={decaysExpandedRows}
               onExpandedRowsChange={handleDecaysExpandedRowsChange}
               title="Radioactive Decays Table"
@@ -2360,6 +2539,9 @@ export default function ShowElementData() {
               minVisibleRows={10}
               virtualizationThreshold={10}
               expandedContentNoPadding={true}
+              customizable
+              onColumnsChange={setDecaysColumnsConfig}
+              storageKey="lenr-columns-decays"
               renderExpandedContent={(decay) => {
                 if (!db) return null
 
