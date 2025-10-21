@@ -136,7 +136,8 @@ export default function RadioactiveNuclideCard({ nuclideData, onClose }: Radioac
   }
 
   return (
-    <div className="p-0 xs:p-4 sm:p-6 animate-fade-in max-w-full xs:overflow-hidden xs:rounded-lg xs:border-2 xs:border-amber-200 dark:xs:border-amber-800 xs:bg-white xs:dark:bg-gray-800 xs:text-gray-950 xs:dark:text-gray-50 xs:shadow-sm">
+    <>
+    <div className="card p-6 animate-fade-in max-w-full mt-4">
       <div className="flex items-start justify-between mb-4">
         <div>
           <h2 className="text-2xl font-bold mb-1 flex items-center gap-2">
@@ -238,7 +239,9 @@ export default function RadioactiveNuclideCard({ nuclideData, onClose }: Radioac
         )}
       </div>
 
-      {/* Radioactive Decay Table - isolated container */}
+      {/* Sections shown inside card on xs+ screens, outside on <xs */}
+      <div className="hidden xs:block">
+      {/* Radioactive Decay Table */}
       {nuclideData.decayData.length > 0 && (
         <div className="mt-4 xs:mt-6">
           <h3 className="font-semibold text-gray-900 dark:text-white mb-3 text-sm uppercase tracking-wide">
@@ -405,6 +408,179 @@ export default function RadioactiveNuclideCard({ nuclideData, onClose }: Radioac
           </div>
         </div>
       )}
+      </div>
     </div>
+
+    {/* Sections shown outside card on <xs screens only */}
+    <div className="block xs:hidden mt-4">
+      {/* Radioactive Decay Table */}
+      {nuclideData.decayData.length > 0 && (
+        <div className="mt-4">
+          <h3 className="font-semibold text-gray-900 dark:text-white mb-3 text-sm uppercase tracking-wide">
+            Radioactive Decay
+          </h3>
+          <div className="overflow-x-auto rounded-lg">
+            <table className="w-full text-xs border border-gray-200 dark:border-gray-700 rounded-lg">
+                <thead className="bg-gray-50 dark:bg-gray-800">
+                  <tr>
+                    <th className="pl-3 pr-2 sm:pl-6 sm:pr-3 py-2 text-left font-medium text-gray-700 dark:text-gray-300">Decay Mode</th>
+                    <th className="px-2 sm:px-3 py-2 text-left font-medium text-gray-700 dark:text-gray-300">Radiation</th>
+                    <th className="px-2 sm:px-3 py-2 text-right font-medium text-gray-700 dark:text-gray-300">Energy (MeV)</th>
+                    <th className="px-2 sm:px-3 py-2 text-right font-medium text-gray-700 dark:text-gray-300">Intensity (%)</th>
+                    <th className="pl-2 pr-3 sm:pl-3 sm:pr-6 py-2 text-left font-medium text-gray-700 dark:text-gray-300">Half-life</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
+                  {/* Show first 4 decay modes */}
+                  {nuclideData.decayData.slice(0, 4).map((decay, idx) => {
+                    const style = getDecayModeStyle(decay.decayMode)
+                    const daughter = getDaughterNuclide(nuclideData.Z, nuclideData.A, nuclideData.E, decay.decayMode)
+                    const hasDaughter = daughter !== null
+                    const daughterE = hasDaughter && db ? (daughter!.E || getElementSymbolByZ(db, daughter!.Z)) : null
+
+                    return (
+                      <tr key={idx} className="hover:bg-gray-50 dark:hover:bg-gray-800/50">
+                        <td className="pl-3 pr-2 sm:pl-6 sm:pr-3 py-2">
+                          <button
+                            onClick={() => handleDecayClick(decay.decayMode)}
+                            disabled={!hasDaughter}
+                            className={`px-2 py-1 rounded-full text-xs font-medium ${style.bg} ${style.text} ${
+                              hasDaughter ? 'cursor-pointer hover:opacity-80 transition-opacity' : 'cursor-default opacity-70'
+                            } flex items-center gap-1`}
+                            title={hasDaughter ? `View daughter nuclide` : 'Decay mode'}
+                          >
+                            {decay.decayMode}
+                            {hasDaughter && (
+                              <>
+                                <ArrowRight className="w-3 h-3" />
+                                <span>{daughterE}-{daughter!.A}</span>
+                              </>
+                            )}
+                          </button>
+                        </td>
+                        <td className="px-2 sm:px-3 py-2 text-gray-900 dark:text-gray-100">{decay.radiationType}</td>
+                        <td className="px-2 sm:px-3 py-2 text-right text-gray-900 dark:text-gray-100">
+                          {decay.energyKeV !== null ? (decay.energyKeV / 1000).toFixed(2) : '—'}
+                        </td>
+                        <td className="px-2 sm:px-3 py-2 text-right text-gray-900 dark:text-gray-100">
+                          {decay.intensity !== null ? decay.intensity.toFixed(1) : '—'}
+                        </td>
+                        <td className="pl-2 pr-3 sm:pl-3 sm:pr-6 py-2 text-gray-900 dark:text-gray-100">
+                          {decay.halfLife !== null && decay.halfLifeUnits !== null
+                            ? decay.halfLife >= 10000
+                              ? `${decay.halfLife.toExponential(2)} ${expandHalfLifeUnit(decay.halfLifeUnits)}`
+                              : `${decay.halfLife} ${expandHalfLifeUnit(decay.halfLifeUnits)}`
+                            : '—'}
+                        </td>
+                      </tr>
+                    )
+                  })}
+
+                  {/* Toggle button row */}
+                  {nuclideData.decayData.length > 4 && (
+                    <tr className="border-t-2 border-gray-300 dark:border-gray-600">
+                      <td colSpan={5} className="px-3 py-2 text-center">
+                        <button
+                          onClick={() => setShowFullDecayTable(!showFullDecayTable)}
+                          className="inline-flex items-center gap-1 text-xs text-blue-600 dark:text-blue-400 hover:underline"
+                        >
+                          {showFullDecayTable ? (
+                            <>
+                              <ChevronUp className="w-3 h-3" />
+                              Hide {nuclideData.decayData.length - 4} additional decay mode{nuclideData.decayData.length - 4 !== 1 ? 's' : ''}
+                            </>
+                          ) : (
+                            <>
+                              <ChevronDown className="w-3 h-3" />
+                              Show {nuclideData.decayData.length - 4} more decay mode{nuclideData.decayData.length - 4 !== 1 ? 's' : ''}
+                            </>
+                          )}
+                        </button>
+                      </td>
+                    </tr>
+                  )}
+
+                  {/* Additional decay modes when expanded */}
+                  {showFullDecayTable && nuclideData.decayData.length > 4 && nuclideData.decayData.slice(4).map((decay, idx) => {
+                    const style = getDecayModeStyle(decay.decayMode)
+                    const daughter = getDaughterNuclide(nuclideData.Z, nuclideData.A, nuclideData.E, decay.decayMode)
+                    const hasDaughter = daughter !== null
+                    const daughterE = hasDaughter && db ? (daughter!.E || getElementSymbolByZ(db, daughter!.Z)) : null
+
+                    return (
+                      <tr key={idx + 4} className="hover:bg-gray-50 dark:hover:bg-gray-800/50 bg-gray-50/30 dark:bg-gray-800/20">
+                        <td className="pl-3 pr-2 sm:pl-6 sm:pr-3 py-2">
+                          <button
+                            onClick={() => handleDecayClick(decay.decayMode)}
+                            disabled={!hasDaughter}
+                            className={`px-2 py-1 rounded-full text-xs font-medium ${style.bg} ${style.text} ${
+                              hasDaughter ? 'cursor-pointer hover:opacity-80 transition-opacity' : 'cursor-default opacity-70'
+                            } flex items-center gap-1`}
+                            title={hasDaughter ? `View daughter nuclide` : 'Decay mode'}
+                          >
+                            {decay.decayMode}
+                            {hasDaughter && (
+                              <>
+                                <ArrowRight className="w-3 h-3" />
+                                <span>{daughterE}-{daughter!.A}</span>
+                              </>
+                            )}
+                          </button>
+                        </td>
+                        <td className="px-2 sm:px-3 py-2 text-gray-900 dark:text-gray-100">{decay.radiationType}</td>
+                        <td className="px-2 sm:px-3 py-2 text-right text-gray-900 dark:text-gray-100">
+                          {decay.energyKeV !== null ? (decay.energyKeV / 1000).toFixed(2) : '—'}
+                        </td>
+                        <td className="px-2 sm:px-3 py-2 text-right text-gray-900 dark:text-gray-100">
+                          {decay.intensity !== null ? decay.intensity.toFixed(1) : '—'}
+                        </td>
+                        <td className="pl-2 pr-3 sm:pl-3 sm:pr-6 py-2 text-gray-900 dark:text-gray-100">
+                          {decay.halfLife !== null && decay.halfLifeUnits !== null
+                            ? decay.halfLife >= 10000
+                              ? `${decay.halfLife.toExponential(2)} ${expandHalfLifeUnit(decay.halfLifeUnits)}`
+                              : `${decay.halfLife} ${expandHalfLifeUnit(decay.halfLifeUnits)}`
+                            : '—'}
+                        </td>
+                      </tr>
+                    )
+                  })}
+                </tbody>
+              </table>
+            </div>
+        </div>
+      )}
+
+      {nuclideData.decayData.length > 0 && (
+        <div className="mt-4 p-4 bg-amber-50 dark:bg-amber-900/20 rounded-lg">
+          <h3 className="font-semibold text-amber-900 dark:text-amber-200 mb-2 text-sm">
+            Radiation Type Legend
+          </h3>
+          <div className="grid md:grid-cols-2 gap-x-4 gap-y-1 text-xs text-amber-800 dark:text-amber-300">
+            {uniqueRadiationTypes.map(type => {
+              const info = RADIATION_TYPE_INFO[type]
+              if (!info) return null
+              return (
+                <div key={type}>
+                  <strong>{type}:</strong>{' '}
+                  <a
+                    href={info.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="hover:underline hover:text-amber-900 dark:hover:text-amber-100"
+                  >
+                    {info.name}
+                  </a>
+                  {' '}({info.description})
+                </div>
+              )
+            })}
+            <div className="md:col-span-2 mt-1 text-xs opacity-80">
+              Shell designations: K (innermost), L, M, N (outer shells)
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+    </>
   )
 }

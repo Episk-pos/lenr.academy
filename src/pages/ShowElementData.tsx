@@ -1943,37 +1943,33 @@ export default function ShowElementData() {
                       )
                     })}
                   </div>
-
-                  {/* Selected nuclide details */}
-                  {selectedNuclide && (
-                    <div className="mt-4">
-                      <NuclideDetailsCard nuclide={selectedNuclide} />
-                    </div>
-                  )}
-
-                  {/* Radioactive nuclide from RadioNuclides table */}
-                  {!selectedNuclide && radioactiveNuclideData && (
-                    <div className="mt-4">
-                      <RadioactiveNuclideCard nuclideData={radioactiveNuclideData} />
-                    </div>
-                  )}
-
-                  {/* Missing nuclide message */}
-                  {!selectedNuclide && !radioactiveNuclideData && requestedMissingNuclide && (
-                    <div className="mt-4 p-6 bg-amber-50 dark:bg-amber-900/20 border-2 border-amber-200 dark:border-amber-800 rounded-lg">
-                      <h3 className="text-lg font-semibold text-amber-900 dark:text-amber-200 mb-2">
-                        Nuclide Not Available
-                      </h3>
-                      <p className="text-sm text-amber-800 dark:text-amber-300 mb-4">
-                        The nuclide <strong>{requestedMissingNuclide.E}-{requestedMissingNuclide.A}</strong> is not available in either the stable nuclides or radioactive decay databases.
-                        This isotope may be extremely short-lived or outside the range of documented nuclides.
-                      </p>
-                      <p className="text-sm text-amber-800 dark:text-amber-300">
-                        Available nuclides for {element?.EName} are shown above. Select one to view its detailed properties.
-                      </p>
-                    </div>
-                  )}
                 </div>
+
+                {/* Selected nuclide details */}
+                {selectedNuclide && (
+                  <NuclideDetailsCard nuclide={selectedNuclide} />
+                )}
+
+                {/* Radioactive nuclide from RadioNuclides table */}
+                {!selectedNuclide && radioactiveNuclideData && (
+                  <RadioactiveNuclideCard nuclideData={radioactiveNuclideData} />
+                )}
+
+                {/* Missing nuclide message */}
+                {!selectedNuclide && !radioactiveNuclideData && requestedMissingNuclide && (
+                  <div className="mt-4 p-6 bg-amber-50 dark:bg-amber-900/20 border-2 border-amber-200 dark:border-amber-800 rounded-lg">
+                    <h3 className="text-lg font-semibold text-amber-900 dark:text-amber-200 mb-2">
+                      Nuclide Not Available
+                    </h3>
+                    <p className="text-sm text-amber-800 dark:text-amber-300 mb-4">
+                      The nuclide <strong>{requestedMissingNuclide.E}-{requestedMissingNuclide.A}</strong> is not available in either the stable nuclides or radioactive decay databases.
+                      This isotope may be extremely short-lived or outside the range of documented nuclides.
+                    </p>
+                    <p className="text-sm text-amber-800 dark:text-amber-300">
+                      Available nuclides for {element?.EName} are shown above. Select one to view its detailed properties.
+                    </p>
+                  </div>
+                )}
               ) : element ? (
                 <div className="card p-6 bg-amber-50 dark:bg-amber-900/20 border-2 border-amber-200 dark:border-amber-800">
                   <h3 className="text-lg font-semibold text-amber-900 dark:text-amber-200 mb-2">
