@@ -3,6 +3,7 @@ import { Download, Info, Loader, Eye, EyeOff, Radiation, ChevronDown } from 'luc
 import { useSearchParams, Link } from 'react-router-dom'
 import type { FissionReaction, QueryFilter, Element, Nuclide, HeatmapMode, HeatmapMetrics, AtomicRadiiData } from '../types'
 import { useDatabase } from '../contexts/DatabaseContext'
+import { useQueryState } from '../contexts/QueryStateContext'
 import { queryFission, getAllElements, getNuclideBySymbol, getElementBySymbol, getAtomicRadii, calculateHeatmapMetrics } from '../services/queryService'
 import PeriodicTableSelector from '../components/PeriodicTableSelector'
 import PeriodicTable from '../components/PeriodicTable'
@@ -24,8 +25,10 @@ const SCROLLBAR_COMPENSATION = 16
 export default function FissionQuery() {
   const { db, isLoading: dbLoading, error: dbError, downloadProgress } = useDatabase()
   const [searchParams, setSearchParams] = useSearchParams()
+  const { getFissionState, updateFissionState } = useQueryState()
   const [availableElements, setAvailableElements] = useState<Element[]>([])
   const [isInitialized, setIsInitialized] = useState(false)
+  const [hasRestoredFromContext, setHasRestoredFromContext] = useState(false)
 
   // Helper to check if any URL parameters exist
   const hasAnyUrlParams = () => searchParams.toString().length > 0
@@ -247,14 +250,57 @@ export default function FissionQuery() {
     return !showBosonFermion && fissionUsesScrollbar ? SCROLLBAR_COMPENSATION : 0
   }, [showBosonFermion, fissionUsesScrollbar])
 
-  // Load elements when database is ready
+  // Load elements when database is ready and restore state from context if no URL params
   useEffect(() => {
     if (db) {
       const allElements = getAllElements(db)
       setAvailableElements(allElements)
       setIsInitialized(true)
+
+      // Restore state from context only if no URL params exist and we haven't restored yet
+      if (!hasAnyUrlParams() && !hasRestoredFromContext) {
+        const savedState = getFissionState()
+        if (savedState) {
+          // Restore selections
+          setSelectedElement(savedState.selectedElements || [])
+          setSelectedOutputElement1(savedState.selectedOutputElement1 || [])
+          setSelectedOutputElement2(savedState.selectedOutputElement2 || [])
+
+          // Restore filter state
+          setFilter({
+            elements: savedState.filter?.elements || [],
+            outputElement1List: savedState.filter?.outputElement1List,
+            outputElement2List: savedState.filter?.outputElement2List,
+            minMeV: savedState.minMeV,
+            maxMeV: savedState.maxMeV,
+            neutrinoTypes: savedState.neutrino ? [savedState.neutrino] : savedState.filter?.neutrinoTypes || DEFAULT_NEUTRINO_TYPES as any[],
+            limit: savedState.limit ?? DEFAULT_LIMIT,
+            orderBy: savedState.filter?.orderBy || 'MeV',
+            orderDirection: savedState.filter?.orderDirection || 'desc'
+          })
+
+          // Restore visualization state
+          if (savedState.visualization) {
+            if (savedState.visualization.pinnedNuclide) {
+              const n = savedState.visualization.pinnedNuclide
+              setHighlightedNuclide(`${n.E}-${n.A}`)
+              setPinnedNuclide(true)
+            } else if (savedState.visualization.pinnedElement) {
+              setHighlightedElement(savedState.visualization.pinnedElement.E)
+              setPinnedElement(true)
+            }
+            setShowHeatmap(savedState.visualization.showHeatmap ?? true)
+            setHeatmapMode(savedState.visualization.heatmapMode ?? 'frequency')
+            setUserTableHeight(savedState.visualization.userTableHeight ?? null)
+          }
+
+          // Restore UI state
+          setShowBosonFermion(savedState.showBosonFermion ?? (window.innerWidth >= 768))
+        }
+        setHasRestoredFromContext(true)
+      }
     }
-  }, [db])
+  }, [db, hasAnyUrlParams, hasRestoredFromContext, getFissionState])
 
   // Save B/F toggle to localStorage
   useEffect(() => {
@@ -384,6 +430,58 @@ export default function FissionQuery() {
       handleQuery()
     }
   }, [db, selectedElement, selectedOutputElement1, selectedOutputElement2, filter.minMeV, filter.maxMeV, filter.neutrinoTypes, filter.limit])
+
+  // Save state to context whenever it changes (for persistence across navigation)
+  useEffect(() => {
+    if (!isInitialized || !db) return
+
+    // Prepare visualization state with proper null conversion
+    const visualizationState = {
+      pinnedNuclide: pinnedNuclide && highlightedNuclide
+        ? (() => {
+            const [E, A] = highlightedNuclide.split('-')
+            return { Z: 0, A: parseInt(A), E }  // Z will be populated from db if needed
+          })()
+        : null,
+      pinnedElement: pinnedElement && highlightedElement
+        ? { Z: 0, E: highlightedElement }  // Z will be populated from db if needed
+        : null,
+      highlightedNuclide: null,  // Not used but kept for consistency
+      highlightedElement: null,  // Not used but kept for consistency
+      showHeatmap,
+      heatmapMode,
+      userTableHeight: userTableHeight ?? undefined
+    }
+
+    updateFissionState({
+      filter,
+      selectedElements: selectedElement,
+      selectedOutputElement1,
+      selectedOutputElement2,
+      minMeV: filter.minMeV,
+      maxMeV: filter.maxMeV,
+      neutrino: filter.neutrinoTypes?.length === 1 ? filter.neutrinoTypes[0] as any : undefined,
+      limit: filter.limit,
+      showBosonFermion,
+      visualization: visualizationState
+    })
+  }, [
+    isInitialized,
+    db,
+    selectedElement,
+    selectedOutputElement1,
+    selectedOutputElement2,
+    filter,
+    pinnedNuclide,
+    highlightedNuclide,
+    pinnedElement,
+    highlightedElement,
+    showHeatmap,
+    heatmapMode,
+    userTableHeight,
+    showBosonFermion,
+    updateFissionState
+  ])
 
   const handleQuery = () => {
     if (!db) return
