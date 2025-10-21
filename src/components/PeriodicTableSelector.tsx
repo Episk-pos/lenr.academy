@@ -12,6 +12,7 @@ interface PeriodicTableSelectorProps {
   onSelectionChange: (elements: string[]) => void
   maxSelections?: number
   align?: 'left' | 'center' | 'right'
+  testId?: string
 }
 
 const HYDROGEN_ISOTOPES = [
@@ -155,6 +156,7 @@ export default function PeriodicTableSelector({
   onSelectionChange,
   maxSelections,
   align = 'left',
+  testId,
 }: PeriodicTableSelectorProps) {
   const { db } = useDatabase()
   const [isOpen, setIsOpen] = useState(false)
@@ -354,6 +356,7 @@ const allElementNames: Record<number, string> = {
         type="button"
         onClick={() => setIsOpen(!isOpen)}
         className="input flex items-center justify-between w-full"
+        data-testid={testId}
       >
         <span className="text-sm">
           {selectedElements.length === 0
@@ -401,14 +404,16 @@ const allElementNames: Record<number, string> = {
 
       {/* Periodic Table Dropdown */}
       {isOpen && (
-        <div className={`
-          fixed sm:absolute z-50
-          inset-x-4 top-20 sm:inset-x-auto sm:top-auto sm:mt-2
-          max-h-[calc(100vh-6rem)] sm:max-h-none overflow-y-auto sm:overflow-visible
-          bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-lg p-4
-          w-auto sm:w-full sm:min-w-[650px] lg:min-w-[800px]
-          ${align === 'right' ? 'sm:right-0' : align === 'center' ? 'sm:left-1/2 sm:-translate-x-1/2' : ''}
-        `}>
+        <div 
+          data-testid="periodic-table-dropdown"
+          className={`
+            fixed sm:absolute z-50
+            inset-x-4 top-20 sm:inset-x-auto sm:top-auto sm:mt-2
+            max-h-[calc(100vh-6rem)] sm:max-h-none overflow-y-auto sm:overflow-visible
+            bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-lg p-4
+            w-auto sm:w-full sm:min-w-[650px] lg:min-w-[800px]
+            ${align === 'right' ? 'sm:right-0' : align === 'center' ? 'sm:left-1/2 sm:-translate-x-1/2' : ''}
+          `}>
           <div className="mb-3 flex justify-between items-center">
             <h3 className="font-semibold text-gray-900 dark:text-white">Select Elements</h3>
             {selectedElements.length > 0 && (

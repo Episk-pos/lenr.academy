@@ -314,7 +314,7 @@ export default function TwoToTwoQuery() {
         setHasRestoredFromContext(true)
       }
     }
-  }, [db, hasAnyUrlParams, hasRestoredFromContext, getTwoToTwoState])
+  }, [db, hasAnyUrlParams, hasRestoredFromContext])
 
   // Save B/F toggle to localStorage (separate key for TwoToTwo)
   useEffect(() => {
@@ -461,7 +461,7 @@ export default function TwoToTwoQuery() {
 
   // Save state to context whenever it changes (for persistence across navigation)
   useEffect(() => {
-    if (!isInitialized || !db) return
+    if (!isInitialized || !db || !hasRestoredFromContext) return
 
     // Prepare visualization state with proper null conversion
     const visualizationState = {
@@ -656,6 +656,7 @@ export default function TwoToTwoQuery() {
             availableElements={elements}
             selectedElements={selectedElement1}
             onSelectionChange={setSelectedElement1}
+            testId="twotwo-input-element-1-selector"
           />
 
           {/* Input Element 2 Selection (E2) */}
@@ -665,6 +666,7 @@ export default function TwoToTwoQuery() {
             selectedElements={selectedElement2}
             onSelectionChange={setSelectedElement2}
             align="center"
+            testId="twotwo-input-element-2-selector"
           />
 
           {/* Output Element 1 Selection (E3) */}
@@ -674,6 +676,7 @@ export default function TwoToTwoQuery() {
             selectedElements={selectedOutputElement3}
             onSelectionChange={setSelectedOutputElement3}
             align="center"
+            testId="twotwo-output-element-1-selector"
           />
 
           {/* Output Element 2 Selection (E4) */}
@@ -683,6 +686,7 @@ export default function TwoToTwoQuery() {
             selectedElements={selectedOutputElement4}
             onSelectionChange={setSelectedOutputElement4}
             align="right"
+            testId="twotwo-output-element-2-selector"
           />
         </div>
 

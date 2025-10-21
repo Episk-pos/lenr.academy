@@ -63,7 +63,7 @@ function buildWhereClause(filter: QueryFilter, tableType: 'fusion' | 'fission' |
   if (filter.outputElement1List && filter.outputElement1List.length > 0) {
     const elements = filter.outputElement1List.map(e => `'${e}'`).join(',');
     if (tableType === 'fission') {
-      conditions.push(`E1 IN (${elements})`);
+      conditions.push(`(E1 IN (${elements}) OR E2 IN (${elements}))`);
     }
   }
 
@@ -71,7 +71,7 @@ function buildWhereClause(filter: QueryFilter, tableType: 'fusion' | 'fission' |
   if (filter.outputElement2List && filter.outputElement2List.length > 0) {
     const elements = filter.outputElement2List.map(e => `'${e}'`).join(',');
     if (tableType === 'fission') {
-      conditions.push(`E2 IN (${elements})`);
+      conditions.push(`(E1 IN (${elements}) OR E2 IN (${elements}))`);
     }
   }
 

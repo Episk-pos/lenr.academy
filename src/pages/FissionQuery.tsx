@@ -300,7 +300,7 @@ export default function FissionQuery() {
         setHasRestoredFromContext(true)
       }
     }
-  }, [db, hasAnyUrlParams, hasRestoredFromContext, getFissionState])
+  }, [db, hasRestoredFromContext])
 
   // Save B/F toggle to localStorage
   useEffect(() => {
@@ -433,7 +433,7 @@ export default function FissionQuery() {
 
   // Save state to context whenever it changes (for persistence across navigation)
   useEffect(() => {
-    if (!isInitialized || !db) return
+    if (!isInitialized || !db || !hasRestoredFromContext) return
 
     // Prepare visualization state with proper null conversion
     const visualizationState = {
@@ -772,6 +772,7 @@ export default function FissionQuery() {
             availableElements={availableElements}
             selectedElements={selectedElement}
             onSelectionChange={setSelectedElement}
+            testId="fission-input-element-selector"
           />
 
           {/* Output Element 1 Selection (E1) */}
@@ -781,6 +782,7 @@ export default function FissionQuery() {
             selectedElements={selectedOutputElement1}
             onSelectionChange={setSelectedOutputElement1}
             align="center"
+            testId="fission-output-element-1-selector"
           />
 
           {/* Output Element 2 Selection (E2) */}
@@ -790,6 +792,7 @@ export default function FissionQuery() {
             selectedElements={selectedOutputElement2}
             onSelectionChange={setSelectedOutputElement2}
             align="right"
+            testId="fission-output-element-2-selector"
           />
         </div>
 
