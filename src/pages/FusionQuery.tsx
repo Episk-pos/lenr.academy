@@ -30,25 +30,18 @@ export default function FusionQuery() {
   const [isInitialized, setIsInitialized] = useState(false)
 
   // Helper to check if any URL parameters exist
-  const hasAnyUrlParams = () => searchParams.toString().length > 0
-
-  // Parse URL parameters or use defaults (only if no params exist)
-  const getInitialElement1 = () => {
-    const param = searchParams.get('e1')
-    if (param) return param.split(',')
-    return hasAnyUrlParams() ? [] : DEFAULT_ELEMENT1
-  }
+  // Default element selections based on URL params
 
   const getInitialElement2 = () => {
     const param = searchParams.get('e2')
     if (param) return param.split(',')
-    return hasAnyUrlParams() ? [] : DEFAULT_ELEMENT2
+    return searchParams.toString().length > 0 ? [] : DEFAULT_ELEMENT2
   }
 
   const getInitialOutputElement = () => {
     const param = searchParams.get('e')
     if (param) return param.split(',')
-    return hasAnyUrlParams() ? [] : DEFAULT_OUTPUT_ELEMENT
+    return searchParams.toString().length > 0 ? [] : DEFAULT_OUTPUT_ELEMENT
   }
 
   const getInitialMinMeV = () => {
@@ -70,6 +63,12 @@ export default function FusionQuery() {
     const param = searchParams.get('limit')
     // Support limit=0 for unlimited, otherwise default to DEFAULT_LIMIT
     return param !== null ? parseInt(param) : DEFAULT_LIMIT
+  }
+
+  const getInitialElement1 = () => {
+    const param = searchParams.get('e1')
+    if (param) return param.split(',')
+    return searchParams.toString().length > 0 ? [] : DEFAULT_ELEMENT1
   }
 
   const [filter, setFilter] = useState<QueryFilter>({
@@ -272,7 +271,7 @@ export default function FusionQuery() {
       setIsInitialized(true)
 
       // Restore state from context if no URL params exist
-      if (!hasAnyUrlParams() && !hasRestoredFromContext) {
+      if (searchParams.toString().length === 0 && !hasRestoredFromContext) {
         const savedState = getFusionState()
         if (savedState) {
           // Restore selections
@@ -305,7 +304,7 @@ export default function FusionQuery() {
         setHasRestoredFromContext(true)
       }
     }
-  }, [db, hasAnyUrlParams, hasRestoredFromContext, getFusionState])
+  }, [db, searchParams, hasRestoredFromContext])
 
   // Initialize pinned element/nuclide state from URL params (after results are loaded)
   // This effect should ONLY run once when results first load, not on every URL change
@@ -355,7 +354,7 @@ export default function FusionQuery() {
   // Save state changes to QueryStateContext
   useEffect(() => {
     // Don't save if we're still initializing
-    if (!isInitialized) return
+    if (!isInitialized || !hasRestoredFromContext) return
 
     // Save current state to context
     updateFusionState({
@@ -630,6 +629,7 @@ export default function FusionQuery() {
             availableElements={elements}
             selectedElements={selectedElement1}
             onSelectionChange={setSelectedElement1}
+            testId="fusion-input-element-1-selector"
           />
 
           {/* Input Element 2 Selection (E2) */}
@@ -639,6 +639,7 @@ export default function FusionQuery() {
             selectedElements={selectedElement2}
             onSelectionChange={setSelectedElement2}
             align="center"
+            testId="fusion-input-element-2-selector"
           />
 
           {/* Output Element Selection (E) */}
@@ -648,6 +649,7 @@ export default function FusionQuery() {
             selectedElements={selectedOutputElement}
             onSelectionChange={setSelectedOutputElement}
             align="right"
+            testId="fusion-output-element-selector"
           />
         </div>
 
