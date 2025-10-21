@@ -78,14 +78,47 @@ test.describe('Two-to-Two Query Page', () => {
   });
 
   test('should handle complex multi-element queries', async ({ page }) => {
-    // Use default multi-element selection (D + Ni,Li,Al,B,N + C)
-    // which already tests complex queries
+    // Select multiple elements for E2 (Ni,Li,Al,B,N) and E3 (C) to test complex queries
+    // E1 already has D selected by default
+
+    // Select E2 elements (Ni, Li, Al, B, N)
+    // Since E1 shows "1 selected", E2 is the first "Any" button (.nth(0))
+    await page.getByRole('button', { name: /Any/i }).nth(0).click(); // E2 selector
+    const ni = page.getByRole('button', { name: /^28\s+Ni$/i }).first();
+    await ni.waitFor({ state: 'visible', timeout: 5000 });
+    await ni.click();
+
+    const li = page.getByRole('button', { name: /^3\s+Li$/i }).first();
+    await li.click();
+
+    const al = page.getByRole('button', { name: /^13\s+Al$/i }).first();
+    await al.click();
+
+    const b = page.getByRole('button', { name: /^5\s+B$/i }).first();
+    await b.click();
+
+    const n = page.getByRole('button', { name: /^7\s+N$/i }).first();
+    await n.click();
+
+    // Close E2 selector
+    await page.keyboard.press('Escape');
+    await page.waitForTimeout(300);
+
+    // Select E3 element (C)
+    // E3 is the second "Any" button (.nth(1))
+    await page.getByRole('button', { name: /Any/i }).nth(1).click(); // E3 selector
+    const c = page.getByRole('button', { name: /^6\s+C$/i }).first();
+    await c.waitFor({ state: 'visible', timeout: 5000 });
+    await c.click();
+    await page.keyboard.press('Escape');
+
+    // Wait for query results
     await waitForReactionResults(page, 'twotwo');
 
     const resultsRegion = page.getByRole('region', { name: /Two-to-two reaction results/i });
     await expect(resultsRegion).toBeVisible();
 
-    // Verify multiple elements are selected
+    // Verify multiple elements are selected in E2
     await expect(page.getByText(/5 selected.*Ni.*Li/i)).toBeVisible();
   });
 
