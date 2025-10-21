@@ -15,7 +15,7 @@ test.describe('Fusion Query Page', () => {
     await waitForDatabaseReady(page);
   });
 
-  test('should display fusion query page with default selections', async ({ page }) => {
+  test('should display fusion query page', async ({ page }) => {
     await expect(page.getByRole('heading', { name: /Fusion Reactions/i }).first()).toBeVisible();
 
     // Should have periodic table selectors
@@ -24,14 +24,14 @@ test.describe('Fusion Query Page', () => {
   });
 
   test('should select elements from periodic tables', async ({ page }) => {
-    // Select Hydrogen in Element 1 (should already be selected by default)
-    // Open Element 1 selector
-    const element1Button = page.getByRole('button', { name: /1 selected.*H/i }).first();
+    // Select Hydrogen in Element 1
+    const element1Button = page.getByRole('button', { name: /Any/i }).first();
     await element1Button.click({ force: true });
     const hydrogenE1 = page.getByRole('button', { name: /^1\s+H$/i }).first();
     await hydrogenE1.waitFor({ state: 'visible', timeout: 5000 });
+    await hydrogenE1.click();
 
-    // Verify it's selected (click to toggle would deselect it, so just check)
+    // Verify it's selected
     await expect(hydrogenE1).toHaveClass(/periodic-cell-selected/);
 
     // Close the dropdown by pressing Escape
@@ -39,7 +39,7 @@ test.describe('Fusion Query Page', () => {
     await page.waitForTimeout(1000);
 
     // Open Element 2 selector and select Lithium
-    const element2Button = page.getByRole('button', { name: /2 selected.*C.*O/i }).first();
+    const element2Button = page.getByRole('button', { name: /Any/i }).nth(1);
     await element2Button.click({ force: true });
     const lithiumE2 = page.getByRole('button', { name: /^3\s+Li$/i }).first();
     await lithiumE2.waitFor({ state: 'visible', timeout: 5000 });
@@ -48,12 +48,24 @@ test.describe('Fusion Query Page', () => {
     // Lithium should now be selected - close dropdown and verify
     await page.keyboard.press('Escape');
     await page.waitForTimeout(500);
-    await expect(page.getByRole('button', { name: /selected.*Li/i })).toBeVisible();
+    await expect(page.getByRole('button', { name: /1 selected.*Li/i })).toBeVisible();
   });
 
   test('should execute fusion query and display results', async ({ page }) => {
-    // Use default selections (H + C,O)
-    // Query auto-executes on page load with default selections
+    // Select H and C elements to execute query
+    const element1Button = page.getByRole('button', { name: /Any/i }).first();
+    await element1Button.click({ force: true });
+    const hydrogenE1 = page.getByRole('button', { name: /^1\s+H$/i }).first();
+    await hydrogenE1.waitFor({ state: 'visible', timeout: 5000 });
+    await hydrogenE1.click();
+    await page.keyboard.press('Escape');
+
+    const element2Button = page.getByRole('button', { name: /Any/i }).nth(1);
+    await element2Button.click({ force: true });
+    const carbonE2 = page.getByRole('button', { name: /^6\s+C$/i }).first();
+    await carbonE2.waitFor({ state: 'visible', timeout: 5000 });
+    await carbonE2.click();
+    await page.keyboard.press('Escape');
 
     // Wait for results to load
     await waitForReactionResults(page, 'fusion');
@@ -113,7 +125,7 @@ test.describe('Fusion Query Page', () => {
 
   test('should support multiple element selections', async ({ page }) => {
     // Open Element 1 selector
-    await page.getByRole('button', { name: /1 selected.*H/i }).first().click();
+    await page.getByRole('button', { name: /Any/i }).first().click();
 
     // Select multiple elements in Element 1 (H, He, Li)
     const elements = [
@@ -141,7 +153,22 @@ test.describe('Fusion Query Page', () => {
   });
 
   test('should display nuclide details on hover', async ({ page }) => {
-    // Query auto-executes with default selections - wait for results table
+    // Select H and C elements to execute query
+    const element1Button = page.getByRole('button', { name: /Any/i }).first();
+    await element1Button.click({ force: true });
+    const hydrogenE1 = page.getByRole('button', { name: /^1\s+H$/i }).first();
+    await hydrogenE1.waitFor({ state: 'visible', timeout: 5000 });
+    await hydrogenE1.click();
+    await page.keyboard.press('Escape');
+
+    const element2Button = page.getByRole('button', { name: /Any/i }).nth(1);
+    await element2Button.click({ force: true });
+    const carbonE2 = page.getByRole('button', { name: /^6\s+C$/i }).first();
+    await carbonE2.waitFor({ state: 'visible', timeout: 5000 });
+    await carbonE2.click();
+    await page.keyboard.press('Escape');
+
+    // Wait for results table
     await page.waitForFunction(
       () => document.querySelector('[role="region"][aria-label="Fusion reaction results"] div[class*="grid"][class*="border-b"]') !== null,
       { timeout: 10000 }
@@ -163,7 +190,22 @@ test.describe('Fusion Query Page', () => {
   });
 
   test('should export results to CSV', async ({ page }) => {
-    // Query auto-executes with default selections - wait for results
+    // Select H and C elements to execute query
+    const element1Button = page.getByRole('button', { name: /Any/i }).first();
+    await element1Button.click({ force: true });
+    const hydrogenE1 = page.getByRole('button', { name: /^1\s+H$/i }).first();
+    await hydrogenE1.waitFor({ state: 'visible', timeout: 5000 });
+    await hydrogenE1.click();
+    await page.keyboard.press('Escape');
+
+    const element2Button = page.getByRole('button', { name: /Any/i }).nth(1);
+    await element2Button.click({ force: true });
+    const carbonE2 = page.getByRole('button', { name: /^6\s+C$/i }).first();
+    await carbonE2.waitFor({ state: 'visible', timeout: 5000 });
+    await carbonE2.click();
+    await page.keyboard.press('Escape');
+
+    // Wait for results
     await page.waitForFunction(
       () => document.querySelector('[role="region"][aria-label="Fusion reaction results"]') !== null,
       { timeout: 10000 }
@@ -187,15 +229,21 @@ test.describe('Fusion Query Page', () => {
   });
 
   test('should update URL with query parameters', async ({ page }) => {
-    // H is already selected in Element 1 by default, verify C is selected in Element 2
-    // Open Element 2 selector and verify Carbon is selected
-    await page.getByRole('button', { name: /2 selected.*C.*O/i }).first().click();
+    // Select H in Element 1
+    const element1Button = page.getByRole('button', { name: /Any/i }).first();
+    await element1Button.click({ force: true });
+    const hydrogenE1 = page.getByRole('button', { name: /^1\s+H$/i }).first();
+    await hydrogenE1.waitFor({ state: 'visible', timeout: 5000 });
+    await hydrogenE1.click();
+    await page.keyboard.press('Escape');
 
-    // Check that C is already selected (it's in the default)
+    // Select C in Element 2
+    const element2Button = page.getByRole('button', { name: /Any/i }).nth(1);
+    await element2Button.click({ force: true });
     const carbon = page.getByRole('button', { name: /^6\s+C$/i }).first();
     await carbon.waitFor({ state: 'visible', timeout: 5000 });
+    await carbon.click();
     await expect(carbon).toHaveClass(/periodic-cell-selected/);
-
     await page.keyboard.press('Escape');
 
     // Set MeV range
@@ -237,8 +285,13 @@ test.describe('Fusion Query Page', () => {
   });
 
   test('should clear selections', async ({ page }) => {
-    // Open Element 1 selector and add Lithium to selection
-    await page.getByRole('button', { name: /1 selected.*H/i }).first().click();
+    // Open Element 1 selector and select Hydrogen
+    await page.getByRole('button', { name: /Any/i }).first().click();
+    const h = page.getByRole('button', { name: /^1\s+H$/i }).first();
+    await h.waitFor({ state: 'visible', timeout: 5000 });
+    await h.click();
+
+    // Select Lithium (should now show 2 selected)
     const li = page.getByRole('button', { name: /^3\s+Li$/i }).first();
     await li.waitFor({ state: 'visible', timeout: 5000 });
     await li.click();
