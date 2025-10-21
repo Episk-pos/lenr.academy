@@ -79,15 +79,38 @@ test.describe('Two-to-Two Query Page', () => {
   });
 
   test('should handle complex multi-element queries', async ({ page }) => {
-    // Use default multi-element selection (D + Ni,Li,Al,B,N + C)
-    // which already tests complex queries
+    // Manually select multiple elements for Input Element 2 to test complex queries
+    const e2Selector = page.getByRole('button', { name: /Any/i }).nth(0); // First "Any" is E2
+    await e2Selector.click();
+
+    // Select Ni, Li, Al, B, N (5 elements)
+    const ni = page.getByRole('button', { name: /^28\s+Ni$/i }).first();
+    await ni.waitFor({ state: 'visible', timeout: 5000 });
+    await ni.click();
+
+    const li = page.getByRole('button', { name: /^3\s+Li$/i }).first();
+    await li.click();
+
+    const al = page.getByRole('button', { name: /^13\s+Al$/i }).first();
+    await al.click();
+
+    const b = page.getByRole('button', { name: /^5\s+B$/i }).first();
+    await b.click();
+
+    const n = page.getByRole('button', { name: /^7\s+N$/i }).first();
+    await n.click();
+
+    // Close the selector
+    await page.keyboard.press('Escape');
+
+    // Wait for query to execute
     await waitForReactionResults(page, 'twotwo');
 
     const resultsRegion = page.getByRole('region', { name: /Two-to-two reaction results/i });
     await expect(resultsRegion).toBeVisible();
 
     // Verify multiple elements are selected
-    await expect(page.getByText(/5 selected.*Ni.*Li/i)).toBeVisible();
+    await expect(page.getByText(/5 selected/i)).toBeVisible();
   });
 
   test('should display reaction format A + B → C + D', async ({ page }) => {

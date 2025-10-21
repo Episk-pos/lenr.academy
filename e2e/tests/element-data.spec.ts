@@ -425,7 +425,8 @@ test.describe('Element Data Page', () => {
     await decayHeading.scrollIntoViewIfNeeded();
 
     // Wait for table to be present with proper headers
-    const decayTable = page.locator('table').filter({ hasText: 'Decay Mode' });
+    // Use .first() because there are 2 tables in DOM (dual rendering for mobile)
+    const decayTable = page.locator('table').filter({ hasText: 'Decay Mode' }).first();
     await expect(decayTable).toBeVisible();
 
     // Verify the table has all column headers (within the table context)
@@ -436,7 +437,7 @@ test.describe('Element Data Page', () => {
     await expect(decayTable.locator('thead')).toContainText('Half-life');
 
     // Should show exactly 4 data rows initially (before expansion)
-    const dataRows = page.locator('table tbody tr').filter({ hasNot: page.locator('button:has-text("Show")') });
+    const dataRows = decayTable.locator('tbody tr').filter({ hasNot: page.locator('button:has-text("Show")') });
     const initialRowCount = await dataRows.count();
     expect(initialRowCount).toBeGreaterThanOrEqual(4);
     expect(initialRowCount).toBeLessThanOrEqual(5); // 4 data rows + 1 toggle row
@@ -452,7 +453,7 @@ test.describe('Element Data Page', () => {
     await showMoreButton.click();
 
     // Should now show all 191 rows plus toggle row
-    const expandedRows = page.locator('table tbody tr');
+    const expandedRows = decayTable.locator('tbody tr');
     const expandedCount = await expandedRows.count();
     expect(expandedCount).toBe(192); // 191 data rows + 1 toggle row
 
@@ -466,7 +467,7 @@ test.describe('Element Data Page', () => {
 
     // Should return to 4 preview rows + toggle row
     await page.waitForTimeout(300); // Wait for collapse animation
-    const collapsedRows = page.locator('table tbody tr').filter({ hasNot: page.locator('button:has-text("additional")') });
+    const collapsedRows = decayTable.locator('tbody tr').filter({ hasNot: page.locator('button:has-text("additional")') });
     const collapsedCount = await collapsedRows.count();
     expect(collapsedCount).toBeGreaterThanOrEqual(4);
     expect(collapsedCount).toBeLessThanOrEqual(5);
@@ -509,11 +510,12 @@ test.describe('Element Data Page', () => {
       await expect(decayHeading).toBeVisible();
 
       // Table should be visible with decay mode column
-      const decayTable = page.locator('table').filter({ hasText: 'Decay Mode' });
+      // Use .first() because there are 2 tables in DOM (dual rendering for mobile)
+      const decayTable = page.locator('table').filter({ hasText: 'Decay Mode' }).first();
       await expect(decayTable).toBeVisible();
 
       // Should show all 3 decay modes without toggle button
-      const dataRows = page.locator('table tbody tr');
+      const dataRows = decayTable.locator('tbody tr');
       const rowCount = await dataRows.count();
       expect(rowCount).toBe(3); // Exactly 3 rows, no toggle row
 
@@ -576,8 +578,9 @@ test.describe('Element Data Page', () => {
 
     // Check that the expanded rows exist
     // The expanded rows come after the first 4 rows and the toggle row
-    // Count all tbody tr elements
-    const allRows = page.locator('table tbody tr');
+    // Count all tbody tr elements (use first table due to dual rendering)
+    const decayTable = page.locator('table').filter({ hasText: 'Decay Mode' }).first();
+    const allRows = decayTable.locator('tbody tr');
     const totalRowCount = await allRows.count();
     expect(totalRowCount).toBe(192); // 191 data rows + 1 toggle row
 
@@ -647,7 +650,8 @@ test.describe('Element Data - Mobile', () => {
     await decayHeading.scrollIntoViewIfNeeded();
 
     // Table should always be visible on mobile
-    const decayTable = page.locator('table').filter({ hasText: 'Decay Mode' });
+    // Use .last() because on mobile (<450px), the second table (outside card) is visible
+    const decayTable = page.locator('table').filter({ hasText: 'Decay Mode' }).last();
     await expect(decayTable).toBeVisible();
 
     // Verify table headers are present

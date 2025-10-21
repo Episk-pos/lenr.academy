@@ -649,7 +649,7 @@ test.describe('Fusion Query Page', () => {
     await page.waitForTimeout(500);
 
     // No detail cards should be visible (should show placeholder)
-    await expect(page.getByText(/Click on an element or nuclide above to see detailed properties/i)).toBeVisible();
+    await expect(page.getByText(/Click on an element or a nuclide above to see detailed properties/i)).toBeVisible();
   });
 
   test('should unpin nuclide when pinning a different element', async ({ page }) => {
