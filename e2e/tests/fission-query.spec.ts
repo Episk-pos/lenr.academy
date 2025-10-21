@@ -207,19 +207,19 @@ test.describe('Fission Query Page', () => {
     await expect(zrNuclides).toHaveCount(0);
   });
 
-  test.skip('should keep element pinned when selecting nuclide from same element', async ({ page }) => {
-    // Select Ca to get query results (Ca has fission reactions)
+  test('should keep element pinned when selecting nuclide from same element', async ({ page }) => {
+    // Select Zr to get query results (Zr has fission reactions, produces Ca as output)
     await page.getByRole('button', { name: /Any/i }).first().click();
-    const ca = page.getByRole('button', { name: /^20\s+Ca$/i }).first();
-    await ca.waitFor({ state: 'visible', timeout: 5000 });
-    await ca.click();
+    const zr = page.getByRole('button', { name: /^40\s+Zr$/i }).first();
+    await zr.waitFor({ state: 'visible', timeout: 5000 });
+    await zr.click();
 
     // Close selector dropdown by clicking outside
     const pageHeader = page.locator('h1, h2').first();
     await pageHeader.click({ force: true });
     await page.waitForTimeout(200);
 
-    // Wait for query results to load (Ca fission)
+    // Wait for query results to load (Zr fission)
     await waitForReactionResults(page, 'fission');
 
     // Scroll down to the results section to ensure heatmap is visible
@@ -237,10 +237,16 @@ test.describe('Fission Query Page', () => {
     }
 
     // Pin Calcium element in the heatmap
-    const caButtonHeatmap = page.locator('[data-testid="heatmap"], .heatmap').getByRole('button', { name: /^20\s+Ca$/ }).first();
+    // Wait for periodic table to render, then get the last Ca button (heatmap one)
+    await page.waitForTimeout(300);
+    const allCaButtons = page.getByRole('button', { name: /^20\s+Ca$/ });
+    const caButtonCount = await allCaButtons.count();
+    // If there are multiple Ca buttons, the heatmap one is the last one
+    const caButtonHeatmap = caButtonCount > 1 ? allCaButtons.last() : allCaButtons.first();
+    await caButtonHeatmap.waitFor({ state: 'visible', timeout: 5000 });
     await caButtonHeatmap.scrollIntoViewIfNeeded();
     await caButtonHeatmap.click();
-    await page.waitForTimeout(500);
+    await page.waitForTimeout(300);
 
     // Verify Calcium has ring indicator styling
     await expect(caButtonHeatmap).toHaveClass(/ring-2.*ring-blue/);
@@ -277,18 +283,18 @@ test.describe('Fission Query Page', () => {
   });
 
   test('should allow element pinning via periodic table', async ({ page }) => {
-    // Select Ca to get query results (Ca has fission reactions)
+    // Select Zr to get query results (Zr has fission reactions, produces Ca as output)
     await page.getByRole('button', { name: /Any/i }).first().click();
-    const ca = page.getByRole('button', { name: /^20\s+Ca$/i }).first();
-    await ca.waitFor({ state: 'visible', timeout: 5000 });
-    await ca.click();
+    const zr = page.getByRole('button', { name: /^40\s+Zr$/i }).first();
+    await zr.waitFor({ state: 'visible', timeout: 5000 });
+    await zr.click();
 
     // Close selector dropdown by clicking outside
     const pageHeader = page.locator('h1, h2').first();
     await pageHeader.click({ force: true });
     await page.waitForTimeout(200);
 
-    // Wait for query results to load (Ca fission)
+    // Wait for query results to load (Zr fission)
     await waitForReactionResults(page, 'fission');
 
     // Scroll down to the results section to ensure heatmap is visible
@@ -306,29 +312,16 @@ test.describe('Fission Query Page', () => {
     }
 
     // Find Ca button in the heatmap's periodic table and click it to pin
-    // Note: We need to wait for the periodic table to fully render after expansion
+    // Wait for periodic table to render, then get the last Ca button (heatmap one)
     await page.waitForTimeout(300);
-
-    // Get all Ca buttons and filter for the one in the heatmap (below the results region)
-    const resultsRegionBottom = await resultsRegion.boundingBox();
-    const allCaButtons = await page.getByRole('button', { name: /^20\s+Ca$/ }).all();
-
-    let caButtonHeatmap = null;
-    for (const btn of allCaButtons) {
-      const box = await btn.boundingBox();
-      if (box && resultsRegionBottom && box.y > resultsRegionBottom.y) {
-        caButtonHeatmap = btn;
-        break;
-      }
-    }
-
-    if (caButtonHeatmap) {
-      await caButtonHeatmap.scrollIntoViewIfNeeded();
-      await caButtonHeatmap.click();
-      await page.waitForTimeout(200);
-    } else {
-      throw new Error('Could not find Ca button in heatmap');
-    }
+    const allCaButtons = page.getByRole('button', { name: /^20\s+Ca$/ });
+    const caButtonCount = await allCaButtons.count();
+    // If there are multiple Ca buttons, the heatmap one is the last one
+    const caButtonHeatmap = caButtonCount > 1 ? allCaButtons.last() : allCaButtons.first();
+    await caButtonHeatmap.waitFor({ state: 'visible', timeout: 5000 });
+    await caButtonHeatmap.scrollIntoViewIfNeeded();
+    await caButtonHeatmap.click();
+    await page.waitForTimeout(300);
 
     // Verify Calcium has ring indicator styling
     await expect(caButtonHeatmap).toHaveClass(/ring-2.*ring-blue/);
