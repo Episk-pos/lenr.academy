@@ -324,8 +324,11 @@ export default function FissionQuery() {
       const massNumber = parseInt(massStr)
       const nuclideDetails = getNuclideBySymbol(db, elementSymbol, massNumber)
       setSelectedNuclideDetails(nuclideDetails)
-      setSelectedElementDetails(null)
-      setSelectedElementRadii(null)
+      // Also fetch element details for the parent element
+      const elementDetails = getElementBySymbol(db, elementSymbol)
+      const radiiData = getAtomicRadii(db, elementSymbol)
+      setSelectedElementDetails(elementDetails)
+      setSelectedElementRadii(radiiData)
     } else {
       setSelectedElementDetails(null)
       setSelectedElementRadii(null)
@@ -1160,7 +1163,7 @@ export default function FissionQuery() {
           </div>
 
           {/* Nuclides Summary */}
-          <div className="p-0 xs:p-4 sm:p-6 xs:overflow-hidden xs:rounded-lg xs:border xs:border-gray-200 xs:dark:border-gray-700 xs:bg-white xs:dark:bg-gray-800 xs:text-gray-950 xs:dark:text-gray-50 xs:shadow-sm">
+          <div className="card p-4 sm:p-6">
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
                 {pinnedElement && highlightedElement ? (
                   <>Nuclides of {highlightedElement} in Results ({filteredNuclides.length} of {nuclides.length})</>
@@ -1224,7 +1227,27 @@ export default function FissionQuery() {
             </div>
 
           {/* Details Section */}
-          {selectedElementDetails && selectedElementRadii ? (
+          {selectedNuclideDetails ? (
+            <>
+              {selectedElementDetails && selectedElementRadii && (
+                <ElementDetailsCard
+                  element={selectedElementDetails}
+                  radii={selectedElementRadii}
+                  onClose={() => {
+                    setPinnedNuclide(false)
+                    setHighlightedNuclide(null)
+                  }}
+                />
+              )}
+              <NuclideDetailsCard
+                nuclide={selectedNuclideDetails}
+                onClose={() => {
+                  setPinnedNuclide(false)
+                  setHighlightedNuclide(null)
+                }}
+              />
+            </>
+          ) : selectedElementDetails && selectedElementRadii ? (
             <ElementDetailsCard
               element={selectedElementDetails}
               atomicRadii={selectedElementRadii}
@@ -1233,21 +1256,13 @@ export default function FissionQuery() {
                 setHighlightedElement(null)
               }}
             />
-          ) : selectedNuclideDetails ? (
-            <NuclideDetailsCard
-              nuclide={selectedNuclideDetails}
-              onClose={() => {
-                setPinnedNuclide(false)
-                setHighlightedNuclide(null)
-              }}
-            />
           ) : (
             <div className="card p-6">
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
                 Details
               </h3>
               <div className="text-center py-8 text-gray-500 dark:text-gray-400">
-                <p className="text-sm">Click on an element in the periodic table or a nuclide above to see detailed properties</p>
+                <p className="text-sm">Click on an element or a nuclide above to see detailed properties</p>
               </div>
             </div>
           )}
