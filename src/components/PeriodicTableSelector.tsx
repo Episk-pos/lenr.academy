@@ -174,6 +174,20 @@ export default function PeriodicTableSelector({
     }
   }, [isOpen])
 
+  // Close dropdown when pressing Escape
+  useEffect(() => {
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key === 'Escape') {
+        setIsOpen(false)
+      }
+    }
+
+    if (isOpen) {
+      document.addEventListener('keydown', handleKeyDown)
+      return () => document.removeEventListener('keydown', handleKeyDown)
+    }
+  }, [isOpen])
+
   const toggleElement = (symbol: string) => {
     if (selectedElements.includes(symbol)) {
       onSelectionChange(selectedElements.filter(e => e !== symbol))
