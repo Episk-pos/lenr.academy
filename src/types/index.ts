@@ -245,3 +245,49 @@ export interface DecayChainResult {
     isStable: boolean;
   }>;
 }
+
+// Query state persistence types for maintaining state across navigation
+export interface VisualizationState {
+  pinnedNuclide?: { Z: number; A: number; E: string } | null;
+  pinnedElement?: { Z: number; E: string } | null;
+  highlightedNuclide?: { Z: number; A: number; E: string } | null;
+  highlightedElement?: { Z: number; E: string } | null;
+  showHeatmap?: boolean;
+  heatmapMode?: HeatmapMode;
+  userTableHeight?: number;
+}
+
+export interface QueryPageState {
+  // Query filters
+  filter: QueryFilter;
+  selectedElements?: string[];  // For generic element selection
+  selectedElement1?: string[];  // For fusion/twotwo E1
+  selectedElement2?: string[];  // For fusion/twotwo E2
+  selectedOutputElement?: string[];  // For fusion output
+  selectedOutputElement1?: string[];  // For fission output E1
+  selectedOutputElement2?: string[];  // For fission output E2
+  selectedOutputElement3?: string[];  // For twotwo output E3
+  selectedOutputElement4?: string[];  // For twotwo output E4
+
+  // Energy filters
+  minMeV?: number;
+  maxMeV?: number;
+
+  // Additional filters
+  neutrino?: NeutrinoType;
+  limit?: number;
+
+  // UI state
+  showBosonFermion?: boolean;
+  visualization?: VisualizationState;
+
+  // Timestamp for cache management
+  lastUpdated?: number;
+}
+
+export interface AllQueryStates {
+  fusion?: QueryPageState;
+  fission?: QueryPageState;
+  twotwo?: QueryPageState;
+  version?: number;  // For future migration if state structure changes
+}

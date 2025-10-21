@@ -3,6 +3,7 @@ import * as Sentry from '@sentry/react'
 import { DatabaseProvider } from './contexts/DatabaseContext'
 import { ThemeProvider } from './contexts/ThemeContext'
 import { LayoutProvider } from './contexts/LayoutContext'
+import { QueryStateProvider } from './contexts/QueryStateContext'
 import Layout from './components/Layout'
 import Home from './pages/Home'
 import FusionQuery from './pages/FusionQuery'
@@ -72,8 +73,9 @@ function App() {
     >
       <ThemeProvider>
         <DatabaseProvider>
-          <Router>
-            <LayoutProvider>
+          <QueryStateProvider>
+            <Router>
+              <LayoutProvider>
               {/* PWA Components */}
               <PWAUpdatePrompt />
               <OfflineIndicator />
@@ -98,6 +100,7 @@ function App() {
               </Layout>
             </LayoutProvider>
           </Router>
+          </QueryStateProvider>
         </DatabaseProvider>
       </ThemeProvider>
     </Sentry.ErrorBoundary>
