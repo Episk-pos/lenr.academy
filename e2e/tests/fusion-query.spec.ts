@@ -317,11 +317,18 @@ test.describe('Fusion Query Page', () => {
   });
 
   test('should limit number of results', async ({ page }) => {
-    // Set a specific limit
-    const limitInput = page.getByLabel(/limit|max.*results/i);
-
-    if (await limitInput.isVisible().catch(() => false)) {
-      await limitInput.fill('10');
+    // Expand filters section first
+    await page.getByRole('button', { name: 'Expand filters' }).click();
+    
+    // Set a specific limit using the dropdown
+    const limitButton = page.locator('button').filter({ hasText: '500' }).first();
+    
+    if (await limitButton.isVisible().catch(() => false)) {
+      await limitButton.click();
+      
+      // Select 10 from the dropdown
+      const limitOption = page.locator('button').filter({ hasText: '10' }).first();
+      await limitOption.click();
 
       // Query auto-executes when limit changes - wait for results
       await page.waitForFunction(
@@ -329,8 +336,8 @@ test.describe('Fusion Query Page', () => {
         { timeout: 10000 }
       );
 
-      // Count rows
-      const rows = page.getByRole('region', { name: /Fusion reaction results/i }).locator('div[class*="grid"][class*="border-b"]');
+      // Count data rows (exclude header rows)
+      const rows = page.getByRole('region', { name: /Fusion reaction results/i }).locator('div[class*="grid"][class*="border-b"]:not([class*="bg-gray-50"]):not([class*="bg-gray-100"])');
       const count = await rows.count();
 
       // Should have at most 10 results (or fewer if query returns less)

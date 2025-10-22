@@ -149,8 +149,9 @@ test.describe('Two-to-Two Query Page', () => {
       { timeout: 15000 }
     );
 
-    const limitInput = page.locator('input[type="number"]').last();
-    await limitInput.fill('50');
+    const limitButton = page.locator('button').filter({ hasText: 'All' }).first();
+    await limitButton.click();
+    await page.locator('button').filter({ hasText: '50' }).first().click();
 
     // Wait for query to re-execute
     await page.waitForTimeout(2000);
@@ -202,9 +203,9 @@ test.describe('Two-to-Two Query Page', () => {
     const minMevInput = page.getByPlaceholder(/min/i);
     await expect(minMevInput).toHaveValue('5');
 
-    // Limit input is the last number input
-    const limitInput = page.locator('input[type="number"]').last();
-    await expect(limitInput).toHaveValue('25');
+    // Limit button should show the selected value
+    const limitButton = page.locator('button').filter({ hasText: '25' }).first();
+    await expect(limitButton).toBeVisible();
   });
 
   test('should allow nuclide pinning in two-to-two results', async ({ page }) => {

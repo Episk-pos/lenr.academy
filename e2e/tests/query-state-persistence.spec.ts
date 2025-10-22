@@ -233,8 +233,9 @@ test.describe('Query State Persistence', () => {
 
     // Set result limit
     await page.getByRole('button', { name: 'Expand filters' }).click()
-    const limitInput = page.locator('input[type="number"]').filter({ hasText: '' }).last()
-    await limitInput.fill('50')
+    const limitBtn = page.locator('button').filter({ hasText: /^All/ }).first()
+    await limitBtn.click()
+    await page.locator('button').filter({ hasText: '50' }).first().click()
 
     // Wait for state to save
     await page.waitForTimeout(1000)
@@ -271,8 +272,8 @@ test.describe('Query State Persistence', () => {
 
     // Check limit was restored by expanding filters
     await page.getByRole('button', { name: 'Expand filters' }).click()
-    const limitValue = await page.locator('input[type="number"]').filter({ hasText: '' }).last().inputValue()
-    expect(limitValue).toBe('50')
+    const limitButton = page.locator('button').filter({ hasText: '50' }).first()
+    await expect(limitButton).toBeVisible()
   })
 
   test('should maintain separate state for each query page', async ({ page }) => {
