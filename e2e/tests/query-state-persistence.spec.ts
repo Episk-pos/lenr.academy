@@ -383,7 +383,7 @@ test.describe('Query State Persistence', () => {
     const liSelected = await page.getByRole('button', { name: /Li/i }).first().isVisible()
     if (liSelected) {
       // Check that Li is not in the selected elements display
-      const selectedE1Text = await page.getByRole('button', { name: /Input Element 1/i }).textContent()
+      const selectedE1Text = await element1Button.textContent()
       expect(selectedE1Text).not.toContain('Li')
     }
   })
