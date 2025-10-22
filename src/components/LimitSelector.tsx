@@ -11,7 +11,7 @@ const limitOptions = [
   { value: 500, label: '500' },
   { value: 1000, label: '1000' },
   { value: 5000, label: '5000' },
-  { value: null, label: 'All' },
+  { value: null, label: 'Unlimited ⚠️' },
   { value: -1, label: 'Custom' }
 ]
 
@@ -128,7 +128,7 @@ export default function LimitSelector({ value, onChange }: LimitSelectorProps) {
         </>
       )}
       
-      <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Maximum 5000 rows</p>
+      <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Recommended ≤ 5000</p>
     </div>
   )
 }
