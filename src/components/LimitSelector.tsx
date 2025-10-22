@@ -7,8 +7,8 @@ export interface LimitSelectorProps {
 }
 
 const limitOptions = [
-  { value: 500, label: '500' },
   { value: 100, label: '100' },
+  { value: 500, label: '500' },
   { value: 1000, label: '1000' },
   { value: 5000, label: '5000' },
   { value: null, label: 'All' },
