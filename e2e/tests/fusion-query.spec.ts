@@ -855,4 +855,54 @@ test.describe('Fusion Query - Navigation Links', () => {
     await page.waitForURL(/\/element-data\?Z=\d+&A=\d+/, { timeout: 5000 });
     await expect(page.getByRole('heading', { name: /Show Element Data/i })).toBeVisible();
   });
+
+  test('should show enhanced empty state when pinned element exists in full dataset but not limited results', async ({ page }) => {
+    // Wait for initial query to execute
+    await waitForReactionResults(page, 'fusion');
+
+    // Scroll down to make sure the heatmap toggle is in view BEFORE trying to locate it
+    await page.evaluate(() => window.scrollBy(0, 500));
+    await page.waitForTimeout(100);
+
+    // Now locate and interact with the heatmap toggle
+    const heatmapToggle = page.getByRole('switch', { name: /use all.*matching results/i });
+    await heatmapToggle.scrollIntoViewIfNeeded();
+    await page.waitForTimeout(100);
+
+    // Enable "use all matching results" heatmap toggle
+    await heatmapToggle.click();
+
+    // Wait for heatmap to update with full dataset
+    await page.waitForTimeout(500);
+
+    // Pin an element that exists in the heatmap but not in the limited results
+    // Use Praseodymium (Pr) which should appear in H+C,O fusion results
+    const praseodymiumButton = page.getByRole('button', { name: /^59\s+Pr$/ }).first();
+    
+    // Wait for Pr to become available after heatmap update
+    await praseodymiumButton.waitFor({ state: 'visible', timeout: 5000 });
+    
+    // Pin Praseodymium
+    await praseodymiumButton.click();
+    
+    // Check if enhanced empty state appears
+    const enhancedEmptyState = page.getByText(/exists in the full dataset but not in the limited results/i);
+    const showAllButtons = page.getByRole('button', { name: 'Show All in Table →' });
+    
+    // The enhanced empty state should appear with the "Show All in Table" button
+    await expect(enhancedEmptyState).toBeVisible();
+    await expect(showAllButtons).toHaveCount(2);
+    await expect(showAllButtons.nth(1)).toBeVisible();
+    
+    // Click the button to show all results
+    await showAllButtons.nth(1).click();
+    
+    // Wait for the query to update with unlimited results
+    await page.waitForTimeout(1000);
+    
+    // Verify the pinned element now appears in the results
+    // The results should contain Praseodymium
+    const resultsText = await page.locator('[role="region"][aria-label="Fusion reaction results"]').textContent();
+    expect(resultsText).toContain('Pr');
+  });
 });
