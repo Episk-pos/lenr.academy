@@ -321,28 +321,23 @@ test.describe('Fusion Query Page', () => {
     await page.getByRole('button', { name: 'Expand filters' }).click();
     
     // Set a specific limit using the dropdown
-    const limitButton = page.locator('button').filter({ hasText: '500' }).first();
+    await page.getByTestId('limit-selector-button').click();
     
-    if (await limitButton.isVisible().catch(() => false)) {
-      await limitButton.click();
-      
-      // Select 10 from the dropdown
-      const limitOption = page.locator('button').filter({ hasText: '10' }).first();
-      await limitOption.click();
+    // Select 100 from the dropdown
+    await page.getByTestId('limit-option-100').click();
 
-      // Query auto-executes when limit changes - wait for results
-      await page.waitForFunction(
-        () => document.querySelector('[role="region"][aria-label="Fusion reaction results"] div[class*="grid"][class*="border-b"]') !== null,
-        { timeout: 10000 }
-      );
+    // Query auto-executes when limit changes - wait for results
+    await page.waitForFunction(
+      () => document.querySelector('[role="region"][aria-label="Fusion reaction results"] div[class*="grid"][class*="border-b"]') !== null,
+      { timeout: 10000 }
+    );
 
-      // Count data rows (exclude header rows)
-      const rows = page.getByRole('region', { name: /Fusion reaction results/i }).locator('div[class*="grid"][class*="border-b"]:not([class*="bg-gray-50"]):not([class*="bg-gray-100"])');
-      const count = await rows.count();
+    // Count data rows (exclude header rows)
+    const rows = page.getByRole('region', { name: /Fusion reaction results/i }).locator('div[class*="grid"][class*="border-b"]:not([class*="bg-gray-50"]):not([class*="bg-gray-100"])');
+    const count = await rows.count();
 
-      // Should have at most 10 results (or fewer if query returns less)
-      expect(count).toBeLessThanOrEqual(10);
-    }
+    // Should have at most 100 results (or fewer if query returns less)
+    expect(count).toBeLessThanOrEqual(100);
   });
 
   test('should handle mutually exclusive element and nuclide pinning', async ({ page }) => {

@@ -233,9 +233,10 @@ test.describe('Query State Persistence', () => {
 
     // Set result limit
     await page.getByRole('button', { name: 'Expand filters' }).click()
-    const limitBtn = page.locator('button').filter({ hasText: /^All/ }).first()
-    await limitBtn.click()
-    await page.locator('button').filter({ hasText: '50' }).first().click()
+    
+    // Open limit dropdown and select 100
+    await page.getByTestId('limit-selector-button').click()
+    await page.getByTestId('limit-option-100').click()
 
     // Wait for state to save
     await page.waitForTimeout(1000)
@@ -251,7 +252,7 @@ test.describe('Query State Persistence', () => {
     expect(twoToTwoState.twotwo.selectedElement1).toContain('H')
     expect(twoToTwoState.twotwo.selectedElement2).toContain('Li')
     expect(twoToTwoState.twotwo.selectedOutputElement3).toContain('Cu')
-    expect(twoToTwoState.twotwo.limit).toBe(50)
+    expect(twoToTwoState.twotwo.limit).toBe(100)
 
     // Navigate away to another page
     await page.goto('/fusion')
@@ -272,8 +273,7 @@ test.describe('Query State Persistence', () => {
 
     // Check limit was restored by expanding filters
     await page.getByRole('button', { name: 'Expand filters' }).click()
-    const limitButton = page.locator('button').filter({ hasText: '50' }).first()
-    await expect(limitButton).toBeVisible()
+    await expect(page.getByTestId('limit-selector-button')).toContainText('100')
   })
 
   test('should maintain separate state for each query page', async ({ page }) => {

@@ -102,6 +102,7 @@ export default function LimitSelector({ value, onChange }: LimitSelectorProps) {
             type="button"
             className="input flex items-center justify-between w-full text-left"
             onClick={() => setIsOpen(!isOpen)}
+            data-testid="limit-selector-button"
           >
             <span>{getDisplayValue()}</span>
             <ChevronDown className={`w-4 h-4 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
@@ -117,6 +118,7 @@ export default function LimitSelector({ value, onChange }: LimitSelectorProps) {
                     value === option.value ? 'bg-primary-50 dark:bg-primary-900/20 text-primary-700 dark:text-primary-300' : ''
                   }`}
                   onClick={() => handleOptionSelect(option.value)}
+                  data-testid={`limit-option-${option.label.toLowerCase()}`}
                 >
                   {option.label}
                 </button>
