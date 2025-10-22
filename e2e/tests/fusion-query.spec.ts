@@ -855,18 +855,17 @@ test.describe('Fusion Query - Navigation Links', () => {
   });
 
   test('should show enhanced empty state when pinned element exists in full dataset but not limited results', async ({ page }) => {
-    // Set a small limit to ensure we don't see all results
-    const limitInput = page.getByLabel(/limit/i);
-    await limitInput.fill('5');
-
-    // Wait for query to execute with limited results
-    await page.waitForTimeout(1000);
+    // Wait for initial query to execute
     await waitForReactionResults(page, 'fusion');
 
-    // Scroll to ensure the heatmap toggle is visible and clickable
-    const heatmapToggle = page.getByRole('switch', { name: /use all matching results/i });
+    // Scroll down to make sure the heatmap toggle is in view BEFORE trying to locate it
+    await page.evaluate(() => window.scrollBy(0, 500));
+    await page.waitForTimeout(100);
+
+    // Now locate and interact with the heatmap toggle
+    const heatmapToggle = page.getByRole('switch', { name: /use all.*matching results/i });
     await heatmapToggle.scrollIntoViewIfNeeded();
-    await page.waitForTimeout(300); // Wait for scroll to complete
+    await page.waitForTimeout(100);
 
     // Enable "use all matching results" heatmap toggle
     await heatmapToggle.click();
@@ -886,14 +885,15 @@ test.describe('Fusion Query - Navigation Links', () => {
     
     // Check if enhanced empty state appears
     const enhancedEmptyState = page.getByText(/exists in the full dataset but not in the limited results/i);
-    const showAllButton = page.getByRole('button', { name: /Show All in Table/i });
+    const showAllButtons = page.getByRole('button', { name: 'Show All in Table →' });
     
     // The enhanced empty state should appear with the "Show All in Table" button
     await expect(enhancedEmptyState).toBeVisible();
-    await expect(showAllButton).toBeVisible();
+    await expect(showAllButtons).toHaveCount(2);
+    await expect(showAllButtons.nth(1)).toBeVisible();
     
     // Click the button to show all results
-    await showAllButton.click();
+    await showAllButtons.nth(1).click();
     
     // Wait for the query to update with unlimited results
     await page.waitForTimeout(1000);
