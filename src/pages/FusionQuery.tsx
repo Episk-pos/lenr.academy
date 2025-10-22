@@ -12,13 +12,14 @@ import NuclideDetailsCard from '../components/NuclideDetailsCard'
 import DatabaseLoadingCard from '../components/DatabaseLoadingCard'
 import DatabaseErrorCard from '../components/DatabaseErrorCard'
 import { VirtualizedList } from '../components/VirtualizedList'
+import LimitSelector from '../components/LimitSelector'
 
 // Default values
 const DEFAULT_ELEMENT1: string[] = []
 const DEFAULT_ELEMENT2: string[] = []
 const DEFAULT_OUTPUT_ELEMENT: string[] = []
 const DEFAULT_NEUTRINO_TYPES = ['none', 'left', 'right']
-const DEFAULT_LIMIT = 100
+const DEFAULT_LIMIT = 500
 const SMALL_RESULT_THRESHOLD = 12
 const SCROLLBAR_COMPENSATION = 16
 
@@ -669,8 +670,8 @@ export default function FusionQuery() {
             </button>
           </div>
 
-          <div className={`transition-all duration-300 ease-in-out overflow-hidden ${showFilters ? 'max-h-[500px] opacity-100' : 'max-h-0 opacity-0'}`}>
-            <div className="grid md:grid-cols-3 gap-6">
+          <div className={`transition-all duration-300 ease-in-out overflow-visible ${showFilters ? 'max-h-[500px] opacity-100' : 'max-h-0 opacity-0'}`}>
+            <div className="grid md:grid-cols-3 gap-6 overflow-visible">
               {/* MeV Range */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
@@ -722,22 +723,11 @@ export default function FusionQuery() {
               </div>
 
               {/* Result Limit */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Result Limit
-                </label>
-                <input
-                  type="number"
-                  className="input"
-                  value={filter.limit ?? 100}
-                  onChange={(e) => {
-                    const val = e.target.value
-                    setFilter({...filter, limit: val === '' ? 100 : parseInt(val)})
-                  }}
-                  min={0}
-                  max={1000}
+              <div className="overflow-visible">
+                <LimitSelector
+                  value={filter.limit}
+                  onChange={(limit) => setFilter({...filter, limit})}
                 />
-                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Maximum 1000 rows</p>
               </div>
             </div>
           </div>
