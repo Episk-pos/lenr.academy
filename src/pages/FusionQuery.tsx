@@ -795,7 +795,7 @@ export default function FusionQuery() {
                   Element Heatmap
                 </h3>
                 <p className="text-sm text-gray-600 dark:text-gray-400">
-                  Visualize which elements appear most frequently in the query results. The color intensity represents the selected metric value, with darker/more intense colors indicating higher values.
+                  Click any element to filter the results table and nuclides list to show only reactions containing that element. Color intensity shows the selected metric value.
                 </p>
               </div>
               <button
@@ -949,7 +949,9 @@ export default function FusionQuery() {
                   heatmapData={heatmapMetrics[heatmapMode]}
                   heatmapMode={heatmapMode}
                   showHeatmap={showHeatmap}
-                  heatmapMetrics={heatmapMetrics}
+                   heatmapMetrics={heatmapMetrics}
+                   hideLegend={true}
+                   hideCardContainer={true}
                 />
               </div>
             </div>

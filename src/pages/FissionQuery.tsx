@@ -950,7 +950,7 @@ export default function FissionQuery() {
                   Heatmap Visualization
                 </h3>
                 <p className="text-sm text-gray-600 dark:text-gray-400">
-                  Visualize which elements appear most frequently in the query results. The color intensity represents the selected metric value, with darker/more intense colors indicating higher values.
+                  Click any element to filter the results table and nuclides list to show only reactions containing that element. Color intensity shows the selected metric value.
                 </p>
               </div>
               <button
@@ -1107,8 +1107,10 @@ export default function FissionQuery() {
                   }}
                   heatmapData={heatmapMetrics[heatmapMode]}
                   heatmapMode={heatmapMode}
-                  showHeatmap={showHeatmap}
-                  heatmapMetrics={heatmapMetrics}
+                   showHeatmap={showHeatmap}
+                   hideLegend={true}
+                   hideCardContainer={true}
+                   heatmapMetrics={heatmapMetrics}
                 />
               </div>
             </div>
