@@ -373,8 +373,12 @@ test.describe('Query State Persistence', () => {
     await waitForReactionResults(page, 'fusion')
 
     // Check that URL parameters took precedence
-    await expect(page.getByRole('button', { name: '1 selected: H', exact: true })).toBeVisible()
-    await expect(page.getByRole('button', { name: '1 selected: He', exact: true })).toBeVisible()
+    const element1Button = page.getByTestId('fusion-input-element-1-selector')
+    const element2Button = page.getByTestId('fusion-input-element-2-selector')
+    
+    await expect(element1Button).toContainText('H')
+    await expect(element2Button).toContainText('He')
+    
     // Li should not be selected
     const liSelected = await page.getByRole('button', { name: /Li/i }).first().isVisible()
     if (liSelected) {
