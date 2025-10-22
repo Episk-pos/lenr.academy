@@ -1122,9 +1122,31 @@ export default function TwoToTwoQuery() {
                   </div>
                 </div>
 
-                {results.length === 0 ? (
+                {filteredResults.length === 0 ? (
                   <div className="p-6 text-center text-sm text-gray-500 dark:text-gray-400">
-                    Run a query to view two-to-two reactions.
+                    {results.length === 0 ? 'Run a query to view two-to-two reactions.' : (
+                      // Enhanced empty state for pinned elements in limited results
+                      useAllResultsForHeatmap && pinnedElement && highlightedElement && (filter.limit ?? 0) > 0 && totalCount > (filter.limit ?? 0) ? (
+                        <div className="space-y-3">
+                          <div>
+                            Element <span className="font-medium">{selectedElementDetails?.EName || highlightedElement}</span> exists in the full dataset but not in the limited results. (may be slow)
+                          </div>
+                          <button
+                            onClick={() => {
+                              // Set limit to 0 for unlimited AND enable heatmap toggle
+                              setFilter({...filter, limit: 0})
+                              setUseAllResultsForHeatmap(true)
+                            }}
+                            className="btn btn-secondary px-4 py-2 text-sm whitespace-nowrap"
+                            title="Remove limit and show all matching reactions in table"
+                          >
+                            Show All in Table →
+                          </button>
+                        </div>
+                      ) : (
+                        'No reactions match the selected filter.'
+                      )
+                    )}
                   </div>
                 ) : filteredResults.length <= SMALL_RESULT_THRESHOLD ? (
                   <div style={{ paddingRight: twoTwoHeaderPadding }}>
