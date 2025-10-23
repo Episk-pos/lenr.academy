@@ -164,6 +164,39 @@ test.describe('Database Loading and Caching', () => {
     await page.reload();
     await expect(meteredWarning).not.toBeVisible({ timeout: 2000 });
   });
+
+  test('should NOT show metered warning for fast WiFi (4g effectiveType)', async ({ page, context }) => {
+    // Simulate fast WiFi connection with 4g effective speed
+    // This was causing false positives before the fix
+    await context.addInitScript(() => {
+      Object.defineProperty(navigator, 'connection', {
+        writable: true,
+        value: {
+          effectiveType: '4g',  // Fast connection speed
+          type: 'wifi',         // But it's WiFi, not cellular
+          saveData: false,
+          downlink: 10,
+          rtt: 50
+        }
+      });
+    });
+
+    // Navigate first
+    await page.goto('/');
+
+    // Clear cache to force download decision
+    await clearAllStorage(page);
+
+    // Reload to trigger metered check
+    await page.reload();
+
+    // Should NOT show metered warning for WiFi, even if effectiveType is 4g
+    const meteredWarning = page.locator('[data-testid="metered-warning"]');
+    await expect(meteredWarning).not.toBeVisible({ timeout: 2000 });
+
+    // Database should load normally
+    await waitForDatabaseReady(page, 60000);
+  });
 });
 
 test.describe('Database Updates', () => {

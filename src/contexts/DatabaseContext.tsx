@@ -14,37 +14,52 @@ function isMeteredConnection(): boolean {
   const conn = (navigator as any).connection || (navigator as any).mozConnection || (navigator as any).webkitConnection;
 
   if (conn) {
+    // Log browser info to help diagnose false positives
+    const userAgent = navigator.userAgent;
+    const isSafari = /^((?!chrome|android).)*safari/i.test(userAgent);
+    const isChrome = /chrome/i.test(userAgent) && !/edg/i.test(userAgent);
+
     console.log('📡 Network connection info:', {
+      browser: isSafari ? 'Safari' : isChrome ? 'Chrome' : 'Other',
+      userAgent: userAgent.substring(0, 100),
       type: conn.type,
       effectiveType: conn.effectiveType,
       saveData: conn.saveData,
       downlink: conn.downlink,
-      rtt: conn.rtt
+      rtt: conn.rtt,
+      metered: conn.metered
     });
 
-    // Check if user has enabled data saver
+    // Check if user has enabled data saver (most reliable indicator)
     if (conn.saveData === true) {
-      console.log('⚠️ Data saver detected');
+      console.log('⚠️ Data saver enabled - treating as metered');
       return true;
     }
 
-    // Check connection type - cellular connections are typically metered
-    const meteredTypes = ['cellular', '2g', '3g', '4g', '5g'];
-    if (conn.effectiveType && meteredTypes.includes(conn.effectiveType)) {
-      console.log('⚠️ Cellular connection detected:', conn.effectiveType);
+    // PRIMARY CHECK: Check actual connection type (not speed)
+    // conn.type indicates the physical connection medium
+    if (conn.type === 'cellular') {
+      console.log('⚠️ Cellular connection detected via type property');
       return true;
     }
 
-    if (conn.type && meteredTypes.includes(conn.type)) {
-      console.log('⚠️ Metered connection type detected:', conn.type);
+    // SECONDARY CHECK: If type is not available, check for slow effective types
+    // Note: effectiveType describes SPEED, not connection medium
+    // '4g' and '5g' indicate FAST connections (likely WiFi), so we exclude them
+    // Only very slow connections (2g, 3g) are likely to be cellular
+    const slowEffectiveTypes = ['slow-2g', '2g', '3g'];
+    if (conn.effectiveType && slowEffectiveTypes.includes(conn.effectiveType)) {
+      console.log('⚠️ Slow connection detected:', conn.effectiveType, '(may be cellular)');
       return true;
     }
 
-    // Check if connection is explicitly marked as metered (rarely supported)
+    // TERTIARY CHECK: Connection explicitly marked as metered (rarely supported)
     if (typeof conn.metered === 'boolean' && conn.metered) {
       console.log('⚠️ Connection explicitly marked as metered');
       return true;
     }
+
+    console.log('✅ Connection appears to be unmetered');
   } else {
     console.log('ℹ️ Network Information API not available - metered detection disabled');
   }
