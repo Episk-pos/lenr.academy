@@ -6,8 +6,23 @@ import {
   waitForReactionResults
 } from '../fixtures/test-helpers'
 
-// LocalStorage key for query states
-const STORAGE_KEY = 'lenr-query-states'
+// LocalStorage key prefix for query states (actual key includes tab ID)
+const STORAGE_KEY_PREFIX = 'lenr-query-states'
+
+// Helper function to find and parse tab-specific query state from localStorage
+async function getQueryStateFromStorage(page: any) {
+  return await page.evaluate((prefix: string) => {
+    // Find the storage key that starts with the prefix
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i)
+      if (key && key.startsWith(prefix)) {
+        const stored = localStorage.getItem(key)
+        return stored ? JSON.parse(stored) : null
+      }
+    }
+    return null
+  }, STORAGE_KEY_PREFIX)
+}
 
 test.describe('Query State Persistence', () => {
   test.beforeEach(async ({ page }) => {
@@ -58,10 +73,7 @@ test.describe('Query State Persistence', () => {
     await waitForReactionResults(page, 'fusion')
 
     // Store the current query state
-    const fusionState = await page.evaluate(() => {
-      const stored = localStorage.getItem('lenr-query-states')
-      return stored ? JSON.parse(stored) : null
-    })
+    const fusionState = await getQueryStateFromStorage(page)
 
     expect(fusionState).toBeTruthy()
     expect(fusionState.fusion).toBeTruthy()
@@ -167,10 +179,7 @@ test.describe('Query State Persistence', () => {
     await page.waitForTimeout(1000)
 
     // Store the current query state
-    const fissionState = await page.evaluate(() => {
-      const stored = localStorage.getItem('lenr-query-states')
-      return stored ? JSON.parse(stored) : null
-    })
+    const fissionState = await getQueryStateFromStorage(page)
 
     expect(fissionState).toBeTruthy()
     expect(fissionState.fission).toBeTruthy()
@@ -242,10 +251,7 @@ test.describe('Query State Persistence', () => {
     await page.waitForTimeout(1000)
 
     // Store the current query state
-    const twoToTwoState = await page.evaluate(() => {
-      const stored = localStorage.getItem('lenr-query-states')
-      return stored ? JSON.parse(stored) : null
-    })
+    const twoToTwoState = await getQueryStateFromStorage(page)
 
     expect(twoToTwoState).toBeTruthy()
     expect(twoToTwoState.twotwo).toBeTruthy()
@@ -320,10 +326,7 @@ test.describe('Query State Persistence', () => {
     await page.waitForTimeout(1000)
 
     // Check all states are saved independently
-    const allStates = await page.evaluate(() => {
-      const stored = localStorage.getItem('lenr-query-states')
-      return stored ? JSON.parse(stored) : null
-    })
+    const allStates = await getQueryStateFromStorage(page)
 
     expect(allStates).toBeTruthy()
     expect(allStates.fusion?.selectedElement1).toContain('Li')
@@ -429,10 +432,7 @@ test.describe('Query State Persistence', () => {
     await page.waitForTimeout(1000)
 
     // Check state includes visualization settings
-    const fusionState = await page.evaluate(() => {
-      const stored = localStorage.getItem('lenr-query-states')
-      return stored ? JSON.parse(stored) : null
-    })
+    const fusionState = await getQueryStateFromStorage(page)
 
     expect(fusionState?.fusion?.visualization).toBeTruthy()
     expect(fusionState.fusion.visualization.showHeatmap).toBe(false)
@@ -482,10 +482,7 @@ test.describe('Query State Persistence', () => {
     await page.waitForTimeout(1000)
 
     // Check state was cleared
-    const fusionState = await page.evaluate(() => {
-      const stored = localStorage.getItem('lenr-query-states')
-      return stored ? JSON.parse(stored) : null
-    })
+    const fusionState = await getQueryStateFromStorage(page)
 
     // The state should still exist but with reset values
     expect(fusionState?.fusion).toBeTruthy()
