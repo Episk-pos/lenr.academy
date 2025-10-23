@@ -18,7 +18,7 @@ import LimitSelector from '../components/LimitSelector'
 const DEFAULT_ELEMENT1: string[] = []
 const DEFAULT_ELEMENT2: string[] = []
 const DEFAULT_OUTPUT_ELEMENT: string[] = []
-const DEFAULT_NEUTRINO_TYPES = ['none', 'left', 'right']
+const DEFAULT_NEUTRINO_TYPE = 'any'
 const DEFAULT_LIMIT = 500
 const SMALL_RESULT_THRESHOLD = 12
 const SCROLLBAR_COMPENSATION = 16
@@ -55,9 +55,9 @@ export default function FusionQuery() {
     return param ? parseFloat(param) : undefined
   }
 
-  const getInitialNeutrinoTypes = () => {
+  const getInitialNeutrinoType = () => {
     const param = searchParams.get('neutrino')
-    return param ? param.split(',') : DEFAULT_NEUTRINO_TYPES
+    return param || DEFAULT_NEUTRINO_TYPE
   }
 
   const getInitialLimit = () => {
@@ -76,7 +76,7 @@ export default function FusionQuery() {
     elements: [],
     minMeV: getInitialMinMeV(),
     maxMeV: getInitialMaxMeV(),
-    neutrinoTypes: getInitialNeutrinoTypes() as any[],
+    neutrinoType: getInitialNeutrinoType() as any,
     limit: getInitialLimit(),
     orderBy: 'MeV',
     orderDirection: 'desc'
@@ -287,7 +287,7 @@ export default function FusionQuery() {
               ...savedState.filter,
               minMeV: savedState.minMeV ?? prev.minMeV,
               maxMeV: savedState.maxMeV ?? prev.maxMeV,
-              neutrinoTypes: savedState.neutrino ? [savedState.neutrino] : prev.neutrinoTypes,
+              neutrinoType: savedState.neutrino || prev.neutrinoType,
               limit: savedState.limit ?? prev.limit
             }))
           }
@@ -365,7 +365,7 @@ export default function FusionQuery() {
       selectedOutputElement,
       minMeV: filter.minMeV,
       maxMeV: filter.maxMeV,
-      neutrino: filter.neutrinoTypes?.[0] as any,
+      neutrino: filter.neutrinoType as any,
       limit: filter.limit,
       showBosonFermion,
       visualization: {
@@ -476,8 +476,8 @@ export default function FusionQuery() {
       params.set('maxMeV', filter.maxMeV.toString())
     }
 
-    if (JSON.stringify(filter.neutrinoTypes) !== JSON.stringify(DEFAULT_NEUTRINO_TYPES)) {
-      params.set('neutrino', filter.neutrinoTypes?.join(',') || '')
+    if (filter.neutrinoType !== DEFAULT_NEUTRINO_TYPE) {
+      params.set('neutrino', filter.neutrinoType || '')
     }
 
     // Always set limit parameter explicitly (including default 100)
@@ -487,7 +487,7 @@ export default function FusionQuery() {
     // They are used only for initial page load, then immediately cleared by the initialization effect
 
     setSearchParams(params, { replace: true })
-  }, [selectedElement1, selectedElement2, selectedOutputElement, filter.minMeV, filter.maxMeV, filter.neutrinoTypes, filter.limit, isInitialized, hasInitializedFromUrl, searchParams])
+  }, [selectedElement1, selectedElement2, selectedOutputElement, filter.minMeV, filter.maxMeV, filter.neutrinoType, filter.limit, isInitialized, hasInitializedFromUrl, searchParams])
 
   // Auto-execute query when filters change
   useEffect(() => {
@@ -695,32 +695,23 @@ export default function FusionQuery() {
                 </div>
               </div>
 
-              {/* Neutrino Type */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Neutrino Involvement
-                </label>
-                <div className="space-y-2">
-                  {['none', 'left', 'right'].map(type => (
-                    <label key={type} className="flex items-center">
-                      <input
-                        type="checkbox"
-                        checked={filter.neutrinoTypes?.includes(type as any)}
-                        onChange={(e) => {
-                          const types = filter.neutrinoTypes || []
-                          if (e.target.checked) {
-                            setFilter({...filter, neutrinoTypes: [...types, type as any]})
-                          } else {
-                            setFilter({...filter, neutrinoTypes: types.filter(t => t !== type)})
-                          }
-                        }}
-                        className="mr-2"
-                      />
-                      <span className="text-sm capitalize">{type}</span>
-                    </label>
-                  ))}
-                </div>
-              </div>
+               {/* Neutrino Type */}
+               <div>
+                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                   Neutrino Involvement
+                 </label>
+                 <select
+                   value={filter.neutrinoType || 'any'}
+                   onChange={(e) => setFilter({...filter, neutrinoType: e.target.value as any})}
+                   className="input w-full"
+                 >
+                   <option value="any">Any neutrino type</option>
+                   <option value="none">No neutrino</option>
+                   <option value="left">Only left neutrino</option>
+                   <option value="right">Only right neutrino</option>
+                   <option value="left-right">Left and right neutrinos</option>
+                 </select>
+               </div>
 
               {/* Result Limit */}
               <div className="overflow-visible">
@@ -753,7 +744,7 @@ export default function FusionQuery() {
                     elements: [],
                     minMeV: undefined,
                     maxMeV: undefined,
-                    neutrinoTypes: DEFAULT_NEUTRINO_TYPES as any[],
+                    neutrinoType: DEFAULT_NEUTRINO_TYPE,
                     limit: DEFAULT_LIMIT,
                     orderBy: 'MeV',
                     orderDirection: 'desc'

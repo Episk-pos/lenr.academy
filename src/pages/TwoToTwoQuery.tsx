@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo, useCallback, useRef } from 'react'
 import { Download, Info, Loader2, Eye, EyeOff, Radiation, ChevronDown } from 'lucide-react'
 import { useSearchParams, Link } from 'react-router-dom'
-import type { TwoToTwoReaction, QueryFilter, Element, Nuclide, HeatmapMode, HeatmapMetrics, AtomicRadiiData } from '../types'
+import type { TwoToTwoReaction, QueryFilter, Element, Nuclide, HeatmapMode, HeatmapMetrics, AtomicRadiiData, NeutrinoType } from '../types'
 import { useDatabase } from '../contexts/DatabaseContext'
 import { useQueryState } from '../contexts/QueryStateContext'
 import { queryTwoToTwo, getAllElements, getNuclideBySymbol, getElementBySymbol, getAtomicRadii, calculateHeatmapMetrics } from '../services/queryService'
@@ -19,7 +19,7 @@ const DEFAULT_ELEMENT1 = ['D']
 const DEFAULT_ELEMENT2: string[] = []
 const DEFAULT_OUTPUT_ELEMENT3: string[] = []
 const DEFAULT_OUTPUT_ELEMENT4: string[] = []
-const DEFAULT_NEUTRINO_TYPES = ['none', 'left', 'right']
+const DEFAULT_NEUTRINO_TYPE = 'any'
 const DEFAULT_LIMIT = 500
 const SCROLLBAR_COMPENSATION = 16
 const SMALL_RESULT_THRESHOLD = 12
@@ -70,9 +70,11 @@ export default function TwoToTwoQuery() {
     return param ? parseFloat(param) : undefined
   }
 
-  const getInitialNeutrinoTypes = () => {
+  const getInitialNeutrinoType = (): NeutrinoType => {
     const param = searchParams.get('neutrino')
-    return param ? param.split(',') : DEFAULT_NEUTRINO_TYPES
+    const neutrinoType = param || DEFAULT_NEUTRINO_TYPE
+    // Ensure the value is a valid NeutrinoType
+    return ['none', 'left', 'right', 'left-right', 'any'].includes(neutrinoType) ? neutrinoType as NeutrinoType : DEFAULT_NEUTRINO_TYPE
   }
 
   const getInitialLimit = () => {
@@ -85,7 +87,7 @@ export default function TwoToTwoQuery() {
     elements: [],
     minMeV: getInitialMinMeV(),
     maxMeV: getInitialMaxMeV(),
-    neutrinoTypes: getInitialNeutrinoTypes() as any[],
+    neutrinoType: getInitialNeutrinoType(),
     limit: getInitialLimit(),
     orderBy: 'MeV',
     orderDirection: 'desc'
@@ -288,7 +290,7 @@ export default function TwoToTwoQuery() {
             outputElement4List: savedState.filter?.outputElement4List,
             minMeV: savedState.minMeV,
             maxMeV: savedState.maxMeV,
-            neutrinoTypes: savedState.neutrino ? [savedState.neutrino] : savedState.filter?.neutrinoTypes || DEFAULT_NEUTRINO_TYPES as any[],
+            neutrinoType: savedState.neutrino || savedState.filter?.neutrinoType || DEFAULT_NEUTRINO_TYPE,
             limit: savedState.limit ?? DEFAULT_LIMIT,
             orderBy: savedState.filter?.orderBy || 'MeV',
             orderDirection: savedState.filter?.orderDirection || 'desc'
@@ -440,8 +442,8 @@ export default function TwoToTwoQuery() {
       params.set('maxMeV', filter.maxMeV.toString())
     }
 
-    if (JSON.stringify(filter.neutrinoTypes) !== JSON.stringify(DEFAULT_NEUTRINO_TYPES)) {
-      params.set('neutrino', filter.neutrinoTypes?.join(',') || '')
+    if (filter.neutrinoType && filter.neutrinoType !== DEFAULT_NEUTRINO_TYPE) {
+      params.set('neutrino', filter.neutrinoType)
     }
 
     // Always set limit parameter explicitly (including default 100)
@@ -451,14 +453,14 @@ export default function TwoToTwoQuery() {
     // They are used only for initial page load, then immediately cleared by the initialization effect
 
     setSearchParams(params, { replace: true })
-  }, [selectedElement1, selectedElement2, selectedOutputElement3, selectedOutputElement4, filter.minMeV, filter.maxMeV, filter.neutrinoTypes, filter.limit, isInitialized, hasInitializedFromUrl, searchParams])
+  }, [selectedElement1, selectedElement2, selectedOutputElement3, selectedOutputElement4, filter.minMeV, filter.maxMeV, filter.neutrinoType, filter.limit, isInitialized, hasInitializedFromUrl, searchParams])
 
   // Auto-execute query when filters change
   useEffect(() => {
     if (db && isInitialized) {
       handleQuery()
     }
-  }, [db, selectedElement1, selectedElement2, selectedOutputElement3, selectedOutputElement4, filter.minMeV, filter.maxMeV, filter.neutrinoTypes, filter.limit, isInitialized])
+  }, [db, selectedElement1, selectedElement2, selectedOutputElement3, selectedOutputElement4, filter.minMeV, filter.maxMeV, filter.neutrinoType, filter.limit, isInitialized])
 
   // Save state to context whenever it changes (for persistence across navigation)
   useEffect(() => {
@@ -490,7 +492,7 @@ export default function TwoToTwoQuery() {
       selectedOutputElement4,
       minMeV: filter.minMeV,
       maxMeV: filter.maxMeV,
-      neutrino: filter.neutrinoTypes?.length === 1 ? filter.neutrinoTypes[0] as any : undefined,
+      neutrino: filter.neutrinoType,
       limit: filter.limit,
       showBosonFermion,
       visualization: visualizationState
@@ -732,32 +734,23 @@ export default function TwoToTwoQuery() {
                 </div>
               </div>
 
-              {/* Neutrino Involvement */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Neutrino Involvement
-                </label>
-                <div className="space-y-2">
-                  {['none', 'left', 'right'].map(type => (
-                    <label key={type} className="flex items-center">
-                      <input
-                        type="checkbox"
-                        checked={filter.neutrinoTypes?.includes(type as any)}
-                        onChange={(e) => {
-                          const types = filter.neutrinoTypes || []
-                          if (e.target.checked) {
-                            setFilter({...filter, neutrinoTypes: [...types, type as any]})
-                          } else {
-                            setFilter({...filter, neutrinoTypes: types.filter(t => t !== type)})
-                          }
-                        }}
-                        className="mr-2"
-                      />
-                      <span className="text-sm capitalize">{type}</span>
-                    </label>
-                  ))}
-                </div>
-              </div>
+               {/* Neutrino Involvement */}
+               <div>
+                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                   Neutrino Involvement
+                 </label>
+                 <select
+                   value={filter.neutrinoType || DEFAULT_NEUTRINO_TYPE}
+                   onChange={(e) => setFilter({...filter, neutrinoType: e.target.value as NeutrinoType})}
+                   className="input w-full"
+                 >
+                   <option value="any">Any neutrino type</option>
+                   <option value="none">No neutrino</option>
+                   <option value="left">Only left neutrino</option>
+                   <option value="right">Only right neutrino</option>
+                   <option value="left-right">Left and right neutrinos</option>
+                 </select>
+               </div>
 
               {/* Result Limit */}
               <div className="overflow-visible">
@@ -784,42 +777,48 @@ export default function TwoToTwoQuery() {
                   <span className="text-sm">Querying...</span>
                 </div>
               )}
-              <button
-                onClick={() => {
-                  setFilter({
-                    elements: [],
-                    minMeV: undefined,
-                    maxMeV: undefined,
-                    neutrinoTypes: DEFAULT_NEUTRINO_TYPES as any[],
-                    limit: DEFAULT_LIMIT,
-                    orderBy: 'MeV',
-                    orderDirection: 'desc'
-                  })
-                  setSelectedElement1(DEFAULT_ELEMENT1)
-                  setSelectedElement2(DEFAULT_ELEMENT2)
-                  setSelectedOutputElement3(DEFAULT_OUTPUT_ELEMENT3)
-                  setSelectedOutputElement4(DEFAULT_OUTPUT_ELEMENT4)
-                }}
-                className="btn btn-secondary px-4 py-1.5 text-sm whitespace-nowrap"
-              >
-                Reset Filters
-              </button>
+                 <button
+                   onClick={() => {
+                     setFilter({
+                       elements: [],
+                       minMeV: undefined,
+                       maxMeV: undefined,
+                       neutrinoType: DEFAULT_NEUTRINO_TYPE,
+                       limit: DEFAULT_LIMIT,
+                       orderBy: 'MeV',
+                       orderDirection: 'desc'
+                     })
+                     setSelectedElement1(DEFAULT_ELEMENT1)
+                     setSelectedElement2(DEFAULT_ELEMENT2)
+                     setSelectedOutputElement3(DEFAULT_OUTPUT_ELEMENT3)
+                     setSelectedOutputElement4(DEFAULT_OUTPUT_ELEMENT4)
+                   }}
+                   className="btn btn-secondary px-4 py-1.5 text-sm whitespace-nowrap"
+                 >
+                   Reset Filters
+                 </button>
             </div>
           </div>
           <code className="text-[10px] sm:text-xs text-gray-600 dark:text-gray-400 block font-mono break-all">
             {[
               'SELECT * FROM TwoToTwoAll',
-              (selectedElement1.length > 0 || selectedElement2.length > 0 || selectedOutputElement3.length > 0 || selectedOutputElement4.length > 0 || filter.minMeV !== undefined || filter.maxMeV !== undefined) && ' WHERE ',
+              (selectedElement1.length > 0 || selectedElement2.length > 0 || selectedOutputElement3.length > 0 || selectedOutputElement4.length > 0 || filter.minMeV !== undefined || filter.maxMeV !== undefined || (filter.neutrinoType && filter.neutrinoType !== 'any')) && ' WHERE ',
               selectedElement1.length > 0 && `E1 IN (${selectedElement1.map(e => `'${e}'`).join(', ')})`,
-              selectedElement1.length > 0 && (selectedElement2.length > 0 || selectedOutputElement3.length > 0 || selectedOutputElement4.length > 0) && ' AND ',
+              selectedElement1.length > 0 && (selectedElement2.length > 0 || selectedOutputElement3.length > 0 || selectedOutputElement4.length > 0 || filter.minMeV !== undefined || filter.maxMeV !== undefined || (filter.neutrinoType && filter.neutrinoType !== 'any')) && ' AND ',
               selectedElement2.length > 0 && `E2 IN (${selectedElement2.map(e => `'${e}'`).join(', ')})`,
-              selectedElement2.length > 0 && (selectedOutputElement3.length > 0 || selectedOutputElement4.length > 0) && ' AND ',
+              selectedElement2.length > 0 && (selectedOutputElement3.length > 0 || selectedOutputElement4.length > 0 || filter.minMeV !== undefined || filter.maxMeV !== undefined || (filter.neutrinoType && filter.neutrinoType !== 'any')) && ' AND ',
               selectedOutputElement3.length > 0 && `E3 IN (${selectedOutputElement3.map(e => `'${e}'`).join(', ')})`,
-              selectedOutputElement3.length > 0 && selectedOutputElement4.length > 0 && ' AND ',
+              selectedOutputElement3.length > 0 && (selectedOutputElement4.length > 0 || filter.minMeV !== undefined || filter.maxMeV !== undefined || (filter.neutrinoType && filter.neutrinoType !== 'any')) && ' AND ',
               selectedOutputElement4.length > 0 && `E4 IN (${selectedOutputElement4.map(e => `'${e}'`).join(', ')})`,
-              (selectedElement1.length > 0 || selectedElement2.length > 0 || selectedOutputElement3.length > 0 || selectedOutputElement4.length > 0) && filter.minMeV !== undefined && ' AND ',
+              selectedOutputElement4.length > 0 && (filter.minMeV !== undefined || filter.maxMeV !== undefined || (filter.neutrinoType && filter.neutrinoType !== 'any')) && ' AND ',
               filter.minMeV !== undefined && `MeV >= ${filter.minMeV}`,
-              filter.maxMeV !== undefined && ` AND MeV <= ${filter.maxMeV}`,
+              filter.minMeV !== undefined && (filter.maxMeV !== undefined || (filter.neutrinoType && filter.neutrinoType !== 'any')) && ' AND ',
+              filter.maxMeV !== undefined && `MeV <= ${filter.maxMeV}`,
+              filter.maxMeV !== undefined && (filter.neutrinoType && filter.neutrinoType !== 'any') && ' AND ',
+              filter.neutrinoType === 'none' && `neutrino = 'none'`,
+              filter.neutrinoType === 'left' && `neutrino = 'left'`,
+              filter.neutrinoType === 'right' && `neutrino = 'right'`,
+              filter.neutrinoType === 'left-right' && `neutrino IN ('left', 'right')`,
               ` ORDER BY MeV ${filter.orderDirection?.toUpperCase()} LIMIT ${filter.limit || 100}`
             ].filter(Boolean).join('').replace(/\s+/g, ' ').trim()};
           </code>

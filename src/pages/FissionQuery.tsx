@@ -18,7 +18,7 @@ import LimitSelector from '../components/LimitSelector'
 const DEFAULT_ELEMENT: string[] = []
 const DEFAULT_OUTPUT_ELEMENT1: string[] = []
 const DEFAULT_OUTPUT_ELEMENT2: string[] = []
-const DEFAULT_NEUTRINO_TYPES = ['none', 'left', 'right']
+const DEFAULT_NEUTRINO_TYPE = 'any'
 const DEFAULT_LIMIT = 500
 const SMALL_RESULT_THRESHOLD = 12
 const SCROLLBAR_COMPENSATION = 16
@@ -63,9 +63,9 @@ export default function FissionQuery() {
     return param ? parseFloat(param) : undefined
   }
 
-  const getInitialNeutrinoTypes = () => {
+  const getInitialNeutrinoType = () => {
     const param = searchParams.get('neutrino')
-    return param ? param.split(',') : DEFAULT_NEUTRINO_TYPES
+    return param || DEFAULT_NEUTRINO_TYPE
   }
 
   const getInitialLimit = () => {
@@ -78,7 +78,7 @@ export default function FissionQuery() {
     elements: [],
     minMeV: getInitialMinMeV(),
     maxMeV: getInitialMaxMeV(),
-    neutrinoTypes: getInitialNeutrinoTypes() as any[],
+    neutrinoType: getInitialNeutrinoType() as any,
     limit: getInitialLimit(),
     orderBy: 'MeV',
     orderDirection: 'desc'
@@ -274,7 +274,7 @@ export default function FissionQuery() {
             outputElement2List: savedState.filter?.outputElement2List,
             minMeV: savedState.minMeV,
             maxMeV: savedState.maxMeV,
-            neutrinoTypes: savedState.neutrino ? [savedState.neutrino] : savedState.filter?.neutrinoTypes || DEFAULT_NEUTRINO_TYPES as any[],
+            neutrinoType: savedState.neutrino || savedState.filter?.neutrinoType || DEFAULT_NEUTRINO_TYPE as any,
             limit: savedState.limit ?? DEFAULT_LIMIT,
             orderBy: savedState.filter?.orderBy || 'MeV',
             orderDirection: savedState.filter?.orderDirection || 'desc'
@@ -412,8 +412,8 @@ export default function FissionQuery() {
       params.set('maxMeV', filter.maxMeV.toString())
     }
 
-    if (JSON.stringify(filter.neutrinoTypes) !== JSON.stringify(DEFAULT_NEUTRINO_TYPES)) {
-      params.set('neutrino', filter.neutrinoTypes?.join(',') || '')
+    if (filter.neutrinoType !== DEFAULT_NEUTRINO_TYPE) {
+      params.set('neutrino', filter.neutrinoType || '')
     }
 
     // Always set limit parameter explicitly (including default 100)
@@ -423,14 +423,14 @@ export default function FissionQuery() {
     // They are used only for initial page load, then immediately cleared by the initialization effect
 
     setSearchParams(params, { replace: true })
-  }, [selectedElement, selectedOutputElement1, selectedOutputElement2, filter.minMeV, filter.maxMeV, filter.neutrinoTypes, filter.limit, isInitialized, hasInitializedFromUrl, searchParams])
+  }, [selectedElement, selectedOutputElement1, selectedOutputElement2, filter.minMeV, filter.maxMeV, filter.neutrinoType, filter.limit, isInitialized, hasInitializedFromUrl, searchParams])
 
   // Auto-execute query when filters change
   useEffect(() => {
     if (db) {
       handleQuery()
     }
-  }, [db, selectedElement, selectedOutputElement1, selectedOutputElement2, filter.minMeV, filter.maxMeV, filter.neutrinoTypes, filter.limit])
+  }, [db, selectedElement, selectedOutputElement1, selectedOutputElement2, filter.minMeV, filter.maxMeV, filter.neutrinoType, filter.limit])
 
   // Save state to context whenever it changes (for persistence across navigation)
   useEffect(() => {
@@ -461,7 +461,7 @@ export default function FissionQuery() {
       selectedOutputElement2,
       minMeV: filter.minMeV,
       maxMeV: filter.maxMeV,
-      neutrino: filter.neutrinoTypes?.length === 1 ? filter.neutrinoTypes[0] as any : undefined,
+      neutrino: filter.neutrinoType as any,
       limit: filter.limit,
       showBosonFermion,
       visualization: visualizationState
@@ -838,32 +838,23 @@ export default function FissionQuery() {
                 </div>
               </div>
 
-              {/* Neutrino Involvement */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Neutrino Involvement
-                </label>
-                <div className="space-y-2">
-                  {['none', 'left', 'right'].map(type => (
-                    <label key={type} className="flex items-center">
-                      <input
-                        type="checkbox"
-                        checked={filter.neutrinoTypes?.includes(type as any)}
-                        onChange={(e) => {
-                          const types = filter.neutrinoTypes || []
-                          if (e.target.checked) {
-                            setFilter({...filter, neutrinoTypes: [...types, type as any]})
-                          } else {
-                            setFilter({...filter, neutrinoTypes: types.filter(t => t !== type)})
-                          }
-                        }}
-                        className="mr-2"
-                      />
-                      <span className="text-sm capitalize">{type}</span>
-                    </label>
-                  ))}
-                </div>
-              </div>
+               {/* Neutrino Type */}
+               <div>
+                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                   Neutrino Involvement
+                 </label>
+                 <select
+                   value={filter.neutrinoType || 'any'}
+                   onChange={(e) => setFilter({...filter, neutrinoType: e.target.value as any})}
+                   className="input w-full"
+                 >
+                   <option value="any">Any neutrino type</option>
+                   <option value="none">No neutrino</option>
+                   <option value="left">Only left neutrino</option>
+                   <option value="right">Only right neutrino</option>
+                   <option value="left-right">Left and right neutrinos</option>
+                 </select>
+               </div>
 
               {/* Result Limit */}
               <div className="overflow-visible">
@@ -896,7 +887,7 @@ export default function FissionQuery() {
                     elements: [],
                     minMeV: undefined,
                     maxMeV: undefined,
-                    neutrinoTypes: DEFAULT_NEUTRINO_TYPES as any[],
+                    neutrinoType: DEFAULT_NEUTRINO_TYPE,
                     limit: DEFAULT_LIMIT,
                     orderBy: 'MeV',
                     orderDirection: 'desc'
@@ -914,15 +905,21 @@ export default function FissionQuery() {
           <code className="text-[10px] sm:text-xs text-gray-600 dark:text-gray-400 block font-mono break-all">
             {[
               'SELECT * FROM FissionAll',
-              (selectedElement.length > 0 || selectedOutputElement1.length > 0 || selectedOutputElement2.length > 0 || filter.minMeV !== undefined || filter.maxMeV !== undefined) && ' WHERE ',
+              (selectedElement.length > 0 || selectedOutputElement1.length > 0 || selectedOutputElement2.length > 0 || filter.minMeV !== undefined || filter.maxMeV !== undefined || (filter.neutrinoType && filter.neutrinoType !== 'any')) && ' WHERE ',
               selectedElement.length > 0 && `E IN (${selectedElement.map(e => `'${e}'`).join(', ')})`,
-              selectedElement.length > 0 && (selectedOutputElement1.length > 0 || selectedOutputElement2.length > 0) && ' AND ',
+              selectedElement.length > 0 && (selectedOutputElement1.length > 0 || selectedOutputElement2.length > 0 || filter.minMeV !== undefined || filter.maxMeV !== undefined || (filter.neutrinoType && filter.neutrinoType !== 'any')) && ' AND ',
               selectedOutputElement1.length > 0 && `E1 IN (${selectedOutputElement1.map(e => `'${e}'`).join(', ')})`,
-              selectedOutputElement1.length > 0 && selectedOutputElement2.length > 0 && ' AND ',
+              selectedOutputElement1.length > 0 && (selectedOutputElement2.length > 0 || filter.minMeV !== undefined || filter.maxMeV !== undefined || (filter.neutrinoType && filter.neutrinoType !== 'any')) && ' AND ',
               selectedOutputElement2.length > 0 && `E2 IN (${selectedOutputElement2.map(e => `'${e}'`).join(', ')})`,
-              (selectedElement.length > 0 || selectedOutputElement1.length > 0 || selectedOutputElement2.length > 0) && filter.minMeV !== undefined && ' AND ',
+              selectedOutputElement2.length > 0 && (filter.minMeV !== undefined || filter.maxMeV !== undefined || (filter.neutrinoType && filter.neutrinoType !== 'any')) && ' AND ',
               filter.minMeV !== undefined && `MeV >= ${filter.minMeV}`,
-              filter.maxMeV !== undefined && ` AND MeV <= ${filter.maxMeV}`,
+              filter.minMeV !== undefined && (filter.maxMeV !== undefined || (filter.neutrinoType && filter.neutrinoType !== 'any')) && ' AND ',
+              filter.maxMeV !== undefined && `MeV <= ${filter.maxMeV}`,
+              filter.maxMeV !== undefined && (filter.neutrinoType && filter.neutrinoType !== 'any') && ' AND ',
+              filter.neutrinoType === 'none' && `neutrino = 'none'`,
+              filter.neutrinoType === 'left' && `neutrino = 'left'`,
+              filter.neutrinoType === 'right' && `neutrino = 'right'`,
+              filter.neutrinoType === 'left-right' && `neutrino IN ('left', 'right')`,
               ` ORDER BY MeV ${filter.orderDirection?.toUpperCase()} LIMIT ${filter.limit || 100}`
             ].filter(Boolean).join('').replace(/\s+/g, ' ').trim()};
           </code>

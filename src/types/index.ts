@@ -1,6 +1,6 @@
 // Core data types for Nanosoft nuclear transmutation tables
 
-export type NeutrinoType = 'none' | 'left' | 'right';
+export type NeutrinoType = 'none' | 'left' | 'right' | 'left-right' | 'any';
 export type BosonFermionType = 'b' | 'f';
 export type ReactionType = 'fusion' | 'fission' | 'twotwo';
 export type HeatmapMode = 'frequency' | 'energy' | 'diversity';
@@ -180,7 +180,7 @@ export interface QueryFilter {
   outputElement4List?: string[];  // For E4 in two-to-two (output element 4)
   minMeV?: number;
   maxMeV?: number;
-  neutrinoTypes?: NeutrinoType[];
+  neutrinoType?: NeutrinoType;
   bosonFermionFilter?: {
     nuclear?: BosonFermionType | 'either';
     atomic?: BosonFermionType | 'either';

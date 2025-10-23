@@ -28,10 +28,18 @@ function buildWhereClause(filter: QueryFilter, tableType: 'fusion' | 'fission' |
     conditions.push(`MeV <= ${filter.maxMeV}`);
   }
 
-  // Neutrino types
-  if (filter.neutrinoTypes && filter.neutrinoTypes.length > 0 && filter.neutrinoTypes.length < 3) {
-    const types = filter.neutrinoTypes.map(t => `'${t}'`).join(',');
-    conditions.push(`neutrino IN (${types})`);
+  // Neutrino type
+  if (filter.neutrinoType && filter.neutrinoType !== 'any') {
+    // Handle specific neutrino type options
+    if (filter.neutrinoType === 'none') {
+      conditions.push(`neutrino = 'none'`);
+    } else if (filter.neutrinoType === 'left') {
+      conditions.push(`neutrino = 'left'`);
+    } else if (filter.neutrinoType === 'right') {
+      conditions.push(`neutrino = 'right'`);
+    } else if (filter.neutrinoType === 'left-right') {
+      conditions.push(`neutrino IN ('left', 'right')`);
+    }
   }
 
   // Element-specific lists (E1 and E/E2)
