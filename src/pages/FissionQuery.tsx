@@ -840,10 +840,11 @@ export default function FissionQuery() {
 
                {/* Neutrino Type */}
                <div>
-                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                 <label htmlFor="neutrino-filter-fission" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                    Neutrino Involvement
                  </label>
                  <select
+                   id="neutrino-filter-fission"
                    value={filter.neutrinoType || 'any'}
                    onChange={(e) => setFilter({...filter, neutrinoType: e.target.value as any})}
                    className="input w-full"

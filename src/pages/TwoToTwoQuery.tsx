@@ -736,10 +736,11 @@ export default function TwoToTwoQuery() {
 
                {/* Neutrino Involvement */}
                <div>
-                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                 <label htmlFor="neutrino-filter-twotwo" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                    Neutrino Involvement
                  </label>
                  <select
+                   id="neutrino-filter-twotwo"
                    value={filter.neutrinoType || DEFAULT_NEUTRINO_TYPE}
                    onChange={(e) => setFilter({...filter, neutrinoType: e.target.value as NeutrinoType})}
                    className="input w-full"
