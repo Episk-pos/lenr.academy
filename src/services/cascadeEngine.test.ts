@@ -219,7 +219,7 @@ describe('cascadeEngine', () => {
       // Mock reactions that produce different products in each loop
       // to ensure the cascade continues until max loops
       let callCount = 0;
-      mockQueryFusion.mockImplementation(async () => {
+      mockQueryFusion.mockImplementation((async (_db, _filter) => {
         callCount++;
         // Loop 0: H + Li → He-4
         // Loop 1: H + He → Li-5
@@ -262,14 +262,14 @@ describe('cascadeEngine', () => {
             Z: 3,
             A: 5,
             MeV: 5.0,
-            neutrino: 'none' as const,
-            nBorF1: 'f' as const,
-            aBorF1: 'b' as const,
-            nBorF2: 'b' as const,
-            aBorF2: 'b' as const,
-            nBorF: 'f' as const,
-            aBorF: 'b' as const,
-          });
+            neutrino: 'none',
+            nBorF1: 'f',
+            aBorF1: 'b',
+            nBorF2: 'b',
+            aBorF2: 'b',
+            nBorF: 'f',
+            aBorF: 'b',
+          } as any);
         } else if (callCount === 3) {
           reactions.push({
             id: 3,
@@ -283,14 +283,14 @@ describe('cascadeEngine', () => {
             Z: 4,
             A: 9,
             MeV: 8.0,
-            neutrino: 'none' as const,
-            nBorF1: 'b' as const,
-            aBorF1: 'b' as const,
-            nBorF2: 'f' as const,
-            aBorF2: 'b' as const,
-            nBorF: 'f' as const,
-            aBorF: 'b' as const,
-          });
+            neutrino: 'none',
+            nBorF1: 'b',
+            aBorF1: 'b',
+            nBorF2: 'f',
+            aBorF2: 'b',
+            nBorF: 'f',
+            aBorF: 'b',
+          } as any);
         }
 
         return {
@@ -302,7 +302,7 @@ describe('cascadeEngine', () => {
           rowCount: reactions.length,
           totalCount: reactions.length,
         };
-      });
+      }) as any);
 
       mockQueryTwoToTwo.mockResolvedValue({
         reactions: [],

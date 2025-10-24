@@ -1,6 +1,6 @@
 import { ReactNode, useEffect, useCallback, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
-import { Menu, X, Atom, Moon, Sun, ChevronLeft, ChevronRight, Home as HomeIcon, GitMerge, Scissors, ArrowLeftRight, FlaskConical, Table, TableProperties, Shield } from 'lucide-react'
+import { Menu, X, Atom, Moon, Sun, ChevronLeft, ChevronRight, Home as HomeIcon, GitMerge, Scissors, ArrowLeftRight, FlaskConical, Table, TableProperties, Shield, Workflow } from 'lucide-react'
 import { useTheme } from '../contexts/ThemeContext'
 import { useLayout } from '../contexts/LayoutContext'
 import DatabaseUpdateBanner from './DatabaseUpdateBanner'
@@ -26,9 +26,9 @@ const navigation: NavigationItem[] = [
   { name: 'Fusion Reactions', path: '/fusion', icon: GitMerge },
   { name: 'Fission Reactions', path: '/fission', icon: Scissors },
   { name: 'Two-To-Two Reactions', path: '/twotwo', icon: ArrowLeftRight },
+  { name: 'Cascades', path: '/cascades', icon: Workflow },
   { name: 'Tables in Detail', path: '/tables', icon: Table },
   { name: 'All Tables', path: '/all-tables', icon: TableProperties },
-  // { name: 'Cascades', path: '/cascades', icon: Workflow },
 ]
 
 export default function Layout({ children }: LayoutProps) {
