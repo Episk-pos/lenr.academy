@@ -67,35 +67,42 @@ export function analyzePathways(reactions: Reaction[]): PathwayAnalysis[] {
   });
 
   // Step 2: Detect feedback loops
-  // Build set of all nuclides that appear as inputs
-  const inputNuclides = new Set<string>();
-  reactions.forEach((r) => r.inputs.forEach((n) => inputNuclides.add(n)));
-
-  // Build map of outputs and their earliest loop appearance
-  const outputFirstLoop = new Map<string, number>();
+  // Build map of nuclides and the loops where they appear as outputs
+  const outputLoops = new Map<string, Set<number>>();
   reactions.forEach((r) => {
     r.outputs.forEach((output) => {
-      const currentFirst = outputFirstLoop.get(output);
-      if (currentFirst === undefined || r.loop < currentFirst) {
-        outputFirstLoop.set(output, r.loop);
+      if (!outputLoops.has(output)) {
+        outputLoops.set(output, new Set());
       }
+      outputLoops.get(output)!.add(r.loop);
+    });
+  });
+
+  // Build map of nuclides and the loops where they appear as inputs
+  const inputLoops = new Map<string, Set<number>>();
+  reactions.forEach((r) => {
+    r.inputs.forEach((input) => {
+      if (!inputLoops.has(input)) {
+        inputLoops.set(input, new Set());
+      }
+      inputLoops.get(input)!.add(r.loop);
     });
   });
 
   // A pathway has feedback if its output appears as input in a later loop
   function hasFeedbackLoop(pathway: { outputs: string[]; loops: Set<number> }): boolean {
-    const pathwayMaxLoop = Math.max(...Array.from(pathway.loops));
+    const pathwayMinLoop = Math.min(...Array.from(pathway.loops));
 
     return pathway.outputs.some((output) => {
-      // Check if this output appears as an input
-      if (!inputNuclides.has(output)) return false;
+      // Check if this output appears as an input at all
+      const inputLoopsForNuclide = inputLoops.get(output);
+      if (!inputLoopsForNuclide) return false;
 
-      // Check if the output appears in a later loop than when it was first produced
-      const firstOutputLoop = outputFirstLoop.get(output);
-      if (firstOutputLoop === undefined) return false;
+      // Check if this output appears as input in a loop after it was first produced
+      const earliestOutput = Math.min(...Array.from(outputLoops.get(output) || []));
+      const laterInputLoops = Array.from(inputLoopsForNuclide).filter(loop => loop > earliestOutput);
 
-      // Feedback if this output is used as input in reactions after it was produced
-      return pathwayMaxLoop < Math.max(...Array.from(pathway.loops));
+      return laterInputLoops.length > 0;
     });
   }
 

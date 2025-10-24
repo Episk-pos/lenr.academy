@@ -5,7 +5,9 @@ import { useCascadeWorker } from '../hooks/useCascadeWorker'
 import CascadeProgressCard from '../components/CascadeProgressCard'
 import CascadeTabs from '../components/CascadeTabs'
 import CascadeNetworkDiagram from '../components/CascadeNetworkDiagram'
-import type { CascadeResults } from '../types'
+import PeriodicTableSelector from '../components/PeriodicTableSelector'
+import { getAllElements } from '../services/queryService'
+import type { CascadeResults, Element } from '../types'
 
 export default function CascadesAll() {
   const { db } = useDatabase()
@@ -28,13 +30,21 @@ export default function CascadesAll() {
   const [sliderMaxNuclides, setSliderMaxNuclides] = useState(5000)
   const [sliderMaxLoops, setSliderMaxLoops] = useState(25)
 
-  const [fuelNuclides, setFuelNuclides] = useState('H1, Li7, Al27, N14, Ni58, Ni60, Ni62, B10, B11')
-  const [parsedFuelNuclides, setParsedFuelNuclides] = useState<string[]>([])
+  const [availableElements, setAvailableElements] = useState<Element[]>([])
+  const [fuelNuclides, setFuelNuclides] = useState<string[]>(['H-1', 'Li-7', 'Al-27', 'N-14', 'Ni-58', 'Ni-60', 'Ni-62', 'B-10', 'B-11'])
   const [results, setResults] = useState<CascadeResults | null>(null)
   const [error, setError] = useState<string | null>(null)
 
   // Track incremental reactions during simulation for real-time visualization
   const [liveReactions, setLiveReactions] = useState<any[]>([])
+
+  // Load available elements when database is ready
+  useEffect(() => {
+    if (db) {
+      const elements = getAllElements(db)
+      setAvailableElements(elements)
+    }
+  }, [db])
 
   // Update live reactions when progress includes new reactions
   useEffect(() => {
@@ -54,25 +64,17 @@ export default function CascadesAll() {
     setLiveReactions([])
 
     try {
-      // Parse fuel nuclides from textarea
-      const nuclideList = fuelNuclides
-        .split(',')
-        .map(s => s.trim())
-        .filter(s => s.length > 0)
-
-      if (nuclideList.length === 0) {
-        throw new Error('Please enter at least one fuel nuclide')
+      // Validate fuel nuclides
+      if (fuelNuclides.length === 0) {
+        throw new Error('Please select at least one fuel nuclide')
       }
-
-      // Store parsed fuel nuclides for visualization
-      setParsedFuelNuclides(nuclideList)
 
       // Export database to ArrayBuffer for worker
       const dbBuffer = db.export().buffer
 
       // Run cascade in worker
       const cascadeResults = await runCascade({
-        fuelNuclides: nuclideList,
+        fuelNuclides: fuelNuclides,
         ...params,
       }, dbBuffer)
 
@@ -99,8 +101,7 @@ export default function CascadesAll() {
     })
     setSliderMaxNuclides(5000)
     setSliderMaxLoops(25)
-    setFuelNuclides('H1, Li7, Al27, N14, Ni58, Ni60, Ni62, B10, B11')
-    setParsedFuelNuclides([])
+    setFuelNuclides(['H-1', 'Li-7', 'Al-27', 'N-14', 'Ni-58', 'Ni-60', 'Ni-62', 'B-10', 'B-11'])
     setResults(null)
     setError(null)
     setLiveReactions([])
@@ -174,18 +175,16 @@ export default function CascadesAll() {
 
       <div className="card p-6 mb-6">
         <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">Fuel Nuclides</h2>
-        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-          Enter fuel nuclides (comma-separated)
-        </label>
-        <textarea
-          className="input"
-          rows={3}
-          value={fuelNuclides}
-          onChange={(e) => setFuelNuclides(e.target.value)}
-          placeholder="e.g., H1, D2, Li7, Ni58"
+        <PeriodicTableSelector
+          label="Select specific isotopes for your fuel mixture"
+          availableElements={availableElements}
+          selectedElements={fuelNuclides}
+          onSelectionChange={setFuelNuclides}
+          mode="nuclide"
         />
         <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
-          Format: ElementSymbol + MassNumber (e.g., H1 for protium, D2 for deuterium)
+          Click on elements to select specific isotopes. Color coding indicates natural abundance:
+          green = abundant (&gt;10%), yellow = trace (0.1-10%), gray = rare/synthetic.
         </p>
       </div>
 
@@ -447,7 +446,7 @@ export default function CascadesAll() {
 
           {/* Tabbed Results Interface */}
           {results.reactions.length > 0 ? (
-            <CascadeTabs results={results} fuelNuclides={parsedFuelNuclides} />
+            <CascadeTabs results={results} fuelNuclides={fuelNuclides} />
           ) : (
             <div className="card p-6 bg-yellow-50 dark:bg-yellow-900/20">
               <div className="flex items-start gap-3">

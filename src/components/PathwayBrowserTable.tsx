@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { Search, ArrowUpDown, Filter } from 'lucide-react';
+import { Search, ArrowUpDown, Filter, ChevronUp, ChevronDown } from 'lucide-react';
 import type { PathwayAnalysis } from '../services/pathwayAnalyzer';
 import { VirtualizedList } from './VirtualizedList';
 
@@ -7,8 +7,32 @@ interface PathwayBrowserTableProps {
   pathways: PathwayAnalysis[];
 }
 
-type SortField = 'frequency' | 'avgEnergy' | 'totalEnergy' | 'rarity';
+type SortField = 'frequency' | 'avgEnergy' | 'totalEnergy' | 'rarity' | 'loops';
 type SortDirection = 'asc' | 'desc';
+
+/**
+ * Format loop array for display
+ * Shows compact representation: "5" or "0-12" or "3, 7, 11"
+ */
+function formatLoops(loops: number[]): string {
+  if (loops.length === 0) return '-';
+  if (loops.length === 1) return loops[0].toString();
+
+  // Check if loops are sequential
+  const sorted = [...loops].sort((a, b) => a - b);
+  const isSequential = sorted.every((val, idx) => idx === 0 || val === sorted[idx - 1] + 1);
+
+  if (isSequential && loops.length > 3) {
+    // Show range for sequential loops: "0-12"
+    return `${sorted[0]}-${sorted[sorted.length - 1]}`;
+  } else if (loops.length <= 3) {
+    // Show all loops if there are only a few
+    return sorted.join(', ');
+  } else {
+    // Show count for non-sequential loops: "5 loops"
+    return `${loops.length} loops`;
+  }
+}
 
 /**
  * Pathway Browser Table
@@ -73,6 +97,12 @@ export default function PathwayBrowserTable({ pathways }: PathwayBrowserTablePro
         case 'rarity':
           comparison = a.rarityScore - b.rarityScore;
           break;
+        case 'loops':
+          // Sort by first loop number (earliest appearance)
+          const minLoopA = Math.min(...a.loops);
+          const minLoopB = Math.min(...b.loops);
+          comparison = minLoopA - minLoopB;
+          break;
       }
 
       return sortDirection === 'asc' ? comparison : -comparison;
@@ -90,21 +120,26 @@ export default function PathwayBrowserTable({ pathways }: PathwayBrowserTablePro
     }
   };
 
-  const SortButton = ({ field, children }: { field: SortField; children: React.ReactNode }) => (
-    <button
-      onClick={() => handleSort(field)}
-      className="flex items-center gap-1 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
-    >
-      {children}
-      {sortField === field && (
-        <ArrowUpDown
-          className={`w-3 h-3 transition-transform ${
-            sortDirection === 'asc' ? 'rotate-180' : ''
-          }`}
-        />
-      )}
-    </button>
-  );
+  const SortButton = ({ field, children }: { field: SortField; children: React.ReactNode }) => {
+    const isActive = sortField === field;
+    return (
+      <button
+        onClick={() => handleSort(field)}
+        className="flex items-center gap-1 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+      >
+        {children}
+        {isActive ? (
+          sortDirection === 'asc' ? (
+            <ChevronUp className="w-3 h-3" />
+          ) : (
+            <ChevronDown className="w-3 h-3" />
+          )
+        ) : (
+          <ArrowUpDown className="w-3 h-3 opacity-40" />
+        )}
+      </button>
+    );
+  };
 
   const maxFrequency = Math.max(...pathways.map((p) => p.frequency), 1);
 
@@ -134,7 +169,11 @@ export default function PathwayBrowserTable({ pathways }: PathwayBrowserTablePro
         </button>
 
         {/* Filters Panel */}
-        {showFilters && (
+        <div
+          className={`overflow-hidden transition-all duration-300 ease-in-out ${
+            showFilters ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
+          }`}
+        >
           <div className="card p-4 space-y-4 bg-gray-50 dark:bg-gray-800">
             {/* Type Filters */}
             <div className="space-y-2">
@@ -191,7 +230,7 @@ export default function PathwayBrowserTable({ pathways }: PathwayBrowserTablePro
               />
             </div>
           </div>
-        )}
+        </div>
       </div>
 
       {/* Results Count */}
@@ -209,15 +248,17 @@ export default function PathwayBrowserTable({ pathways }: PathwayBrowserTablePro
                 <th className="px-4 py-3 text-left font-medium" style={{ width: '30%' }}>Pathway</th>
                 <th className="px-4 py-3 text-left font-medium" style={{ width: '10%' }}>Type</th>
                 <th className="px-4 py-3 text-right font-medium" style={{ width: '10%' }}>
-                  <SortButton field="frequency">Frequency</SortButton>
+                  <SortButton field="frequency">Count</SortButton>
                 </th>
                 <th className="px-4 py-3 text-right font-medium" style={{ width: '12%' }}>
-                  <SortButton field="avgEnergy">Avg Energy</SortButton>
+                  <SortButton field="avgEnergy">Avg (MeV)</SortButton>
                 </th>
                 <th className="px-4 py-3 text-right font-medium" style={{ width: '12%' }}>
-                  <SortButton field="totalEnergy">Total Energy</SortButton>
+                  <SortButton field="totalEnergy">Total (MeV)</SortButton>
                 </th>
-                <th className="px-4 py-3 text-center font-medium" style={{ width: '10%' }}>Loops</th>
+                <th className="px-4 py-3 text-center font-medium" style={{ width: '10%' }}>
+                  <SortButton field="loops">Loops</SortButton>
+                </th>
                 <th className="px-4 py-3 text-center font-medium" style={{ width: '8%' }}>Feedback</th>
                 <th className="px-4 py-3 text-right font-medium" style={{ width: '8%' }}>
                   <SortButton field="rarity">Rarity</SortButton>
@@ -253,10 +294,10 @@ export default function PathwayBrowserTable({ pathways }: PathwayBrowserTablePro
                       </span>
                     </td>
                     <td className="px-4 py-3 text-right font-medium" style={{ width: '10%' }}>×{pathway.frequency}</td>
-                    <td className="px-4 py-3 text-right" style={{ width: '12%' }}>{pathway.avgEnergy.toFixed(2)} MeV</td>
-                    <td className="px-4 py-3 text-right" style={{ width: '12%' }}>{pathway.totalEnergy.toFixed(2)} MeV</td>
+                    <td className="px-4 py-3 text-right" style={{ width: '12%' }}>{pathway.avgEnergy.toFixed(2)}</td>
+                    <td className="px-4 py-3 text-right" style={{ width: '12%' }}>{pathway.totalEnergy.toFixed(2)}</td>
                     <td className="px-4 py-3 text-center text-xs text-gray-600 dark:text-gray-400" style={{ width: '10%' }}>
-                      {pathway.loops.join(', ')}
+                      {formatLoops(pathway.loops)}
                     </td>
                     <td className="px-4 py-3 text-center" style={{ width: '8%' }}>
                       {pathway.isFeedback && (

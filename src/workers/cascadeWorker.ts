@@ -21,6 +21,7 @@ export interface CascadeProgressMessage {
   loop: number;
   totalLoops: number;
   newReactionsCount: number;
+  newReactions?: any[];  // Incremental reactions for real-time visualization
 }
 
 export interface CascadeCompleteMessage {
@@ -139,6 +140,7 @@ async function runCascadeWithProgress(params: CascadeParameters): Promise<Cascad
     const elementsStr = elements.map(e => `'${e}'`).join(',');
 
     let newReactionsThisLoop = 0;
+    const reactionsThisLoop: any[] = [];  // Track reactions for this loop
 
     // Query fusion reactions
     const fusionQuery = `
@@ -166,14 +168,16 @@ async function runCascadeWithProgress(params: CascadeParameters): Promise<Cascad
                              shouldAllowDimerReaction(input1, input2, params);
 
         if (shouldInclude) {
-          allReactions.push({
+          const reaction = {
             type: 'fusion',
             inputs: [input1, input2],
             outputs: [output],
             MeV: row[9] as number,
             loop: loopCount,
             neutrino: row[10] as string,
-          });
+          };
+          allReactions.push(reaction);
+          reactionsThisLoop.push(reaction);  // Track for incremental update
 
           newProducts.add(output);
           productDistribution.set(output, (productDistribution.get(output) || 0) + 1);
@@ -209,14 +213,16 @@ async function runCascadeWithProgress(params: CascadeParameters): Promise<Cascad
                              shouldAllowDimerReaction(input1, input2, params);
 
         if (shouldInclude) {
-          allReactions.push({
+          const reaction = {
             type: 'twotwo',
             inputs: [input1, input2],
             outputs: [output1, output2],
             MeV: row[12] as number,
             loop: loopCount,
             neutrino: row[13] as string,
-          });
+          };
+          allReactions.push(reaction);
+          reactionsThisLoop.push(reaction);  // Track for incremental update
 
           newProducts.add(output1);
           newProducts.add(output2);
@@ -227,12 +233,13 @@ async function runCascadeWithProgress(params: CascadeParameters): Promise<Cascad
       }
     }
 
-    // Send progress update
+    // Send progress update with incremental reactions for real-time visualization
     postMessage({
       type: 'progress',
       loop: loopCount,
       totalLoops: params.maxLoops,
       newReactionsCount: newReactionsThisLoop,
+      newReactions: reactionsThisLoop,
     } as CascadeProgressMessage);
 
     // Apply feedback rules to filter new products

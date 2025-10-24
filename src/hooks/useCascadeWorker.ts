@@ -11,6 +11,7 @@ export interface CascadeProgress {
   totalLoops: number;
   newReactionsCount: number;
   percentage: number;
+  newReactions?: any[];  // Incremental reactions for real-time visualization
 }
 
 export interface UseCascadeWorkerReturn {
@@ -54,6 +55,7 @@ export function useCascadeWorker(): UseCascadeWorkerReturn {
           totalLoops: progressMsg.totalLoops,
           newReactionsCount: progressMsg.newReactionsCount,
           percentage: ((progressMsg.loop + 1) / progressMsg.totalLoops) * 100,
+          newReactions: progressMsg.newReactions,
         });
       } else if (message.type === 'complete') {
         setIsRunning(false);
