@@ -13,6 +13,7 @@ import DatabaseLoadingCard from '../components/DatabaseLoadingCard'
 import DatabaseErrorCard from '../components/DatabaseErrorCard'
 import { VirtualizedList } from '../components/VirtualizedList'
 import LimitSelector from '../components/LimitSelector'
+import EnergyVisualization from '../components/EnergyVisualization'
 
 // Default values
 const DEFAULT_ELEMENT1: string[] = []
@@ -777,6 +778,13 @@ export default function FusionQuery() {
       {/* Results */}
       {showResults && (
         <div className="space-y-6">
+          {/* Energy Distribution Visualization */}
+          <EnergyVisualization
+            reactions={filteredResults}
+            title="Energy Distribution"
+            defaultExpanded={false}
+          />
+
           {/* Heatmap Visualization */}
           <div className="card p-6">
             <div className="flex items-center justify-between mb-4">
