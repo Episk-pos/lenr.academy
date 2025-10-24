@@ -13,13 +13,13 @@ export default function CascadesAll() {
     temperature: 2400,
     minFusionMeV: 1.0,
     minTwoToTwoMeV: 1.0,
-    maxNuclides: 50,
-    maxLoops: 2,
+    maxNuclides: 5000,
+    maxLoops: 25,
     feedbackBosons: true,
     feedbackFermions: true,
     allowDimers: true,
     excludeMelted: false,
-    excludeBoiledOff: false,
+    excludeBoiledOff: true,
   })
 
   const [fuelNuclides, setFuelNuclides] = useState('H1, Li7, Al27, N14, Ni58, Ni60, Ni62, B10, B11')
@@ -68,13 +68,13 @@ export default function CascadesAll() {
       temperature: 2400,
       minFusionMeV: 1.0,
       minTwoToTwoMeV: 1.0,
-      maxNuclides: 50,
-      maxLoops: 2,
+      maxNuclides: 5000,
+      maxLoops: 25,
       feedbackBosons: true,
       feedbackFermions: true,
       allowDimers: true,
       excludeMelted: false,
-      excludeBoiledOff: false,
+      excludeBoiledOff: true,
     })
     setFuelNuclides('H1, Li7, Al27, N14, Ni58, Ni60, Ni62, B10, B11')
     setResults(null)
@@ -93,7 +93,7 @@ export default function CascadesAll() {
           <AlertCircle className="w-5 h-5 text-orange-600 flex-shrink-0 mt-0.5" />
           <div className="text-sm text-gray-700 dark:text-gray-300">
             <strong>Note:</strong> Cascade simulations are computationally intensive.
-            Start with conservative settings (max 50 nuclides, 2-3 loops) to prevent timeouts.
+            Default settings (5000 max nuclides, 25 loops) provide comprehensive results.
             Processing time typically ranges from 30 seconds to 15 minutes depending on parameters.
           </div>
         </div>
@@ -170,9 +170,8 @@ export default function CascadesAll() {
               className="input"
               value={params.maxNuclides}
               onChange={(e) => setParams({...params, maxNuclides: parseInt(e.target.value)})}
-              max={100}
             />
-            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Recommended: 50-100</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Recommended: 1000-10000</p>
           </div>
 
           <div>
@@ -184,9 +183,8 @@ export default function CascadesAll() {
               className="input"
               value={params.maxLoops}
               onChange={(e) => setParams({...params, maxLoops: parseInt(e.target.value)})}
-              max={5}
             />
-            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Recommended: 2-3</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Recommended: 10-50</p>
           </div>
         </div>
 
