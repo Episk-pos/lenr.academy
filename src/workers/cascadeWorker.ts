@@ -264,12 +264,45 @@ async function runCascadeWithProgress(params: CascadeParameters): Promise<Cascad
     terminationReason = 'max_loops';
   }
 
-  const totalEnergy = allReactions.reduce((sum, r) => sum + r.MeV, 0);
+  // Finalization phase - calculate energy with progress updates
+  postMessage({
+    type: 'progress',
+    loop: loopCount,
+    totalLoops: params.maxLoops,
+    newReactionsCount: -1, // Special value to indicate finalizing
+  } as CascadeProgressMessage);
+
+  // Calculate total energy in batches to allow progress updates
+  let totalEnergy = 0;
+  const batchSize = 1000;
+  for (let i = 0; i < allReactions.length; i += batchSize) {
+    const batch = allReactions.slice(i, i + batchSize);
+    totalEnergy += batch.reduce((sum, r) => sum + r.MeV, 0);
+
+    // Send progress every batch
+    if (i + batchSize < allReactions.length) {
+      postMessage({
+        type: 'progress',
+        loop: loopCount,
+        totalLoops: params.maxLoops,
+        newReactionsCount: -2, // Special value for energy calculation
+      } as CascadeProgressMessage);
+    }
+  }
+
   const executionTime = performance.now() - startTime;
 
   // Get unique nuclides and elements (simplified - returning empty arrays for now)
   const nuclides: any[] = [];
   const elements: any[] = [];
+
+  // Final progress before serialization
+  postMessage({
+    type: 'progress',
+    loop: loopCount,
+    totalLoops: params.maxLoops,
+    newReactionsCount: -3, // Special value for serialization
+  } as CascadeProgressMessage);
 
   return {
     reactions: allReactions,

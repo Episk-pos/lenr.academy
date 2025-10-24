@@ -40,9 +40,14 @@ export default function CascadeProgressCard({ progress, onCancel }: CascadeProgr
               </p>
             </div>
             <div>
-              <span className="text-gray-600 dark:text-gray-400">New Reactions (this loop)</span>
+              <span className="text-gray-600 dark:text-gray-400">
+                {progress.newReactionsCount < 0 ? 'Status' : 'New Reactions (this loop)'}
+              </span>
               <p className="text-lg font-semibold text-gray-900 dark:text-white">
-                {progress.newReactionsCount}
+                {progress.newReactionsCount === -1 && 'Finalizing...'}
+                {progress.newReactionsCount === -2 && 'Calculating energy...'}
+                {progress.newReactionsCount === -3 && 'Preparing results...'}
+                {progress.newReactionsCount >= 0 && progress.newReactionsCount}
               </p>
             </div>
           </div>
@@ -60,7 +65,10 @@ export default function CascadeProgressCard({ progress, onCancel }: CascadeProgr
 
           {/* Info Text */}
           <p className="mt-3 text-xs text-gray-600 dark:text-gray-400">
-            Searching for reactions between active nuclides and products...
+            {progress.newReactionsCount === -1 && 'Starting finalization process...'}
+            {progress.newReactionsCount === -2 && 'Computing total energy from all reactions...'}
+            {progress.newReactionsCount === -3 && 'Serializing results for display...'}
+            {progress.newReactionsCount >= 0 && 'Searching for reactions between active nuclides and products...'}
           </p>
         </div>
       </div>
