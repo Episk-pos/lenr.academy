@@ -291,3 +291,32 @@ export interface AllQueryStates {
   twotwo?: QueryPageState;
   version?: number;  // For future migration if state structure changes
 }
+
+// Isotope Chart (Segré Chart) types
+export type NuclideStability = 'stable' | 'long' | 'short' | 'unknown';
+
+export interface ChartNuclide {
+  Z: number;         // Proton number
+  N: number;         // Neutron number (calculated as A - Z)
+  A: number;         // Mass number
+  E: string;         // Element symbol
+  logHalfLife?: number;  // Log₁₀ of half-life in years
+  stability: NuclideStability;
+}
+
+export interface ReactionPathway {
+  from: Array<{ Z: number; N: number; E: string; A: number }>;
+  to: Array<{ Z: number; N: number; E: string; A: number }>;
+  reactionType: ReactionType;  // 'fusion' | 'fission' | 'twotwo'
+  MeV: number;
+}
+
+export interface IsotopeChartProps {
+  highlightedNuclides?: string[];  // Array of "Z-A" format (e.g., ["1-1", "3-7"])
+  reactionPaths?: ReactionPathway[];
+  showValleyOfStability?: boolean;
+  showMagicNumbers?: boolean;
+  width?: number;
+  height?: number;
+  onNuclideClick?: (Z: number, A: number, E: string) => void;
+}

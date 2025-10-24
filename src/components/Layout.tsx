@@ -1,6 +1,6 @@
 import { ReactNode, useEffect, useCallback, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
-import { Menu, X, Atom, Moon, Sun, ChevronLeft, ChevronRight, Home as HomeIcon, GitMerge, Scissors, ArrowLeftRight, FlaskConical, Table, TableProperties, Shield } from 'lucide-react'
+import { Menu, X, Atom, Moon, Sun, ChevronLeft, ChevronRight, Home as HomeIcon, GitMerge, Scissors, ArrowLeftRight, FlaskConical, Table, TableProperties, Grid3x3, Shield } from 'lucide-react'
 import { useTheme } from '../contexts/ThemeContext'
 import { useLayout } from '../contexts/LayoutContext'
 import DatabaseUpdateBanner from './DatabaseUpdateBanner'
@@ -23,6 +23,7 @@ interface NavigationItem {
 const navigation: NavigationItem[] = [
   { name: 'Home', path: '/', icon: HomeIcon },
   { name: 'Show Element Data', path: '/element-data', icon: FlaskConical },
+  { name: 'Isotope Chart', path: '/isotope-chart', icon: Grid3x3 },
   { name: 'Fusion Reactions', path: '/fusion', icon: GitMerge },
   { name: 'Fission Reactions', path: '/fission', icon: Scissors },
   { name: 'Two-To-Two Reactions', path: '/twotwo', icon: ArrowLeftRight },

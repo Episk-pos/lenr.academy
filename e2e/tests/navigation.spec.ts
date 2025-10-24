@@ -21,6 +21,7 @@ test.describe('Navigation and Routing', () => {
       { path: '/fission', name: 'Fission', heading: /Fission Reactions/i, needsDb: true },
       { path: '/twotwo', name: 'Two-to-Two', heading: /Two-to-Two Reactions/i, needsDb: true },
       { path: '/element-data', name: 'Element Data', heading: /Element Data/i, needsDb: true },
+      { path: '/isotope-chart', name: 'Isotope Chart', heading: /Isotope Chart/i, needsDb: true },
       { path: '/tables', name: 'Tables in Detail', heading: /Tables in Detail/i, needsDb: true },
       { path: '/all-tables', name: 'All Tables', heading: /All Tables/i, needsDb: true },
       { path: '/cascades', name: 'Cascades', heading: /Cascade Simulations/i, needsDb: false },

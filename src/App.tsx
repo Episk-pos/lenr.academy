@@ -13,6 +13,7 @@ import ShowElementData from './pages/ShowElementData'
 import TablesInDetail from './pages/TablesInDetail'
 import AllTables from './pages/AllTables'
 import CascadesAll from './pages/CascadesAll'
+import IsotopeChart from './pages/IsotopeChart'
 import PrivacyPreferences from './pages/PrivacyPreferences'
 import SentryTest from './pages/SentryTest'
 import ErrorDisplay from './components/ErrorDisplay'
@@ -60,6 +61,7 @@ function App() {
                 <Route path="/fission" element={<FissionQuery />} />
                 <Route path="/twotwo" element={<TwoToTwoQuery />} />
                 <Route path="/element-data" element={<ShowElementData />} />
+                <Route path="/isotope-chart" element={<IsotopeChart />} />
                 <Route path="/tables" element={<TablesInDetail />} />
                 <Route path="/all-tables" element={<AllTables />} />
                 <Route path="/cascades" element={<CascadesAll />} />
