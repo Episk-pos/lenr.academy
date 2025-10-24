@@ -25,6 +25,7 @@ export default function ErrorDisplay({
   const [isDetailsExpanded, setIsDetailsExpanded] = useState(false);
   const [hasSearched, setHasSearched] = useState(false);
   const [copySuccess, setCopySuccess] = useState(false);
+  const [countdown, setCountdown] = useState<number | null>(null);
   const [isClearing, setIsClearing] = useState(false);
 
   // Collect error context on mount
@@ -51,16 +52,31 @@ export default function ErrorDisplay({
       // Copy formatted error report to clipboard
       await copyErrorReportToClipboard(errorContext);
 
-      // Show success feedback
+      // Show success feedback with countdown
       setCopySuccess(true);
-      setTimeout(() => setCopySuccess(false), 3000);
+      setCountdown(3);
 
-      // Open GitHub new issue page
-      const newIssueUrl = getGitHubNewIssueUrl(errorContext);
-      window.open(newIssueUrl, '_blank', 'noopener,noreferrer');
+      // Countdown timer
+      const countdownInterval = setInterval(() => {
+        setCountdown(prev => {
+          if (prev === null || prev <= 1) {
+            clearInterval(countdownInterval);
+            return null;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+
+      // Open GitHub new issue page after 3 seconds
+      setTimeout(() => {
+        const newIssueUrl = getGitHubNewIssueUrl(errorContext);
+        window.open(newIssueUrl, '_blank', 'noopener,noreferrer');
+        setCopySuccess(false);
+        setCountdown(null);
+      }, 3000);
     } catch (err) {
       console.error('Failed to copy error report:', err);
-      // Still open GitHub even if clipboard fails
+      // Still open GitHub even if clipboard fails (immediately, no countdown)
       const newIssueUrl = getGitHubNewIssueUrl(errorContext);
       window.open(newIssueUrl, '_blank', 'noopener,noreferrer');
     }
@@ -156,15 +172,20 @@ export default function ErrorDisplay({
               className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 transition-colors"
             >
               {isDetailsExpanded ? (
-                <ChevronDown className="w-4 h-4" />
+                <ChevronDown className="w-4 h-4 transition-transform" />
               ) : (
-                <ChevronRight className="w-4 h-4" />
+                <ChevronRight className="w-4 h-4 transition-transform" />
               )}
               Technical Details
             </button>
 
-            {isDetailsExpanded && (
-              <div className="mt-3 space-y-3">
+            <div
+              className={`grid transition-all duration-300 ease-in-out ${
+                isDetailsExpanded ? 'grid-rows-[1fr] opacity-100 mt-3' : 'grid-rows-[0fr] opacity-0'
+              }`}
+            >
+              <div className="overflow-hidden">
+                <div className="space-y-3">
                 {/* Error Fingerprint */}
                 <div className="flex items-center gap-2">
                   <span className="text-sm text-gray-600 dark:text-gray-400">Error Fingerprint:</span>
@@ -228,8 +249,9 @@ export default function ErrorDisplay({
                   </div>
                 </div>
               </div>
-            )}
+            </div>
           </div>
+        </div>
 
           {/* Database Corruption Recovery Section */}
           {isCorruptionError && (
@@ -268,7 +290,7 @@ export default function ErrorDisplay({
 
             <button
               onClick={handleReportError}
-              disabled={!hasSearched}
+              disabled={!hasSearched || countdown !== null}
               className="btn btn-primary px-4 py-2 text-sm flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed relative"
               title={
                 !hasSearched
@@ -277,8 +299,22 @@ export default function ErrorDisplay({
               }
             >
               <ExternalLink className="w-4 h-4" />
-              {copySuccess ? 'Copied! Opening GitHub...' : 'Report This Error'}
+              {countdown !== null
+                ? `Opening in ${countdown}s...`
+                : copySuccess
+                ? 'Copied!'
+                : 'Report This Error'}
             </button>
+
+            {/* Toast notification */}
+            {copySuccess && countdown !== null && (
+              <div className="fixed top-4 right-4 z-50 bg-green-600 text-white px-6 py-3 rounded-lg shadow-lg flex items-center gap-3 animate-slide-in">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
+                <span className="font-medium">Error report copied to clipboard! Opening GitHub in {countdown}s...</span>
+              </div>
+            )}
 
             {/* Standard Recovery Buttons */}
             {resetError && (

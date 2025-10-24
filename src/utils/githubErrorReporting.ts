@@ -42,11 +42,11 @@ export function getGitHubNewIssueUrl(errorContext: ErrorContext): string {
   // Create title with error fingerprint for easy searching
   const title = `[Bug] ${error.name}: ${error.message.substring(0, 80)} [fp:${fingerprint}]`;
 
-  // Use bug_report.yml template and pre-fill title
+  // Use error_report.yml template and pre-fill title
   const params = new URLSearchParams({
-    template: 'bug_report.yml',
+    template: 'error_report.yml',
     title,
-    labels: 'bug,needs-triage',
+    labels: 'bug,needs-triage,automated-report',
   });
 
   return `${REPO_URL}/issues/new?${params.toString()}`;
