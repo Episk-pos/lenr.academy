@@ -7,6 +7,7 @@
 
 import initSqlJs, { Database as SqlJsDatabase } from 'sql.js';
 import type { CascadeParameters, CascadeResults } from '../types';
+import { applyFeedbackRules, shouldAllowDimerReaction } from '../services/cascadeFeedbackRules';
 
 // Message types
 export interface CascadeWorkerRequest {
@@ -142,7 +143,7 @@ async function runCascadeWithProgress(params: CascadeParameters): Promise<Cascad
     // Query fusion reactions
     const fusionQuery = `
       SELECT E1, Z1, A1, E2, Z2, A2, E, Z, A, MeV, neutrino
-      FROM Fus_Fis
+      FROM FusionAll
       WHERE E1 IN (${elementsStr})
         AND E2 IN (${elementsStr})
         AND MeV >= ${params.minFusionMeV}
@@ -158,7 +159,13 @@ async function runCascadeWithProgress(params: CascadeParameters): Promise<Cascad
         const input2 = buildNuclideId(row[3] as string, row[5] as number);
         const output = buildNuclideId(row[6] as string, row[8] as number);
 
-        if (activeNuclides.has(input1) && activeNuclides.has(input2) && !activeNuclides.has(output)) {
+        // Check if this reaction should be included
+        const shouldInclude = activeNuclides.has(input1) &&
+                             activeNuclides.has(input2) &&
+                             !activeNuclides.has(output) &&
+                             shouldAllowDimerReaction(input1, input2, params);
+
+        if (shouldInclude) {
           allReactions.push({
             type: 'fusion',
             inputs: [input1, input2],
@@ -178,7 +185,7 @@ async function runCascadeWithProgress(params: CascadeParameters): Promise<Cascad
     // Query two-to-two reactions
     const twoToTwoQuery = `
       SELECT E1, Z1, A1, E2, Z2, A2, E3, Z3, A3, E4, Z4, A4, MeV, neutrino
-      FROM TwoToTwo
+      FROM TwoToTwoAll
       WHERE E1 IN (${elementsStr})
         AND E2 IN (${elementsStr})
         AND MeV >= ${params.minTwoToTwoMeV}
@@ -196,7 +203,12 @@ async function runCascadeWithProgress(params: CascadeParameters): Promise<Cascad
         const output2 = buildNuclideId(row[9] as string, row[11] as number);
 
         const hasNewOutput = !activeNuclides.has(output1) || !activeNuclides.has(output2);
-        if (activeNuclides.has(input1) && activeNuclides.has(input2) && hasNewOutput) {
+        const shouldInclude = activeNuclides.has(input1) &&
+                             activeNuclides.has(input2) &&
+                             hasNewOutput &&
+                             shouldAllowDimerReaction(input1, input2, params);
+
+        if (shouldInclude) {
           allReactions.push({
             type: 'twotwo',
             inputs: [input1, input2],
@@ -223,16 +235,20 @@ async function runCascadeWithProgress(params: CascadeParameters): Promise<Cascad
       newReactionsCount: newReactionsThisLoop,
     } as CascadeProgressMessage);
 
-    // Check for new products
-    const hasNewProducts = Array.from(newProducts).some(p => !processedNuclides.has(p));
+    // Apply feedback rules to filter new products
+    const newProductsArray = Array.from(newProducts);
+    const filteredProducts = applyFeedbackRules(db, newProductsArray, params);
+
+    // Check for new products that pass feedback rules
+    const hasNewProducts = filteredProducts.some(p => !processedNuclides.has(p));
 
     if (!hasNewProducts) {
       terminationReason = 'no_new_products';
       break;
     }
 
-    // Feedback: add new products to active pool
-    for (const product of newProducts) {
+    // Feedback: add filtered products to active pool
+    for (const product of filteredProducts) {
       activeNuclides.add(product);
       processedNuclides.add(product);
     }
