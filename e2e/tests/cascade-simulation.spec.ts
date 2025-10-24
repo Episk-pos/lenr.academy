@@ -4,13 +4,13 @@ test.describe('Cascade Simulation', () => {
   test.beforeEach(async ({ page }) => {
     // Navigate to cascades page
     await page.goto('/');
-    await page.click('text=Cascades');
+    await page.getByRole('link', { name: 'Cascades' }).click();
     await expect(page).toHaveURL('/cascades');
   });
 
   test('should load cascade simulation page with default parameters', async ({ page }) => {
     // Check page title
-    await expect(page.locator('h1')).toContainText('Cascade Simulations');
+    await expect(page.getByRole('heading', { name: 'Cascade Simulations' })).toBeVisible();
 
     // Check default fuel nuclides are populated
     const fuelTextarea = page.locator('textarea');

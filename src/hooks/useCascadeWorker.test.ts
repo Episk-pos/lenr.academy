@@ -11,7 +11,7 @@
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { renderHook, act, waitFor } from '@testing-library/react';
+import { renderHook, act } from '@testing-library/react';
 import { useCascadeWorker } from './useCascadeWorker';
 import type { CascadeParameters, CascadeResults } from '../types';
 import type { CascadeWorkerResponse } from '../workers/cascadeWorker';
@@ -41,7 +41,7 @@ class MockWorker {
 let mockWorkerInstance: MockWorker;
 
 // Mock the Worker constructor
-vi.stubGlobal('Worker', vi.fn(function(this: any, url: URL | string, options?: WorkerOptions) {
+vi.stubGlobal('Worker', vi.fn(function(this: any, _url: URL | string, _options?: WorkerOptions) {
   mockWorkerInstance = new MockWorker();
   return mockWorkerInstance;
 }));

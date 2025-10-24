@@ -376,7 +376,7 @@ describe('PathwayBrowserTable', () => {
 
     it('should show sort indicators', async () => {
       const user = userEvent.setup();
-      const { container } = render(<PathwayBrowserTable pathways={mockPathways} />);
+      render(<PathwayBrowserTable pathways={mockPathways} />);
 
       // Count button should have active indicator (ChevronDown)
       const countButton = screen.getByRole('button', { name: /Count/i });
