@@ -16,8 +16,8 @@ import type { CascadeParameters } from '../types';
  */
 interface ElementTempData {
   symbol: string;
-  meltingPoint: number | null;  // Kelvin
-  boilingPoint: number | null;  // Kelvin
+  melting: number | null;  // Melting point in Kelvin
+  boiling: number | null;  // Boiling point in Kelvin
 }
 
 // Cache for element temperature data to avoid repeated queries
@@ -46,7 +46,7 @@ export function getElementTemperatureData(
   if (uncachedElements.length > 0) {
     const elementsStr = uncachedElements.map(e => `'${e}'`).join(',');
     const query = `
-      SELECT E, MeltingPoint, BoilingPoint
+      SELECT E, Melting, Boiling
       FROM ElementPropertiesPlus
       WHERE E IN (${elementsStr})
     `;
@@ -56,8 +56,8 @@ export function getElementTemperatureData(
       for (const row of queryResults[0].values) {
         const data: ElementTempData = {
           symbol: row[0] as string,
-          meltingPoint: row[1] as number | null,
-          boilingPoint: row[2] as number | null,
+          melting: row[1] as number | null,
+          boiling: row[2] as number | null,
         };
         elementTempCache.set(data.symbol, data);
         result.set(data.symbol, data);
@@ -82,15 +82,15 @@ export function shouldExcludeByTemperature(
   if (!tempData) return false;
 
   // Exclude if melting point is above temperature (not yet melted)
-  if (params.excludeMelted && tempData.meltingPoint !== null) {
-    if (params.temperature < tempData.meltingPoint) {
+  if (params.excludeMelted && tempData.melting !== null) {
+    if (params.temperature < tempData.melting) {
       return true;
     }
   }
 
   // Exclude if boiling point is below temperature (boiled off)
-  if (params.excludeBoiledOff && tempData.boilingPoint !== null) {
-    if (params.temperature > tempData.boilingPoint) {
+  if (params.excludeBoiledOff && tempData.boiling !== null) {
+    if (params.temperature > tempData.boiling) {
       return true;
     }
   }

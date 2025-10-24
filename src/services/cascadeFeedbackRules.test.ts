@@ -38,13 +38,13 @@ describe('Cascade Feedback Rules', () => {
       expect(result.size).toBe(2);
       expect(result.get('H')).toEqual({
         symbol: 'H',
-        meltingPoint: 14.01,
-        boilingPoint: 20.28,
+        melting: 14.01,
+        boiling: 20.28,
       });
       expect(result.get('Fe')).toEqual({
         symbol: 'Fe',
-        meltingPoint: 1811,
-        boilingPoint: 3134,
+        melting: 1811,
+        boiling: 3134,
       });
     });
   });
@@ -52,14 +52,14 @@ describe('Cascade Feedback Rules', () => {
   describe('shouldExcludeByTemperature', () => {
     const hydrogenData = {
       symbol: 'H',
-      meltingPoint: 14.01,
-      boilingPoint: 20.28,
+      melting: 14.01,
+      boiling: 20.28,
     };
 
     const ironData = {
       symbol: 'Fe',
-      meltingPoint: 1811,
-      boilingPoint: 3134,
+      melting: 1811,
+      boiling: 3134,
     };
 
     it('should exclude element if temperature < melting point (excludeMelted=true)', () => {
