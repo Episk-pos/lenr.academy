@@ -22,6 +22,10 @@ export default function CascadesAll() {
     excludeBoiledOff: true,
   })
 
+  // Local state for sliders during dragging (prevents performance issues)
+  const [sliderMaxNuclides, setSliderMaxNuclides] = useState(5000)
+  const [sliderMaxLoops, setSliderMaxLoops] = useState(25)
+
   const [fuelNuclides, setFuelNuclides] = useState('H1, Li7, Al27, N14, Ni58, Ni60, Ni62, B10, B11')
   const [results, setResults] = useState<CascadeResults | null>(null)
   const [error, setError] = useState<string | null>(null)
@@ -76,6 +80,8 @@ export default function CascadesAll() {
       excludeMelted: false,
       excludeBoiledOff: true,
     })
+    setSliderMaxNuclides(5000)
+    setSliderMaxLoops(25)
     setFuelNuclides('H1, Li7, Al27, N14, Ni58, Ni60, Ni62, B10, B11')
     setResults(null)
     setError(null)
@@ -164,7 +170,7 @@ export default function CascadesAll() {
 
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Max Nuclides to Pair: {params.maxNuclides}
+              Max Nuclides to Pair: {sliderMaxNuclides}
             </label>
             <input
               type="range"
@@ -172,8 +178,10 @@ export default function CascadesAll() {
               max="10000"
               step="10"
               className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700 accent-blue-600"
-              value={params.maxNuclides}
-              onChange={(e) => setParams({...params, maxNuclides: parseInt(e.target.value)})}
+              value={sliderMaxNuclides}
+              onInput={(e) => setSliderMaxNuclides(parseInt((e.target as HTMLInputElement).value))}
+              onMouseUp={(e) => setParams({...params, maxNuclides: parseInt((e.target as HTMLInputElement).value)})}
+              onTouchEnd={(e) => setParams({...params, maxNuclides: parseInt((e.target as HTMLInputElement).value)})}
             />
             <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400 mt-1">
               <span>10</span>
@@ -184,7 +192,7 @@ export default function CascadesAll() {
 
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Max Cascade Loops: {params.maxLoops}
+              Max Cascade Loops: {sliderMaxLoops}
             </label>
             <input
               type="range"
@@ -192,8 +200,10 @@ export default function CascadesAll() {
               max="100"
               step="1"
               className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700 accent-blue-600"
-              value={params.maxLoops}
-              onChange={(e) => setParams({...params, maxLoops: parseInt(e.target.value)})}
+              value={sliderMaxLoops}
+              onInput={(e) => setSliderMaxLoops(parseInt((e.target as HTMLInputElement).value))}
+              onMouseUp={(e) => setParams({...params, maxLoops: parseInt((e.target as HTMLInputElement).value)})}
+              onTouchEnd={(e) => setParams({...params, maxLoops: parseInt((e.target as HTMLInputElement).value)})}
             />
             <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400 mt-1">
               <span>1</span>
