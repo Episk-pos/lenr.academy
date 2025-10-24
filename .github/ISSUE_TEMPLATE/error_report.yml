@@ -10,7 +10,10 @@ body:
 
         This template is designed for errors reported through LENR Academy's built-in error reporting system.
 
-        **If you clicked "Report This Error" in the app:** Simply paste the error details from your clipboard below in the "Error Report" field.
+        **If you clicked "Report This Error" in the app:**
+        1. ✅ Paste the error details from your clipboard below in the "Error Report" field
+        2. ⚠️ **IMPORTANT:** After pasting, scroll down and fill in the **Steps to Reproduce**, **Expected Behavior**, and **Actual Behavior** sections
+        3. 🔍 These details are critical for developers to understand and fix the issue quickly
 
         **If you're manually creating this report:** Please use the [Bug Report](https://github.com/Episk-pos/lenr.academy/issues/new?template=bug_report.yml) template instead, which provides structured fields for manual entry.
 
@@ -19,20 +22,30 @@ body:
     attributes:
       label: Error Report
       description: |
-        Paste the complete error report that was copied to your clipboard when you clicked "Report This Error".
+        **Step 1:** Paste the complete error report that was copied to your clipboard when you clicked "Report This Error".
 
-        The report should include:
-        - Error fingerprint
+        The report includes technical details like:
+        - Error fingerprint (for searching/grouping similar errors)
         - Error type and message
         - Stack trace
         - Browser/OS/device information
         - URL and timestamp
-        - Steps to reproduce (please fill these in)
-      placeholder: |
-        Paste the automated error report here...
 
-        After pasting, please scroll down to the "Steps to Reproduce" section
-        and fill in the steps that led to this error.
+        **Step 2 (CRITICAL):** After pasting, you MUST scroll through the pasted report and fill in these sections:
+        - **Steps to Reproduce** - Exact steps that led to this error
+        - **Expected Behavior** - What you expected to happen
+        - **Actual Behavior** - What actually happened
+
+        Without these details, developers cannot reliably reproduce and fix the issue.
+      placeholder: |
+        [Paste the automated error report here]
+
+        ⚠️ REMINDER: After pasting, scroll down through your pasted report and fill in:
+        - Steps to Reproduce
+        - Expected Behavior
+        - Actual Behavior
+
+        These sections are essential for fixing the bug!
     validations:
       required: true
 

@@ -12,7 +12,6 @@ import TabNavigation, { Tab } from '../components/TabNavigation'
 import SortableTable, { TableColumn } from '../components/SortableTable'
 import FilterPanel, { FilterConfig, FilterPreset } from '../components/FilterPanel'
 import DatabaseLoadingCard from '../components/DatabaseLoadingCard'
-import ErrorDisplay from '../components/ErrorDisplay'
 import Tooltip from '../components/Tooltip'
 import DecayChainDiagram from '../components/DecayChainDiagram'
 import {
@@ -1604,8 +1603,9 @@ export default function ShowElementData() {
     return <DatabaseLoadingCard downloadProgress={downloadProgress} />
   }
 
+  // Throw error to ErrorBoundary so it renders outside Layout (without sidebar)
   if (dbError) {
-    return <ErrorDisplay error={dbError} errorBoundary="ShowElementData" isDatabaseError={true} />
+    throw dbError
   }
 
   return (

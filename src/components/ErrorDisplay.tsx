@@ -294,7 +294,9 @@ export default function ErrorDisplay({
               className="btn btn-primary px-4 py-2 text-sm flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed relative"
               title={
                 !hasSearched
-                  ? 'Please search for similar issues first to avoid duplicates'
+                  ? 'Please search for similar issues first to avoid duplicate reports'
+                  : countdown !== null
+                  ? 'Copying to clipboard and opening GitHub...'
                   : 'Copy error details and open GitHub to report'
               }
             >
@@ -308,11 +310,16 @@ export default function ErrorDisplay({
 
             {/* Toast notification */}
             {copySuccess && countdown !== null && (
-              <div className="fixed top-4 right-4 z-50 bg-green-600 text-white px-6 py-3 rounded-lg shadow-lg flex items-center gap-3 animate-slide-in">
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                </svg>
-                <span className="font-medium">Error report copied to clipboard! Opening GitHub in {countdown}s...</span>
+              <div className="fixed top-4 right-4 z-50 bg-green-600 text-white px-6 py-3 rounded-lg shadow-lg max-w-md animate-slide-in">
+                <div className="flex items-start gap-3">
+                  <svg className="w-5 h-5 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  </svg>
+                  <div className="flex-1">
+                    <p className="font-medium">Error report copied to clipboard!</p>
+                    <p className="text-sm text-green-100 mt-1">Opening GitHub in {countdown}s... Please fill in the reproduction steps after pasting.</p>
+                  </div>
+                </div>
               </div>
             )}
 
@@ -334,10 +341,14 @@ export default function ErrorDisplay({
             </button>
           </div>
 
-          {/* Helper text for disabled Report button */}
-          {!hasSearched && (
+          {/* Helper text for Report button */}
+          {!hasSearched ? (
             <p className="text-xs text-gray-600 dark:text-gray-400 mt-2">
-              💡 Please search for similar issues first to avoid duplicate reports
+              💡 Please search for similar issues <strong>first</strong> to avoid duplicate reports
+            </p>
+          ) : (
+            <p className="text-xs text-gray-600 dark:text-gray-400 mt-2">
+              📝 <strong>Important:</strong> After pasting the error report, please fill in the Steps to Reproduce, Expected Behavior, and Actual Behavior sections to help us fix this issue quickly
             </p>
           )}
         </div>
