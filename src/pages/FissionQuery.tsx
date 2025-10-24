@@ -12,6 +12,7 @@ import NuclideDetailsCard from '../components/NuclideDetailsCard'
 import DatabaseLoadingCard from '../components/DatabaseLoadingCard'
 import { VirtualizedList } from '../components/VirtualizedList'
 import LimitSelector from '../components/LimitSelector'
+import EnergyVisualization from '../components/EnergyVisualization'
 
 // Default values
 const DEFAULT_ELEMENT: string[] = []
@@ -935,6 +936,13 @@ export default function FissionQuery() {
       {/* Results */}
       {showResults && (
         <div className="space-y-6">
+          {/* Energy Distribution Visualization */}
+          <EnergyVisualization
+            reactions={filteredResults}
+            title="Energy Distribution"
+            defaultExpanded={false}
+          />
+
           {/* Heatmap Visualization */}
           <div className="card p-6">
             <div className="flex items-center justify-between mb-4">
