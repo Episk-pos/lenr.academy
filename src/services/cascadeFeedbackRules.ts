@@ -75,7 +75,7 @@ export function getElementTemperatureData(
  * - excludeBoiledOff: Remove elements with boiling point < temperature
  */
 export function shouldExcludeByTemperature(
-  element: string,
+  _element: string,
   tempData: ElementTempData | undefined,
   params: CascadeParameters
 ): boolean {
@@ -151,7 +151,7 @@ export function getBosonFermionData(
  * Check if a nuclide should be excluded based on boson/fermion feedback rules
  */
 export function shouldExcludeByBosonFermion(
-  nuclideId: string,
+  _nuclideId: string,
   bfData: BosonFermionData | undefined,
   params: CascadeParameters
 ): boolean {

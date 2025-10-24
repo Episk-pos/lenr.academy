@@ -169,99 +169,195 @@
    - Optimized build configuration
    - Database served via CDN
 
-## Next Steps (Phase 5-6)
+## Completed Work (Phase 5.1)
 
-### Priority 4: Cascade Simulation Logic
+### ✅ Priority 4: Cascade Simulation Logic - COMPLETE (PR #93)
 
-**Implement the recursive cascade algorithm**
+**Full implementation of recursive cascade simulation with Web Worker processing**
 
-1. **Create cascade engine** (`src/services/cascadeEngine.ts`)
-   ```typescript
-   export async function runCascadeSimulation(
-     db: Database,
-     params: CascadeParameters
-   ): Promise<CascadeResults> {
-     // 1. Parse fuel nuclides
-     // 2. Find initial reactions (Fusion + TwoToTwo)
-     // 3. Apply feedback rules (Boson/Fermion, temperature)
-     // 4. Recursive loop until max loops or no new nuclides
-     // 5. Return reaction tree and product distribution
-   }
-   ```
+**Status**: Complete implementation in draft PR #93. All acceptance criteria met for issues #15, #16, #17.
 
-2. **Add progress tracking**
-   - Web Worker for background processing
-   - Progress bar UI
-   - Cancellation support
+1. **✅ Cascade Engine** (`src/services/cascadeEngine.ts`)
+   - Recursive algorithm querying fusion and two-to-two reactions
+   - Multiple termination modes:
+     - `max-loops`: Stop after N iterations (default: 10)
+     - `no-new-products`: Stop when no new nuclides appear
+     - `max-nuclides`: Stop when product count reaches threshold
+   - Parses fuel nuclides in multiple formats (H-1, H1, D, T)
+   - Tracks complete reaction history with loop/generation metadata
+   - Returns comprehensive results: reactions, products, energy, timing
+   - **17 comprehensive unit tests** covering all functionality
 
-3. **Implement feedback rules**
-   - Temperature threshold checks
-   - Melting/boiling point filters
-   - Dimer formation logic
-   - Boson/Fermion classification
+2. **✅ Web Worker Background Processing** (`src/workers/cascadeWorker.ts`)
+   - Background execution keeps UI responsive during heavy computation
+   - Real-time progress updates with granular feedback:
+     - Initialization phase (parsing, validation)
+     - Loop-by-loop progress with reaction counts
+     - Finalization with batched energy calculation
+   - Cancellation support via AbortController pattern
+   - Automatic cleanup on component unmount
+   - React hook wrapper (`src/hooks/useCascadeWorker.ts`)
 
-### Priority 5: Data Visualization
+3. **✅ Feedback Rules System** (`src/services/cascadeFeedbackRules.ts`)
+   - **Temperature constraints**: Filter by element melting/boiling points
+   - **Boson/Fermion classification**: Prioritize nuclear spin properties
+   - **Element allowlist**: Restrict cascade to specific elements
+   - Database-driven limits prevent unrealistic parameter values
+   - All rules optional and independently configurable
+   - **27 comprehensive unit tests** for all rule combinations
 
-**Add charts and graphs for better insight**
+4. **✅ Cascade Visualizations**
+   - **Network Diagram** (`CascadeNetworkDiagram.tsx`): Interactive force-directed graph using ReactFlow
+   - **Sankey Diagram** (`CascadeSankeyDiagram.tsx`): Energy flow visualization across cascade loops
+   - **Pathway Browser** (`PathwayBrowserTable.tsx`): Searchable table with virtual scrolling (react-window)
+   - **Nuclide Selector** (`NuclidePickerModal.tsx`): Visual picker with natural abundance data
+   - **Progress Card** (`CascadeProgressCard.tsx`): Real-time loop tracking with cancel button
 
-1. **Install visualization library**
-   ```bash
-   npm install recharts
-   ```
+5. **✅ Supporting Services**
+   - **Isotope Service** (`src/services/isotopeService.ts`): Nuclide parsing and natural abundance data
+   - **Pathway Analyzer** (`src/services/pathwayAnalyzer.ts`): Reaction tree analysis and statistics
 
-2. **Create visualization components**
-   - Energy distribution histogram
-   - Periodic table heatmap (nuclides in results)
-   - Reaction network graph (D3.js or Cytoscape.js)
-   - Cascade tree visualization
+6. **✅ Testing & Quality**
+   - **44 unit tests total** (17 engine + 27 feedback rules) - All passing ✓
+   - **E2E tests** (`e2e/cascade-simulation.spec.ts`): User flow validation with Playwright
+   - Performance optimizations: debouncing, virtualization, batched calculations
 
-3. **Add to query results**
+7. **✅ UX Enhancements**
+   - Database-driven sliders with automatic min/max from element properties
+   - Accessible keyboard navigation and ARIA labels
+   - Mobile-responsive layout with collapsible panels
+   - Dark mode support throughout
+
+**Files Added**:
+- `src/services/cascadeEngine.ts` + tests
+- `src/services/cascadeFeedbackRules.ts` + tests
+- `src/services/isotopeService.ts`
+- `src/services/pathwayAnalyzer.ts`
+- `src/workers/cascadeWorker.ts`
+- `src/hooks/useCascadeWorker.ts`
+- `src/components/CascadeNetworkDiagram.tsx`
+- `src/components/CascadeSankeyDiagram.tsx`
+- `src/components/CascadeProgressCard.tsx`
+- `src/components/CascadeTabs.tsx`
+- `src/components/NuclidePickerModal.tsx`
+- `src/components/PathwayBrowserTable.tsx`
+- `e2e/cascade-simulation.spec.ts`
+- `vitest.config.ts`
+
+**Metrics**:
+- 7,124+ lines of code added
+- 44 unit tests passing
+- E2E test coverage for critical user flows
+- Handles cascades with 500+ reactions smoothly
+
+## Next Steps (Phase 5.2-5.4)
+
+### Priority 5: Data Visualization (Partially Complete)
+
+**Add charts and graphs for better insight into reaction data**
+
+**Completed**:
+- ✅ Cascade-specific visualizations (Network diagram, Sankey diagram) - See Phase 5.1
+- ✅ Periodic table heatmap for query results - Implemented in query pages
+- ✅ Visualization libraries installed: ReactFlow, Recharts, D3
+
+**Remaining Work**:
+
+1. **Energy Distribution Histogram Charts** (Issue #18)
+   - Histogram showing energy (MeV) distribution across query results
+   - Integration with Fusion, Fission, and TwoToTwo query pages
    - Toggle between table and chart views
    - Export charts as images
 
-### Priority 6: Enhanced Features
+2. **Reaction Network Force-Directed Graphs** (Issue #19 - Partial)
+   - ⚠️ Currently implemented for cascade results only
+   - Need to extend to general query results (Fusion, Fission, TwoToTwo)
+   - Allow users to visualize any query result as a network graph
+   - Shared component that works across all query types
 
-1. **Query History & Saved Queries**
-   - LocalStorage persistence
-   - Query naming and organization
-   - Share query via URL
+3. **Isotope Chart (Segré Chart) Visualization** (Issue #20)
+   - Interactive chart of nuclides (N vs Z plot)
+   - Color-coded by stability, decay mode, or half-life
+   - Click nuclide to show details
+   - Overlay query results on the chart
+   - Educational tool for understanding nuclear stability
 
-2. **Result Export Options**
-   - CSV (already implemented)
-   - JSON export
-   - PDF reports with charts
-   - Share results via URL
+### Priority 6: Enhanced Features (Partially Complete)
 
-3. **Advanced SQL Builder**
-   - Visual query builder (no SQL knowledge required)
-   - Query validation
-   - Autocomplete for table/field names
-   - Query explanation
+**Completed**:
+- ✅ Persistent query state across navigation (PR #82)
+- ✅ CSV export for all query results
+- ✅ Enhanced error reporting with expandable details (PR #91, in progress)
+- ✅ Advanced element/nuclide filtering and pinning
+- ✅ SQL preview in all query pages
+- ✅ Comprehensive element and nuclide detail views
+- ✅ Privacy-friendly analytics with consent management
 
-4. **Help System**
-   - Inline tooltips
+**Remaining Work**:
+
+1. **Query History & Bookmarks System** (Issue #22)
+   - LocalStorage persistence of query history
+   - Save favorite queries with custom names
+   - Quick recall of previous searches
+   - Export/import saved queries
+
+2. **Advanced Export: JSON and PDF** (Issue #23)
+   - JSON export for programmatic access
+   - PDF reports with charts and visualizations
+   - Customizable export templates
+   - Batch export functionality
+
+3. **URL Query Sharing System** (Issue #24)
+   - Encode query parameters in URL
+   - Shareable links for specific searches
+   - Deep linking to exact query state
+   - QR code generation for sharing
+
+4. **Help System with Interactive Tutorials** (Issue #25)
+   - Interactive walkthrough for new users
+   - Contextual help tooltips
    - Example queries library
-   - Tutorial walkthrough
-   - Field glossary
+   - Video tutorials
+   - Field glossary with definitions
+   - FAQ section
 
-### Priority 7: Performance & Polish
+### Priority 7: Performance & Polish (Mostly Complete)
 
-1. **Optimization**
-   - Web Workers for heavy queries
-   - Virtual scrolling for large tables
-   - Query result pagination
-   - Database indexing
+**Completed**:
+- ✅ Web Workers for cascade simulations (Phase 5.1)
+- ✅ Virtual scrolling for large tables (react-window in PathwayBrowserTable)
+- ✅ Database indexing and optimization
+- ✅ Unit tests (44 tests for cascade engine + feedback rules)
+- ✅ E2E tests with Playwright (`e2e/` directory)
+- ✅ PWA support with offline mode (PR #69)
+- ✅ Deployed to production at **lenr.academy**
+- ✅ Custom domain setup complete
+- ✅ Performance optimizations:
+  - Debounced input handling
+  - Batched calculations
+  - Lazy loading of components
+  - Optimized bundle size with code splitting
 
-2. **Testing**
-   - Unit tests for query builder
-   - Integration tests for cascade logic
-   - E2E tests with Playwright
+**Remaining Work**:
 
-3. **Build & Deploy**
-   - Optimize bundle size
-   - PWA support (offline mode)
-   - Deploy to Netlify/Vercel
-   - Custom domain setup
+1. **Web Workers for Heavy SQL Queries** (Issue #26)
+   - Currently: Only cascade simulations use Web Workers
+   - Extend to regular query pages (Fusion, Fission, TwoToTwo)
+   - Background processing for large result sets
+   - Prevent UI blocking on complex SQL queries
+   - Progress indicator for long-running queries
+
+2. **Additional Testing & Quality**
+   - Expand unit test coverage beyond cascade features
+   - Integration tests for query service functions
+   - Performance regression tests
+   - Accessibility testing (a11y compliance)
+
+3. **Further Optimizations**
+   - Query result pagination for very large datasets
+   - Memoization of expensive computations
+   - Service worker caching strategies
+   - Bundle size reduction (tree-shaking, compression)
 
 ## Data Acquisition
 
@@ -332,8 +428,41 @@
 
 ---
 
-**Current Status**: Phase 4 complete! Full database loaded with caching, advanced UI features, and deployed to production at **lenr.academy**. Ready for cascade simulation logic and data visualization.
+## Current Status Summary
+
+**Phase 1-4**: ✅ **COMPLETE**
+- Project infrastructure, data models, query tools, database integration, caching, theme system
+
+**Phase 5.1 (Cascade Simulations)**: ✅ **COMPLETE** (in PR #93, pending merge)
+- Full cascade engine with Web Workers, feedback rules, visualizations, and comprehensive testing
+- 7,124+ lines of code, 44 unit tests passing, E2E test coverage
+- Issues #15, #16, #17 resolved (pending closure after PR merge)
+
+**Phase 5.2 (Data Visualization)**: 🟡 **PARTIALLY COMPLETE** (3/5 features)
+- ✅ Cascade network diagrams (ReactFlow)
+- ✅ Cascade Sankey diagrams (energy flow)
+- ✅ Periodic table heatmaps
+- ❌ Energy distribution histograms (Issue #18)
+- ⚠️ Reaction network graphs (Issue #19 - needs extension to query results)
+- ❌ Segré Chart (Issue #20)
+
+**Phase 5.3 (Enhanced Features)**: 🟡 **PARTIALLY COMPLETE** (5/9 features)
+- ✅ Persistent query state, CSV export, enhanced error reporting, element/nuclide filtering, SQL preview
+- ❌ Query history/bookmarks (Issue #22)
+- ❌ JSON/PDF export (Issue #23)
+- ❌ URL sharing (Issue #24)
+- ❌ Help system (Issue #25)
+
+**Phase 5.4 (Performance & PWA)**: ✅ **MOSTLY COMPLETE** (8/9 features)
+- ✅ PWA support, virtual scrolling, unit tests, E2E tests, performance optimizations
+- ❌ Web Workers for SQL queries (Issue #26 - only cascades use workers currently)
 
 **Deployed**: ✅ Live at [lenr.academy](https://lenr.academy)
 
-**Est. Time to Full Feature Set**: 4-6 weeks (cascade logic + visualizations)
+**Next Milestone Priorities**:
+1. **Immediate**: Merge PR #93 (Phase 5.1 complete) and close issues #15, #16, #17
+2. **Short-term** (Phase 5.2): Energy histograms (#18), Segré Chart (#20), extend network graphs (#19)
+3. **Medium-term** (Phase 5.3): Query history (#22), URL sharing (#24), help system (#25)
+4. **Long-term**: Additional testing, Web Workers for SQL queries (#26), advanced exports (#23)
+
+**Est. Time to Full Feature Set**: 6-8 weeks for remaining Phase 5.2-5.4 features

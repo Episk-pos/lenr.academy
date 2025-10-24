@@ -242,10 +242,10 @@ export default function PathwayBrowserTable({ pathways }: PathwayBrowserTablePro
       <div className="rounded-lg border border-gray-300 dark:border-gray-700 overflow-hidden">
         {/* Fixed Table Header */}
         <div className="overflow-x-auto">
-          <table className="w-full text-sm">
+          <table className="w-full text-sm" style={{ tableLayout: 'fixed' }}>
             <thead className="bg-gray-50 dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-b border-gray-300 dark:border-gray-700">
               <tr>
-                <th className="px-4 py-3 text-left font-medium" style={{ width: '30%' }}>Pathway</th>
+                <th className="hidden md:table-cell px-4 py-3 text-left font-medium" style={{ width: '30%' }}>Pathway</th>
                 <th className="px-4 py-3 text-left font-medium" style={{ width: '10%' }}>Type</th>
                 <th className="px-4 py-3 text-right font-medium" style={{ width: '10%' }}>
                   <SortButton field="frequency">Count</SortButton>
@@ -256,11 +256,11 @@ export default function PathwayBrowserTable({ pathways }: PathwayBrowserTablePro
                 <th className="px-4 py-3 text-right font-medium" style={{ width: '12%' }}>
                   <SortButton field="totalEnergy">Total (MeV)</SortButton>
                 </th>
-                <th className="px-4 py-3 text-center font-medium" style={{ width: '10%' }}>
+                <th className="hidden sm:table-cell px-4 py-3 text-center font-medium" style={{ width: '10%' }}>
                   <SortButton field="loops">Loops</SortButton>
                 </th>
-                <th className="px-4 py-3 text-center font-medium" style={{ width: '8%' }}>Feedback</th>
-                <th className="px-4 py-3 text-right font-medium" style={{ width: '8%' }}>
+                <th className="hidden lg:table-cell px-4 py-3 text-center font-medium" style={{ width: '8%' }}>Feedback</th>
+                <th className="hidden lg:table-cell px-4 py-3 text-right font-medium" style={{ width: '8%' }}>
                   <SortButton field="rarity">Rarity</SortButton>
                 </th>
               </tr>
@@ -272,17 +272,29 @@ export default function PathwayBrowserTable({ pathways }: PathwayBrowserTablePro
         <VirtualizedList
           items={filteredAndSorted}
           height={600}
-          fixedRowHeight={48}
+          fixedRowHeight={60}
           overscanRowCount={10}
           ariaLabel="Pathway results table"
         >
           {(pathway) => (
             <div className="border-b border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
-              <table className="w-full text-sm">
+              <table className="w-full text-sm" style={{ tableLayout: 'fixed' }}>
                 <tbody>
+                  {/* Mobile: Pathway in full-width row (top) */}
+                  <tr className="md:hidden">
+                    <td colSpan={8} className="px-4 pt-1.5 pb-0.5 font-mono text-xs break-words text-gray-900 dark:text-gray-100">
+                      {pathway.pathway}
+                    </td>
+                  </tr>
+
+                  {/* Data row */}
                   <tr className="text-gray-900 dark:text-gray-100">
-                    <td className="px-4 py-3 font-mono text-sm" style={{ width: '30%' }}>{pathway.pathway}</td>
-                    <td className="px-4 py-3" style={{ width: '10%' }}>
+                    {/* Desktop: Pathway in first column */}
+                    <td className="hidden md:table-cell px-4 py-2.5 font-mono text-sm" style={{ width: '30%' }}>
+                      {pathway.pathway}
+                    </td>
+
+                    <td className="px-4 py-1.5 md:py-2.5" style={{ width: '10%' }}>
                       <span
                         className={`px-2 py-1 rounded text-xs font-medium ${
                           pathway.type === 'fusion'
@@ -293,18 +305,18 @@ export default function PathwayBrowserTable({ pathways }: PathwayBrowserTablePro
                         {pathway.type === 'fusion' ? 'Fusion' : '2→2'}
                       </span>
                     </td>
-                    <td className="px-4 py-3 text-right font-medium" style={{ width: '10%' }}>×{pathway.frequency}</td>
-                    <td className="px-4 py-3 text-right" style={{ width: '12%' }}>{pathway.avgEnergy.toFixed(2)}</td>
-                    <td className="px-4 py-3 text-right" style={{ width: '12%' }}>{pathway.totalEnergy.toFixed(2)}</td>
-                    <td className="px-4 py-3 text-center text-xs text-gray-600 dark:text-gray-400" style={{ width: '10%' }}>
+                    <td className="px-4 py-1.5 md:py-2.5 text-right font-medium" style={{ width: '10%' }}>×{pathway.frequency}</td>
+                    <td className="px-4 py-1.5 md:py-2.5 text-right" style={{ width: '12%' }}>{pathway.avgEnergy.toFixed(2)}</td>
+                    <td className="px-4 py-1.5 md:py-2.5 text-right" style={{ width: '12%' }}>{pathway.totalEnergy.toFixed(2)}</td>
+                    <td className="hidden sm:table-cell px-4 py-1.5 md:py-2.5 text-center text-xs text-gray-600 dark:text-gray-400" style={{ width: '10%' }}>
                       {formatLoops(pathway.loops)}
                     </td>
-                    <td className="px-4 py-3 text-center" style={{ width: '8%' }}>
+                    <td className="hidden lg:table-cell px-4 py-1.5 md:py-2.5 text-center" style={{ width: '8%' }}>
                       {pathway.isFeedback && (
                         <span className="text-green-600 dark:text-green-400 font-bold">✓</span>
                       )}
                     </td>
-                    <td className="px-4 py-3 text-right text-xs text-gray-600 dark:text-gray-400" style={{ width: '8%' }}>
+                    <td className="hidden lg:table-cell px-4 py-1.5 md:py-2.5 text-right text-xs text-gray-600 dark:text-gray-400" style={{ width: '8%' }}>
                       {pathway.rarityScore.toFixed(0)}%
                     </td>
                   </tr>

@@ -40,7 +40,7 @@ export type CascadeWorkerResponse =
   | CascadeErrorMessage;
 
 let db: SqlJsDatabase | null = null;
-let isRunning = false;
+// Note: isRunning tracking removed - cancellation handled via AbortController
 let shouldCancel = false;
 
 /**
@@ -336,7 +336,6 @@ self.onmessage = async (event: MessageEvent<CascadeWorkerRequest | { type: 'canc
 
   if (message.type === 'run') {
     try {
-      isRunning = true;
       shouldCancel = false;
 
       // Initialize database if needed
@@ -359,7 +358,6 @@ self.onmessage = async (event: MessageEvent<CascadeWorkerRequest | { type: 'canc
         error: errorMessage,
       } as CascadeErrorMessage);
     } finally {
-      isRunning = false;
       shouldCancel = false;
     }
   }

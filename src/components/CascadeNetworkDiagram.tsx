@@ -314,12 +314,12 @@ export default function CascadeNetworkDiagram({
     setEdges(newEdges);
   }, [reactions, setNodes, setEdges]);
 
-  const onNodeClick = useCallback((event: React.MouseEvent, node: Node) => {
+  const onNodeClick = useCallback((_event: React.MouseEvent, node: Node) => {
     console.log('Node clicked:', node.id);
     // TODO: Show nuclide details in modal
   }, []);
 
-  const onEdgeClick = useCallback((event: React.MouseEvent, edge: Edge) => {
+  const onEdgeClick = useCallback((_event: React.MouseEvent, edge: Edge) => {
     console.log('Edge clicked:', edge.id);
     // TODO: Show reaction details in modal
   }, []);

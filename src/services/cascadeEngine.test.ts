@@ -219,7 +219,7 @@ describe('cascadeEngine', () => {
       // Mock reactions that produce different products in each loop
       // to ensure the cascade continues until max loops
       let callCount = 0;
-      mockQueryFusion.mockImplementation((async (_db, _filter) => {
+      mockQueryFusion.mockImplementation((async (_db: any, _filter: any) => {
         callCount++;
         // Loop 0: H + Li → He-4
         // Loop 1: H + He → Li-5

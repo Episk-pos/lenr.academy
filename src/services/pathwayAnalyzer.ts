@@ -91,8 +91,6 @@ export function analyzePathways(reactions: Reaction[]): PathwayAnalysis[] {
 
   // A pathway has feedback if its output appears as input in a later loop
   function hasFeedbackLoop(pathway: { outputs: string[]; loops: Set<number> }): boolean {
-    const pathwayMinLoop = Math.min(...Array.from(pathway.loops));
-
     return pathway.outputs.some((output) => {
       // Check if this output appears as an input at all
       const inputLoopsForNuclide = inputLoops.get(output);

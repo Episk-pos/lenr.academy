@@ -76,7 +76,7 @@ export default function CascadesAll() {
       const cascadeResults = await runCascade({
         fuelNuclides: fuelNuclides,
         ...params,
-      }, dbBuffer)
+      }, dbBuffer as ArrayBuffer)
 
       setResults(cascadeResults)
     } catch (err) {
