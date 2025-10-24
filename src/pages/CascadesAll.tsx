@@ -1,11 +1,13 @@
 import { useState } from 'react'
-import { Play, Settings, AlertCircle, Loader2, CheckCircle, XCircle } from 'lucide-react'
+import { Play, Settings, AlertCircle, CheckCircle, XCircle, Loader2 } from 'lucide-react'
 import { useDatabase } from '../contexts/DatabaseContext'
-import { runCascadeSimulation } from '../services/cascadeEngine'
+import { useCascadeWorker } from '../hooks/useCascadeWorker'
+import CascadeProgressCard from '../components/CascadeProgressCard'
 import type { CascadeResults } from '../types'
 
 export default function CascadesAll() {
   const { db } = useDatabase()
+  const { runCascade, cancelCascade, progress, isRunning, error: workerError } = useCascadeWorker()
 
   const [params, setParams] = useState({
     temperature: 2400,
@@ -22,7 +24,6 @@ export default function CascadesAll() {
 
   const [fuelNuclides, setFuelNuclides] = useState('H1, Li7, Al27, N14, Ni58, Ni60, Ni62, B10, B11')
   const [results, setResults] = useState<CascadeResults | null>(null)
-  const [isRunning, setIsRunning] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
   const handleRunSimulation = async () => {
@@ -31,7 +32,6 @@ export default function CascadesAll() {
       return
     }
 
-    setIsRunning(true)
     setError(null)
     setResults(null)
 
@@ -46,18 +46,20 @@ export default function CascadesAll() {
         throw new Error('Please enter at least one fuel nuclide')
       }
 
-      const cascadeResults = await runCascadeSimulation(db, {
+      // Export database to ArrayBuffer for worker
+      const dbBuffer = db.export().buffer
+
+      // Run cascade in worker
+      const cascadeResults = await runCascade({
         fuelNuclides: nuclideList,
         ...params,
-      })
+      }, dbBuffer)
 
       setResults(cascadeResults)
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Unknown error occurred'
       setError(message)
       console.error('Cascade simulation error:', err)
-    } finally {
-      setIsRunning(false)
     }
   }
 
@@ -267,14 +269,21 @@ export default function CascadesAll() {
         </button>
       </div>
 
+      {/* Progress Display */}
+      {isRunning && progress && (
+        <div className="mt-6">
+          <CascadeProgressCard progress={progress} onCancel={cancelCascade} />
+        </div>
+      )}
+
       {/* Error Display */}
-      {error && (
+      {(error || workerError) && (
         <div className="card p-6 mt-6 bg-red-50 dark:bg-red-900/20">
           <div className="flex items-start gap-3">
             <XCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
             <div>
               <h3 className="font-semibold text-red-900 dark:text-red-100 mb-1">Error</h3>
-              <p className="text-sm text-red-700 dark:text-red-200">{error}</p>
+              <p className="text-sm text-red-700 dark:text-red-200">{error || workerError}</p>
             </div>
           </div>
         </div>
