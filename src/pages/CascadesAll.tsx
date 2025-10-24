@@ -1,8 +1,10 @@
-import { useState } from 'react'
-import { Play, Settings, AlertCircle, CheckCircle, XCircle, Loader2 } from 'lucide-react'
+import { useState, useEffect } from 'react'
+import { Play, Settings, AlertCircle, CheckCircle, XCircle, Loader2, Download } from 'lucide-react'
 import { useDatabase } from '../contexts/DatabaseContext'
 import { useCascadeWorker } from '../hooks/useCascadeWorker'
 import CascadeProgressCard from '../components/CascadeProgressCard'
+import CascadeTabs from '../components/CascadeTabs'
+import CascadeNetworkDiagram from '../components/CascadeNetworkDiagram'
 import type { CascadeResults } from '../types'
 
 export default function CascadesAll() {
@@ -27,8 +29,19 @@ export default function CascadesAll() {
   const [sliderMaxLoops, setSliderMaxLoops] = useState(25)
 
   const [fuelNuclides, setFuelNuclides] = useState('H1, Li7, Al27, N14, Ni58, Ni60, Ni62, B10, B11')
+  const [parsedFuelNuclides, setParsedFuelNuclides] = useState<string[]>([])
   const [results, setResults] = useState<CascadeResults | null>(null)
   const [error, setError] = useState<string | null>(null)
+
+  // Track incremental reactions during simulation for real-time visualization
+  const [liveReactions, setLiveReactions] = useState<any[]>([])
+
+  // Update live reactions when progress includes new reactions
+  useEffect(() => {
+    if (progress?.newReactions && progress.newReactions.length > 0) {
+      setLiveReactions((prev) => [...prev, ...progress.newReactions!])
+    }
+  }, [progress])
 
   const handleRunSimulation = async () => {
     if (!db) {
@@ -38,6 +51,7 @@ export default function CascadesAll() {
 
     setError(null)
     setResults(null)
+    setLiveReactions([])
 
     try {
       // Parse fuel nuclides from textarea
@@ -49,6 +63,9 @@ export default function CascadesAll() {
       if (nuclideList.length === 0) {
         throw new Error('Please enter at least one fuel nuclide')
       }
+
+      // Store parsed fuel nuclides for visualization
+      setParsedFuelNuclides(nuclideList)
 
       // Export database to ArrayBuffer for worker
       const dbBuffer = db.export().buffer
@@ -83,8 +100,57 @@ export default function CascadesAll() {
     setSliderMaxNuclides(5000)
     setSliderMaxLoops(25)
     setFuelNuclides('H1, Li7, Al27, N14, Ni58, Ni60, Ni62, B10, B11')
+    setParsedFuelNuclides([])
     setResults(null)
     setError(null)
+    setLiveReactions([])
+  }
+
+  const handleDownloadCSV = () => {
+    if (!results) return
+
+    // Build CSV content
+    const lines: string[] = []
+
+    // Header
+    lines.push('Loop,Type,Input1,Input2,Output1,Output2,Energy_MeV,Neutrino')
+
+    // Reactions
+    results.reactions.forEach((reaction) => {
+      const input1 = reaction.inputs[0] || ''
+      const input2 = reaction.inputs[1] || ''
+      const output1 = reaction.outputs[0] || ''
+      const output2 = reaction.outputs[1] || ''
+      lines.push(
+        `${reaction.loop},${reaction.type},${input1},${input2},${output1},${output2},${reaction.MeV},${reaction.neutrino}`
+      )
+    })
+
+    // Add blank line
+    lines.push('')
+    lines.push('Product Distribution')
+    lines.push('Nuclide,Count')
+
+    // Product distribution
+    Array.from(results.productDistribution.entries())
+      .sort((a, b) => b[1] - a[1])
+      .forEach(([nuclide, count]) => {
+        lines.push(`${nuclide},${count}`)
+      })
+
+    // Create blob and download
+    const csv = lines.join('\n')
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' })
+    const link = document.createElement('a')
+    const url = URL.createObjectURL(blob)
+
+    link.setAttribute('href', url)
+    link.setAttribute('download', `cascade_results_${Date.now()}.csv`)
+    link.style.visibility = 'hidden'
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    URL.revokeObjectURL(url)
   }
 
   return (
@@ -294,8 +360,19 @@ export default function CascadesAll() {
 
       {/* Progress Display */}
       {isRunning && progress && (
-        <div className="mt-6">
+        <div className="mt-6 space-y-6">
           <CascadeProgressCard progress={progress} onCancel={cancelCascade} />
+
+          {/* Real-time Network Visualization */}
+          {liveReactions.length > 0 && (
+            <div className="card p-6">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+                <Loader2 className="w-5 h-5 animate-spin" />
+                Live Cascade Network ({liveReactions.length} reactions so far)
+              </h3>
+              <CascadeNetworkDiagram reactions={liveReactions} />
+            </div>
+          )}
         </div>
       )}
 
@@ -315,14 +392,23 @@ export default function CascadesAll() {
       {/* Results Display */}
       {results && (
         <div className="mt-6 space-y-6">
-          {/* Summary Card */}
+          {/* Completion Banner */}
           <div className="card p-6 bg-green-50 dark:bg-green-900/20">
             <div className="flex items-start gap-3">
               <CheckCircle className="w-6 h-6 text-green-600 flex-shrink-0 mt-0.5" />
               <div className="flex-1">
-                <h3 className="font-semibold text-green-900 dark:text-green-100 mb-3">
-                  Cascade Complete
-                </h3>
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className="font-semibold text-green-900 dark:text-green-100">
+                    Cascade Complete
+                  </h3>
+                  <button
+                    onClick={handleDownloadCSV}
+                    className="flex items-center gap-2 px-3 py-1.5 text-sm bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors"
+                  >
+                    <Download className="w-4 h-4" />
+                    Download CSV
+                  </button>
+                </div>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
                   <div>
                     <span className="text-gray-600 dark:text-gray-400">Reactions Found</span>
@@ -359,77 +445,10 @@ export default function CascadesAll() {
             </div>
           </div>
 
-          {/* Reactions Table */}
-          {results.reactions.length > 0 && (
-            <div className="card p-6">
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-                Cascade Reactions ({results.reactions.length})
-              </h3>
-              <div className="overflow-x-auto">
-                <table className="w-full text-sm">
-                  <thead className="bg-gray-50 dark:bg-gray-800 text-gray-700 dark:text-gray-300">
-                    <tr>
-                      <th className="px-4 py-2 text-left">Loop</th>
-                      <th className="px-4 py-2 text-left">Type</th>
-                      <th className="px-4 py-2 text-left">Inputs</th>
-                      <th className="px-4 py-2 text-left">Outputs</th>
-                      <th className="px-4 py-2 text-right">Energy (MeV)</th>
-                      <th className="px-4 py-2 text-left">Neutrino</th>
-                    </tr>
-                  </thead>
-                  <tbody className="text-gray-900 dark:text-gray-100">
-                    {results.reactions.map((reaction, idx) => (
-                      <tr key={idx} className="border-b border-gray-200 dark:border-gray-700">
-                        <td className="px-4 py-2">{reaction.loop}</td>
-                        <td className="px-4 py-2">
-                          <span className={`px-2 py-1 rounded text-xs font-medium ${
-                            reaction.type === 'fusion'
-                              ? 'bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200'
-                              : 'bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200'
-                          }`}>
-                            {reaction.type}
-                          </span>
-                        </td>
-                        <td className="px-4 py-2 font-mono">{reaction.inputs.join(' + ')}</td>
-                        <td className="px-4 py-2 font-mono">{reaction.outputs.join(' + ')}</td>
-                        <td className="px-4 py-2 text-right font-mono">{reaction.MeV.toFixed(3)}</td>
-                        <td className="px-4 py-2">{reaction.neutrino}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          )}
-
-          {/* Product Distribution */}
-          {results.productDistribution.size > 0 && (
-            <div className="card p-6">
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-                Product Distribution ({results.productDistribution.size} unique nuclides)
-              </h3>
-              <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3">
-                {Array.from(results.productDistribution.entries())
-                  .sort((a, b) => b[1] - a[1])
-                  .map(([nuclide, count]) => (
-                    <div
-                      key={nuclide}
-                      className="px-3 py-2 bg-gray-50 dark:bg-gray-800 rounded text-center"
-                    >
-                      <div className="font-mono text-sm font-medium text-gray-900 dark:text-white">
-                        {nuclide}
-                      </div>
-                      <div className="text-xs text-gray-600 dark:text-gray-400">
-                        {count}×
-                      </div>
-                    </div>
-                  ))}
-              </div>
-            </div>
-          )}
-
-          {/* No Reactions Found */}
-          {results.reactions.length === 0 && (
+          {/* Tabbed Results Interface */}
+          {results.reactions.length > 0 ? (
+            <CascadeTabs results={results} fuelNuclides={parsedFuelNuclides} />
+          ) : (
             <div className="card p-6 bg-yellow-50 dark:bg-yellow-900/20">
               <div className="flex items-start gap-3">
                 <AlertCircle className="w-5 h-5 text-yellow-600 flex-shrink-0 mt-0.5" />
