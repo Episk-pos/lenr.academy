@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Play, BookOpen, Download, Loader, AlertCircle } from 'lucide-react'
 import { useDatabase } from '../contexts/DatabaseContext'
 import DatabaseLoadingCard from '../components/DatabaseLoadingCard'
-import DatabaseErrorCard from '../components/DatabaseErrorCard'
+import ErrorDisplay from '../components/ErrorDisplay'
 
 export default function AllTables() {
   const { db, isLoading: dbLoading, error: dbError, downloadProgress } = useDatabase()
@@ -68,7 +68,7 @@ export default function AllTables() {
   }
 
   if (dbError) {
-    return <DatabaseErrorCard error={dbError} />
+    return <ErrorDisplay error={dbError} errorBoundary="AllTables" isDatabaseError={true} />
   }
 
   return (

@@ -15,7 +15,7 @@ import AllTables from './pages/AllTables'
 import CascadesAll from './pages/CascadesAll'
 import PrivacyPreferences from './pages/PrivacyPreferences'
 import SentryTest from './pages/SentryTest'
-import DatabaseErrorCard from './components/DatabaseErrorCard'
+import ErrorDisplay from './components/ErrorDisplay'
 import PWAUpdatePrompt from './components/PWAUpdatePrompt'
 import PWAInstallPrompt from './components/PWAInstallPrompt'
 import OfflineIndicator from './components/OfflineIndicator'
@@ -27,45 +27,17 @@ function App() {
         // Check if this is a database error
         const errorMessage = error instanceof Error ? error.message.toLowerCase() : String(error).toLowerCase();
         const isDatabaseError = errorMessage.includes('database') || errorMessage.includes('sql');
+        const errorObj = error instanceof Error ? error : new Error(String(error));
 
         return (
           <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center p-4">
-            <div className="max-w-2xl w-full">
-              {isDatabaseError ? (
-                <DatabaseErrorCard error={error instanceof Error ? error : new Error(String(error))} />
-              ) : (
-                <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-8">
-                  <h1 className="text-2xl font-bold text-red-600 dark:text-red-400 mb-4">
-                    Something went wrong
-                  </h1>
-                  <p className="text-gray-700 dark:text-gray-300 mb-4">
-                    We're sorry, but the application encountered an unexpected error.
-                    This error has been automatically reported to our team.
-                  </p>
-                  <details className="mb-6">
-                    <summary className="cursor-pointer text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200">
-                      Technical details
-                    </summary>
-                    <pre className="mt-2 p-4 bg-gray-100 dark:bg-gray-900 rounded text-xs overflow-auto">
-                      {error instanceof Error ? error.message : String(error)}
-                    </pre>
-                  </details>
-                  <div className="flex gap-4">
-                    <button
-                      onClick={resetError}
-                      className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
-                    >
-                      Try again
-                    </button>
-                    <button
-                      onClick={() => window.location.href = '/'}
-                      className="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700 transition-colors"
-                    >
-                      Return to home
-                    </button>
-                  </div>
-                </div>
-              )}
+            <div className="w-full flex justify-center">
+              <ErrorDisplay
+                error={errorObj}
+                resetError={resetError}
+                errorBoundary="App"
+                isDatabaseError={isDatabaseError}
+              />
             </div>
           </div>
         );

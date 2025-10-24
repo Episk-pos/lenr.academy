@@ -10,7 +10,7 @@ import PeriodicTableSelector from '../components/PeriodicTableSelector'
 import PeriodicTable from '../components/PeriodicTable'
 import NuclideDetailsCard from '../components/NuclideDetailsCard'
 import DatabaseLoadingCard from '../components/DatabaseLoadingCard'
-import DatabaseErrorCard from '../components/DatabaseErrorCard'
+import ErrorDisplay from '../components/ErrorDisplay'
 import { VirtualizedList } from '../components/VirtualizedList'
 import LimitSelector from '../components/LimitSelector'
 
@@ -608,7 +608,7 @@ export default function FusionQuery() {
   }
 
   if (dbError) {
-    return <DatabaseErrorCard error={dbError} />
+    return <ErrorDisplay error={dbError} errorBoundary="FusionQuery" isDatabaseError={true} />
   }
 
   return (

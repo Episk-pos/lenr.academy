@@ -12,7 +12,7 @@ import TabNavigation, { Tab } from '../components/TabNavigation'
 import SortableTable, { TableColumn } from '../components/SortableTable'
 import FilterPanel, { FilterConfig, FilterPreset } from '../components/FilterPanel'
 import DatabaseLoadingCard from '../components/DatabaseLoadingCard'
-import DatabaseErrorCard from '../components/DatabaseErrorCard'
+import ErrorDisplay from '../components/ErrorDisplay'
 import Tooltip from '../components/Tooltip'
 import DecayChainDiagram from '../components/DecayChainDiagram'
 import {
@@ -1605,7 +1605,7 @@ export default function ShowElementData() {
   }
 
   if (dbError) {
-    return <DatabaseErrorCard error={dbError} />
+    return <ErrorDisplay error={dbError} errorBoundary="ShowElementData" isDatabaseError={true} />
   }
 
   return (

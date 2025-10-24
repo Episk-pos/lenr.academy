@@ -78,4 +78,28 @@
   .data-table tbody tr:hover {
     @apply bg-gray-50 dark:bg-gray-800/50;
   }
+
+  /* Error display components */
+  .error-stack {
+    @apply font-mono text-xs whitespace-pre-wrap overflow-x-auto p-4 bg-gray-50 dark:bg-gray-900 rounded border border-gray-200 dark:border-gray-700 max-h-80;
+  }
+
+  .error-stack-line {
+    @apply block py-0.5;
+  }
+
+  /* Highlight file paths in stack traces (e.g., at Component.tsx:123:45) */
+  .error-stack .error-stack-file {
+    @apply text-blue-600 dark:text-blue-400;
+  }
+
+  /* Highlight line:column numbers */
+  .error-stack .error-stack-location {
+    @apply text-purple-600 dark:text-purple-400;
+  }
+
+  /* Error fingerprint badge */
+  .error-fingerprint {
+    @apply font-mono text-xs px-2 py-1 rounded bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-600;
+  }
 }

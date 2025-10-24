@@ -10,7 +10,7 @@ import PeriodicTable from '../components/PeriodicTable'
 import ElementDetailsCard from '../components/ElementDetailsCard'
 import NuclideDetailsCard from '../components/NuclideDetailsCard'
 import DatabaseLoadingCard from '../components/DatabaseLoadingCard'
-import DatabaseErrorCard from '../components/DatabaseErrorCard'
+import ErrorDisplay from '../components/ErrorDisplay'
 import { VirtualizedList } from '../components/VirtualizedList'
 import LimitSelector from '../components/LimitSelector'
 
@@ -637,7 +637,7 @@ export default function TwoToTwoQuery() {
   }
 
   if (dbError) {
-    return <DatabaseErrorCard error={dbError} />
+    return <ErrorDisplay error={dbError} errorBoundary="TwoToTwoQuery" isDatabaseError={true} />
   }
 
   return (
