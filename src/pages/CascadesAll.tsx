@@ -88,13 +88,14 @@ export default function CascadesAll() {
         <p className="text-gray-600 dark:text-gray-400">Model cascading chain reactions from initial fuel nuclides</p>
       </div>
 
-      <div className="card p-6 mb-6 bg-orange-50 dark:bg-orange-900/20">
+      <div className="card p-6 mb-6 bg-blue-50 dark:bg-blue-900/20">
         <div className="flex items-start gap-3">
-          <AlertCircle className="w-5 h-5 text-orange-600 flex-shrink-0 mt-0.5" />
+          <AlertCircle className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
           <div className="text-sm text-gray-700 dark:text-gray-300">
-            <strong>Note:</strong> Cascade simulations are computationally intensive.
+            <strong>Database-driven limits:</strong> The database contains 324 nuclides across 92 elements,
+            with 3,921 fusion reactions and 1.2M two-to-two reactions. Slider ranges reflect these constraints.
             Default settings (5000 max nuclides, 25 loops) provide comprehensive results.
-            Processing time typically ranges from 30 seconds to 15 minutes depending on parameters.
+            Processing time ranges from 30 seconds to 15 minutes depending on parameters.
           </div>
         </div>
       </div>
@@ -163,28 +164,42 @@ export default function CascadesAll() {
 
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Max Nuclides to Pair
+              Max Nuclides to Pair: {params.maxNuclides}
             </label>
             <input
-              type="number"
-              className="input"
+              type="range"
+              min="10"
+              max="10000"
+              step="10"
+              className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700 accent-blue-600"
               value={params.maxNuclides}
               onChange={(e) => setParams({...params, maxNuclides: parseInt(e.target.value)})}
             />
-            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Recommended: 1000-10000</p>
+            <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400 mt-1">
+              <span>10</span>
+              <span>Database has 324 total nuclides</span>
+              <span>10,000</span>
+            </div>
           </div>
 
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Max Cascade Loops
+              Max Cascade Loops: {params.maxLoops}
             </label>
             <input
-              type="number"
-              className="input"
+              type="range"
+              min="1"
+              max="100"
+              step="1"
+              className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700 accent-blue-600"
               value={params.maxLoops}
               onChange={(e) => setParams({...params, maxLoops: parseInt(e.target.value)})}
             />
-            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Recommended: 10-50</p>
+            <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400 mt-1">
+              <span>1</span>
+              <span>Recommended: 10-50</span>
+              <span>100</span>
+            </div>
           </div>
         </div>
 
