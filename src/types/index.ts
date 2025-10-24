@@ -221,6 +221,27 @@ export interface CascadeParameters {
   excludeBoiledOff: boolean;
 }
 
+// Cascade simulation result types
+export interface CascadeReaction {
+  type: 'fusion' | 'twotwo';         // Reaction type
+  inputs: string[];                  // Nuclide IDs (e.g., ["H-1", "Li-7"])
+  outputs: string[];                 // Product nuclide IDs
+  MeV: number;                       // Energy released/absorbed
+  loop: number;                      // Which iteration produced this reaction (0 = initial)
+  neutrino: NeutrinoType;            // Neutrino involvement
+}
+
+export interface CascadeResults {
+  reactions: CascadeReaction[];                    // All reactions in cascade
+  productDistribution: Map<string, number>;        // Nuclide ID → count of appearances
+  nuclides: Nuclide[];                             // All nuclides involved
+  elements: Element[];                             // All elements involved
+  totalEnergy: number;                             // Sum of all MeV values
+  loopsExecuted: number;                           // Actual loops run (may be < maxLoops)
+  executionTime: number;                           // Time in milliseconds
+  terminationReason: 'max_loops' | 'no_new_products' | 'max_nuclides'; // Why cascade stopped
+}
+
 // Decay chain types for multi-generation radioactive decay visualization
 export interface DecayChainNode {
   nuclide: { Z: number; A: number; E: string };
