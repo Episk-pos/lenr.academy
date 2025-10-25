@@ -12,9 +12,14 @@ test.describe('Cascade Simulation', () => {
     // Check page title
     await expect(page.getByRole('heading', { name: 'Cascade Simulations' })).toBeVisible();
 
-    // Check default fuel nuclides are populated
-    const fuelTextarea = page.locator('textarea');
-    await expect(fuelTextarea).toHaveValue(/H1.*Li7.*Al27/);
+    // Check default fuel nuclides are populated (now shown as chips, not textarea)
+    const fuelSummary = page.locator('text=9 selected:');
+    await expect(fuelSummary).toBeVisible();
+
+    // Verify some default nuclides are shown as chips
+    await expect(page.locator('text=H-1').first()).toBeVisible();
+    await expect(page.locator('text=Li-7').first()).toBeVisible();
+    await expect(page.locator('text=Al-27').first()).toBeVisible();
 
     // Check default parameter values
     await expect(page.locator('input[type="number"]').first()).toHaveValue('2400'); // Temperature
@@ -44,9 +49,11 @@ test.describe('Cascade Simulation', () => {
     await expect(page.locator('text=Total Energy')).toBeVisible();
     await expect(page.locator('text=Execution Time')).toBeVisible();
 
-    // Verify at least one reaction was found
-    const reactionsText = await page.locator('text=Cascade Reactions').textContent();
+    // Verify at least one reaction was found (check the value after "Reactions Found")
+    const reactionsElement = page.locator('text=Reactions Found').locator('..').locator('p');
+    const reactionsText = await reactionsElement.textContent();
     expect(reactionsText).toMatch(/\d+/); // Contains a number
+    expect(parseInt(reactionsText || '0')).toBeGreaterThan(0);
   });
 
   test('should display progress updates during simulation', async ({ page }) => {
@@ -97,9 +104,11 @@ test.describe('Cascade Simulation', () => {
     const runButton = page.locator('button:has-text("Run Cascade Simulation")');
     await expect(runButton).toBeEnabled({ timeout: 10000 });
 
-    // Clear fuel nuclides
-    const fuelTextarea = page.locator('textarea');
-    await fuelTextarea.fill('');
+    // Clear all fuel nuclides using Clear all button
+    await page.locator('button:has-text("Clear all")').click();
+
+    // Verify no nuclides are selected
+    await expect(page.locator('text=0 selected')).toBeVisible();
 
     // Try to run with no fuel
     await runButton.click();
@@ -114,23 +123,19 @@ test.describe('Cascade Simulation', () => {
     const runButton = page.locator('button:has-text("Run Cascade Simulation")');
     await expect(runButton).toBeEnabled({ timeout: 10000 });
 
-    // Set specific fuel (H1 only) and disable all feedback
-    const fuelTextarea = page.locator('textarea');
-    await fuelTextarea.fill('H1');
-
-    // Uncheck feedback options
-    await page.locator('text=Feedback Bosons').locator('input').uncheck();
-    await page.locator('text=Feedback Fermions').locator('input').uncheck();
+    // Disable all feedback (use default fuel nuclides)
+    await page.locator('text=Feedback Bosons').locator('..').locator('input').uncheck();
+    await page.locator('text=Feedback Fermions').locator('..').locator('input').uncheck();
 
     // Run simulation
     await runButton.click();
 
-    // Wait for results or error
-    await expect(page.locator('text=Cascade Complete, text=Error').first()).toBeVisible({ timeout: 30000 });
+    // Wait for results
+    await expect(page.locator('text=Cascade Complete')).toBeVisible({ timeout: 30000 });
 
-    // With no feedback, cascade should terminate quickly with no new products
-    const terminationText = await page.textContent('body');
-    expect(terminationText).toContain('Termination');
+    // With no feedback, cascade should terminate quickly with fewer loops
+    await expect(page.locator('text=Loops Executed')).toBeVisible();
+    await expect(page.locator('text=Termination')).toBeVisible();
   });
 
   test('should correctly query database tables (regression for table names)', async ({ page }) => {
@@ -141,12 +146,10 @@ test.describe('Cascade Simulation', () => {
     const runButton = page.locator('button:has-text("Run Cascade Simulation")');
     await expect(runButton).toBeEnabled({ timeout: 10000 });
 
-    // Use minimal fuel for fast test
-    const fuelTextarea = page.locator('textarea');
-    await fuelTextarea.fill('D, Li7');
-
-    // Set max loops to 1 for speed
-    const loopInput = page.locator('input[type="number"]').nth(4);
+    // Set max loops to 1 for speed (use default fuel nuclides)
+    const loopInput = page.locator('input[type="range"]').filter({ hasText: /Max Cascade Loops/i }).or(
+      page.locator('label:has-text("Max Cascade Loops")').locator('..').locator('input[type="range"]')
+    );
     await loopInput.fill('1');
 
     // Run simulation
@@ -209,7 +212,7 @@ test.describe('Cascade Simulation', () => {
     // Adjust min fusion energy
     const fusionInput = page.locator('input[type="number"]').nth(1);
     await fusionInput.fill('2.0');
-    await expect(fusionInput).toHaveValue('2');
+    await expect(fusionInput).toHaveValue('2.0');
 
     // Adjust max nuclides
     const nuclidesInput = page.locator('input[type="number"]').nth(3);
@@ -235,8 +238,8 @@ test.describe('Cascade Simulation', () => {
     const twoToTwoInput = page.locator('input[type="number"]').nth(2);
     await twoToTwoInput.fill('1000');
 
-    // Set max loops to 1
-    const loopInput = page.locator('input[type="number"]').nth(4);
+    // Set max loops to 1 (now a range slider)
+    const loopInput = page.locator('label:has-text("Max Cascade Loops")').locator('..').locator('input[type="range"]');
     await loopInput.fill('1');
 
     // Run simulation

@@ -111,8 +111,12 @@ test.describe('Cascade Sankey Diagram Error Handling', () => {
     // Clear localStorage to ensure guide shows
     await page.evaluate(() => localStorage.removeItem('cascade-sankey-guide-seen'));
 
-    // Reload to trigger guide
+    // Reload to trigger guide - wait for state restoration
     await page.reload();
+
+    // Wait for simulation results to be restored from localStorage
+    await expect(page.locator('text=Cascade Complete')).toBeVisible({ timeout: 10000 });
+
     await page.click('button:has-text("Flow View")');
     await page.waitForTimeout(1000);
 
@@ -139,6 +143,10 @@ test.describe('Cascade Sankey Diagram Error Handling', () => {
     // First ensure guide is hidden (set localStorage key)
     await page.evaluate(() => localStorage.setItem('cascade-sankey-guide-seen', 'true'));
     await page.reload();
+
+    // Wait for simulation results to be restored from localStorage
+    await expect(page.locator('text=Cascade Complete')).toBeVisible({ timeout: 10000 });
+
     await page.click('button:has-text("Flow View")');
     await page.waitForTimeout(1000);
 
