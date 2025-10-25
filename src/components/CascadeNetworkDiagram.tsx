@@ -363,7 +363,7 @@ export default function CascadeNetworkDiagram({
   // State
   const [currentLoop, setCurrentLoop] = useState(0);
   const [isPlaying, setIsPlaying] = useState(true);
-  const [playbackSpeed, setPlaybackSpeed] = useState(2);
+  const [playbackSpeed, setPlaybackSpeed] = useState(1);
   const [maxPathways, setMaxPathways] = useState(50);
   const [showFilters, setShowFilters] = useState(false);
 
@@ -534,15 +534,26 @@ export default function CascadeNetworkDiagram({
     const edgesGroup = g.append('g').attr('class', 'edges');
     const nodesGroup = g.append('g').attr('class', 'nodes');
 
-    // Render edges
+    // Render edges with transitions
     const edgeElements = edgesGroup
       .selectAll('line')
-      .data(graphData.links)
-      .join('line')
+      .data(graphData.links, (d: any) => `${d.source.id}-${d.target.id}`)
+      .join(
+        enter => enter.append('line')
+          .attr('stroke', d => getEdgeColor(d.energy))
+          .attr('stroke-width', d => d.width)
+          .attr('stroke-opacity', 0)
+          .attr('marker-end', d => d.isActive ? 'url(#arrowhead-active)' : 'url(#arrowhead)'),
+        update => update,
+        exit => exit.transition().duration(300).attr('stroke-opacity', 0).remove()
+      )
+      .transition()
+      .duration(500)
       .attr('stroke', d => getEdgeColor(d.energy))
       .attr('stroke-width', d => d.width)
       .attr('stroke-opacity', d => d.isActive ? 0.8 : 0.3)
-      .attr('marker-end', 'url(#arrowhead)');
+      .attr('marker-end', d => d.isActive ? 'url(#arrowhead-active)' : 'url(#arrowhead)')
+      .selection();
 
     // Render nodes
     const nodeElements = nodesGroup
@@ -567,10 +578,16 @@ export default function CascadeNetworkDiagram({
         }) as any
       );
 
-    // Node circles
-    nodeElements
-      .append('circle')
-      .attr('r', d => d.size / 2)
+    // Node circles - update existing or create new
+    const circles = nodeElements.selectAll('circle')
+      .data(d => [d])
+      .join('circle')
+      .attr('r', d => d.size / 2);
+
+    // Animate circle properties with transitions
+    circles
+      .transition()
+      .duration(500)
       .attr('fill', d => getBlendedNodeColor(d.inputCount, d.outputCount))
       .attr('fill-opacity', d => 0.3 + 0.7 * d.recency)
       .attr('stroke', d => d.isActive ? '#FFD700' : '#555')
@@ -581,16 +598,22 @@ export default function CascadeNetworkDiagram({
         return 'none';
       });
 
-    // Node labels
-    nodeElements
-      .append('text')
+    // Node labels - update existing or create new
+    const labels = nodeElements.selectAll('text')
+      .data(d => [d])
+      .join('text')
       .text(d => d.label)
       .attr('text-anchor', 'middle')
       .attr('dy', d => d.size / 2 + 12)
       .attr('font-size', '10px')
       .attr('font-weight', '600')
       .attr('fill', 'currentColor')
-      .attr('class', 'text-gray-900 dark:text-gray-100')
+      .attr('class', 'text-gray-900 dark:text-gray-100');
+
+    // Animate label opacity
+    labels
+      .transition()
+      .duration(500)
       .attr('opacity', d => 0.3 + 0.7 * d.recency);
 
     // Hover interactions - highlight node and its connections
@@ -909,12 +932,22 @@ export default function CascadeNetworkDiagram({
             <marker
               id="arrowhead"
               viewBox="0 0 10 10"
-              refX="9"
+              refX="8"
               refY="5"
-              markerWidth="6"
-              markerHeight="6"
+              markerWidth="8"
+              markerHeight="8"
               orient="auto-start-reverse">
-              <path d="M 0 0 L 10 5 L 0 10 z" fill="context-stroke" />
+              <path d="M 0 0 L 10 5 L 0 10 z" className="fill-gray-500 dark:fill-gray-400" />
+            </marker>
+            <marker
+              id="arrowhead-active"
+              viewBox="0 0 10 10"
+              refX="8"
+              refY="5"
+              markerWidth="8"
+              markerHeight="8"
+              orient="auto-start-reverse">
+              <path d="M 0 0 L 10 5 L 0 10 z" className="fill-blue-500 dark:fill-blue-400" />
             </marker>
           </defs>
         </svg>
