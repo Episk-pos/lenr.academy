@@ -65,15 +65,14 @@ test.describe('Cascade Simulation', () => {
     await runButton.click();
 
     // Progress card should appear
-    const progressCard = page.locator('text=Running Cascade Simulation').locator('..');
-    await expect(progressCard).toBeVisible();
+    await expect(page.locator('text=Running Cascade Simulation')).toBeVisible({ timeout: 2000 });
 
     // Progress should show loop information
     await expect(page.locator('text=Loop Progress')).toBeVisible();
     await expect(page.locator('text=New Reactions (this loop)')).toBeVisible();
 
-    // Progress bar should be present
-    await expect(page.locator('[style*="width"]')).toBeVisible();
+    // Wait for completion (don't check for progress bar as it may complete too fast)
+    await expect(page.locator('text=Cascade Complete')).toBeVisible({ timeout: 30000 });
   });
 
   test('should handle cancel operation', async ({ page }) => {
@@ -82,7 +81,7 @@ test.describe('Cascade Simulation', () => {
     await expect(runButton).toBeEnabled({ timeout: 10000 });
 
     // Increase loop count to make simulation longer
-    const loopInput = page.locator('input[type="number"]').nth(4); // Max loops input
+    const loopInput = page.locator('label:has-text("Max Cascade Loops")').locator('..').locator('input[type="range"]');
     await loopInput.fill('5');
 
     // Click run button
@@ -107,8 +106,8 @@ test.describe('Cascade Simulation', () => {
     // Clear all fuel nuclides using Clear all button
     await page.locator('button:has-text("Clear all")').click();
 
-    // Verify no nuclides are selected
-    await expect(page.locator('text=0 selected')).toBeVisible();
+    // Verify no nuclides are selected (button shows "Any" when empty)
+    await expect(page.locator('button:has-text("Any")')).toBeVisible();
 
     // Try to run with no fuel
     await runButton.click();
@@ -192,11 +191,14 @@ test.describe('Cascade Simulation', () => {
     // Wait for results
     await expect(page.locator('text=Cascade Complete')).toBeVisible({ timeout: 30000 });
 
-    // Check for product distribution section
-    await expect(page.locator('text=Product Distribution')).toBeVisible();
+    // Click on Products tab to see product distribution
+    await page.locator('button:has-text("Products")').click();
 
-    // Should show unique nuclide count
-    const distributionHeader = await page.locator('text=Product Distribution').textContent();
+    // Wait for product distribution to load (heading is "Top Products")
+    await expect(page.locator('text=Top Products')).toBeVisible({ timeout: 5000 });
+
+    // Should show unique nuclide count in the heading
+    const distributionHeader = await page.locator('text=Top Products').textContent();
     expect(distributionHeader).toMatch(/\d+ unique nuclides/);
   });
 
@@ -214,10 +216,11 @@ test.describe('Cascade Simulation', () => {
     await fusionInput.fill('2.0');
     await expect(fusionInput).toHaveValue('2.0');
 
-    // Adjust max nuclides
-    const nuclidesInput = page.locator('input[type="number"]').nth(3);
-    await nuclidesInput.fill('30');
-    await expect(nuclidesInput).toHaveValue('30');
+    // Adjust max nuclides (now a range slider)
+    const nuclidesInput = page.locator('label:has-text("Max Nuclides to Pair")').locator('..').locator('input[type="range"]');
+    await nuclidesInput.fill('3000');
+    // Verify it changed (value displayed in label)
+    await expect(page.locator('text=Max Nuclides to Pair: 3000')).toBeVisible();
 
     // Reset parameters
     await page.click('button:has-text("Reset Parameters")');
