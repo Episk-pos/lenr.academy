@@ -46,15 +46,12 @@
   },
   "dependencies": {
     "@sentry/react": "^10.19.0",
-    "@types/dagre": "^0.7.53",
-    "clsx": "^2.0.0",
     "d3-drag": "^3.0.0",
     "d3-ease": "^3.0.1",
     "d3-force": "^3.0.0",
     "d3-selection": "^3.0.0",
     "d3-transition": "^3.0.1",
     "d3-zoom": "^3.0.0",
-    "dagre": "^0.8.5",
     "lucide-react": "^0.292.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
@@ -62,13 +59,10 @@
     "react-router-dom": "^6.20.0",
     "react-virtualized": "^9.22.6",
     "react-zoom-pan-pinch": "^3.7.0",
-    "reactflow": "^11.11.4",
     "recharts": "^2.10.3",
     "remark-gfm": "^4.0.0",
     "remark-github": "^12.0.0",
-    "sql.js": "^1.13.0",
-    "tailwind-merge": "^2.1.0",
-    "zustand": "^4.4.7"
+    "sql.js": "^1.13.0"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.10.2",
@@ -77,7 +71,6 @@
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.0",
     "@testing-library/user-event": "^14.6.1",
-    "@types/cytoscape": "^3.21.9",
     "@types/d3-drag": "^3.0.7",
     "@types/d3-ease": "^3.0.2",
     "@types/d3-force": "^3.0.10",
