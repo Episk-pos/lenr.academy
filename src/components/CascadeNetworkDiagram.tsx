@@ -1,21 +1,15 @@
-import { useCallback, useMemo, useState, useEffect, useRef } from 'react';
-import cytoscape, { Core } from 'cytoscape';
-// @ts-ignore - No types available for cytoscape-cose-bilkent
-import coseBilkent from 'cytoscape-cose-bilkent';
-import { ChevronDown, ChevronUp, Play, Pause, StopCircle, SkipForward, SkipBack, Gauge } from 'lucide-react';
-import { detectCycles } from '../services/cycleDetector';
+import { useEffect, useRef, useState, useCallback } from 'react';
+import * as d3 from 'd3-selection';
+import { forceSimulation, forceLink, forceManyBody, forceCenter, forceCollide, SimulationNodeDatum, SimulationLinkDatum } from 'd3-force';
+import { zoom, zoomIdentity, ZoomBehavior } from 'd3-zoom';
+import { drag } from 'd3-drag';
+import { easeCubicOut } from 'd3-ease';
+import { Play, Pause, StopCircle, SkipForward, SkipBack, Gauge, ChevronDown, ChevronUp, ZoomIn, ZoomOut, Maximize2 } from 'lucide-react';
 import type { NodeRole } from '../types';
 
 /**
- * Linear interpolation helper
+ * Reaction data structure from cascade results
  */
-function lerp(start: number, end: number, t: number): number {
-  return Math.round(start + (end - start) * t);
-}
-
-// Register the layout algorithm
-cytoscape.use(coseBilkent);
-
 interface Reaction {
   type: 'fusion' | 'twotwo';
   inputs: string[];
@@ -23,6 +17,45 @@ interface Reaction {
   MeV: number;
   loop: number;
   neutrino: string;
+}
+
+/**
+ * D3 Force Simulation Node
+ */
+interface GraphNode extends SimulationNodeDatum {
+  id: string;
+  label: string;
+
+  // Activity tracking
+  firstLoop: number;
+  lastActiveLoop: number;
+  isActive: boolean;
+  recency: number;  // 1.0 = current loop, decays over time
+
+  // Visual properties
+  size: number;
+  inputCount: number;
+  outputCount: number;
+  role: NodeRole;
+  frequency: number;
+}
+
+/**
+ * D3 Force Simulation Link
+ */
+interface GraphLink extends SimulationLinkDatum<GraphNode> {
+  source: string | GraphNode;
+  target: string | GraphNode;
+
+  // Activity tracking
+  firstLoop: number;
+  isActive: boolean;
+
+  // Visual properties
+  type: 'fusion' | 'twotwo';
+  energy: number;  // MeV
+  frequency: number;
+  width: number;
 }
 
 interface CascadeNetworkDiagramProps {
@@ -43,28 +76,39 @@ const ROLE_COLORS: Record<NodeRole, string> = {
 
 /**
  * Blend node color based on input/output ratio
- * Similar to periodic table heatmap approach
- * @param inputCount - Number of times nuclide appears as input
- * @param outputCount - Number of times nuclide appears as output
- * @returns RGB color string
  */
 function getBlendedNodeColor(inputCount: number, outputCount: number): string {
   const total = inputCount + outputCount;
   if (total === 0) return ROLE_COLORS.intermediate;
 
-  // Calculate ratio: 0 = pure input, 1 = pure output
   const ratio = outputCount / total;
 
-  // Base colors (RGB values)
-  const inputColor = { r: 74, g: 144, b: 226 };   // Blue (#4A90E2)
-  const outputColor = { r: 126, g: 211, b: 33 };  // Green (#7ED321)
+  // Lerp between blue (input) and green (output)
+  const inputColor = { r: 74, g: 144, b: 226 };
+  const outputColor = { r: 126, g: 211, b: 33 };
 
-  // Blend colors based on ratio
-  const r = lerp(inputColor.r, outputColor.r, ratio);
-  const g = lerp(inputColor.g, outputColor.g, ratio);
-  const b = lerp(inputColor.b, outputColor.b, ratio);
+  const r = Math.round(inputColor.r + (outputColor.r - inputColor.r) * ratio);
+  const g = Math.round(inputColor.g + (outputColor.g - inputColor.g) * ratio);
+  const b = Math.round(inputColor.b + (outputColor.b - inputColor.b) * ratio);
 
   return `rgb(${r}, ${g}, ${b})`;
+}
+
+/**
+ * Get edge color based on energy (MeV) with brightness variations
+ * More exothermic = brighter green, more endothermic = dimmer red
+ */
+function getEdgeColor(meV: number): string {
+  // Calculate brightness based on energy magnitude
+  const brightness = Math.min(1.0, 0.3 + Math.abs(meV) / 20);
+
+  if (meV > 0) {
+    // Exothermic - green with brightness based on energy
+    return `rgba(126, 211, 33, ${brightness})`;
+  } else {
+    // Endothermic - red with reduced brightness
+    return `rgba(208, 2, 27, ${brightness * 0.5})`;
+  }
 }
 
 /**
@@ -72,61 +116,46 @@ function getBlendedNodeColor(inputCount: number, outputCount: number): string {
  */
 function classifyNuclideRole(
   nuclideId: string,
-  reactions: Reaction[],
+  allReactions: Reaction[],
   firstLoopInputs: Set<string>
 ): NodeRole {
   let appearsAsInput = 0;
   let appearsAsOutput = 0;
-  let inFirstLoop = firstLoopInputs.has(nuclideId);
+  const inFirstLoop = firstLoopInputs.has(nuclideId);
 
-  reactions.forEach((reaction) => {
+  allReactions.forEach((reaction) => {
     if (reaction.inputs.includes(nuclideId)) appearsAsInput++;
     if (reaction.outputs.includes(nuclideId)) appearsAsOutput++;
   });
 
-  // Fuel: Only in first loop as input, never produced
-  if (inFirstLoop && appearsAsOutput === 0) {
-    return 'fuel';
-  }
-
-  // Stable: Appears as output but never as input (terminal node)
-  if (appearsAsOutput > 0 && appearsAsInput === 0) {
-    return 'stable';
-  }
-
-  // Product: Mostly appears as output
-  if (appearsAsOutput > appearsAsInput * 2) {
-    return 'product';
-  }
-
-  // Intermediate: Active participant in reactions
+  if (inFirstLoop && appearsAsOutput === 0) return 'fuel';
+  if (appearsAsOutput > 0 && appearsAsInput === 0) return 'stable';
+  if (appearsAsOutput > appearsAsInput * 2) return 'product';
   return 'intermediate';
 }
 
 /**
- * Get edge color based on energy (MeV)
+ * Build clean graph data with activity tracking
+ * NO ORPHANED NODES - filters pathways first, then builds graph
  */
-function getEdgeColor(meV: number): string {
-  if (meV > 5) return '#00D084';   // Bright green - highly exothermic
-  if (meV > 0) return '#7ED321';   // Green - exothermic
-  if (meV > -5) return '#F5A623';  // Orange - slightly endothermic
-  return '#D0021B';                 // Red - endothermic
-}
-
-/**
- * Build Cytoscape graph elements from cascade reactions
- */
-function buildCytoscapeElements(
+function buildGraphData(
   reactions: Reaction[],
+  currentLoop: number,
   maxPathways: number = 0
 ): {
-  elements: cytoscape.ElementDefinition[];
-  totalPathways: number;
-  displayedPathways: number;
-  nodeRoles: Map<string, NodeRole>;
+  nodes: GraphNode[];
+  links: GraphLink[];
+  activeNodeIds: Set<string>;
 } {
-  // De-duplicate and aggregate pathways
-  const pathwayMap = new Map<string, { count: number; type: string; avgMeV: number; loops: Set<number> }>();
+  // Phase 1: Aggregate and filter pathways by frequency
+  const pathwayMap = new Map<string, {
+    count: number;
+    type: 'fusion' | 'twotwo';
+    avgMeV: number;
+    loops: Set<number>;
+    firstLoop: number;
+    lastLoop: number;
+  }>();
 
   reactions.forEach((reaction) => {
     const pathwayKey = `${reaction.inputs.join('+')}→${reaction.outputs.join('+')}`;
@@ -136,330 +165,273 @@ function buildCytoscapeElements(
       existing.count++;
       existing.avgMeV = (existing.avgMeV * (existing.count - 1) + reaction.MeV) / existing.count;
       existing.loops.add(reaction.loop);
+      existing.lastLoop = Math.max(existing.lastLoop, reaction.loop);
     } else {
       pathwayMap.set(pathwayKey, {
         count: 1,
         type: reaction.type,
         avgMeV: reaction.MeV,
         loops: new Set([reaction.loop]),
+        firstLoop: reaction.loop,
+        lastLoop: reaction.loop,
       });
     }
   });
 
-  const totalPathways = pathwayMap.size;
+  // Filter: only pathways that have appeared by currentLoop
+  const sortedPathways = Array.from(pathwayMap.entries())
+    .filter(([_, pathway]) => pathway.firstLoop <= currentLoop)
+    .sort((a, b) => b[1].count - a[1].count);
 
-  // Sort by count and limit
-  const sortedPathways = Array.from(pathwayMap.entries()).sort((a, b) => b[1].count - a[1].count);
   const filteredPathways = maxPathways > 0 ? sortedPathways.slice(0, maxPathways) : sortedPathways;
-  const limitedPathwayMap = new Map(filteredPathways);
 
-  // Extract unique nuclides from filtered pathways
-  const nuclideFrequency = new Map<string, number>();
+  // Phase 2: Build node activity tracking from FILTERED pathways only
+  const nodeActivity = new Map<string, {
+    firstLoop: number;
+    lastLoop: number;
+    inputCount: number;
+    outputCount: number;
+    activeLoops: Set<number>;
+  }>();
+
   const firstLoopInputs = new Set<string>();
-
-  // Find first loop inputs
   reactions.filter((r) => r.loop === 0 || r.loop === 1).forEach((r) => {
     r.inputs.forEach((n) => firstLoopInputs.add(n));
   });
 
-  // Calculate input/output counts for proportional color blending
-  const inputCounts = new Map<string, number>();
-  const outputCounts = new Map<string, number>();
-
-  limitedPathwayMap.forEach((pathway, key) => {
+  // Track activity only for nodes in filtered pathways
+  filteredPathways.forEach(([key, pathway]) => {
     const [inputs, outputs] = key.split('→');
 
-    // Track input occurrences
-    inputs.split('+').forEach((nuclide) => {
-      inputCounts.set(nuclide, (inputCounts.get(nuclide) || 0) + pathway.count);
-      nuclideFrequency.set(nuclide, (nuclideFrequency.get(nuclide) || 0) + pathway.count);
-    });
+    pathway.loops.forEach(loop => {
+      if (loop > currentLoop) return;
 
-    // Track output occurrences
-    outputs.split('+').forEach((nuclide) => {
-      outputCounts.set(nuclide, (outputCounts.get(nuclide) || 0) + pathway.count);
-      nuclideFrequency.set(nuclide, (nuclideFrequency.get(nuclide) || 0) + pathway.count);
+      inputs.split('+').forEach((nuclide) => {
+        if (!nodeActivity.has(nuclide)) {
+          nodeActivity.set(nuclide, {
+            firstLoop: loop,
+            lastLoop: loop,
+            inputCount: 0,
+            outputCount: 0,
+            activeLoops: new Set(),
+          });
+        }
+        const activity = nodeActivity.get(nuclide)!;
+        activity.lastLoop = Math.max(activity.lastLoop, loop);
+        activity.inputCount += pathway.count;
+        activity.activeLoops.add(loop);
+      });
+
+      outputs.split('+').forEach((nuclide) => {
+        if (!nodeActivity.has(nuclide)) {
+          nodeActivity.set(nuclide, {
+            firstLoop: loop,
+            lastLoop: loop,
+            inputCount: 0,
+            outputCount: 0,
+            activeLoops: new Set(),
+          });
+        }
+        const activity = nodeActivity.get(nuclide)!;
+        activity.lastLoop = Math.max(activity.lastLoop, loop);
+        activity.outputCount += pathway.count;
+        activity.activeLoops.add(loop);
+      });
     });
   });
 
-  // Classify nodes (still needed for role-based styling options)
-  const nodeRoles = new Map<string, NodeRole>();
-  nuclideFrequency.forEach((_, nuclideId) => {
-    const role = classifyNuclideRole(nuclideId, reactions, firstLoopInputs);
-    nodeRoles.set(nuclideId, role);
-  });
+  // Calculate recency score (exponential decay)
+  const calculateRecency = (lastLoop: number): number => {
+    const loopsSinceActive = currentLoop - lastLoop;
+    if (loopsSinceActive === 0) return 1.0;
+    return Math.max(0.2, Math.exp(-loopsSinceActive / 3));
+  };
 
-  // Build nodes with input/output counts for color blending
-  const nodes: cytoscape.ElementDefinition[] = Array.from(nuclideFrequency.entries()).map(
-    ([nuclideId, frequency]) => {
-      const role = nodeRoles.get(nuclideId)!;
+  // Phase 3: Build D3 nodes
+  const activeNodeIds = new Set<string>();
+  const nodes: GraphNode[] = Array.from(nodeActivity.entries()).map(
+    ([nuclideId, activity]) => {
+      const role = classifyNuclideRole(nuclideId, reactions, firstLoopInputs);
+      const isActive = activity.activeLoops.has(currentLoop);
+      if (isActive) activeNodeIds.add(nuclideId);
+
+      const recency = calculateRecency(activity.lastLoop);
       const baseSize = 30;
+      const frequency = activity.inputCount + activity.outputCount;
       const size = baseSize + Math.log(frequency + 1) * 10;
-      const inputCount = inputCounts.get(nuclideId) || 0;
-      const outputCount = outputCounts.get(nuclideId) || 0;
 
       return {
-        data: {
-          id: nuclideId,
-          label: nuclideId,
-          frequency,
-          role,
-          size,
-          inputCount,
-          outputCount,
-        },
+        id: nuclideId,
+        label: nuclideId,
+        firstLoop: activity.firstLoop,
+        lastActiveLoop: activity.lastLoop,
+        isActive,
+        recency,
+        size,
+        inputCount: activity.inputCount,
+        outputCount: activity.outputCount,
+        role,
+        frequency,
       };
     }
   );
 
-  // Build edges
-  const edges: cytoscape.ElementDefinition[] = [];
-  let edgeId = 0;
-
-  limitedPathwayMap.forEach((pathway, key) => {
+  // Phase 4: Build D3 links
+  const links: GraphLink[] = [];
+  filteredPathways.forEach(([key, pathway]) => {
     const [inputs, outputs] = key.split('→');
     const inputList = inputs.split('+');
     const outputList = outputs.split('+');
-    const edgeColor = getEdgeColor(pathway.avgMeV);
-    const strokeWidth = Math.min(8, 1 + Math.log(pathway.count + 1) * 1.5);
 
-    // Determine if this pathway should be animated (top 20% by frequency)
-    const animate = pathway.count > 5;
+    const isActive = pathway.loops.has(currentLoop);
+    const strokeWidth = Math.min(8, 1 + Math.log(pathway.count + 1) * 1.5);
 
     if (pathway.type === 'fusion') {
       // Fusion: A + B → C
-      edges.push({
-        data: {
-          id: `e${edgeId++}`,
-          source: inputList[0],
-          target: outputList[0],
-          type: pathway.type,
-          count: pathway.count,
-          energy: pathway.avgMeV,
-          width: strokeWidth,
-          color: edgeColor,
-          animate,
-        },
+      links.push({
+        source: inputList[0],
+        target: outputList[0],
+        type: pathway.type,
+        frequency: pathway.count,
+        energy: pathway.avgMeV,
+        width: strokeWidth,
+        firstLoop: pathway.firstLoop,
+        isActive,
       });
 
-      // Secondary input (dashed)
+      // Secondary input (if different)
       if (inputList[1] && inputList[1] !== inputList[0]) {
-        edges.push({
-          data: {
-            id: `e${edgeId++}`,
-            source: inputList[1],
-            target: outputList[0],
-            type: pathway.type,
-            count: pathway.count,
-            energy: pathway.avgMeV,
-            width: Math.max(1, strokeWidth - 1),
-            color: edgeColor,
-            secondary: true,
-            animate: false,
-          },
+        links.push({
+          source: inputList[1],
+          target: outputList[0],
+          type: pathway.type,
+          frequency: pathway.count,
+          energy: pathway.avgMeV,
+          width: Math.max(1, strokeWidth - 1),
+          firstLoop: pathway.firstLoop,
+          isActive,
         });
       }
     } else {
       // Two-to-two: A + B → C + D
-      edges.push({
-        data: {
-          id: `e${edgeId++}`,
-          source: inputList[0],
-          target: outputList[0],
-          type: pathway.type,
-          count: pathway.count,
-          energy: pathway.avgMeV,
-          width: strokeWidth,
-          color: edgeColor,
-          animate,
-        },
+      links.push({
+        source: inputList[0],
+        target: outputList[0],
+        type: pathway.type,
+        frequency: pathway.count,
+        energy: pathway.avgMeV,
+        width: strokeWidth,
+        firstLoop: pathway.firstLoop,
+        isActive,
       });
 
       if (outputList[1]) {
-        edges.push({
-          data: {
-            id: `e${edgeId++}`,
-            source: inputList[0],
-            target: outputList[1],
-            type: pathway.type,
-            count: pathway.count,
-            energy: pathway.avgMeV,
-            width: Math.max(1, strokeWidth - 1),
-            color: edgeColor,
-            secondary: true,
-            animate: false,
-          },
+        links.push({
+          source: inputList[0],
+          target: outputList[1],
+          type: pathway.type,
+          frequency: pathway.count,
+          energy: pathway.avgMeV,
+          width: Math.max(1, strokeWidth - 1),
+          firstLoop: pathway.firstLoop,
+          isActive,
         });
       }
     }
   });
 
-  return {
-    elements: [...nodes, ...edges],
-    totalPathways,
-    displayedPathways: filteredPathways.length,
-    nodeRoles,
-  };
+  return { nodes, links, activeNodeIds };
 }
 
 /**
- * Create Cytoscape stylesheet with smooth animations
- */
-function createStylesheet(): any[] {
-  return [
-    // Node styles with proportional color blending and smooth transitions
-    {
-      selector: 'node',
-      style: {
-        'background-color': (ele: any) => {
-          const inputCount = ele.data('inputCount') || 0;
-          const outputCount = ele.data('outputCount') || 0;
-          return getBlendedNodeColor(inputCount, outputCount);
-        },
-        width: (ele: any) => ele.data('size'),
-        height: (ele: any) => ele.data('size'),
-        label: (ele: any) => ele.data('label'),
-        'font-size': 10,
-        'font-weight': 'bold',
-        color: '#333',
-        'text-valign': 'center',
-        'text-halign': 'center',
-        'border-width': 2,
-        'border-color': '#555',
-        // Smooth transitions for all style changes
-        'transition-property': 'background-color, border-color, border-width, width, height, opacity',
-        'transition-duration': '0.5s',
-        'transition-timing-function': 'ease-in-out',
-      },
-    },
-    // New nodes (fade in effect)
-    {
-      selector: 'node.new',
-      style: {
-        'border-width': 4,
-        'border-color': '#4A90E2',
-      },
-    },
-    // Cycle nodes (highlighted)
-    {
-      selector: 'node.cycle',
-      style: {
-        'border-width': 3,
-        'border-color': '#FF6B6B',
-        'border-style': 'solid',
-      },
-    },
-    // Edge styles with smooth transitions
-    {
-      selector: 'edge',
-      style: {
-        width: (ele: any) => ele.data('width'),
-        'line-color': (ele: any) => ele.data('color'),
-        'target-arrow-color': (ele: any) => ele.data('color'),
-        'target-arrow-shape': 'triangle',
-        'curve-style': 'bezier',
-        opacity: 0.7,
-        // Smooth transitions for edges
-        'transition-property': 'line-color, target-arrow-color, width, opacity',
-        'transition-duration': '0.4s',
-        'transition-timing-function': 'ease-in-out',
-      },
-    },
-    // Secondary edges (dashed)
-    {
-      selector: 'edge[secondary]',
-      style: {
-        'line-style': 'dashed',
-        opacity: 0.5,
-      },
-    },
-    // Animated edges (flowing effect with scrolling dashes)
-    {
-      selector: 'edge[?animate]',
-      style: {
-        'line-style': 'dashed',
-        'line-dash-pattern': [8, 4],
-        'line-dash-offset': 24, // Creates scrolling effect when animated
-        opacity: 0.85,
-      },
-    },
-  ];
-}
-
-/**
- * Cascade Network Diagram with Cytoscape.js
+ * Cascade Network Diagram - D3 Force-Directed Graph
  *
- * Force-directed graph visualization showing:
- * - Node colors by role (fuel/intermediate/product/stable)
- * - Edge colors by energy (green=exothermic, red=endothermic)
- * - Cycle detection and highlighting
- * - Interactive exploration
+ * Gource-inspired real-time visualization with:
+ * - Continuous physics simulation (never stops!)
+ * - Activity-based fading (recent = bright, old = dim)
+ * - Auto camera following
+ * - Rich visual effects
  */
 export default function CascadeNetworkDiagram({
   reactions,
   width = '100%',
   height = '600px',
 }: CascadeNetworkDiagramProps) {
-  // Calculate max loop from reactions
-  const maxLoop = useMemo(() => {
-    if (reactions.length === 0) return 0;
-    return Math.max(...reactions.map(r => r.loop));
-  }, [reactions]);
+  // Calculate max loop
+  const maxLoop = Math.max(...reactions.map(r => r.loop), 0);
 
   // State
-  const [maxPathways, setMaxPathways] = useState(50); // Increased default for better initial view
-  const [showFilters, setShowFilters] = useState(false); // Collapsed by default - timeline is primary control
-  const [highlightCycles, setHighlightCycles] = useState(false);
-  const [cycleCount, setCycleCount] = useState(0);
-
-  // Timeline animation state
-  const [currentLoop, setCurrentLoop] = useState(0); // Start at beginning for Gource-like experience
-  const [isPlaying, setIsPlaying] = useState(true); // Auto-play on mount
-  const [playbackSpeed, setPlaybackSpeed] = useState(2); // 2x speed by default for smoother experience
+  const [currentLoop, setCurrentLoop] = useState(0);
+  const [isPlaying, setIsPlaying] = useState(true);
+  const [playbackSpeed, setPlaybackSpeed] = useState(2);
+  const [maxPathways, setMaxPathways] = useState(50);
+  const [showFilters, setShowFilters] = useState(false);
 
   // Refs
+  const svgRef = useRef<SVGSVGElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
-  const cyRef = useRef<Core | null>(null);
-  const nodePositionsRef = useRef<Map<string, { x: number; y: number }>>(new Map());
-  const previousElementIdsRef = useRef<Set<string>>(new Set());
+  const simulationRef = useRef<any>(null);
+  const zoomBehaviorRef = useRef<ZoomBehavior<SVGSVGElement, unknown> | null>(null);
 
-  // Filter reactions up to current loop (show evolution)
-  const filteredReactions = useMemo(() => {
-    return reactions.filter(r => r.loop <= currentLoop);
-  }, [reactions, currentLoop]);
+  // Media control handlers
+  const handlePlay = useCallback(() => {
+    if (currentLoop >= maxLoop) setCurrentLoop(0);
+    setIsPlaying(true);
+  }, [currentLoop, maxLoop]);
 
-  // Build graph data from filtered reactions
-  const graphData = useMemo(
-    () => buildCytoscapeElements(filteredReactions, maxPathways),
-    [filteredReactions, maxPathways]
-  );
+  const handlePause = useCallback(() => setIsPlaying(false), []);
 
-  // Progressive loading
-  const hasMorePathways = useMemo(
-    () => graphData.displayedPathways < graphData.totalPathways,
-    [graphData.displayedPathways, graphData.totalPathways]
-  );
-
-  const loadMorePathways = useCallback(() => {
-    setMaxPathways((prev) => Math.min(prev + 30, 200));
+  const handleStop = useCallback(() => {
+    setIsPlaying(false);
+    setCurrentLoop(0);
   }, []);
 
-  // Sync currentLoop when maxLoop changes (e.g., new cascade data)
-  // Reset to beginning and start playing for Gource-like experience
-  useEffect(() => {
-    setCurrentLoop(0);
-    setIsPlaying(true);
+  const handleStepForward = useCallback(() => {
+    setIsPlaying(false);
+    setCurrentLoop(prev => Math.min(prev + 1, maxLoop));
   }, [maxLoop]);
 
-  // Timeline animation playback
+  const handleStepBackward = useCallback(() => {
+    setIsPlaying(false);
+    setCurrentLoop(prev => Math.max(prev - 1, 0));
+  }, []);
+
+  // Zoom control handlers
+  const handleZoomIn = useCallback(() => {
+    if (!svgRef.current || !zoomBehaviorRef.current) return;
+    const svg = d3.select(svgRef.current);
+    svg.transition().duration(300).call(zoomBehaviorRef.current.scaleBy as any, 1.3);
+  }, []);
+
+  const handleZoomOut = useCallback(() => {
+    if (!svgRef.current || !zoomBehaviorRef.current) return;
+    const svg = d3.select(svgRef.current);
+    svg.transition().duration(300).call(zoomBehaviorRef.current.scaleBy as any, 0.7);
+  }, []);
+
+  const handleZoomReset = useCallback(() => {
+    if (!svgRef.current || !zoomBehaviorRef.current) return;
+    const svg = d3.select(svgRef.current);
+    svg.transition().duration(500).call(
+      zoomBehaviorRef.current.transform as any,
+      zoomIdentity
+    );
+  }, []);
+
+  const handleRestart = useCallback(() => {
+    setCurrentLoop(0);
+    setIsPlaying(true);
+  }, []);
+
+  // Timeline playback
   useEffect(() => {
     if (!isPlaying) return;
 
-    const intervalMs = 1000 / playbackSpeed; // Speed controls interval
+    const intervalMs = 1000 / playbackSpeed;
     const interval = setInterval(() => {
-      setCurrentLoop((prev) => {
+      setCurrentLoop(prev => {
         if (prev >= maxLoop) {
-          setIsPlaying(false); // Stop at end
+          setIsPlaying(false);
           return maxLoop;
         }
         return prev + 1;
@@ -469,278 +441,301 @@ export default function CascadeNetworkDiagram({
     return () => clearInterval(interval);
   }, [isPlaying, playbackSpeed, maxLoop]);
 
-  // Media control handlers
-  const handlePlay = useCallback(() => {
-    if (currentLoop >= maxLoop) {
-      setCurrentLoop(0); // Reset to start if at end
-    }
-    setIsPlaying(true);
-  }, [currentLoop, maxLoop]);
-
-  const handlePause = useCallback(() => {
-    setIsPlaying(false);
-  }, []);
-
-  const handleStop = useCallback(() => {
-    setIsPlaying(false);
+  // Reset on new cascade data
+  useEffect(() => {
     setCurrentLoop(0);
-  }, []);
-
-  const handleRestart = useCallback(() => {
-    setCurrentLoop(0);
-    setIsPlaying(true);
-  }, []);
-
-  const handleStepForward = useCallback(() => {
-    setIsPlaying(false);
-    setCurrentLoop((prev) => Math.min(prev + 1, maxLoop));
+    setIsPlaying(false);  // Don't auto-play
   }, [maxLoop]);
 
-  const handleStepBackward = useCallback(() => {
-    setIsPlaying(false);
-    setCurrentLoop((prev) => Math.max(prev - 1, 0));
-  }, []);
+  // Build graph data
+  const graphData = buildGraphData(reactions, currentLoop, maxPathways);
 
-  // Initialize Cytoscape with incremental updates
+  // Initialize and update D3 force simulation
   useEffect(() => {
-    if (!containerRef.current) return;
+    if (!svgRef.current || !containerRef.current) return;
+    if (graphData.nodes.length === 0) return;
 
-    const currentElementIds = new Set(
-      graphData.elements.map(el => el.data.id).filter((id): id is string => id !== undefined)
-    );
-    const previousElementIds = previousElementIdsRef.current;
+    const container = containerRef.current;
+    const width = container.clientWidth;
+    const height = container.clientHeight;
 
-    // First-time initialization
-    if (!cyRef.current) {
-      const cy = cytoscape({
-        container: containerRef.current,
-        elements: graphData.elements,
-        style: createStylesheet(),
-        layout: {
-          name: 'cose-bilkent',
-          animate: 'end',
-          animationDuration: 1000,
-          nodeDimensionsIncludeLabels: true,
-          idealEdgeLength: 100,
-          nodeRepulsion: 8000,
-          edgeElasticity: 0.45,
-          numIter: 2500,
-          gravity: 0.5, // Stronger pull toward center to prevent isolated nodes drifting away
-          gravityRange: 2.0, // Tighter gravity range keeps disconnected components closer
-        } as any,
-        minZoom: 0.3,
-        maxZoom: 3,
+    // Initialize simulation (continuous physics!)
+    if (!simulationRef.current) {
+      // Initialize all nodes at center with random offset to avoid "flying in from top-left"
+      graphData.nodes.forEach(node => {
+        node.x = width / 2 + (Math.random() - 0.5) * 200;
+        node.y = height / 2 + (Math.random() - 0.5) * 200;
+        node.vx = 0;
+        node.vy = 0;
       });
 
-      cyRef.current = cy;
+      const simulation = forceSimulation(graphData.nodes)
+        .force('link', forceLink<GraphNode, GraphLink>(graphData.links)
+          .id(d => d.id)
+          .distance(100)
+          .strength(0.3)
+        )
+        .force('charge', forceManyBody().strength(-150))
+        .force('center', forceCenter(width / 2, height / 2).strength(0.03))
+        .force('collision', forceCollide<GraphNode>().radius(d => d.size + 5))
+        .alphaMin(0.001)  // Cool down but maintain subtle motion
+        .alphaDecay(0.02)  // Slow cooldown
+        .velocityDecay(0.6);  // More friction for stability
 
-      // Event handlers (only set once)
-      cy.on('tap', 'node', (evt) => {
-        const node = evt.target;
-        console.log('Node clicked:', node.data());
-      });
-
-      cy.on('tap', 'edge', (evt) => {
-        const edge = evt.target;
-        console.log('Edge clicked:', edge.data());
-      });
-
-      cy.on('mouseover', 'node', (evt) => {
-        const node = evt.target;
-        node.style('border-width', 4);
-        node.connectedEdges().style('opacity', 1);
-      });
-
-      cy.on('mouseout', 'node', (evt) => {
-        const node = evt.target;
-        const isCycle = node.hasClass('cycle');
-        node.style('border-width', isCycle ? 3 : 2);
-        node.connectedEdges().style('opacity', 0.7);
-      });
-
-      // Store initial positions
-      cy.ready(() => {
-        cy.nodes().forEach(node => {
-          const pos = node.position();
-          nodePositionsRef.current.set(node.id(), { x: pos.x, y: pos.y });
-        });
-      });
-
-      previousElementIdsRef.current = currentElementIds;
-      return;
-    }
-
-    // Incremental update for existing instance
-    const cy = cyRef.current;
-
-    // Store current positions before making changes
-    cy.nodes().forEach(node => {
-      const pos = node.position();
-      nodePositionsRef.current.set(node.id(), { x: pos.x, y: pos.y });
-    });
-
-    // Find elements to add and remove
-    const toAdd: cytoscape.ElementDefinition[] = [];
-    const toRemoveIds: string[] = [];
-
-    graphData.elements.forEach(el => {
-      if (el.data.id && !previousElementIds.has(el.data.id)) {
-        toAdd.push(el);
-      }
-    });
-
-    cy.elements().forEach(el => {
-      if (!currentElementIds.has(el.id())) {
-        toRemoveIds.push(el.id());
-      }
-    });
-
-    // Batch updates for performance
-    cy.batch(() => {
-      // Remove old elements
-      if (toRemoveIds.length > 0) {
-        toRemoveIds.forEach(id => {
-          cy.getElementById(id).remove();
-          nodePositionsRef.current.delete(id);
-        });
-      }
-
-      // Add new elements
-      if (toAdd.length > 0) {
-        const newElements = cy.add(toAdd);
-
-        // Highlight new nodes with animation
-        newElements.nodes().addClass('new');
-
-        // Remove highlight after animation completes
-        setTimeout(() => {
-          newElements.nodes().removeClass('new');
-        }, 1500);
-
-        // Position new nodes near their connected nodes (better initial placement)
-        newElements.nodes().forEach(node => {
-          const savedPos = nodePositionsRef.current.get(node.id());
-          if (savedPos) {
-            // Existing node - restore position
-            node.position(savedPos);
-          } else {
-            // New node - position near connected neighbors
-            const neighbors = node.neighborhood('node');
-            if (neighbors.length > 0) {
-              // Average position of neighbors
-              let avgX = 0;
-              let avgY = 0;
-              let count = 0;
-              neighbors.forEach(neighbor => {
-                const pos = neighbor.position();
-                avgX += pos.x;
-                avgY += pos.y;
-                count++;
-              });
-              if (count > 0) {
-                node.position({
-                  x: avgX / count + (Math.random() - 0.5) * 50,
-                  y: avgY / count + (Math.random() - 0.5) * 50,
-                });
-              }
-            } else {
-              // No neighbors YET (edges might be added later or connected nodes don't exist yet)
-              // Use center of mass of existing nodes instead of extent
-              const existingNodes = cy.nodes().filter(n => n.id() !== node.id());
-              if (existingNodes.length > 0) {
-                let totalX = 0;
-                let totalY = 0;
-                existingNodes.forEach(n => {
-                  const pos = n.position();
-                  totalX += pos.x;
-                  totalY += pos.y;
-                });
-                const centerX = totalX / existingNodes.length;
-                const centerY = totalY / existingNodes.length;
-
-                // Place near center with significant random offset to prevent clustering
-                node.position({
-                  x: centerX + (Math.random() - 0.5) * 200,
-                  y: centerY + (Math.random() - 0.5) * 200,
-                });
-              } else {
-                // First node - place at origin
-                node.position({ x: 0, y: 0 });
-              }
-            }
-          }
-        });
-
-        // Run smooth layout on ALL nodes to resolve overlaps
-        // Use current positions as starting points for organic transitions
-        if (cy.nodes().length < 150) {
-          cy.layout({
-            name: 'cose-bilkent',
-            animate: 'end', // Animate to final positions
-            animationDuration: 800, // Longer, smoother animation
-            animationEasing: 'ease-out', // Smooth deceleration
-            nodeDimensionsIncludeLabels: true,
-            idealEdgeLength: 100,
-            nodeRepulsion: 8500,
-            edgeElasticity: 0.45,
-            numIter: 800,
-            gravity: 0.5, // Stronger pull toward center to prevent isolated nodes drifting away
-            gravityRange: 2.0, // Tighter gravity range keeps disconnected components closer
-            fit: false, // Don't re-center viewport
-            randomize: false, // Use current positions as starting point
-          } as any).run();
-        }
-
-        // Store positions after layout completes (with buffer for animation)
-        setTimeout(() => {
-          cy.nodes().forEach(node => {
-            const pos = node.position();
-            nodePositionsRef.current.set(node.id(), { x: pos.x, y: pos.y });
-          });
-        }, 900);
-      }
-    });
-
-    previousElementIdsRef.current = currentElementIds;
-
-    // Cleanup only on unmount
-    return () => {
-      // Don't destroy - we'll reuse the instance
-    };
-  }, [graphData.elements]);
-
-  // Cleanup on unmount
-  useEffect(() => {
-    return () => {
-      if (cyRef.current) {
-        cyRef.current.destroy();
-        cyRef.current = null;
-      }
-    };
-  }, []);
-
-  // Handle cycle highlighting
-  useEffect(() => {
-    if (!cyRef.current) return;
-
-    if (highlightCycles) {
-      const result = detectCycles(cyRef.current);
-      setCycleCount(result.cycleCount);
-
-      // Add cycle class to nodes
-      result.cycleNuclides.forEach((nuclideId) => {
-        cyRef.current!.getElementById(nuclideId).addClass('cycle');
-      });
+      simulationRef.current = simulation;
     } else {
-      // Remove cycle class
-      cyRef.current.nodes().removeClass('cycle');
-      setCycleCount(0);
+      // Update existing simulation with new data
+      const sim = simulationRef.current;
+
+      // Preserve positions of existing nodes
+      const oldNodes = sim.nodes();
+      const positionMap = new Map(oldNodes.map(n => [n.id, { x: n.x, y: n.y, vx: n.vx, vy: n.vy }]));
+
+      // Transfer positions to new nodes, initialize new nodes at center with random offset
+      graphData.nodes.forEach(node => {
+        const oldPos = positionMap.get(node.id);
+        if (oldPos) {
+          // Existing node - preserve position
+          node.x = oldPos.x;
+          node.y = oldPos.y;
+          node.vx = oldPos.vx;
+          node.vy = oldPos.vy;
+        } else {
+          // New node - initialize at center with random offset to avoid "flying in from top-left"
+          node.x = width / 2 + (Math.random() - 0.5) * 200;
+          node.y = height / 2 + (Math.random() - 0.5) * 200;
+          node.vx = 0;
+          node.vy = 0;
+        }
+      });
+
+      sim.nodes(graphData.nodes);
+      sim.force('link').links(graphData.links);
+      sim.alpha(0.3).restart();  // Gentle restart for smooth transitions
     }
-  }, [highlightCycles, graphData.elements]);
+
+    // Setup SVG
+    const svg = d3.select(svgRef.current);
+
+    // Preserve current transform if it exists
+    const graphContainer = svg.select('g.graph-container');
+    const currentTransform = graphContainer.empty() ? null : graphContainer.attr('transform');
+
+    svg.selectAll('*').remove();  // Clear
+
+    // Create groups for edges and nodes
+    const g = svg.append('g').attr('class', 'graph-container');
+
+    // Restore previous transform if it existed
+    if (currentTransform) {
+      g.attr('transform', currentTransform);
+    }
+
+    const edgesGroup = g.append('g').attr('class', 'edges');
+    const nodesGroup = g.append('g').attr('class', 'nodes');
+
+    // Render edges
+    const edgeElements = edgesGroup
+      .selectAll('line')
+      .data(graphData.links)
+      .join('line')
+      .attr('stroke', d => getEdgeColor(d.energy))
+      .attr('stroke-width', d => d.width)
+      .attr('stroke-opacity', d => d.isActive ? 0.8 : 0.3)
+      .attr('marker-end', 'url(#arrowhead)');
+
+    // Render nodes
+    const nodeElements = nodesGroup
+      .selectAll('g')
+      .data(graphData.nodes)
+      .join('g')
+      .attr('class', 'node')
+      .call(drag<SVGGElement, GraphNode>()
+        .on('start', (event, d) => {
+          if (!event.active) simulationRef.current.alphaTarget(0.3).restart();
+          d.fx = d.x;
+          d.fy = d.y;
+        })
+        .on('drag', (event, d) => {
+          d.fx = event.x;
+          d.fy = event.y;
+        })
+        .on('end', (event, d) => {
+          if (!event.active) simulationRef.current.alphaTarget(0);
+          d.fx = null;
+          d.fy = null;
+        }) as any
+      );
+
+    // Node circles
+    nodeElements
+      .append('circle')
+      .attr('r', d => d.size / 2)
+      .attr('fill', d => getBlendedNodeColor(d.inputCount, d.outputCount))
+      .attr('fill-opacity', d => 0.3 + 0.7 * d.recency)
+      .attr('stroke', d => d.isActive ? '#FFD700' : '#555')
+      .attr('stroke-width', d => d.isActive ? 4 : 2)
+      .attr('filter', d => {
+        if (d.isActive) return 'url(#active-glow)';
+        if (d.recency > 0.6) return 'url(#recent-glow)';
+        return 'none';
+      });
+
+    // Node labels
+    nodeElements
+      .append('text')
+      .text(d => d.label)
+      .attr('text-anchor', 'middle')
+      .attr('dy', d => d.size / 2 + 12)
+      .attr('font-size', '10px')
+      .attr('font-weight', '600')
+      .attr('fill', 'currentColor')
+      .attr('class', 'text-gray-900 dark:text-gray-100')
+      .attr('opacity', d => 0.3 + 0.7 * d.recency);
+
+    // Hover interactions - highlight node and its connections
+    nodeElements
+      .on('mouseenter', function(event, d) {
+        // Find connected edges
+        const connectedEdges = graphData.links.filter(l =>
+          (l.source as GraphNode).id === d.id || (l.target as GraphNode).id === d.id
+        );
+        const connectedNodeIds = new Set<string>();
+        connectedEdges.forEach(e => {
+          connectedNodeIds.add((e.source as GraphNode).id);
+          connectedNodeIds.add((e.target as GraphNode).id);
+        });
+
+        // Fade non-connected elements
+        nodeElements
+          .transition()
+          .duration(200)
+          .style('opacity', node => connectedNodeIds.has(node.id) ? 1.0 : 0.2);
+
+        edgeElements
+          .transition()
+          .duration(200)
+          .style('opacity', edge => {
+            const sourceId = (edge.source as GraphNode).id;
+            const targetId = (edge.target as GraphNode).id;
+            return (sourceId === d.id || targetId === d.id) ? 1.0 : 0.1;
+          });
+
+        // Highlight hovered node
+        d3.select(this)
+          .select('circle')
+          .transition()
+          .duration(200)
+          .attr('stroke-width', 6)
+          .attr('stroke', '#FFD700');
+      })
+      .on('mouseleave', function() {
+        // Restore all elements
+        nodeElements
+          .transition()
+          .duration(200)
+          .style('opacity', null);
+
+        edgeElements
+          .transition()
+          .duration(200)
+          .style('opacity', null);
+
+        // Restore node stroke
+        nodeElements.selectAll('circle')
+          .transition()
+          .duration(200)
+          .attr('stroke-width', d => d.isActive ? 4 : 2)
+          .attr('stroke', d => d.isActive ? '#FFD700' : '#555');
+      })
+      .style('cursor', 'pointer');
+
+    // Zoom behavior - recreate each time to reference current g element
+    const zoomBehavior = zoom<SVGSVGElement, unknown>()
+      .scaleExtent([0.3, 3])
+      .filter((event) => {
+        // Allow zoom on wheel/pinch
+        // Prevent zoom on drag if target is a node (has class 'node' in parent)
+        if (event.type === 'mousedown' || event.type === 'touchstart') {
+          const target = event.target as Element;
+          // Check if click is on a node or its children
+          if (target.closest('.node')) {
+            return false;  // Let node drag handle it
+          }
+        }
+        return true;  // Allow zoom/pan
+      })
+      .on('zoom', (event) => {
+        g.attr('transform', event.transform);
+      });
+
+    // Apply zoom behavior
+    svg.call(zoomBehavior);
+    zoomBehaviorRef.current = zoomBehavior;
+
+    // Update positions on simulation tick
+    simulationRef.current.on('tick', () => {
+      edgeElements
+        .attr('x1', d => (d.source as GraphNode).x!)
+        .attr('y1', d => (d.source as GraphNode).y!)
+        .attr('x2', d => (d.target as GraphNode).x!)
+        .attr('y2', d => (d.target as GraphNode).y!);
+
+      nodeElements.attr('transform', d => `translate(${d.x},${d.y})`);
+    });
+
+    // Auto camera following (smooth zoom to active nodes)
+    if (graphData.activeNodeIds.size > 0) {
+      const activeNodes = graphData.nodes.filter(n => graphData.activeNodeIds.has(n.id));
+
+      // Calculate bounds of active nodes
+      const xs = activeNodes.map(n => n.x!).filter(x => x !== undefined);
+      const ys = activeNodes.map(n => n.y!).filter(y => y !== undefined);
+
+      if (xs.length > 0 && ys.length > 0) {
+        const minX = Math.min(...xs);
+        const maxX = Math.max(...xs);
+        const minY = Math.min(...ys);
+        const maxY = Math.max(...ys);
+
+        const padding = 100;
+        const boundsWidth = maxX - minX + padding * 2;
+        const boundsHeight = maxY - minY + padding * 2;
+        const centerX = (minX + maxX) / 2;
+        const centerY = (minY + maxY) / 2;
+
+        const scale = Math.min(
+          width / boundsWidth,
+          height / boundsHeight,
+          2.0  // Max zoom
+        );
+
+        // Smooth transition to active area
+        svg
+          .transition()
+          .duration(800)
+          .ease(easeCubicOut)
+          .call(
+            zoomBehaviorRef.current!.transform as any,
+            zoomIdentity
+              .translate(width / 2, height / 2)
+              .scale(scale)
+              .translate(-centerX, -centerY)
+          );
+      }
+    }
+
+    return () => {
+      // Cleanup simulation on unmount
+      if (simulationRef.current) {
+        simulationRef.current.stop();
+      }
+    };
+  }, [graphData]);
 
   return (
     <div className="space-y-4">
-      {/* Timeline Animation Controls - Prominent Gource-style */}
+      {/* Timeline Animation Controls */}
       <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-gray-800 dark:to-gray-750 rounded-lg border-2 border-blue-300 dark:border-blue-700 p-5 shadow-sm">
         <div className="flex items-center justify-between mb-4">
           <div>
@@ -749,17 +744,9 @@ export default function CascadeNetworkDiagram({
               Cascade Evolution Timeline
             </h3>
             <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-              Loop {currentLoop} of {maxLoop} • {filteredReactions.length} reactions visible
+              Loop {currentLoop} of {maxLoop} • {reactions.length} total reactions
             </p>
           </div>
-          <button
-            onClick={handleRestart}
-            className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg shadow-sm transition-colors flex items-center gap-2"
-            title="Restart animation from beginning"
-          >
-            <Play className="w-4 h-4" />
-            Restart
-          </button>
         </div>
 
         {/* Media Controls */}
@@ -767,7 +754,7 @@ export default function CascadeNetworkDiagram({
           <button
             onClick={handleStepBackward}
             disabled={currentLoop === 0}
-            className="p-2 rounded bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="p-2 rounded bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             title="Step backward"
           >
             <SkipBack className="w-4 h-4 text-gray-700 dark:text-gray-300" />
@@ -776,7 +763,7 @@ export default function CascadeNetworkDiagram({
           <button
             onClick={handleStop}
             disabled={currentLoop === 0 && !isPlaying}
-            className="p-2 rounded bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="p-2 rounded bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             title="Stop (reset to beginning)"
           >
             <StopCircle className="w-4 h-4 text-gray-700 dark:text-gray-300" />
@@ -785,7 +772,7 @@ export default function CascadeNetworkDiagram({
           {isPlaying ? (
             <button
               onClick={handlePause}
-              className="p-2 rounded bg-blue-500 hover:bg-blue-600 text-white"
+              className="p-2 rounded bg-blue-500 hover:bg-blue-600 text-white transition-colors"
               title="Pause"
             >
               <Pause className="w-4 h-4" />
@@ -794,7 +781,7 @@ export default function CascadeNetworkDiagram({
             <button
               onClick={handlePlay}
               disabled={currentLoop >= maxLoop && maxLoop > 0}
-              className="p-2 rounded bg-blue-500 hover:bg-blue-600 text-white disabled:opacity-50 disabled:cursor-not-allowed"
+              className="p-2 rounded bg-blue-500 hover:bg-blue-600 text-white disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               title="Play"
             >
               <Play className="w-4 h-4" />
@@ -804,7 +791,7 @@ export default function CascadeNetworkDiagram({
           <button
             onClick={handleStepForward}
             disabled={currentLoop >= maxLoop}
-            className="p-2 rounded bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="p-2 rounded bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             title="Step forward"
           >
             <SkipForward className="w-4 h-4 text-gray-700 dark:text-gray-300" />
@@ -824,9 +811,19 @@ export default function CascadeNetworkDiagram({
               <option value={5}>5x</option>
             </select>
           </div>
+
+          {/* Restart Button */}
+          <button
+            onClick={handleRestart}
+            className="ml-auto px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg shadow-sm transition-colors flex items-center gap-2"
+            title="Restart animation from beginning"
+          >
+            <Play className="w-4 h-4" />
+            Restart
+          </button>
         </div>
 
-        {/* Loop Scrubber Slider */}
+        {/* Loop Scrubber */}
         <div>
           <input
             id="loop-scrubber"
@@ -848,134 +845,107 @@ export default function CascadeNetworkDiagram({
         </div>
       </div>
 
-      {/* Advanced Settings (collapsed by default) */}
-      <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-300 dark:border-gray-700 p-3">
-        <button
-          onClick={() => setShowFilters(!showFilters)}
-          className="w-full flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-750 rounded px-2 py-1 transition-colors"
-          aria-label={showFilters ? 'Hide advanced settings' : 'Show advanced settings'}
-        >
-          <h3 className="text-sm font-medium text-gray-600 dark:text-gray-400">Advanced Settings</h3>
-          {showFilters ? (
-            <ChevronUp className="w-4 h-4 text-gray-500 dark:text-gray-500" />
-          ) : (
-            <ChevronDown className="w-4 h-4 text-gray-500 dark:text-gray-500" />
-          )}
-        </button>
-
-        {showFilters && (
-          <div className="space-y-4 mt-3 pt-3 border-t border-gray-200 dark:border-gray-700">
-            {/* Pathway Limit Slider - Enhanced granularity */}
-            <div>
-              <div className="flex items-center justify-between mb-2">
-                <label htmlFor="max-pathways" className="text-sm text-gray-600 dark:text-gray-400">
-                  Maximum Pathways
-                </label>
-                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                  {maxPathways === 0 ? 'All' : maxPathways}
-                </span>
-              </div>
-              <input
-                id="max-pathways"
-                type="range"
-                min="1"
-                max="200"
-                step="1"
-                value={maxPathways}
-                onChange={(e) => setMaxPathways(Number(e.target.value))}
-                className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700"
-              />
-              <div className="flex justify-between text-xs text-gray-500 dark:text-gray-500 mt-1">
-                <span>1</span>
-                <span>200</span>
-              </div>
-            </div>
-
-            {/* Cycle Detection Toggle */}
-            <div className="flex items-center justify-between">
-              <label htmlFor="highlight-cycles" className="text-sm text-gray-600 dark:text-gray-400">
-                Highlight Feedback Cycles
-              </label>
-              <input
-                id="highlight-cycles"
-                type="checkbox"
-                checked={highlightCycles}
-                onChange={(e) => setHighlightCycles(e.target.checked)}
-                className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-              />
-            </div>
-
-            {/* Quick Actions */}
-            <div className="flex gap-2">
-              <button
-                onClick={() => setMaxPathways(200)}
-                disabled={maxPathways >= 200}
-                className="flex-1 px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 rounded hover:bg-gray-200 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                Show All
-              </button>
-              <button
-                onClick={() => setMaxPathways(30)}
-                disabled={maxPathways <= 30}
-                className="flex-1 px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 rounded hover:bg-gray-200 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                Reset
-              </button>
-            </div>
-          </div>
-        )}
-
-        {/* Stats */}
-        <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700 space-y-1">
-          <p className="text-sm text-gray-600 dark:text-gray-400">
-            Showing{' '}
-            <span className="font-semibold text-gray-700 dark:text-gray-300">{graphData.displayedPathways}</span> of{' '}
-            <span className="font-semibold text-gray-700 dark:text-gray-300">{graphData.totalPathways}</span> pathways
-            {graphData.displayedPathways < graphData.totalPathways && (
-              <span className="text-xs text-gray-500 dark:text-gray-500 ml-2">(sorted by frequency)</span>
-            )}
-          </p>
-          {highlightCycles && (
-            <p className="text-sm text-gray-600 dark:text-gray-400">
-              Detected{' '}
-              <span className="font-semibold text-red-600 dark:text-red-400">{cycleCount}</span> feedback{' '}
-              {cycleCount === 1 ? 'cycle' : 'cycles'}
-            </p>
-          )}
-        </div>
-
-        {/* Legend */}
-        <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
-          <p className="text-xs font-semibold text-gray-600 dark:text-gray-400 mb-2">Node Colors:</p>
-          <div className="grid grid-cols-2 gap-2">
-            {Object.entries(ROLE_COLORS).map(([role, color]) => (
-              <div key={role} className="flex items-center gap-2">
-                <div className="w-3 h-3 rounded-full border border-gray-400" style={{ backgroundColor: color }} />
-                <span className="text-xs text-gray-600 dark:text-gray-400 capitalize">{role}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* Network Graph */}
+      {/* Network Graph Container */}
       <div
         ref={containerRef}
         style={{ width, height }}
-        className="rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900"
-      />
-
-      {/* Load More Button */}
-      {hasMorePathways && maxPathways < 200 && (
-        <div className="flex justify-center">
+        className="rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 relative overflow-hidden"
+      >
+        {/* Zoom Controls */}
+        <div className="absolute top-4 right-4 z-10 flex flex-col gap-1 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 p-1">
           <button
-            onClick={loadMorePathways}
-            className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg shadow-sm transition-colors"
+            onClick={handleZoomIn}
+            className="p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+            title="Zoom in"
           >
-            Load More Pathways (+30)
+            <ZoomIn className="w-4 h-4 text-gray-700 dark:text-gray-300" />
+          </button>
+          <button
+            onClick={handleZoomReset}
+            className="p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+            title="Reset zoom"
+          >
+            <Maximize2 className="w-4 h-4 text-gray-700 dark:text-gray-300" />
+          </button>
+          <button
+            onClick={handleZoomOut}
+            className="p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+            title="Zoom out"
+          >
+            <ZoomOut className="w-4 h-4 text-gray-700 dark:text-gray-300" />
           </button>
         </div>
-      )}
+
+        <svg
+          ref={svgRef}
+          className="w-full h-full"
+        >
+          {/* SVG Filter Definitions */}
+          <defs>
+            {/* Active node glow filter */}
+            <filter id="active-glow" x="-50%" y="-50%" width="200%" height="200%">
+              <feGaussianBlur in="SourceGraphic" stdDeviation="3" result="blur" />
+              <feFlood floodColor="#FFD700" floodOpacity="0.8" result="color" />
+              <feComposite in="color" in2="blur" operator="in" result="glow" />
+              <feMerge>
+                <feMergeNode in="glow" />
+                <feMergeNode in="glow" />
+                <feMergeNode in="SourceGraphic" />
+              </feMerge>
+            </filter>
+
+            {/* Subtle glow for recent nodes */}
+            <filter id="recent-glow" x="-30%" y="-30%" width="160%" height="160%">
+              <feGaussianBlur in="SourceGraphic" stdDeviation="2" result="blur" />
+              <feFlood floodColor="#4A90E2" floodOpacity="0.5" result="color" />
+              <feComposite in="color" in2="blur" operator="in" result="glow" />
+              <feMerge>
+                <feMergeNode in="glow" />
+                <feMergeNode in="SourceGraphic" />
+              </feMerge>
+            </filter>
+
+            {/* Arrow markers for edges */}
+            <marker
+              id="arrowhead"
+              viewBox="0 0 10 10"
+              refX="9"
+              refY="5"
+              markerWidth="6"
+              markerHeight="6"
+              orient="auto-start-reverse">
+              <path d="M 0 0 L 10 5 L 0 10 z" fill="context-stroke" />
+            </marker>
+          </defs>
+        </svg>
+      </div>
+
+      {/* Advanced Settings */}
+      <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-300 dark:border-gray-700 p-3">
+        <button
+          onClick={() => setShowFilters(!showFilters)}
+          className="w-full flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-750 rounded px-2 py-1"
+        >
+          <h3 className="text-sm font-medium text-gray-600 dark:text-gray-400">Advanced Settings</h3>
+          {showFilters ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+        </button>
+
+        {showFilters && (
+          <div className="mt-3 pt-3 border-t border-gray-200 dark:border-gray-700">
+            <label className="text-sm text-gray-600 dark:text-gray-400">
+              Max Pathways: {maxPathways}
+            </label>
+            <input
+              type="range"
+              min="10"
+              max="200"
+              value={maxPathways}
+              onChange={(e) => setMaxPathways(Number(e.target.value))}
+              className="w-full mt-2"
+            />
+          </div>
+        )}
+      </div>
     </div>
   );
 }

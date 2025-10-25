@@ -5,7 +5,6 @@ import { useQueryState } from '../contexts/QueryStateContext'
 import { useCascadeWorker } from '../hooks/useCascadeWorker'
 import CascadeProgressCard from '../components/CascadeProgressCard'
 import CascadeTabs from '../components/CascadeTabs'
-import CascadeNetworkDiagram from '../components/CascadeNetworkDiagram'
 import PeriodicTableSelector from '../components/PeriodicTableSelector'
 import { getAllElements } from '../services/queryService'
 import type { CascadeResults, Element } from '../types'
@@ -37,9 +36,6 @@ export default function CascadesAll() {
   const [fuelNuclides, setFuelNuclides] = useState<string[]>(['H-1', 'Li-7', 'Al-27', 'N-14', 'Ni-58', 'Ni-60', 'Ni-62', 'B-10', 'B-11'])
   const [results, setResults] = useState<CascadeResults | null>(null)
   const [error, setError] = useState<string | null>(null)
-
-  // Track incremental reactions during simulation for real-time visualization
-  const [liveReactions, setLiveReactions] = useState<any[]>([])
 
   // Load available elements and restore state when database is ready
   useEffect(() => {
@@ -112,13 +108,6 @@ export default function CascadesAll() {
     updateCascadeState,
   ])
 
-  // Update live reactions when progress includes new reactions
-  useEffect(() => {
-    if (progress?.newReactions && progress.newReactions.length > 0) {
-      setLiveReactions((prev) => [...prev, ...progress.newReactions!])
-    }
-  }, [progress])
-
   const handleRunSimulation = async () => {
     if (!db) {
       setError('Database not loaded yet. Please wait...')
@@ -127,7 +116,6 @@ export default function CascadesAll() {
 
     setError(null)
     setResults(null)
-    setLiveReactions([])
 
     try {
       // Validate fuel nuclides
@@ -170,7 +158,6 @@ export default function CascadesAll() {
     setFuelNuclides(['H-1', 'Li-7', 'Al-27', 'N-14', 'Ni-58', 'Ni-60', 'Ni-62', 'B-10', 'B-11'])
     setResults(null)
     setError(null)
-    setLiveReactions([])
   }
 
   const handleDownloadCSV = () => {
@@ -425,19 +412,8 @@ export default function CascadesAll() {
 
       {/* Progress Display */}
       {isRunning && progress && (
-        <div className="mt-6 space-y-6">
+        <div className="mt-6">
           <CascadeProgressCard progress={progress} onCancel={cancelCascade} />
-
-          {/* Real-time Network Visualization */}
-          {liveReactions.length > 0 && (
-            <div className="card p-6">
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-                <Loader2 className="w-5 h-5 animate-spin" />
-                Live Cascade Network ({liveReactions.length} reactions so far)
-              </h3>
-              <CascadeNetworkDiagram reactions={liveReactions} />
-            </div>
-          )}
         </div>
       )}
 
