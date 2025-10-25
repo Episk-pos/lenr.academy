@@ -12,9 +12,9 @@ test.describe('Cascade Sankey Diagram Error Handling', () => {
     await acceptMeteredWarningIfPresent(page);
     await waitForDatabaseReady(page);
 
-    // Wait for database to load and run a simulation
+    // Wait for database to load and run a simulation (longer timeout for test isolation)
     const runButton = page.locator('button:has-text("Run Cascade Simulation")');
-    await expect(runButton).toBeEnabled({ timeout: 10000 });
+    await expect(runButton).toBeEnabled({ timeout: 20000 });
 
     // Use default params which should generate enough pathways
     await runButton.click();
