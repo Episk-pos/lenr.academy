@@ -4,7 +4,7 @@ import { test, expect } from '@playwright/test';
  * E2E Tests for Cascade Visualization Interactions and Responsive Layouts
  *
  * Tests:
- * - Tab switching (Summary, Network, Sankey, Pathways)
+ * - Tab switching (Summary, Network, Flow View, Pathway Browser)
  * - Pathway browser sorting and filtering
  * - Nuclide picker modal interactions
  * - Responsive layouts at different viewports
@@ -36,13 +36,13 @@ test.describe('Cascade Visualizations', () => {
       // await page.click('button:has-text("Network")');
       // await expect(page.locator('svg').or(page.locator('canvas'))).toBeVisible();
 
-      // Click Sankey tab
-      await page.click('button:has-text("Sankey")');
+      // Click Flow View tab (Sankey diagram)
+      await page.click('button:has-text("Flow View")');
       // Verify Sankey diagram is visible
       await expect(page.locator('svg').or(page.locator('canvas'))).toBeVisible();
 
-      // Click Pathways tab
-      await page.click('button:has-text("Pathways")');
+      // Click Pathway Browser tab
+      await page.click('button:has-text("Pathway Browser")');
       // Verify table is visible
       await expect(page.locator('table')).toBeVisible();
 
@@ -52,28 +52,28 @@ test.describe('Cascade Visualizations', () => {
     });
 
     test('should maintain tab state when switching back', async ({ page }) => {
-      // Go to Pathways tab
-      await page.click('button:has-text("Pathways")');
-      await expect(page.locator('table')).toBeVisible();
+      // Go to Pathway Browser tab
+      await page.click('button:has-text("Pathway Browser")');
+      await expect(page.locator('table').first()).toBeVisible();
 
       // Scroll down in the table
-      await page.locator('table').evaluate(el => el.scrollTop = 100);
-      const scrollPosition = await page.locator('table').evaluate(el => el.scrollTop);
+      await page.locator('table').first().evaluate(el => el.scrollTop = 100);
+      const scrollPosition = await page.locator('table').first().evaluate(el => el.scrollTop);
 
       // Switch to Summary and back
       await page.click('button:has-text("Summary")');
-      await page.click('button:has-text("Pathways")');
+      await page.click('button:has-text("Pathway Browser")');
 
       // Table should still be present
-      await expect(page.locator('table')).toBeVisible();
+      await expect(page.locator('table').first()).toBeVisible();
     });
   });
 
   test.describe('Pathway Browser Sorting', () => {
     test.beforeEach(async ({ page }) => {
-      // Navigate to Pathways tab
-      await page.click('button:has-text("Pathways")');
-      await expect(page.locator('table')).toBeVisible();
+      // Navigate to Pathway Browser tab
+      await page.click('button:has-text("Pathway Browser")');
+      await expect(page.locator('table').first()).toBeVisible();
     });
 
     test('should sort pathways by count (frequency)', async ({ page }) => {
@@ -135,9 +135,9 @@ test.describe('Cascade Visualizations', () => {
 
   test.describe('Pathway Browser Filtering', () => {
     test.beforeEach(async ({ page }) => {
-      // Navigate to Pathways tab
-      await page.click('button:has-text("Pathways")');
-      await expect(page.locator('table')).toBeVisible();
+      // Navigate to Pathway Browser tab
+      await page.click('button:has-text("Pathway Browser")');
+      await expect(page.locator('table').first()).toBeVisible();
     });
 
     test('should filter pathways by search term', async ({ page }) => {
@@ -289,13 +289,13 @@ test.describe('Cascade Visualizations', () => {
       // Set mobile viewport
       await page.setViewportSize({ width: 375, height: 667 });
 
-      // Navigate to Pathways tab
-      await page.click('button:has-text("Pathways")');
-      await expect(page.locator('table')).toBeVisible();
+      // Navigate to Pathway Browser tab
+      await page.click('button:has-text("Pathway Browser")');
+      await expect(page.locator('table').first()).toBeVisible();
 
       // Verify pathway appears in separate row (mobile layout)
       // This is indicated by specific mobile classes or layout
-      const table = page.locator('table');
+      const table = page.locator('table').first();
       await expect(table).toBeVisible();
 
       // Verify certain columns are hidden (Loops, Feedback, Rarity)
@@ -314,12 +314,12 @@ test.describe('Cascade Visualizations', () => {
       // Set tablet viewport
       await page.setViewportSize({ width: 768, height: 1024 });
 
-      // Navigate to Pathways tab
-      await page.click('button:has-text("Pathways")');
-      await expect(page.locator('table')).toBeVisible();
+      // Navigate to Pathway Browser tab
+      await page.click('button:has-text("Pathway Browser")');
+      await expect(page.locator('table').first()).toBeVisible();
 
       // Verify pathway in first column (tablet layout)
-      const table = page.locator('table');
+      const table = page.locator('table').first();
       await expect(table).toBeVisible();
 
       // Feedback and Rarity columns should be hidden
@@ -337,9 +337,9 @@ test.describe('Cascade Visualizations', () => {
       // Set desktop viewport
       await page.setViewportSize({ width: 1920, height: 1080 });
 
-      // Navigate to Pathways tab
-      await page.click('button:has-text("Pathways")');
-      await expect(page.locator('table')).toBeVisible();
+      // Navigate to Pathway Browser tab
+      await page.click('button:has-text("Pathway Browser")');
+      await expect(page.locator('table').first()).toBeVisible();
 
       // All columns should be visible
       await expect(page.locator('th:has-text("Type")')).toBeVisible();
@@ -352,12 +352,12 @@ test.describe('Cascade Visualizations', () => {
       // Set very narrow viewport
       await page.setViewportSize({ width: 320, height: 568 });
 
-      // Navigate to Pathways tab
-      await page.click('button:has-text("Pathways")');
-      await expect(page.locator('table')).toBeVisible();
+      // Navigate to Pathway Browser tab
+      await page.click('button:has-text("Pathway Browser")');
+      await expect(page.locator('table').first()).toBeVisible();
 
       // Table should be scrollable
-      const table = page.locator('table').or(page.locator('[style*="overflow"]'));
+      const table = page.locator('table').first();
       await expect(table).toBeVisible();
 
       // Try to scroll horizontally
