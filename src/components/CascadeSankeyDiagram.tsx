@@ -89,13 +89,12 @@ function pathwaysToSankeyData(pathways: PathwayAnalysis[], fuelNuclides: string[
     return aIn.A - bIn.A;
   });
 
-  // Build node list and index map with type classification
+  // Collect all unique nuclides with their types
+  const nuclideTypes = new Map<string, { type: NodeType; color: string }>();
+
   sortedPathways.forEach((pathway) => {
     [...pathway.inputs, ...pathway.outputs].forEach((nuclide) => {
-      if (!nodeMap.has(nuclide)) {
-        const index = nodes.length;
-        nodeMap.set(nuclide, index);
-
+      if (!nuclideTypes.has(nuclide)) {
         // Determine node type and color
         let type: NodeType;
         let color: string;
@@ -111,9 +110,35 @@ function pathwaysToSankeyData(pathways: PathwayAnalysis[], fuelNuclides: string[
           color = '#3b82f6'; // Blue for intermediates
         }
 
-        nodes.push({ name: nuclide, type, color });
+        nuclideTypes.set(nuclide, { type, color });
       }
     });
+  });
+
+  // Sort nuclides by Z and A to minimize crossings
+  // Group: fuel nodes, then intermediate nodes, then final nodes
+  // Within each group, sort by atomic number then mass number
+  const sortedNuclides = Array.from(nuclideTypes.entries()).sort((a, b) => {
+    const [nuclideA, typeA] = a;
+    const [nuclideB, typeB] = b;
+
+    // Sort by type first (fuel < intermediate < final)
+    const typeOrder = { fuel: 0, intermediate: 1, final: 2 };
+    const typeComparison = typeOrder[typeA.type] - typeOrder[typeB.type];
+    if (typeComparison !== 0) return typeComparison;
+
+    // Within same type, sort by Z then A
+    const parsedA = parseNuclide(nuclideA);
+    const parsedB = parseNuclide(nuclideB);
+
+    if (parsedA.Z !== parsedB.Z) return parsedA.Z - parsedB.Z;
+    return parsedA.A - parsedB.A;
+  });
+
+  // Build node list with optimized ordering
+  sortedNuclides.forEach(([nuclide, { type, color }], index) => {
+    nodeMap.set(nuclide, index);
+    nodes.push({ name: nuclide, type, color });
   });
 
   // Build aggregated links - consolidate duplicate connections
