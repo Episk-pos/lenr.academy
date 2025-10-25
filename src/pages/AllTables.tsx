@@ -2,7 +2,6 @@ import { useState } from 'react'
 import { Play, BookOpen, Download, Loader, AlertCircle } from 'lucide-react'
 import { useDatabase } from '../contexts/DatabaseContext'
 import DatabaseLoadingCard from '../components/DatabaseLoadingCard'
-import DatabaseErrorCard from '../components/DatabaseErrorCard'
 
 export default function AllTables() {
   const { db, isLoading: dbLoading, error: dbError, downloadProgress } = useDatabase()
@@ -67,8 +66,9 @@ export default function AllTables() {
     return <DatabaseLoadingCard downloadProgress={downloadProgress} />
   }
 
+  // Throw error to ErrorBoundary so it renders outside Layout (without sidebar)
   if (dbError) {
-    return <DatabaseErrorCard error={dbError} />
+    throw dbError
   }
 
   return (

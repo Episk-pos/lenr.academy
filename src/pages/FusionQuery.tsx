@@ -10,7 +10,6 @@ import PeriodicTableSelector from '../components/PeriodicTableSelector'
 import PeriodicTable from '../components/PeriodicTable'
 import NuclideDetailsCard from '../components/NuclideDetailsCard'
 import DatabaseLoadingCard from '../components/DatabaseLoadingCard'
-import DatabaseErrorCard from '../components/DatabaseErrorCard'
 import { VirtualizedList } from '../components/VirtualizedList'
 import LimitSelector from '../components/LimitSelector'
 
@@ -29,6 +28,7 @@ export default function FusionQuery() {
   const { getFusionState, updateFusionState } = useQueryState()
   const [elements, setElements] = useState<Element[]>([])
   const [isInitialized, setIsInitialized] = useState(false)
+  const [queryError, setQueryError] = useState<Error | null>(null)
 
   // Helper to check if any URL parameters exist
   // Default element selections based on URL params
@@ -523,7 +523,7 @@ export default function FusionQuery() {
       }
     } catch (error) {
       console.error('Query failed:', error)
-      alert(`Query failed: ${error instanceof Error ? error.message : 'Unknown error'}`)
+      setQueryError(error instanceof Error ? error : new Error('Unknown error'))
     } finally {
       setIsQuerying(false)
     }
@@ -607,8 +607,13 @@ export default function FusionQuery() {
     return <DatabaseLoadingCard downloadProgress={downloadProgress} />
   }
 
+  // Throw errors to ErrorBoundary so they render outside Layout (without sidebar)
   if (dbError) {
-    return <DatabaseErrorCard error={dbError} />
+    throw dbError
+  }
+
+  if (queryError) {
+    throw queryError
   }
 
   return (

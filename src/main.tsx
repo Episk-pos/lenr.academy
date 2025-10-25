@@ -4,6 +4,7 @@ import * as Sentry from '@sentry/react'
 import App from './App.tsx'
 import './index.css'
 import { loadUmamiScript } from './utils/analytics'
+import { generateErrorFingerprint } from './utils/errorFingerprint'
 
 // Initialize Sentry for error tracking
 // Only initialize if DSN is provided (production environment) AND user hasn't explicitly declined
@@ -26,6 +27,17 @@ if (import.meta.env.VITE_SENTRY_DSN && errorReportingConsent !== 'declined') {
       if (import.meta.env.MODE === 'development') {
         console.error('[Sentry]', event, hint);
         return null;
+      }
+
+      // Add error fingerprint tag for grouping and searching
+      if (hint.originalException instanceof Error) {
+        const error = hint.originalException;
+        const fingerprint = generateErrorFingerprint(error);
+
+        event.tags = {
+          ...event.tags,
+          errorFingerprint: fingerprint,
+        };
       }
 
       // Remove any query parameters that might contain sensitive data
