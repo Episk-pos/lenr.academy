@@ -525,7 +525,8 @@ export default function CascadeNetworkDiagram({
           nodeRepulsion: 8000,
           edgeElasticity: 0.45,
           numIter: 2500,
-          gravityRange: 3.8,
+          gravity: 0.5, // Stronger pull toward center to prevent isolated nodes drifting away
+          gravityRange: 2.0, // Tighter gravity range keeps disconnected components closer
         } as any,
         minZoom: 0.3,
         maxZoom: 3,
@@ -683,7 +684,8 @@ export default function CascadeNetworkDiagram({
             nodeRepulsion: 8500,
             edgeElasticity: 0.45,
             numIter: 800,
-            gravityRange: 3.8,
+            gravity: 0.5, // Stronger pull toward center to prevent isolated nodes drifting away
+            gravityRange: 2.0, // Tighter gravity range keeps disconnected components closer
             fit: false, // Don't re-center viewport
             randomize: false, // Use current positions as starting point
           } as any).run();
