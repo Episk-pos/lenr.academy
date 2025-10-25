@@ -272,29 +272,27 @@ export default function PathwayBrowserTable({ pathways }: PathwayBrowserTablePro
         <VirtualizedList
           items={filteredAndSorted}
           height={600}
-          fixedRowHeight={60}
+          estimatedRowHeight={48}
           overscanRowCount={10}
           ariaLabel="Pathway results table"
         >
           {(pathway) => (
             <div className="border-b border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+              {/* Mobile: Pathway in separate div (top) */}
+              <div className="md:hidden px-4 pt-2 pb-1 font-mono text-xs break-words text-gray-900 dark:text-gray-100 border-b border-gray-100 dark:border-gray-800">
+                {pathway.pathway}
+              </div>
+
               <table className="w-full text-sm" style={{ tableLayout: 'fixed' }}>
                 <tbody>
-                  {/* Mobile: Pathway in full-width row (top) */}
-                  <tr className="md:hidden">
-                    <td colSpan={8} className="px-4 pt-1.5 pb-0.5 font-mono text-xs break-words text-gray-900 dark:text-gray-100">
-                      {pathway.pathway}
-                    </td>
-                  </tr>
-
                   {/* Data row */}
                   <tr className="text-gray-900 dark:text-gray-100">
                     {/* Desktop: Pathway in first column */}
-                    <td className="hidden md:table-cell px-4 py-2.5 font-mono text-sm" style={{ width: '30%' }}>
+                    <td className="hidden md:table-cell px-4 py-2 font-mono text-sm align-middle" style={{ width: '30%' }}>
                       {pathway.pathway}
                     </td>
 
-                    <td className="px-4 py-1.5 md:py-2.5" style={{ width: '10%' }}>
+                    <td className="px-4 py-2 align-middle" style={{ width: '10%' }}>
                       <span
                         className={`px-2 py-1 rounded text-xs font-medium ${
                           pathway.type === 'fusion'
@@ -305,18 +303,18 @@ export default function PathwayBrowserTable({ pathways }: PathwayBrowserTablePro
                         {pathway.type === 'fusion' ? 'Fusion' : '2→2'}
                       </span>
                     </td>
-                    <td className="px-4 py-1.5 md:py-2.5 text-right font-medium" style={{ width: '10%' }}>×{pathway.frequency}</td>
-                    <td className="px-4 py-1.5 md:py-2.5 text-right" style={{ width: '12%' }}>{pathway.avgEnergy.toFixed(2)}</td>
-                    <td className="px-4 py-1.5 md:py-2.5 text-right" style={{ width: '12%' }}>{pathway.totalEnergy.toFixed(2)}</td>
-                    <td className="hidden sm:table-cell px-4 py-1.5 md:py-2.5 text-center text-xs text-gray-600 dark:text-gray-400" style={{ width: '10%' }}>
+                    <td className="px-4 py-2 align-middle text-right font-medium" style={{ width: '10%' }}>×{pathway.frequency}</td>
+                    <td className="px-4 py-2 align-middle text-right" style={{ width: '12%' }}>{pathway.avgEnergy.toFixed(2)}</td>
+                    <td className="px-4 py-2 align-middle text-right" style={{ width: '12%' }}>{pathway.totalEnergy.toFixed(2)}</td>
+                    <td className="hidden sm:table-cell px-4 py-2 align-middle text-center text-xs text-gray-600 dark:text-gray-400" style={{ width: '10%' }}>
                       {formatLoops(pathway.loops)}
                     </td>
-                    <td className="hidden lg:table-cell px-4 py-1.5 md:py-2.5 text-center" style={{ width: '8%' }}>
+                    <td className="hidden lg:table-cell px-4 py-2 align-middle text-center" style={{ width: '8%' }}>
                       {pathway.isFeedback && (
                         <span className="text-green-600 dark:text-green-400 font-bold">✓</span>
                       )}
                     </td>
-                    <td className="hidden lg:table-cell px-4 py-1.5 md:py-2.5 text-right text-xs text-gray-600 dark:text-gray-400" style={{ width: '8%' }}>
+                    <td className="hidden lg:table-cell px-4 py-2 align-middle text-right text-xs text-gray-600 dark:text-gray-400" style={{ width: '8%' }}>
                       {pathway.rarityScore.toFixed(0)}%
                     </td>
                   </tr>

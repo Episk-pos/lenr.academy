@@ -16,6 +16,7 @@ interface PeriodicTableSelectorProps {
   align?: 'left' | 'center' | 'right'
   testId?: string
   mode?: 'element' | 'nuclide' // Default: 'element' for backwards compatibility
+  disableHydrogenIsotopes?: boolean // When true, D and T buttons are hidden (nuclide mode only)
 }
 
 const HYDROGEN_ISOTOPES = [
@@ -161,6 +162,7 @@ export default function PeriodicTableSelector({
   align = 'left',
   testId,
   mode = 'element',
+  disableHydrogenIsotopes = false,
 }: PeriodicTableSelectorProps) {
   const { db } = useDatabase()
   const [isOpen, setIsOpen] = useState(false)
@@ -202,7 +204,7 @@ export default function PeriodicTableSelector({
     if (mode === 'nuclide') {
       const element = availableElements.find(el => el.E === symbol)
       if (element) {
-        setIsOpen(false) // Close the periodic table dropdown
+        // Keep periodic table open so users can select from multiple elements
         setNuclidePicker({ element, isOpen: true })
         return
       }
@@ -354,23 +356,26 @@ const allElementNames: Record<number, string> = {
         >
           {buttonChildren}
         </button>
-        <div className="periodic-cell-isotope-group">
-          {HYDROGEN_ISOTOPES.map(isotope => {
-            const isotopeAvailable = availableSymbols.has(isotope.symbol)
-            const isotopeSelected = selectedElements.includes(isotope.symbol)
-            return (
-              <button
-                key={isotope.symbol}
-                onClick={() => isotopeAvailable && toggleElement(isotope.symbol)}
-                disabled={!isotopeAvailable}
-                className={`${ISOTOPE_BUTTON_COMMON} ${isotopeSelected ? 'periodic-cell-isotope-selected' : ''} ${!isotopeAvailable ? 'periodic-cell-isotope-disabled' : ''}`}
-                title={`${isotope.label} - hydrogen isotope`}
-              >
-                {isotope.symbol}
-              </button>
-            )
-          })}
-        </div>
+        {/* Only show D and T buttons if not disabled */}
+        {!disableHydrogenIsotopes && (
+          <div className="periodic-cell-isotope-group">
+            {HYDROGEN_ISOTOPES.map(isotope => {
+              const isotopeAvailable = availableSymbols.has(isotope.symbol)
+              const isotopeSelected = selectedElements.includes(isotope.symbol)
+              return (
+                <button
+                  key={isotope.symbol}
+                  onClick={() => isotopeAvailable && toggleElement(isotope.symbol)}
+                  disabled={!isotopeAvailable}
+                  className={`${ISOTOPE_BUTTON_COMMON} ${isotopeSelected ? 'periodic-cell-isotope-selected' : ''} ${!isotopeAvailable ? 'periodic-cell-isotope-disabled' : ''}`}
+                  title={`${isotope.label} - hydrogen isotope`}
+                >
+                  {isotope.symbol}
+                </button>
+              )
+            })}
+          </div>
+        )}
       </div>
     )
   }

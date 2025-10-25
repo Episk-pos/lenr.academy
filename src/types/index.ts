@@ -307,9 +307,33 @@ export interface QueryPageState {
   lastUpdated?: number;
 }
 
+export interface CascadePageState {
+  // Cascade parameters
+  temperature: number;
+  minFusionMeV: number;
+  minTwoToTwoMeV: number;
+  maxNuclides: number;
+  maxLoops: number;
+  feedbackBosons: boolean;
+  feedbackFermions: boolean;
+  allowDimers: boolean;
+  excludeMelted: boolean;
+  excludeBoiledOff: boolean;
+
+  // Fuel nuclides
+  fuelNuclides: string[];
+
+  // Simulation results (optional - only present after running simulation)
+  results?: CascadeResults;
+
+  // Timestamp for cache management
+  lastUpdated?: number;
+}
+
 export interface AllQueryStates {
   fusion?: QueryPageState;
   fission?: QueryPageState;
   twotwo?: QueryPageState;
+  cascade?: CascadePageState;
   version?: number;  // For future migration if state structure changes
 }

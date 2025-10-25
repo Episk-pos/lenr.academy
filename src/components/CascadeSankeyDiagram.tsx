@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Sankey, Tooltip, ResponsiveContainer, Rectangle } from 'recharts';
 import { Sliders, HelpCircle, X } from 'lucide-react';
 import type { PathwayAnalysis } from '../services/pathwayAnalyzer';
+import { SankeyErrorBoundary } from './SankeyErrorBoundary';
 
 interface CascadeSankeyDiagramProps {
   pathways: PathwayAnalysis[];
@@ -184,7 +185,7 @@ function pathwaysToSankeyData(pathways: PathwayAnalysis[], fuelNuclides: string[
  * Width of flows represents pathway frequency.
  */
 export default function CascadeSankeyDiagram({ pathways, fuelNuclides = [] }: CascadeSankeyDiagramProps) {
-  const [topN, setTopN] = useState(20);
+  const [topN, setTopN] = useState(15);
   const [feedbackOnly, setFeedbackOnly] = useState(false);
   const [minFrequency, setMinFrequency] = useState(1);
   const [showFilters, setShowFilters] = useState(false);
@@ -195,8 +196,9 @@ export default function CascadeSankeyDiagram({ pathways, fuelNuclides = [] }: Ca
     return !hasSeenGuide;
   });
 
-  // Safety: Clamp topN to max of 50 to prevent stack overflow
-  const safeTopN = Math.min(topN, 50);
+  // Safety: Clamp topN to max of 30 to prevent stack overflow
+  // Note: Even 30 pathways can create 60+ nodes and links which strains Recharts
+  const safeTopN = Math.min(topN, 30);
 
   const handleCloseGuide = () => {
     localStorage.setItem('cascade-sankey-guide-seen', 'true');
@@ -230,13 +232,51 @@ export default function CascadeSankeyDiagram({ pathways, fuelNuclides = [] }: Ca
 
   // Convert to Sankey format with color coding
   let sankeyData;
+  let nodeCountExceeded = false;
   try {
     sankeyData = pathwaysToSankeyData(filteredPathways, fuelNuclides);
-    // Clear any previous errors
-    if (renderError) setRenderError(null);
+
+    // Additional safety check: limit total node count to prevent stack overflow
+    // Recharts Sankey can overflow with >50 nodes even with good pathway limits
+    const MAX_NODES = 50;
+    if (sankeyData.nodes.length > MAX_NODES) {
+      nodeCountExceeded = true;
+      // Calculate how many pathways we can safely show
+      // Binary search would be ideal, but simple reduction works
+      let reducedPathways = Math.floor(filteredPathways.length * 0.6);
+      let attempts = 0;
+
+      while (attempts < 5 && sankeyData.nodes.length > MAX_NODES && reducedPathways > 5) {
+        const testPathways = filteredPathways.slice(0, reducedPathways);
+        sankeyData = pathwaysToSankeyData(testPathways, fuelNuclides);
+
+        if (sankeyData.nodes.length <= MAX_NODES) {
+          filteredPathways = testPathways;
+          nodeCountExceeded = false;
+          break;
+        }
+
+        reducedPathways = Math.floor(reducedPathways * 0.7);
+        attempts++;
+      }
+
+      if (nodeCountExceeded) {
+        setRenderError(`Too many unique nuclides (${sankeyData.nodes.length}) to display safely. Try using filters to reduce complexity.`);
+        sankeyData = { nodes: [], links: [] };
+      }
+    }
+
+    // Clear any previous errors if successful
+    if (!nodeCountExceeded && renderError) setRenderError(null);
   } catch (error) {
     console.error('Error generating Sankey data:', error);
-    setRenderError(error instanceof Error ? error.message : 'Unknown error generating diagram');
+    const message = error instanceof Error ? error.message : 'Unknown error generating diagram';
+    // Check if it's a stack overflow
+    if (message.includes('stack') || message.includes('Maximum call stack')) {
+      setRenderError('Diagram too complex - exceeded rendering limits. Please reduce the number of pathways or use filters.');
+    } else {
+      setRenderError(message);
+    }
     sankeyData = { nodes: [], links: [] }; // Empty fallback
   }
 
@@ -261,20 +301,40 @@ export default function CascadeSankeyDiagram({ pathways, fuelNuclides = [] }: Ca
     const thickness = 2 + (normalizedValue * 28); // 2-30px range
     const halfThickness = thickness / 2;
 
+    const pathD = `
+      M${sourceX},${sourceY - halfThickness}
+      C${sourceControlX},${sourceY - halfThickness} ${targetControlX},${targetY - halfThickness} ${targetX},${targetY - halfThickness}
+      L${targetX},${targetY + halfThickness}
+      C${targetControlX},${targetY + halfThickness} ${sourceControlX},${sourceY + halfThickness} ${sourceX},${sourceY + halfThickness}
+      Z
+    `;
+
+    const pathway = linkData.pathway as PathwayAnalysis;
+    const tooltipText = pathway ?
+      `${pathway.pathway}\nType: ${pathway.type === 'fusion' ? 'Fusion' : 'Two-to-Two'}\nFrequency: ×${pathway.frequency}\nAvg Energy: ${pathway.avgEnergy.toFixed(2)} MeV${pathway.isFeedback ? '\n✓ Feedback Loop' : ''}`
+      : '';
+
     return (
-      <path
-        d={`
-          M${sourceX},${sourceY - halfThickness}
-          C${sourceControlX},${sourceY - halfThickness} ${targetControlX},${targetY - halfThickness} ${targetX},${targetY - halfThickness}
-          L${targetX},${targetY + halfThickness}
-          C${targetControlX},${targetY + halfThickness} ${sourceControlX},${sourceY + halfThickness} ${sourceX},${sourceY + halfThickness}
-          Z
-        `}
-        fill="#9ca3af"
-        fillOpacity={0.4}
-        stroke="none"
-        style={{ cursor: 'pointer' }}
-      />
+      <g>
+        <title>{tooltipText}</title>
+        {/* Visible path */}
+        <path
+          d={pathD}
+          fill="#9ca3af"
+          fillOpacity={0.4}
+          stroke="none"
+          pointerEvents="none"
+        />
+        {/* Invisible larger hitbox for tooltips */}
+        <path
+          d={pathD}
+          fill="transparent"
+          stroke="transparent"
+          strokeWidth={Math.max(thickness, 10)}
+          style={{ cursor: 'pointer' }}
+          pointerEvents="all"
+        />
+      </g>
     );
   };
 
@@ -346,7 +406,11 @@ export default function CascadeSankeyDiagram({ pathways, fuelNuclides = [] }: Ca
   return (
     <div className="space-y-4">
       {/* First-Time User Guide Overlay */}
-      {showGuide && (
+      <div
+        className={`overflow-hidden transition-all duration-300 ease-in-out ${
+          showGuide ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
+        }`}
+      >
         <div className="card p-4 bg-blue-50 dark:bg-blue-900/20 border-2 border-blue-500 dark:border-blue-400">
           <div className="flex items-start gap-3">
             <div className="flex-1">
@@ -375,7 +439,7 @@ export default function CascadeSankeyDiagram({ pathways, fuelNuclides = [] }: Ca
             </button>
           </div>
         </div>
-      )}
+      </div>
 
       {/* Header with Visual Guide */}
       <div className="flex items-center justify-between">
@@ -403,36 +467,40 @@ export default function CascadeSankeyDiagram({ pathways, fuelNuclides = [] }: Ca
       </div>
 
       {/* Filter Controls */}
-      {showFilters && (
-        <div className="card p-4 space-y-4 bg-gray-50 dark:bg-gray-800">
+      <div
+        className={`overflow-hidden transition-all duration-300 ease-in-out ${
+          showFilters ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
+        }`}
+      >
+        <div className="card p-3 space-y-3 bg-gray-50 dark:bg-gray-800">
           {/* Top N Slider */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               Show Top Pathways: {topN}
             </label>
             <input
               type="range"
               min="5"
-              max="50"
+              max="30"
               step="5"
-              value={Math.min(topN, 50)}
+              value={Math.min(topN, 30)}
               onChange={(e) => setTopN(parseInt(e.target.value))}
               className="w-full"
             />
-            <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400 mt-1">
+            <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400">
               <span>5</span>
-              <span>50 (max)</span>
+              <span>30 (max)</span>
             </div>
-            {topN > 40 && (
+            {topN > 20 && (
               <p className="text-xs text-orange-600 dark:text-orange-400 mt-1">
-                ⚠️ High pathway counts may cause slow rendering
+                ⚠️ High pathway counts may cause slow rendering or errors
               </p>
             )}
           </div>
 
           {/* Min Frequency Slider */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               Minimum Frequency: {minFrequency}×
             </label>
             <input
@@ -444,7 +512,7 @@ export default function CascadeSankeyDiagram({ pathways, fuelNuclides = [] }: Ca
               onChange={(e) => setMinFrequency(parseInt(e.target.value))}
               className="w-full"
             />
-            <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400 mt-1">
+            <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400">
               <span>1</span>
               <span>{Math.min(maxFrequency, 100)}</span>
             </div>
@@ -467,7 +535,7 @@ export default function CascadeSankeyDiagram({ pathways, fuelNuclides = [] }: Ca
             </label>
           </div>
         </div>
-      )}
+      </div>
 
       {/* Filter Status Message */}
       <div className="text-sm text-gray-600 dark:text-gray-400">
@@ -512,13 +580,25 @@ export default function CascadeSankeyDiagram({ pathways, fuelNuclides = [] }: Ca
       )}
 
       {/* Sankey Diagram */}
-      {!renderError && (
-        <ResponsiveContainer width="100%" height={500}>
-          <Sankey
-            key={`${safeTopN}-${minFrequency}-${feedbackOnly}`}
-            data={sankeyData}
-            link={CustomLink}
-          node={(nodeProps: any) => {
+      {!renderError && sankeyData.nodes.length > 0 && (
+        <div className="overflow-hidden rounded-lg">
+          <SankeyErrorBoundary
+            onError={(error) => {
+              console.error('Sankey Error Boundary caught:', error);
+              const message = error.message || String(error);
+              if (message.includes('stack') || message.includes('Maximum call stack')) {
+                setRenderError('Stack overflow - diagram too complex. Please reduce the number of pathways using filters.');
+              } else {
+                setRenderError(`Rendering error: ${message}. Try reducing complexity with filters.`);
+              }
+            }}
+          >
+            <ResponsiveContainer width="100%" height={500}>
+            <Sankey
+              key={`${safeTopN}-${minFrequency}-${feedbackOnly}`}
+              data={sankeyData}
+              link={CustomLink}
+            node={(nodeProps: any) => {
             const { x, y, width, height, index, containerWidth } = nodeProps;
             const node = sankeyData.nodes[index] as EnhancedNode;
 
@@ -544,8 +624,14 @@ export default function CascadeSankeyDiagram({ pathways, fuelNuclides = [] }: Ca
                 ? 'start'  // Left-align for right side
                 : 'middle';  // Center for middle
 
+            const nodeTypeLabel = node.type === 'fuel' ? 'Fuel Nuclide' :
+                                  node.type === 'final' ? 'Final Product' :
+                                  'Intermediate Product';
+            const tooltipText = `${node.name}\n${nodeTypeLabel}`;
+
             return (
               <g>
+                <title>{tooltipText}</title>
                 {/* Color-coded rectangle */}
                 <Rectangle
                   x={x}
@@ -583,6 +669,8 @@ export default function CascadeSankeyDiagram({ pathways, fuelNuclides = [] }: Ca
           <Tooltip content={<CustomTooltip />} />
         </Sankey>
       </ResponsiveContainer>
+        </SankeyErrorBoundary>
+        </div>
       )}
 
       {/* Interactive Legend */}

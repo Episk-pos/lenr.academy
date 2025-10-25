@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Play, Settings, AlertCircle, CheckCircle, XCircle, Loader2, Download } from 'lucide-react'
 import { useDatabase } from '../contexts/DatabaseContext'
+import { useQueryState } from '../contexts/QueryStateContext'
 import { useCascadeWorker } from '../hooks/useCascadeWorker'
 import CascadeProgressCard from '../components/CascadeProgressCard'
 import CascadeTabs from '../components/CascadeTabs'
@@ -11,7 +12,9 @@ import type { CascadeResults, Element } from '../types'
 
 export default function CascadesAll() {
   const { db } = useDatabase()
+  const { getCascadeState, updateCascadeState } = useQueryState()
   const { runCascade, cancelCascade, progress, isRunning, error: workerError } = useCascadeWorker()
+  const [hasRestoredFromContext, setHasRestoredFromContext] = useState(false)
 
   const [params, setParams] = useState({
     temperature: 2400,
@@ -38,13 +41,76 @@ export default function CascadesAll() {
   // Track incremental reactions during simulation for real-time visualization
   const [liveReactions, setLiveReactions] = useState<any[]>([])
 
-  // Load available elements when database is ready
+  // Load available elements and restore state when database is ready
   useEffect(() => {
     if (db) {
       const elements = getAllElements(db)
       setAvailableElements(elements)
+
+      // Restore state from context if not already done
+      if (!hasRestoredFromContext) {
+        const savedState = getCascadeState()
+        if (savedState) {
+          setParams({
+            temperature: savedState.temperature,
+            minFusionMeV: savedState.minFusionMeV,
+            minTwoToTwoMeV: savedState.minTwoToTwoMeV,
+            maxNuclides: savedState.maxNuclides,
+            maxLoops: savedState.maxLoops,
+            feedbackBosons: savedState.feedbackBosons,
+            feedbackFermions: savedState.feedbackFermions,
+            allowDimers: savedState.allowDimers,
+            excludeMelted: savedState.excludeMelted,
+            excludeBoiledOff: savedState.excludeBoiledOff,
+          })
+          setSliderMaxNuclides(savedState.maxNuclides)
+          setSliderMaxLoops(savedState.maxLoops)
+          setFuelNuclides(savedState.fuelNuclides)
+
+          // Restore simulation results if available
+          if (savedState.results) {
+            setResults(savedState.results)
+          }
+        }
+        setHasRestoredFromContext(true)
+      }
     }
-  }, [db])
+  }, [db, hasRestoredFromContext, getCascadeState])
+
+  // Save state to context whenever it changes
+  useEffect(() => {
+    if (!hasRestoredFromContext) return
+
+    updateCascadeState({
+      temperature: params.temperature,
+      minFusionMeV: params.minFusionMeV,
+      minTwoToTwoMeV: params.minTwoToTwoMeV,
+      maxNuclides: params.maxNuclides,
+      maxLoops: params.maxLoops,
+      feedbackBosons: params.feedbackBosons,
+      feedbackFermions: params.feedbackFermions,
+      allowDimers: params.allowDimers,
+      excludeMelted: params.excludeMelted,
+      excludeBoiledOff: params.excludeBoiledOff,
+      fuelNuclides,
+      results: results || undefined,
+    })
+  }, [
+    hasRestoredFromContext,
+    params.temperature,
+    params.minFusionMeV,
+    params.minTwoToTwoMeV,
+    params.maxNuclides,
+    params.maxLoops,
+    params.feedbackBosons,
+    params.feedbackFermions,
+    params.allowDimers,
+    params.excludeMelted,
+    params.excludeBoiledOff,
+    fuelNuclides,
+    results,
+    updateCascadeState,
+  ])
 
   // Update live reactions when progress includes new reactions
   useEffect(() => {
@@ -181,10 +247,10 @@ export default function CascadesAll() {
           selectedElements={fuelNuclides}
           onSelectionChange={setFuelNuclides}
           mode="nuclide"
+          disableHydrogenIsotopes={true}
         />
         <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
-          Click on elements to select specific isotopes. Color coding indicates natural abundance:
-          green = abundant (&gt;10%), yellow = trace (0.1-10%), gray = rare/synthetic.
+          Click on elements to select specific isotopes. Color coding indicates natural abundance.
         </p>
       </div>
 

@@ -36,7 +36,20 @@ export default function NuclidePickerModal({
   useEffect(() => {
     if (!db || !isOpen) return;
 
-    const loadedNuclides = getNuclidesForElement(db, element.E);
+    // Special handling for hydrogen: also load D and T isotopes
+    let loadedNuclides: NuclideWithAbundance[] = [];
+    if (element.E === 'H') {
+      // Load all hydrogen isotopes (H, D, T) since they're stored separately in the database
+      const hNuclides = getNuclidesForElement(db, 'H');
+      const dNuclides = getNuclidesForElement(db, 'D');
+      const tNuclides = getNuclidesForElement(db, 'T');
+      loadedNuclides = [...hNuclides, ...dNuclides, ...tNuclides];
+      // Sort by mass number for consistent display
+      loadedNuclides.sort((a, b) => a.A - b.A);
+    } else {
+      loadedNuclides = getNuclidesForElement(db, element.E);
+    }
+
     setNuclides(loadedNuclides);
 
     // Initialize local selection from props
