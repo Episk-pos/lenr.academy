@@ -508,16 +508,18 @@ export default function CascadesAll() {
         </div>
       )}
 
-      <div className="card p-6 mt-6 bg-blue-50 dark:bg-blue-900/30">
-        <h3 className="font-semibold text-gray-900 dark:text-white mb-2">How Cascades Work</h3>
-        <ol className="text-sm text-gray-700 dark:text-gray-300 space-y-2 list-decimal list-inside">
-          <li>Start with your specified fuel nuclides</li>
-          <li>Find all possible Fusion and 2-2 reactions between these nuclides</li>
-          <li>Products meeting energy/temperature criteria are "fed back" as new reactants</li>
-          <li>Process repeats recursively up to the max loop count</li>
-          <li>Results show the full cascade of reactions and final product distribution</li>
-        </ol>
-      </div>
+      {!results && (
+        <div className="card p-6 mt-6 bg-blue-50 dark:bg-blue-900/30">
+          <h3 className="font-semibold text-gray-900 dark:text-white mb-2">How Cascades Work</h3>
+          <ol className="text-sm text-gray-700 dark:text-gray-300 space-y-2 list-decimal list-inside">
+            <li>Start with your specified fuel nuclides</li>
+            <li>Find all possible Fusion and 2-2 reactions between these nuclides</li>
+            <li>Products meeting energy/temperature criteria are "fed back" as new reactants</li>
+            <li>Process repeats recursively up to the max loop count</li>
+            <li>Results show the full cascade of reactions and final product distribution</li>
+          </ol>
+        </div>
+      )}
     </div>
   )
 }

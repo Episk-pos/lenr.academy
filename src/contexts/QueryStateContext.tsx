@@ -1,5 +1,11 @@
 import { createContext, useContext, useState, useEffect, useCallback, ReactNode, useRef } from 'react';
 import { AllQueryStates, QueryPageState, CascadePageState } from '../types';
+import {
+  saveCascadeResults,
+  getCascadeResults,
+  deleteCascadeResults,
+  cleanupOldResults,
+} from '../services/cascadeResultsCache';
 
 const STORAGE_KEY_PREFIX = 'lenr-query-states';
 const TAB_ID_KEY = 'lenr-tab-id';
@@ -38,6 +44,7 @@ export function QueryStateProvider({ children }: { children: ReactNode }) {
 
   const [queryStates, setQueryStates] = useState<AllQueryStates>(() => {
     // Try to load from localStorage using tab-specific key
+    // Note: This only loads parameters, not cascade results (those come from IndexedDB)
     try {
       const stored = localStorage.getItem(storageKey);
       if (stored) {
@@ -61,10 +68,42 @@ export function QueryStateProvider({ children }: { children: ReactNode }) {
     };
   });
 
+  // Load cascade results from IndexedDB asynchronously
+  useEffect(() => {
+    const loadCascadeResults = async () => {
+      try {
+        const results = await getCascadeResults(tabId.current);
+        if (results) {
+          setQueryStates(prev => ({
+            ...prev,
+            cascade: prev.cascade
+              ? { ...prev.cascade, results }
+              : undefined,
+          }));
+        }
+      } catch (error) {
+        console.error('Failed to load cascade results from IndexedDB:', error);
+      }
+    };
+
+    loadCascadeResults();
+  }, []); // Only run once on mount
+
   // Save to localStorage whenever queryStates changes using tab-specific key
+  // Note: Cascade results are excluded from localStorage and saved to IndexedDB separately
   useEffect(() => {
     try {
-      localStorage.setItem(storageKey, JSON.stringify(queryStates));
+      // Create a copy without cascade results (parameters only)
+      const stateToSave = {
+        ...queryStates,
+        cascade: queryStates.cascade
+          ? {
+              ...queryStates.cascade,
+              results: undefined, // Exclude results from localStorage
+            }
+          : undefined,
+      };
+      localStorage.setItem(storageKey, JSON.stringify(stateToSave));
     } catch (error) {
       console.error('Failed to save query states to localStorage:', error);
     }
@@ -72,27 +111,39 @@ export function QueryStateProvider({ children }: { children: ReactNode }) {
 
   // Cleanup old tab states on mount (remove states older than 7 days)
   useEffect(() => {
-    try {
-      const now = Date.now();
-      const maxAge = 7 * 24 * 60 * 60 * 1000; // 7 days in milliseconds
+    const cleanup = async () => {
+      // Cleanup localStorage
+      try {
+        const now = Date.now();
+        const maxAge = 7 * 24 * 60 * 60 * 1000; // 7 days in milliseconds
 
-      for (let i = 0; i < localStorage.length; i++) {
-        const key = localStorage.key(i);
-        if (key && key.startsWith(STORAGE_KEY_PREFIX) && key !== storageKey) {
-          // Extract timestamp from key if possible
-          const match = key.match(/tab-(\d+)-/);
-          if (match) {
-            const timestamp = parseInt(match[1], 10);
-            if (now - timestamp > maxAge) {
-              localStorage.removeItem(key);
+        for (let i = 0; i < localStorage.length; i++) {
+          const key = localStorage.key(i);
+          if (key && key.startsWith(STORAGE_KEY_PREFIX) && key !== storageKey) {
+            // Extract timestamp from key if possible
+            const match = key.match(/tab-(\d+)-/);
+            if (match) {
+              const timestamp = parseInt(match[1], 10);
+              if (now - timestamp > maxAge) {
+                localStorage.removeItem(key);
+              }
             }
           }
         }
+      } catch (error) {
+        console.error('Failed to cleanup old query states:', error);
       }
-    } catch (error) {
-      console.error('Failed to cleanup old query states:', error);
-    }
-  }, []); // Only run once on mount
+
+      // Cleanup IndexedDB cascade results
+      try {
+        await cleanupOldResults();
+      } catch (error) {
+        console.error('Failed to cleanup old cascade results:', error);
+      }
+    };
+
+    cleanup();
+  }, [storageKey]); // Only run once on mount
 
   const updateFusionState = useCallback((state: Partial<QueryPageState>) => {
     setQueryStates(prev => ({
@@ -157,16 +208,23 @@ export function QueryStateProvider({ children }: { children: ReactNode }) {
       let processedState = { ...state };
 
       if (state.results) {
+        // Convert Map to array for JSON serialization in state
+        const serializedResults = {
+          ...state.results,
+          productDistribution: state.results.productDistribution instanceof Map
+            ? Array.from(state.results.productDistribution.entries()) as any
+            : state.results.productDistribution,
+        };
+
         processedState = {
           ...state,
-          results: {
-            ...state.results,
-            // Convert Map to array for JSON serialization
-            productDistribution: state.results.productDistribution instanceof Map
-              ? Array.from(state.results.productDistribution.entries()) as any
-              : state.results.productDistribution,
-          },
+          results: serializedResults,
         };
+
+        // Save results to IndexedDB asynchronously (don't await)
+        saveCascadeResults(tabId.current, state.results).catch(error => {
+          console.error('Failed to save cascade results to IndexedDB:', error);
+        });
       }
 
       return {
@@ -209,6 +267,11 @@ export function QueryStateProvider({ children }: { children: ReactNode }) {
       twotwo: undefined,
       cascade: undefined,
     });
+
+    // Also delete cascade results from IndexedDB
+    deleteCascadeResults(tabId.current).catch(error => {
+      console.error('Failed to delete cascade results from IndexedDB:', error);
+    });
   }, []);
 
   const clearPageState = useCallback((page: 'fusion' | 'fission' | 'twotwo' | 'cascade') => {
@@ -216,6 +279,13 @@ export function QueryStateProvider({ children }: { children: ReactNode }) {
       ...prev,
       [page]: undefined,
     }));
+
+    // If clearing cascade page, also delete from IndexedDB
+    if (page === 'cascade') {
+      deleteCascadeResults(tabId.current).catch(error => {
+        console.error('Failed to delete cascade results from IndexedDB:', error);
+      });
+    }
   }, []);
 
   const contextValue: QueryStateContextType = {
