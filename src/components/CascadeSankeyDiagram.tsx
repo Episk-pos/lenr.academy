@@ -134,6 +134,41 @@ export default function CascadeSankeyDiagram({ pathways, fuelNuclides = [] }: Ca
   // Calculate max frequency for color scaling
   const maxFrequency = Math.max(...pathways.map((p) => p.frequency), 1);
 
+  // Calculate min/max for link width scaling
+  const linkValues = sankeyData.links.map(l => l.value);
+  const minValue = Math.min(...linkValues);
+  const maxValue = Math.max(...linkValues);
+
+  // Custom link renderer with variable width based on pathway frequency
+  const CustomLink = (props: any) => {
+    const { sourceX, targetX, sourceY, targetY, sourceControlX, targetControlX, index } = props;
+    const linkData = sankeyData.links[index];
+
+    // Calculate thickness from pathway frequency value
+    // Normalize value to get thickness between 2 and 30 pixels
+    const normalizedValue = maxValue > minValue
+      ? (linkData.value - minValue) / (maxValue - minValue)
+      : 0.5;
+    const thickness = 2 + (normalizedValue * 28); // 2-30px range
+    const halfThickness = thickness / 2;
+
+    return (
+      <path
+        d={`
+          M${sourceX},${sourceY - halfThickness}
+          C${sourceControlX},${sourceY - halfThickness} ${targetControlX},${targetY - halfThickness} ${targetX},${targetY - halfThickness}
+          L${targetX},${targetY + halfThickness}
+          C${targetControlX},${targetY + halfThickness} ${sourceControlX},${sourceY + halfThickness} ${sourceX},${sourceY + halfThickness}
+          Z
+        `}
+        fill="#9ca3af"
+        fillOpacity={0.4}
+        stroke="none"
+        style={{ cursor: 'pointer' }}
+      />
+    );
+  };
+
   // Custom tooltip
   const CustomTooltip = ({ active, payload }: any) => {
     if (!active || !payload || !payload.length) return null;
@@ -349,6 +384,7 @@ export default function CascadeSankeyDiagram({ pathways, fuelNuclides = [] }: Ca
       <ResponsiveContainer width="100%" height={500}>
         <Sankey
           data={sankeyData}
+          link={CustomLink}
           node={(nodeProps: any) => {
             const { x, y, width, height, index, containerWidth } = nodeProps;
             const node = sankeyData.nodes[index] as EnhancedNode;
@@ -408,7 +444,6 @@ export default function CascadeSankeyDiagram({ pathways, fuelNuclides = [] }: Ca
               </g>
             );
           }}
-          link={{ stroke: '#9ca3af', strokeOpacity: 0.3 }}
           nodePadding={60}
           margin={{ top: 30, right: 120, bottom: 30, left: 120 }}
         >
