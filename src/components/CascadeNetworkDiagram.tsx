@@ -303,11 +303,11 @@ function buildCytoscapeElements(
 }
 
 /**
- * Create Cytoscape stylesheet
+ * Create Cytoscape stylesheet with smooth animations
  */
 function createStylesheet(): any[] {
   return [
-    // Node styles with proportional color blending
+    // Node styles with proportional color blending and smooth transitions
     {
       selector: 'node',
       style: {
@@ -326,6 +326,18 @@ function createStylesheet(): any[] {
         'text-halign': 'center',
         'border-width': 2,
         'border-color': '#555',
+        // Smooth transitions for all style changes
+        'transition-property': 'background-color, border-color, border-width, width, height, opacity',
+        'transition-duration': '0.5s',
+        'transition-timing-function': 'ease-in-out',
+      },
+    },
+    // New nodes (fade in effect)
+    {
+      selector: 'node.new',
+      style: {
+        'border-width': 4,
+        'border-color': '#4A90E2',
       },
     },
     // Cycle nodes (highlighted)
@@ -337,7 +349,7 @@ function createStylesheet(): any[] {
         'border-style': 'solid',
       },
     },
-    // Edge styles
+    // Edge styles with smooth transitions
     {
       selector: 'edge',
       style: {
@@ -347,6 +359,10 @@ function createStylesheet(): any[] {
         'target-arrow-shape': 'triangle',
         'curve-style': 'bezier',
         opacity: 0.7,
+        // Smooth transitions for edges
+        'transition-property': 'line-color, target-arrow-color, width, opacity',
+        'transition-duration': '0.4s',
+        'transition-timing-function': 'ease-in-out',
       },
     },
     // Secondary edges (dashed)
@@ -357,12 +373,14 @@ function createStylesheet(): any[] {
         opacity: 0.5,
       },
     },
-    // Animated edges
+    // Animated edges (flowing effect with scrolling dashes)
     {
       selector: 'edge[?animate]',
       style: {
         'line-style': 'dashed',
-        'line-dash-pattern': [6, 3],
+        'line-dash-pattern': [8, 4],
+        'line-dash-offset': 24, // Creates scrolling effect when animated
+        opacity: 0.85,
       },
     },
   ];
@@ -389,15 +407,15 @@ export default function CascadeNetworkDiagram({
   }, [reactions]);
 
   // State
-  const [maxPathways, setMaxPathways] = useState(30);
-  const [showFilters, setShowFilters] = useState(true);
+  const [maxPathways, setMaxPathways] = useState(50); // Increased default for better initial view
+  const [showFilters, setShowFilters] = useState(false); // Collapsed by default - timeline is primary control
   const [highlightCycles, setHighlightCycles] = useState(false);
   const [cycleCount, setCycleCount] = useState(0);
 
   // Timeline animation state
-  const [currentLoop, setCurrentLoop] = useState(maxLoop); // Start at end (showing all)
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [playbackSpeed, setPlaybackSpeed] = useState(1); // 1x speed
+  const [currentLoop, setCurrentLoop] = useState(0); // Start at beginning for Gource-like experience
+  const [isPlaying, setIsPlaying] = useState(true); // Auto-play on mount
+  const [playbackSpeed, setPlaybackSpeed] = useState(2); // 2x speed by default for smoother experience
 
   // Refs
   const containerRef = useRef<HTMLDivElement>(null);
@@ -427,8 +445,10 @@ export default function CascadeNetworkDiagram({
   }, []);
 
   // Sync currentLoop when maxLoop changes (e.g., new cascade data)
+  // Reset to beginning and start playing for Gource-like experience
   useEffect(() => {
-    setCurrentLoop(maxLoop);
+    setCurrentLoop(0);
+    setIsPlaying(true);
   }, [maxLoop]);
 
   // Timeline animation playback
@@ -464,6 +484,11 @@ export default function CascadeNetworkDiagram({
   const handleStop = useCallback(() => {
     setIsPlaying(false);
     setCurrentLoop(0);
+  }, []);
+
+  const handleRestart = useCallback(() => {
+    setCurrentLoop(0);
+    setIsPlaying(true);
   }, []);
 
   const handleStepForward = useCallback(() => {
@@ -583,6 +608,14 @@ export default function CascadeNetworkDiagram({
       if (toAdd.length > 0) {
         const newElements = cy.add(toAdd);
 
+        // Highlight new nodes with animation
+        newElements.nodes().addClass('new');
+
+        // Remove highlight after animation completes
+        setTimeout(() => {
+          newElements.nodes().removeClass('new');
+        }, 1500);
+
         // Position new nodes near their connected nodes (better initial placement)
         newElements.nodes().forEach(node => {
           const savedPos = nodePositionsRef.current.get(node.id());
@@ -637,31 +670,32 @@ export default function CascadeNetworkDiagram({
           }
         });
 
-        // Run gentle layout on ALL nodes to resolve overlaps
-        // Use current positions as starting points (randomize: false)
+        // Run smooth layout on ALL nodes to resolve overlaps
+        // Use current positions as starting points for organic transitions
         if (cy.nodes().length < 150) {
           cy.layout({
             name: 'cose-bilkent',
-            animate: true,
-            animationDuration: 600,
+            animate: 'end', // Animate to final positions
+            animationDuration: 800, // Longer, smoother animation
+            animationEasing: 'ease-out', // Smooth deceleration
             nodeDimensionsIncludeLabels: true,
             idealEdgeLength: 100,
-            nodeRepulsion: 8500, // Slightly higher repulsion to spread out nodes
+            nodeRepulsion: 8500,
             edgeElasticity: 0.45,
-            numIter: 800, // Increased iterations to better settle isolated nodes
+            numIter: 800,
             gravityRange: 3.8,
             fit: false, // Don't re-center viewport
             randomize: false, // Use current positions as starting point
           } as any).run();
         }
 
-        // Store positions after layout completes
+        // Store positions after layout completes (with buffer for animation)
         setTimeout(() => {
           cy.nodes().forEach(node => {
             const pos = node.position();
             nodePositionsRef.current.set(node.id(), { x: pos.x, y: pos.y });
           });
-        }, 700);
+        }, 900);
       }
     });
 
@@ -704,15 +738,26 @@ export default function CascadeNetworkDiagram({
 
   return (
     <div className="space-y-4">
-      {/* Timeline Animation Controls */}
-      <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-300 dark:border-gray-700 p-4">
+      {/* Timeline Animation Controls - Prominent Gource-style */}
+      <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-gray-800 dark:to-gray-750 rounded-lg border-2 border-blue-300 dark:border-blue-700 p-5 shadow-sm">
         <div className="flex items-center justify-between mb-4">
           <div>
-            <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300">Timeline Animation</h3>
-            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-              Loop {currentLoop} of {maxLoop} • {filteredReactions.length} reactions
+            <h3 className="text-base font-bold text-gray-800 dark:text-gray-200 flex items-center gap-2">
+              <Play className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+              Cascade Evolution Timeline
+            </h3>
+            <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+              Loop {currentLoop} of {maxLoop} • {filteredReactions.length} reactions visible
             </p>
           </div>
+          <button
+            onClick={handleRestart}
+            className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg shadow-sm transition-colors flex items-center gap-2"
+            title="Restart animation from beginning"
+          >
+            <Play className="w-4 h-4" />
+            Restart
+          </button>
         </div>
 
         {/* Media Controls */}
@@ -801,25 +846,23 @@ export default function CascadeNetworkDiagram({
         </div>
       </div>
 
-      {/* Filter Controls */}
-      <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-300 dark:border-gray-700 p-4">
-        <div className="flex items-center justify-between mb-2">
-          <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300">Network Filters</h3>
-          <button
-            onClick={() => setShowFilters(!showFilters)}
-            className="p-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded"
-            aria-label={showFilters ? 'Hide filters' : 'Show filters'}
-          >
-            {showFilters ? (
-              <ChevronUp className="w-4 h-4 text-gray-600 dark:text-gray-400" />
-            ) : (
-              <ChevronDown className="w-4 h-4 text-gray-600 dark:text-gray-400" />
-            )}
-          </button>
-        </div>
+      {/* Advanced Settings (collapsed by default) */}
+      <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-300 dark:border-gray-700 p-3">
+        <button
+          onClick={() => setShowFilters(!showFilters)}
+          className="w-full flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-750 rounded px-2 py-1 transition-colors"
+          aria-label={showFilters ? 'Hide advanced settings' : 'Show advanced settings'}
+        >
+          <h3 className="text-sm font-medium text-gray-600 dark:text-gray-400">Advanced Settings</h3>
+          {showFilters ? (
+            <ChevronUp className="w-4 h-4 text-gray-500 dark:text-gray-500" />
+          ) : (
+            <ChevronDown className="w-4 h-4 text-gray-500 dark:text-gray-500" />
+          )}
+        </button>
 
         {showFilters && (
-          <div className="space-y-4">
+          <div className="space-y-4 mt-3 pt-3 border-t border-gray-200 dark:border-gray-700">
             {/* Pathway Limit Slider - Enhanced granularity */}
             <div>
               <div className="flex items-center justify-between mb-2">
