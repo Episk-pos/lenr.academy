@@ -56,8 +56,8 @@ test.describe('Cascade State Persistence', () => {
     const maxLoopsSlider = page.locator('input[type="range"]').nth(1);
     await maxLoopsSlider.fill('15');
 
-    // Wait longer for state to save (debounced in React)
-    await page.waitForTimeout(1500);
+    // Wait longer for state to save (debounced in React + IndexedDB async operations)
+    await page.waitForTimeout(3000);
 
     // Check state was saved - just verify cascade state exists
     const cascadeState = await getQueryStateFromStorage(page);
@@ -97,8 +97,8 @@ test.describe('Cascade State Persistence', () => {
     // Wait for page to load
     await expect(page.getByRole('heading', { name: 'Cascade Simulations' })).toBeVisible();
 
-    // Wait longer for initial state to be saved after page load
-    await page.waitForTimeout(2500);
+    // Wait longer for initial state to be saved after page load (IndexedDB + localStorage async operations)
+    await page.waitForTimeout(4000);
     const initialState = await getQueryStateFromStorage(page);
     const initialFuelNuclides = initialState?.cascade?.fuelNuclides || [];
 
@@ -119,8 +119,8 @@ test.describe('Cascade State Persistence', () => {
     await acceptMeteredWarningIfPresent(page);
     await waitForDatabaseReady(page);
 
-    // Wait for state restoration
-    await page.waitForTimeout(1500);
+    // Wait for state restoration (IndexedDB + localStorage)
+    await page.waitForTimeout(3000);
 
     // Verify fuel nuclides were restored
     const restoredState = await getQueryStateFromStorage(page);
