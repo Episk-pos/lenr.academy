@@ -511,7 +511,7 @@ export default function CascadeNetworkDiagram({
 
       sim.nodes(graphData.nodes);
       sim.force('link').links(graphData.links);
-      sim.alpha(0.3).restart();  // Gentle restart for smooth transitions
+      sim.alpha(0.05).restart();  // Very gentle restart for smooth loop transitions
     }
 
     // Setup SVG
