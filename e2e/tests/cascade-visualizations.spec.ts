@@ -69,7 +69,7 @@ test.describe('Cascade Visualizations', () => {
     });
   });
 
-  test.skip.describe('Pathway Browser Sorting', () => {
+  test.describe('Pathway Browser Sorting', () => {
     test.beforeEach(async ({ page }) => {
       // Navigate to Pathway Browser tab
       await page.click('button:has-text("Pathway Browser")');
