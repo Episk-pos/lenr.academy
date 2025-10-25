@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Sankey, Tooltip, ResponsiveContainer, Rectangle } from 'recharts';
-import { Sliders, HelpCircle, X, ArrowRight } from 'lucide-react';
+import { Sliders, HelpCircle, X } from 'lucide-react';
 import type { PathwayAnalysis } from '../services/pathwayAnalyzer';
 
 interface CascadeSankeyDiagramProps {
@@ -14,6 +14,28 @@ interface EnhancedNode {
   name: string;
   type: NodeType;
   color: string;
+}
+
+/**
+ * Extract atomic number and mass number from nuclide ID
+ * e.g., "He-4" → { element: "He", Z: 2, A: 4 }
+ */
+function parseNuclide(nuclideId: string): { element: string; Z: number; A: number } {
+  const match = nuclideId.match(/^([A-Z][a-z]?)[-\s]?(\d+)$/);
+  if (!match) return { element: nuclideId, Z: 0, A: 0 };
+
+  const element = match[1];
+  const A = parseInt(match[2]);
+
+  // Map common elements to Z (atomic number)
+  const elementToZ: Record<string, number> = {
+    'H': 1, 'D': 1, 'T': 1, 'He': 2, 'Li': 3, 'Be': 4, 'B': 5, 'C': 6, 'N': 7, 'O': 8,
+    'F': 9, 'Ne': 10, 'Na': 11, 'Mg': 12, 'Al': 13, 'Si': 14, 'P': 15, 'S': 16,
+    'Cl': 17, 'Ar': 18, 'K': 19, 'Ca': 20, 'Fe': 26, 'Ni': 28, 'Cu': 29, 'Zn': 30
+  };
+
+  const Z = elementToZ[element] || 0;
+  return { element, Z, A };
 }
 
 /**
@@ -44,8 +66,30 @@ function pathwaysToSankeyData(pathways: PathwayAnalysis[], fuelNuclides: string[
     pathway.inputs.forEach((input) => hasOutgoingEdges.add(input));
   });
 
+  // Sort pathways to minimize crossings in Sankey diagram
+  // Group by: 1) output element/mass, 2) input element/mass
+  const sortedPathways = [...pathways].sort((a, b) => {
+    // Parse first output of each pathway
+    const aOut = parseNuclide(a.outputs[0]);
+    const bOut = parseNuclide(b.outputs[0]);
+
+    // Sort by output Z (atomic number) first
+    if (aOut.Z !== bOut.Z) return aOut.Z - bOut.Z;
+
+    // Then by output A (mass number)
+    if (aOut.A !== bOut.A) return aOut.A - bOut.A;
+
+    // Then by input Z
+    const aIn = parseNuclide(a.inputs[0]);
+    const bIn = parseNuclide(b.inputs[0]);
+    if (aIn.Z !== bIn.Z) return aIn.Z - bIn.Z;
+
+    // Finally by input A
+    return aIn.A - bIn.A;
+  });
+
   // Build node list and index map with type classification
-  pathways.forEach((pathway) => {
+  sortedPathways.forEach((pathway) => {
     [...pathway.inputs, ...pathway.outputs].forEach((nuclide) => {
       if (!nodeMap.has(nuclide)) {
         const index = nodes.length;
@@ -71,19 +115,60 @@ function pathwaysToSankeyData(pathways: PathwayAnalysis[], fuelNuclides: string[
     });
   });
 
-  // Build links using node indices
-  pathways.forEach((pathway) => {
-    const sourceIndex = nodeMap.get(pathway.inputs[0]);
-    const targetIndex = nodeMap.get(pathway.outputs[0]);
+  // Build aggregated links - consolidate duplicate connections
+  // Map from "sourceIndex-targetIndex" to aggregated link data
+  const linkMap = new Map<string, {
+    source: number;
+    target: number;
+    value: number;
+    pathways: PathwayAnalysis[];
+  }>();
 
-    if (sourceIndex !== undefined && targetIndex !== undefined) {
-      links.push({
-        source: sourceIndex,
-        target: targetIndex,
-        value: pathway.frequency,
-        pathway,
-      });
+  sortedPathways.forEach((pathway) => {
+    // For each pathway, create connections from inputs to outputs
+    // For two-to-two reactions (A + B → C + D), we create all possible links
+    const numInputs = pathway.inputs.length;
+    const numOutputs = pathway.outputs.length;
+    const valuePerLink = pathway.frequency / Math.max(numInputs, numOutputs);
+
+    // Create links from each input to corresponding outputs
+    for (let i = 0; i < Math.max(numInputs, numOutputs); i++) {
+      const inputIndex = i < numInputs ? i : 0; // Use first input if we run out
+      const outputIndex = i < numOutputs ? i : 0; // Use first output if we run out
+
+      const sourceIndex = nodeMap.get(pathway.inputs[inputIndex]);
+      const targetIndex = nodeMap.get(pathway.outputs[outputIndex]);
+
+      if (sourceIndex !== undefined && targetIndex !== undefined) {
+        const linkKey = `${sourceIndex}-${targetIndex}`;
+
+        if (linkMap.has(linkKey)) {
+          // Aggregate with existing link
+          const existing = linkMap.get(linkKey)!;
+          existing.value += valuePerLink;
+          existing.pathways.push(pathway);
+        } else {
+          // Create new aggregated link
+          linkMap.set(linkKey, {
+            source: sourceIndex,
+            target: targetIndex,
+            value: valuePerLink,
+            pathways: [pathway],
+          });
+        }
+      }
     }
+  });
+
+  // Convert aggregated links to array
+  // Use the most frequent pathway for tooltip display
+  linkMap.forEach(({ source, target, value, pathways }) => {
+    links.push({
+      source,
+      target,
+      value,
+      pathway: pathways.sort((a, b) => b.frequency - a.frequency)[0], // Show most frequent pathway in tooltip
+    });
   });
 
   return {
@@ -103,33 +188,57 @@ export default function CascadeSankeyDiagram({ pathways, fuelNuclides = [] }: Ca
   const [feedbackOnly, setFeedbackOnly] = useState(false);
   const [minFrequency, setMinFrequency] = useState(1);
   const [showFilters, setShowFilters] = useState(false);
+  const [renderError, setRenderError] = useState<string | null>(null);
   const [showGuide, setShowGuide] = useState(() => {
     // Show guide on first visit
     const hasSeenGuide = localStorage.getItem('cascade-sankey-guide-seen');
     return !hasSeenGuide;
   });
 
+  // Safety: Clamp topN to max of 50 to prevent stack overflow
+  const safeTopN = Math.min(topN, 50);
+
   const handleCloseGuide = () => {
     localStorage.setItem('cascade-sankey-guide-seen', 'true');
     setShowGuide(false);
   };
 
-  // Apply filters
+  // Apply filters and track counts for user feedback
   let filteredPathways = [...pathways];
+  const totalPathways = pathways.length;
+
+  // Track filter effects
+  let afterFeedbackFilter = filteredPathways.length;
+  let afterFrequencyFilter = filteredPathways.length;
 
   if (feedbackOnly) {
     filteredPathways = filteredPathways.filter((p) => p.isFeedback);
+    afterFeedbackFilter = filteredPathways.length;
   }
 
   if (minFrequency > 1) {
     filteredPathways = filteredPathways.filter((p) => p.frequency >= minFrequency);
+    afterFrequencyFilter = filteredPathways.length;
   }
 
-  // Limit to top N
-  filteredPathways = filteredPathways.slice(0, topN);
+  // Sort by frequency (descending) to ensure "Top N" shows the most frequent
+  filteredPathways.sort((a, b) => b.frequency - a.frequency);
+
+  // Limit to top N (using safe clamped value)
+  const beforeTopNLimit = filteredPathways.length;
+  filteredPathways = filteredPathways.slice(0, safeTopN);
 
   // Convert to Sankey format with color coding
-  const sankeyData = pathwaysToSankeyData(filteredPathways, fuelNuclides);
+  let sankeyData;
+  try {
+    sankeyData = pathwaysToSankeyData(filteredPathways, fuelNuclides);
+    // Clear any previous errors
+    if (renderError) setRenderError(null);
+  } catch (error) {
+    console.error('Error generating Sankey data:', error);
+    setRenderError(error instanceof Error ? error.message : 'Unknown error generating diagram');
+    sankeyData = { nodes: [], links: [] }; // Empty fallback
+  }
 
   // Calculate max frequency for color scaling
   const maxFrequency = Math.max(...pathways.map((p) => p.frequency), 1);
@@ -293,25 +402,6 @@ export default function CascadeSankeyDiagram({ pathways, fuelNuclides = [] }: Ca
         </button>
       </div>
 
-      {/* Visual Flow Direction Guide */}
-      <div className="flex items-center justify-center gap-4 text-sm">
-        <div className="flex items-center gap-2">
-          <div className="w-12 h-8 bg-green-500 dark:bg-green-600 rounded flex items-center justify-center text-white text-xs font-bold">
-            Fuel
-          </div>
-          <ArrowRight className="w-4 h-4 text-gray-400" />
-        </div>
-        <div className="flex items-center gap-2">
-          <div className="w-16 h-8 bg-blue-500 dark:bg-blue-600 rounded flex items-center justify-center text-white text-xs font-bold">
-            Intermediate
-          </div>
-          <ArrowRight className="w-4 h-4 text-gray-400" />
-        </div>
-        <div className="w-12 h-8 bg-orange-500 dark:bg-orange-600 rounded flex items-center justify-center text-white text-xs font-bold">
-          Final
-        </div>
-      </div>
-
       {/* Filter Controls */}
       {showFilters && (
         <div className="card p-4 space-y-4 bg-gray-50 dark:bg-gray-800">
@@ -323,16 +413,21 @@ export default function CascadeSankeyDiagram({ pathways, fuelNuclides = [] }: Ca
             <input
               type="range"
               min="5"
-              max="100"
+              max="50"
               step="5"
-              value={topN}
+              value={Math.min(topN, 50)}
               onChange={(e) => setTopN(parseInt(e.target.value))}
               className="w-full"
             />
             <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400 mt-1">
               <span>5</span>
-              <span>100</span>
+              <span>50 (max)</span>
             </div>
+            {topN > 40 && (
+              <p className="text-xs text-orange-600 dark:text-orange-400 mt-1">
+                ⚠️ High pathway counts may cause slow rendering
+              </p>
+            )}
           </div>
 
           {/* Min Frequency Slider */}
@@ -374,17 +469,55 @@ export default function CascadeSankeyDiagram({ pathways, fuelNuclides = [] }: Ca
         </div>
       )}
 
-      {/* Showing N of M message */}
-      <p className="text-sm text-gray-600 dark:text-gray-400">
-        Showing {filteredPathways.length} of {pathways.length} total pathways
-        {feedbackOnly && ` (${pathways.filter((p) => p.isFeedback).length} with feedback loops)`}
-      </p>
+      {/* Filter Status Message */}
+      <div className="text-sm text-gray-600 dark:text-gray-400">
+        <p>
+          Showing <strong>{filteredPathways.length}</strong> of <strong>{totalPathways}</strong> total pathways
+          {beforeTopNLimit > safeTopN && (
+            <span className="text-gray-500"> (top {safeTopN} by frequency)</span>
+          )}
+        </p>
+        {(minFrequency > 1 || feedbackOnly) && (
+          <p className="text-xs mt-1">
+            Filters applied:
+            {feedbackOnly && <span> • Feedback loops only ({afterFeedbackFilter} matched)</span>}
+            {minFrequency > 1 && (
+              <span> • Min frequency ≥{minFrequency}× ({afterFrequencyFilter} matched)</span>
+            )}
+          </p>
+        )}
+      </div>
+
+      {/* Error Message */}
+      {renderError && (
+        <div className="card p-4 bg-red-50 dark:bg-red-900/20 border-2 border-red-500 dark:border-red-400">
+          <div className="flex items-start gap-3">
+            <div className="flex-1">
+              <h4 className="font-semibold text-red-900 dark:text-red-100 mb-2">
+                Diagram Rendering Error
+              </h4>
+              <p className="text-sm text-red-800 dark:text-red-200">
+                The Sankey diagram encountered an error while rendering. This usually happens with too many pathways.
+              </p>
+              <p className="text-xs text-red-700 dark:text-red-300 mt-2">
+                Try reducing the number of pathways or using filters to simplify the data.
+              </p>
+              <details className="mt-2">
+                <summary className="text-xs text-red-600 dark:text-red-400 cursor-pointer">Technical details</summary>
+                <pre className="text-xs text-red-700 dark:text-red-300 mt-1 whitespace-pre-wrap">{renderError}</pre>
+              </details>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Sankey Diagram */}
-      <ResponsiveContainer width="100%" height={500}>
-        <Sankey
-          data={sankeyData}
-          link={CustomLink}
+      {!renderError && (
+        <ResponsiveContainer width="100%" height={500}>
+          <Sankey
+            key={`${safeTopN}-${minFrequency}-${feedbackOnly}`}
+            data={sankeyData}
+            link={CustomLink}
           node={(nodeProps: any) => {
             const { x, y, width, height, index, containerWidth } = nodeProps;
             const node = sankeyData.nodes[index] as EnhancedNode;
@@ -450,6 +583,7 @@ export default function CascadeSankeyDiagram({ pathways, fuelNuclides = [] }: Ca
           <Tooltip content={<CustomTooltip />} />
         </Sankey>
       </ResponsiveContainer>
+      )}
 
       {/* Interactive Legend */}
       <div className="card p-4 bg-gray-50 dark:bg-gray-800">
@@ -480,7 +614,6 @@ export default function CascadeSankeyDiagram({ pathways, fuelNuclides = [] }: Ca
         <div className="mt-3 pt-3 border-t border-gray-200 dark:border-gray-700 text-xs text-gray-600 dark:text-gray-400 space-y-1">
           <p>💡 <strong>Flow width</strong> represents how often each reaction pathway occurs</p>
           <p>💡 <strong>Hover</strong> over flows to see detailed reaction information</p>
-          <p>💡 <strong>Green checkmark</strong> in tooltip indicates feedback loop pathways</p>
         </div>
       </div>
     </div>

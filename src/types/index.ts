@@ -4,6 +4,7 @@ export type NeutrinoType = 'none' | 'left' | 'right' | 'left-right' | 'any';
 export type BosonFermionType = 'b' | 'f';
 export type ReactionType = 'fusion' | 'fission' | 'twotwo';
 export type HeatmapMode = 'frequency' | 'energy' | 'diversity';
+export type NodeRole = 'fuel' | 'intermediate' | 'product' | 'stable';
 
 export interface Nuclide {
   id: number;
