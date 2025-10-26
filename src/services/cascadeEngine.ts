@@ -3,8 +3,14 @@ import type {
   CascadeParameters,
   CascadeResults,
   CascadeReaction,
+  FuelNuclide,
 } from '../types';
 import { queryFusion, queryTwoToTwo, getAllNuclides, getAllElements } from './queryService';
+import {
+  normalizeFuelProportions,
+  calculateReactionWeight,
+  createEqualProportionFuel,
+} from '../utils/fuelProportions';
 
 /**
  * Parse fuel nuclide strings into standardized format
@@ -88,10 +94,37 @@ export async function runCascadeSimulation(
 ): Promise<CascadeResults> {
   const startTime = performance.now();
 
-  // Parse and validate fuel nuclides
-  const fuelNuclideIds = parseFuelNuclides(params.fuelNuclides);
-  if (fuelNuclideIds.length === 0) {
+  // Determine if weighted mode is enabled
+  const useWeightedMode = params.useWeightedMode ?? false;
+
+  // Parse and normalize fuel nuclides with proportions
+  let fuelComposition: FuelNuclide[];
+  if (typeof params.fuelNuclides[0] === 'string') {
+    // Convert string array to FuelNuclide array
+    const nuclideIds = parseFuelNuclides(params.fuelNuclides as string[]);
+    fuelComposition = useWeightedMode
+      ? createEqualProportionFuel(nuclideIds)
+      : createEqualProportionFuel(nuclideIds);
+  } else {
+    // Already FuelNuclide array - normalize proportions
+    fuelComposition = normalizeFuelProportions(params.fuelNuclides as FuelNuclide[]);
+    // Parse nuclide IDs to ensure standard format
+    fuelComposition = fuelComposition.map(fuel => ({
+      ...fuel,
+      nuclideId: parseFuelNuclides([fuel.nuclideId])[0],
+    }));
+  }
+
+  if (fuelComposition.length === 0) {
     throw new Error('No valid fuel nuclides provided');
+  }
+
+  // Build proportions map for reaction weighting
+  const proportions = new Map<string, number>();
+  const fuelNuclideIds: string[] = [];
+  for (const fuel of fuelComposition) {
+    proportions.set(fuel.nuclideId, fuel.proportion);
+    fuelNuclideIds.push(fuel.nuclideId);
   }
 
   // Track all reactions and nuclides
@@ -139,6 +172,11 @@ export async function runCascadeSimulation(
 
       // Only include if both inputs are in active pool AND output is new
       if (activeNuclides.has(input1) && activeNuclides.has(input2) && !activeNuclides.has(output)) {
+        // Calculate reaction weight based on input proportions
+        const weight = useWeightedMode
+          ? calculateReactionWeight(input1, input2, proportions)
+          : 1.0;
+
         allReactions.push({
           type: 'fusion',
           inputs: [input1, input2],
@@ -146,11 +184,19 @@ export async function runCascadeSimulation(
           MeV: reaction.MeV,
           loop: loopCount,
           neutrino: reaction.neutrino,
+          weight: useWeightedMode ? weight : undefined,
         });
 
-        // Track product
+        // Track product (weighted count)
         newProducts.add(output);
-        productDistribution.set(output, (productDistribution.get(output) || 0) + 1);
+        productDistribution.set(output, (productDistribution.get(output) || 0) + weight);
+        
+        // Update proportions for feedback (products inherit weighted proportion)
+        if (!proportions.has(output)) {
+          proportions.set(output, weight);
+        } else {
+          proportions.set(output, proportions.get(output)! + weight);
+        }
       }
     }
 
@@ -171,6 +217,11 @@ export async function runCascadeSimulation(
       // Only include if both inputs are in active pool AND at least one output is new
       const hasNewOutput = !activeNuclides.has(output1) || !activeNuclides.has(output2);
       if (activeNuclides.has(input1) && activeNuclides.has(input2) && hasNewOutput) {
+        // Calculate reaction weight based on input proportions
+        const weight = useWeightedMode
+          ? calculateReactionWeight(input1, input2, proportions)
+          : 1.0;
+
         allReactions.push({
           type: 'twotwo',
           inputs: [input1, input2],
@@ -178,13 +229,26 @@ export async function runCascadeSimulation(
           MeV: reaction.MeV,
           loop: loopCount,
           neutrino: reaction.neutrino,
+          weight: useWeightedMode ? weight : undefined,
         });
 
-        // Track products
+        // Track products (weighted count)
         newProducts.add(output1);
         newProducts.add(output2);
-        productDistribution.set(output1, (productDistribution.get(output1) || 0) + 1);
-        productDistribution.set(output2, (productDistribution.get(output2) || 0) + 1);
+        productDistribution.set(output1, (productDistribution.get(output1) || 0) + weight);
+        productDistribution.set(output2, (productDistribution.get(output2) || 0) + weight);
+
+        // Update proportions for feedback
+        if (!proportions.has(output1)) {
+          proportions.set(output1, weight);
+        } else {
+          proportions.set(output1, proportions.get(output1)! + weight);
+        }
+        if (!proportions.has(output2)) {
+          proportions.set(output2, weight);
+        } else {
+          proportions.set(output2, proportions.get(output2)! + weight);
+        }
       }
     }
 
@@ -249,5 +313,7 @@ export async function runCascadeSimulation(
     loopsExecuted: loopCount,
     executionTime,
     terminationReason,
+    fuelComposition: useWeightedMode ? fuelComposition : undefined,
+    isWeighted: useWeightedMode,
   };
 }

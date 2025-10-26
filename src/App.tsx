@@ -46,7 +46,7 @@ function App() {
       <ThemeProvider>
         <DatabaseProvider>
           <QueryStateProvider>
-            <Router>
+            <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
               <LayoutProvider>
               {/* PWA Components */}
               <PWAUpdatePrompt />

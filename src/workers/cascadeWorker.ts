@@ -6,7 +6,7 @@
  */
 
 import initSqlJs, { Database as SqlJsDatabase } from 'sql.js';
-import type { CascadeParameters, CascadeResults } from '../types';
+import type { CascadeParameters, CascadeResults, FuelNuclide } from '../types';
 import { applyFeedbackRules, shouldAllowDimerReaction } from '../services/cascadeFeedbackRules';
 
 // Message types
@@ -57,11 +57,20 @@ async function initDatabase(buffer: ArrayBuffer): Promise<void> {
 
 /**
  * Parse fuel nuclide strings into standardized format
+ * Handles both simple strings and FuelNuclide objects
  */
-function parseFuelNuclides(fuelNuclides: string[]): string[] {
+function parseFuelNuclides(fuelNuclides: string[] | FuelNuclide[]): string[] {
+  // Extract nuclide IDs if FuelNuclide array
+  let nuclideStrings: string[];
+  if (fuelNuclides.length > 0 && typeof fuelNuclides[0] === 'object') {
+    nuclideStrings = (fuelNuclides as FuelNuclide[]).map(f => f.nuclideId);
+  } else {
+    nuclideStrings = fuelNuclides as string[];
+  }
+
   const parsed: string[] = [];
 
-  for (const nuclide of fuelNuclides) {
+  for (const nuclide of nuclideStrings) {
     const trimmed = nuclide.trim();
     if (!trimmed) continue;
 
