@@ -115,13 +115,15 @@ export async function initDatabase(
         console.log('✅ Loaded database from cache');
       } catch (loadError) {
         console.warn('⚠️ Cached database is corrupted, clearing cache:', loadError);
+        if (db) {
+          db.close();
+        }
         // Clear corrupted cache
         await clearAllCache();
         db = null;
         cachedDB = null;
         // Continue to download fresh database below
       }
-
       // Only check for updates if cache loaded successfully
       if (db && cachedDB) {
         // Background: Try to check for updates (don't block if offline)
@@ -594,3 +596,4 @@ export async function importDatabase(data: Uint8Array): Promise<Database> {
   db = new SQL.Database(data);
   return db;
 }
+

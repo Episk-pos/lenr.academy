@@ -343,9 +343,9 @@ None identified. All critical functionality tested and working.
 
 ## 👥 Contributors
 
-**Developer**: Brandon (Diadon)  
+**Developer**: ConsciousEnergy (Diadon)  
 **AI Assistant**: Claude (Sonnet 4.5)  
-**Repository**: ConsciousEnergy/lenr.academy  
+**Repository**: ConsciousEnergy/lenr.academy (Fork) < Episk-pos/lenr.academy
 **Feature Branch**: feature/weighted-fuel-proportions
 
 ---
@@ -354,7 +354,7 @@ None identified. All critical functionality tested and working.
 
 For questions or review feedback regarding this feature:
 1. Review `PULL_REQUEST_DOCUMENTATION.md` for comprehensive PR overview
-2. Check `DECAY_CHAIN_TESTS_FINAL_REPORT.md` for test validation
+2. Check `testing/DECAY_CHAIN_TESTS_FINAL_REPORT.md` for test validation
 3. See `PHASE_1_COMPLETION_SUMMARY.md` for weighted fuel details
 
 **Status**: **READY FOR MERGE** 🚀
