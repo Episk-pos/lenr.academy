@@ -36,5 +36,8 @@ dist-ssr
 # Claude
 .claude/
 
+# SpecStory (AI conversation history)
+.specstory/
+
 docs/screenshots/pr/
 .aider*

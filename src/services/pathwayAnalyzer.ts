@@ -27,6 +27,7 @@ interface Reaction {
   outputs: string[];
   MeV: number;
   loop: number;
+  weight?: number;  // Optional weight for probabilistic cascade simulations
 }
 
 /**
@@ -49,18 +50,21 @@ export function analyzePathways(reactions: Reaction[]): PathwayAnalysis[] {
     // Create unique key for this pathway
     const pathwayKey = `${reaction.inputs.join('+')}→${reaction.outputs.join('+')}`;
 
+    // Use weight if available (weighted mode), otherwise count as 1
+    const reactionWeight = reaction.weight ?? 1.0;
+
     if (pathwayMap.has(pathwayKey)) {
       const existing = pathwayMap.get(pathwayKey)!;
-      existing.count++;
-      existing.totalEnergy += reaction.MeV;
+      existing.count += reactionWeight;
+      existing.totalEnergy += reaction.MeV * reactionWeight;
       existing.loops.add(reaction.loop);
     } else {
       pathwayMap.set(pathwayKey, {
         type: reaction.type,
         inputs: reaction.inputs,
         outputs: reaction.outputs,
-        count: 1,
-        totalEnergy: reaction.MeV,
+        count: reactionWeight,
+        totalEnergy: reaction.MeV * reactionWeight,
         loops: new Set([reaction.loop]),
       });
     }

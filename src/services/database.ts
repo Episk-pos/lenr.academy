@@ -3,6 +3,7 @@ import {
   getCachedDB,
   setCachedDB,
   clearOldVersions,
+  clearAllCache,
   fetchMetadata,
   requestPersistentStorage,
   type CachedDatabase,
@@ -100,30 +101,51 @@ export async function initDatabase(
     if (cachedDB) {
       console.log(`💾 Found cached database version: ${cachedDB.version}`);
 
-      // Load cached database immediately to make app functional
-      db = new SQL.Database(cachedDB.data);
-      currentVersion = cachedDB.version;
-      console.log('✅ Loaded database from cache');
-
-      // Background: Try to check for updates (don't block if offline)
       try {
-        const metadata = await fetchMetadata();
-        console.log(`📡 Server database version: ${metadata.version}`);
-
-        // Check if update is available
-        if (metadata.version !== cachedDB.version) {
-          console.log(`🔄 Update available: ${cachedDB.version} → ${metadata.version}`);
-          if (onUpdateAvailable) {
-            onUpdateAvailable(metadata.version);
-          }
-          // Background update will be handled by DatabaseContext
+        // Load cached database immediately to make app functional
+        db = new SQL.Database(cachedDB.data);
+        
+        // Validate database by running a simple query
+        const result = db.exec('SELECT name FROM sqlite_master WHERE type="table" LIMIT 1');
+        if (!result || result.length === 0) {
+          throw new Error('Cached database appears to be empty or corrupted');
         }
-      } catch (metadataError) {
-        // Offline or network error - that's OK, we already have cached database
-        console.log('ℹ️ Could not check for updates (offline?), using cached version');
+        
+        currentVersion = cachedDB.version;
+        console.log('✅ Loaded database from cache');
+      } catch (loadError) {
+        console.warn('⚠️ Cached database is corrupted, clearing cache:', loadError);
+        if (db) {
+          db.close();
+        }
+        // Clear corrupted cache
+        await clearAllCache();
+        db = null;
+        cachedDB = null;
+        // Continue to download fresh database below
       }
+      // Only check for updates if cache loaded successfully
+      if (db && cachedDB) {
+        // Background: Try to check for updates (don't block if offline)
+        try {
+          const metadata = await fetchMetadata();
+          console.log(`📡 Server database version: ${metadata.version}`);
 
-      return db;
+          // Check if update is available
+          if (metadata.version !== cachedDB.version) {
+            console.log(`🔄 Update available: ${cachedDB.version} → ${metadata.version}`);
+            if (onUpdateAvailable) {
+              onUpdateAvailable(metadata.version);
+            }
+            // Background update will be handled by DatabaseContext
+          }
+        } catch (metadataError) {
+          // Offline or network error - that's OK, we already have cached database
+          console.log('ℹ️ Could not check for updates (offline?), using cached version');
+        }
+
+        return db;
+      }
     }
   } catch (cacheError) {
     console.warn('Failed to check cache:', cacheError);
@@ -147,6 +169,13 @@ export async function initDatabase(
 
     // Load into SQL.js
     db = new SQL.Database(data);
+    
+    // Validate database by running a simple query
+    const result = db.exec('SELECT name FROM sqlite_master WHERE type="table" LIMIT 1');
+    if (!result || result.length === 0) {
+      throw new Error('Downloaded database appears to be empty or invalid');
+    }
+    
     console.log('✅ Parkhomov database loaded successfully');
 
     // Cache for next time
@@ -567,3 +596,4 @@ export async function importDatabase(data: Uint8Array): Promise<Database> {
   db = new SQL.Database(data);
   return db;
 }
+

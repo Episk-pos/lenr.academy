@@ -303,7 +303,9 @@ export default function PathwayBrowserTable({ pathways }: PathwayBrowserTablePro
                         {pathway.type === 'fusion' ? 'Fusion' : '2→2'}
                       </span>
                     </td>
-                    <td className="px-4 py-2 align-middle text-right font-medium" style={{ width: '10%' }}>×{pathway.frequency}</td>
+                    <td className="px-4 py-2 align-middle text-right font-medium" style={{ width: '10%' }}>
+                      ×{pathway.frequency % 1 === 0 ? pathway.frequency : pathway.frequency.toFixed(3)}
+                    </td>
                     <td className="px-4 py-2 align-middle text-right" style={{ width: '12%' }}>{pathway.avgEnergy.toFixed(2)}</td>
                     <td className="px-4 py-2 align-middle text-right" style={{ width: '12%' }}>{pathway.totalEnergy.toFixed(2)}</td>
                     <td className="hidden sm:table-cell px-4 py-2 align-middle text-center text-xs text-gray-600 dark:text-gray-400" style={{ width: '10%' }}>

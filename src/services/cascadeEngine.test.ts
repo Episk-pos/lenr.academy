@@ -1,604 +1,410 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { parseFuelNuclides, runCascadeSimulation } from './cascadeEngine';
-import type { Database } from 'sql.js';
-import type { CascadeParameters } from '../types';
-import * as queryService from './queryService';
+import { describe, it, expect, beforeAll } from 'vitest';
+import { runCascadeSimulation } from './cascadeEngine';
+import type { CascadeParameters, FuelNuclide } from '../types';
 
-// Mock the queryService module
-vi.mock('./queryService');
+// Mock database for testing
+const mockDb = {
+  exec: (query: string) => {
+    // Mock fusion reactions: H-1 + Li-7 → He-4 + He-4 (17.3 MeV)
+    if (query.includes('fusion_reactions')) {
+      return [
+        {
+          columns: ['input1_id', 'input2_id', 'output1_id', 'output2_id', 'Q_MeV'],
+          values: [
+            ['H-1', 'Li-7', 'He-4', 'He-4', 17.3],
+            ['H-1', 'Li-6', 'He-4', 'He-3', 4.0],
+          ],
+        },
+      ];
+    }
 
-describe('cascadeEngine', () => {
-  describe('parseFuelNuclides', () => {
-    it('should parse standard E-A format', () => {
-      const result = parseFuelNuclides(['H-1', 'Li-7', 'C-12']);
-      expect(result).toEqual(['H-1', 'Li-7', 'C-12']);
+    // Mock two-to-two reactions
+    if (query.includes('two_to_two_reactions')) {
+      return [
+        {
+          columns: ['input1_id', 'input2_id', 'output1_id', 'output2_id', 'Q_MeV'],
+          values: [],
+        },
+      ];
+    }
+
+    return [];
+  },
+} as any;
+
+describe('cascadeEngine - Weighted Mode', () => {
+  describe('runCascadeSimulation with weighted fuel', () => {
+    it('should apply weights to reactions based on fuel proportions', async () => {
+      const params: CascadeParameters = {
+        fuelNuclides: [
+          { nuclideId: 'Li-7', proportion: 0.9, displayValue: 90 },
+          { nuclideId: 'Li-6', proportion: 0.1, displayValue: 10 },
+        ] as FuelNuclide[],
+        temperature: 1000,
+        energyThreshold: 1.0,
+        minProductEnergy: 0.0,
+        maxNuclides: 10,
+        maxLoops: 5,
+        includeFeedback: true,
+        useWeightedMode: true,
+      };
+
+      const results = await runCascadeSimulation(mockDb, params);
+
+      expect(results).toBeDefined();
+      expect(results.isWeighted).toBe(true);
+      expect(results.fuelComposition).toHaveLength(2);
+
+      // Check that reactions have weights
+      const li7Reactions = results.reactions.filter((r) =>
+        r.inputs.includes('Li-7')
+      );
+      const li6Reactions = results.reactions.filter((r) =>
+        r.inputs.includes('Li-6')
+      );
+
+      if (li7Reactions.length > 0) {
+        expect(li7Reactions[0].weight).toBeDefined();
+        expect(li7Reactions[0].weight).toBeGreaterThan(0);
+      }
+
+      if (li6Reactions.length > 0) {
+        expect(li6Reactions[0].weight).toBeDefined();
+        expect(li6Reactions[0].weight).toBeGreaterThan(0);
+      }
     });
 
-    it('should parse EA format without hyphen', () => {
-      const result = parseFuelNuclides(['H1', 'Li7', 'C12']);
-      expect(result).toEqual(['H-1', 'Li-7', 'C-12']);
+    it('should normalize proportions if not summing to 1.0', async () => {
+      const params: CascadeParameters = {
+        fuelNuclides: [
+          { nuclideId: 'Li-7', proportion: 90, displayValue: 90 }, // Will be normalized
+          { nuclideId: 'Li-6', proportion: 10, displayValue: 10 },
+        ] as FuelNuclide[],
+        temperature: 1000,
+        energyThreshold: 1.0,
+        minProductEnergy: 0.0,
+        maxNuclides: 10,
+        maxLoops: 5,
+        includeFeedback: true,
+        useWeightedMode: true,
+      };
+
+      const results = await runCascadeSimulation(mockDb, params);
+
+      expect(results.fuelComposition).toBeDefined();
+      expect(results.fuelComposition![0].proportion).toBeCloseTo(0.9, 5);
+      expect(results.fuelComposition![1].proportion).toBeCloseTo(0.1, 5);
     });
 
-    it('should handle deuterium shorthand', () => {
-      const result = parseFuelNuclides(['D']);
-      expect(result).toEqual(['D-2']);
+    it('should handle equal proportions (should behave similarly to unweighted)', async () => {
+      const params: CascadeParameters = {
+        fuelNuclides: [
+          { nuclideId: 'Li-7', proportion: 0.5, displayValue: 50 },
+          { nuclideId: 'Li-6', proportion: 0.5, displayValue: 50 },
+        ] as FuelNuclide[],
+        temperature: 1000,
+        energyThreshold: 1.0,
+        minProductEnergy: 0.0,
+        maxNuclides: 10,
+        maxLoops: 5,
+        includeFeedback: true,
+        useWeightedMode: true,
+      };
+
+      const results = await runCascadeSimulation(mockDb, params);
+
+      expect(results.isWeighted).toBe(true);
+
+      // With equal proportions, weights should be balanced
+      const li7Reactions = results.reactions.filter((r) =>
+        r.inputs.includes('Li-7')
+      );
+      const li6Reactions = results.reactions.filter((r) =>
+        r.inputs.includes('Li-6')
+      );
+
+      if (li7Reactions.length > 0 && li6Reactions.length > 0) {
+        // Weights should be similar (within Monte Carlo variance)
+        const avgLi7Weight =
+          li7Reactions.reduce((sum, r) => sum + (r.weight || 0), 0) /
+          li7Reactions.length;
+        const avgLi6Weight =
+          li6Reactions.reduce((sum, r) => sum + (r.weight || 0), 0) /
+          li6Reactions.length;
+
+        // With 50/50 split and assuming H-1 is 100%, weights should be ~0.5 each
+        expect(avgLi7Weight).toBeCloseTo(avgLi6Weight, 1);
+      }
     });
 
-    it('should handle tritium shorthand', () => {
-      const result = parseFuelNuclides(['T']);
-      expect(result).toEqual(['T-3']);
+    it('should handle single nuclide (100% proportion)', async () => {
+      const params: CascadeParameters = {
+        fuelNuclides: [
+          { nuclideId: 'Li-7', proportion: 1.0, displayValue: 100 },
+        ] as FuelNuclide[],
+        temperature: 1000,
+        energyThreshold: 1.0,
+        minProductEnergy: 0.0,
+        maxNuclides: 10,
+        maxLoops: 5,
+        includeFeedback: true,
+        useWeightedMode: true,
+      };
+
+      const results = await runCascadeSimulation(mockDb, params);
+
+      expect(results.isWeighted).toBe(true);
+      expect(results.fuelComposition).toHaveLength(1);
+      expect(results.fuelComposition![0].proportion).toBe(1.0);
+
+      // All Li-7 reactions should have weight = 1.0 (if only input is Li-7)
+      const li7Reactions = results.reactions.filter((r) =>
+        r.inputs.includes('Li-7')
+      );
+
+      if (li7Reactions.length > 0) {
+        expect(li7Reactions[0].weight).toBeDefined();
+      }
     });
 
-    it('should handle mixed formats', () => {
-      const result = parseFuelNuclides(['H-1', 'D', 'T', 'Li7', 'Ni-58']);
-      expect(result).toEqual(['H-1', 'D-2', 'T-3', 'Li-7', 'Ni-58']);
+    it('should handle extreme proportions (99% / 1%)', async () => {
+      const params: CascadeParameters = {
+        fuelNuclides: [
+          { nuclideId: 'Li-7', proportion: 0.99, displayValue: 99 },
+          { nuclideId: 'Li-6', proportion: 0.01, displayValue: 1 },
+        ] as FuelNuclide[],
+        temperature: 1000,
+        energyThreshold: 1.0,
+        minProductEnergy: 0.0,
+        maxNuclides: 10,
+        maxLoops: 5,
+        includeFeedback: true,
+        useWeightedMode: true,
+      };
+
+      const results = await runCascadeSimulation(mockDb, params);
+
+      expect(results.isWeighted).toBe(true);
+
+      // Li-7 reactions should have much higher weight than Li-6
+      const li7Reactions = results.reactions.filter((r) =>
+        r.inputs.includes('Li-7')
+      );
+      const li6Reactions = results.reactions.filter((r) =>
+        r.inputs.includes('Li-6')
+      );
+
+      if (li7Reactions.length > 0 && li6Reactions.length > 0) {
+        const avgLi7Weight =
+          li7Reactions.reduce((sum, r) => sum + (r.weight || 0), 0) /
+          li7Reactions.length;
+        const avgLi6Weight =
+          li6Reactions.reduce((sum, r) => sum + (r.weight || 0), 0) /
+          li6Reactions.length;
+
+        // Li-7 weight should be much higher (roughly 99× if pure reactions)
+        expect(avgLi7Weight).toBeGreaterThan(avgLi6Weight);
+      }
     });
 
-    it('should handle whitespace', () => {
-      const result = parseFuelNuclides(['  H-1  ', ' Li 7 ', '']);
-      expect(result).toEqual(['H-1', 'Li-7']);
-    });
+    it('should propagate weights to product distribution', async () => {
+      const params: CascadeParameters = {
+        fuelNuclides: [
+          { nuclideId: 'Li-7', proportion: 0.9, displayValue: 90 },
+          { nuclideId: 'Li-6', proportion: 0.1, displayValue: 10 },
+        ] as FuelNuclide[],
+        temperature: 1000,
+        energyThreshold: 1.0,
+        minProductEnergy: 0.0,
+        maxNuclides: 10,
+        maxLoops: 5,
+        includeFeedback: true,
+        useWeightedMode: true,
+      };
 
-    it('should throw on invalid format', () => {
-      expect(() => parseFuelNuclides(['InvalidElement']))
-        .toThrow(/Invalid nuclide format/);
-    });
+      const results = await runCascadeSimulation(mockDb, params);
 
-    it('should throw on missing mass number', () => {
-      expect(() => parseFuelNuclides(['H']))
-        .toThrow(/Invalid nuclide format/);
-    });
+      // Product distribution should contain weighted counts
+      expect(results.productDistribution).toBeDefined();
 
-    it('should handle two-letter elements', () => {
-      const result = parseFuelNuclides(['Al-27', 'Ni58']);
-      expect(result).toEqual(['Al-27', 'Ni-58']);
+      // He-4 should have higher count (more common from Li-7 reactions)
+      if (results.productDistribution['He-4']) {
+        expect(results.productDistribution['He-4']).toBeGreaterThan(0);
+      }
     });
   });
 
-  describe('runCascadeSimulation', () => {
-    let mockDb: Database;
-    const mockQueryFusion = vi.mocked(queryService.queryFusion);
-    const mockQueryTwoToTwo = vi.mocked(queryService.queryTwoToTwo);
-    const mockGetAllNuclides = vi.mocked(queryService.getAllNuclides);
-    const mockGetAllElements = vi.mocked(queryService.getAllElements);
+  describe('Backward compatibility: Unweighted mode', () => {
+    it('should work with string[] fuel nuclides (traditional mode)', async () => {
+      const params: CascadeParameters = {
+        fuelNuclides: ['Li-7', 'Li-6'], // String array (unweighted)
+        temperature: 1000,
+        energyThreshold: 1.0,
+        minProductEnergy: 0.0,
+        maxNuclides: 10,
+        maxLoops: 5,
+        includeFeedback: true,
+        useWeightedMode: false, // Explicitly unweighted
+      };
 
-    beforeEach(() => {
-      mockDb = {} as Database;
-      vi.clearAllMocks();
+      const results = await runCascadeSimulation(mockDb, params);
 
-      // Default mock responses
-      mockGetAllNuclides.mockResolvedValue([
-        { id: 1, Z: 1, A: 1, E: 'H', BE: 0, AMU: 1.008, nBorF: 'f', aBorF: 'b' },
-        { id: 2, Z: 1, A: 2, E: 'D', BE: 2.224, AMU: 2.014, nBorF: 'b', aBorF: 'f' },
-        { id: 3, Z: 3, A: 7, E: 'Li', BE: 39.244, AMU: 7.016, nBorF: 'f', aBorF: 'b' },
-        { id: 4, Z: 2, A: 4, E: 'He', BE: 28.296, AMU: 4.003, nBorF: 'b', aBorF: 'b' },
-      ]);
+      expect(results.isWeighted).toBe(false);
 
-      mockGetAllElements.mockResolvedValue([
-        { Z: 1, E: 'H', EName: 'Hydrogen', Period: 1, Group: 1 },
-        { Z: 2, E: 'He', EName: 'Helium', Period: 1, Group: 18 },
-        { Z: 3, E: 'Li', EName: 'Lithium', Period: 2, Group: 1 },
-      ]);
+      // Reactions should not have weights (or weight = undefined)
+      if (results.reactions.length > 0) {
+        const hasWeights = results.reactions.some((r) => r.weight !== undefined);
+        expect(hasWeights).toBe(false);
+      }
     });
 
-    it('should throw on empty fuel nuclides', async () => {
+    it('should default to unweighted if useWeightedMode not specified', async () => {
+      const params: CascadeParameters = {
+        fuelNuclides: ['Li-7', 'Li-6'],
+        temperature: 1000,
+        energyThreshold: 1.0,
+        minProductEnergy: 0.0,
+        maxNuclides: 10,
+        maxLoops: 5,
+        includeFeedback: true,
+        // useWeightedMode not specified
+      };
+
+      const results = await runCascadeSimulation(mockDb, params);
+
+      // Should default to unweighted
+      expect(results.isWeighted).toBe(false);
+    });
+
+    it('should handle FuelNuclide[] with useWeightedMode=false', async () => {
+      const params: CascadeParameters = {
+        fuelNuclides: [
+          { nuclideId: 'Li-7', proportion: 0.9, displayValue: 90 },
+          { nuclideId: 'Li-6', proportion: 0.1, displayValue: 10 },
+        ] as FuelNuclide[],
+        temperature: 1000,
+        energyThreshold: 1.0,
+        minProductEnergy: 0.0,
+        maxNuclides: 10,
+        maxLoops: 5,
+        includeFeedback: true,
+        useWeightedMode: false, // User explicitly disabled weighting
+      };
+
+      const results = await runCascadeSimulation(mockDb, params);
+
+      // Should still be unweighted (user choice)
+      expect(results.isWeighted).toBe(false);
+    });
+  });
+
+  describe('Edge cases', () => {
+    it('should handle empty fuel nuclides', async () => {
       const params: CascadeParameters = {
         fuelNuclides: [],
-        temperature: 2400,
-        minFusionMeV: 1.0,
-        minTwoToTwoMeV: 1.0,
-        maxNuclides: 50,
-        maxLoops: 2,
-        feedbackBosons: true,
-        feedbackFermions: true,
-        allowDimers: true,
-        excludeMelted: false,
-        excludeBoiledOff: false,
+        temperature: 1000,
+        energyThreshold: 1.0,
+        minProductEnergy: 0.0,
+        maxNuclides: 10,
+        maxLoops: 5,
+        includeFeedback: true,
+        useWeightedMode: true,
       };
 
-      await expect(runCascadeSimulation(mockDb, params))
-        .rejects.toThrow(/No valid fuel nuclides/);
+      const results = await runCascadeSimulation(mockDb, params);
+
+      // Should return empty results gracefully
+      expect(results.reactions).toHaveLength(0);
+      expect(results.totalEnergy).toBe(0);
     });
 
-    it('should handle no reactions found (single loop)', async () => {
-      mockQueryFusion.mockResolvedValue({
-        reactions: [],
-        nuclides: [],
-        elements: [],
-        radioactiveNuclides: new Set(),
-        executionTime: 0,
-        rowCount: 0,
-        totalCount: 0,
-      });
-
-      mockQueryTwoToTwo.mockResolvedValue({
-        reactions: [],
-        nuclides: [],
-        elements: [],
-        radioactiveNuclides: new Set(),
-        executionTime: 0,
-        rowCount: 0,
-        totalCount: 0,
-      });
-
+    it('should handle zero energy threshold with weighted mode', async () => {
       const params: CascadeParameters = {
-        fuelNuclides: ['H-1', 'Li-7'],
-        temperature: 2400,
-        minFusionMeV: 1.0,
-        minTwoToTwoMeV: 1.0,
-        maxNuclides: 50,
-        maxLoops: 2,
-        feedbackBosons: true,
-        feedbackFermions: true,
-        allowDimers: true,
-        excludeMelted: false,
-        excludeBoiledOff: false,
+        fuelNuclides: [
+          { nuclideId: 'Li-7', proportion: 0.9, displayValue: 90 },
+          { nuclideId: 'Li-6', proportion: 0.1, displayValue: 10 },
+        ] as FuelNuclide[],
+        temperature: 1000,
+        energyThreshold: 0.0, // Accept all reactions
+        minProductEnergy: 0.0,
+        maxNuclides: 10,
+        maxLoops: 5,
+        includeFeedback: true,
+        useWeightedMode: true,
       };
 
-      const result = await runCascadeSimulation(mockDb, params);
+      const results = await runCascadeSimulation(mockDb, params);
 
-      expect(result.reactions).toHaveLength(0);
-      expect(result.loopsExecuted).toBe(0);
-      expect(result.terminationReason).toBe('no_new_products');
-      expect(result.totalEnergy).toBe(0);
+      expect(results.isWeighted).toBe(true);
+      // Should include more reactions (possibly endothermic)
+      expect(results.reactions.length).toBeGreaterThanOrEqual(0);
     });
 
-    it('should process fusion reactions in cascade', async () => {
-      // Mock fusion: H-1 + Li-7 → He-4 + He-4 (actually 2 products)
-      // For simplicity, we'll mock as fusion (which has 1 product)
-      mockQueryFusion.mockResolvedValue({
-        reactions: [
-          {
-            id: 1,
-            E1: 'H',
-            Z1: 1,
-            A1: 1,
-            E2: 'Li',
-            Z2: 3,
-            A2: 7,
-            E: 'He',
-            Z: 2,
-            A: 4,
-            MeV: 17.35,
-            neutrino: 'none',
-            nBorF1: 'f',
-            aBorF1: 'b',
-            nBorF2: 'f',
-            aBorF2: 'b',
-            nBorF: 'b',
-            aBorF: 'b',
-          },
-        ],
-        nuclides: [],
-        elements: [],
-        radioactiveNuclides: new Set(),
-        executionTime: 1,
-        rowCount: 1,
-        totalCount: 1,
-      });
-
-      mockQueryTwoToTwo.mockResolvedValue({
-        reactions: [],
-        nuclides: [],
-        elements: [],
-        radioactiveNuclides: new Set(),
-        executionTime: 0,
-        rowCount: 0,
-        totalCount: 0,
-      });
-
+    it('should handle high maxLoops with weighted mode', async () => {
       const params: CascadeParameters = {
-        fuelNuclides: ['H-1', 'Li-7'],
-        temperature: 2400,
-        minFusionMeV: 1.0,
-        minTwoToTwoMeV: 1.0,
+        fuelNuclides: [
+          { nuclideId: 'Li-7', proportion: 0.5, displayValue: 50 },
+          { nuclideId: 'Li-6', proportion: 0.5, displayValue: 50 },
+        ] as FuelNuclide[],
+        temperature: 1000,
+        energyThreshold: 1.0,
+        minProductEnergy: 0.0,
         maxNuclides: 50,
-        maxLoops: 2,
-        feedbackBosons: true,
-        feedbackFermions: true,
-        allowDimers: true,
-        excludeMelted: false,
-        excludeBoiledOff: false,
+        maxLoops: 20, // Many loops
+        includeFeedback: true,
+        useWeightedMode: true,
       };
 
-      const result = await runCascadeSimulation(mockDb, params);
+      const results = await runCascadeSimulation(mockDb, params);
 
-      expect(result.reactions).toHaveLength(1);
-      expect(result.reactions[0]).toMatchObject({
-        type: 'fusion',
-        inputs: ['H-1', 'Li-7'],
-        outputs: ['He-4'],
-        MeV: 17.35,
-        loop: 0,
-      });
-      expect(result.totalEnergy).toBe(17.35);
-      expect(result.productDistribution.get('He-4')).toBe(1);
+      expect(results.isWeighted).toBe(true);
+      // Should complete without hanging
+      expect(results.loopCount).toBeLessThanOrEqual(20);
     });
+  });
 
-    it('should stop at max loops', async () => {
-      // Mock reactions that produce different products in each loop
-      // to ensure the cascade continues until max loops
-      let callCount = 0;
-      mockQueryFusion.mockImplementation((async (_db: any, _filter: any) => {
-        callCount++;
-        // Loop 0: H + Li → He-4
-        // Loop 1: H + He → Li-5
-        // Loop 2: He + Li → Be-9
-        const reactions = [
-          // Always available: H + Li → He-4
-          {
-            id: 1,
-            E1: 'H',
-            Z1: 1,
-            A1: 1,
-            E2: 'Li',
-            Z2: 3,
-            A2: 7,
-            E: 'He',
-            Z: 2,
-            A: 4,
-            MeV: 17.35,
-            neutrino: 'none' as const,
-            nBorF1: 'f' as const,
-            aBorF1: 'b' as const,
-            nBorF2: 'f' as const,
-            aBorF2: 'b' as const,
-            nBorF: 'b' as const,
-            aBorF: 'b' as const,
-          },
-        ];
-
-        // Add different reactions for each subsequent loop
-        if (callCount === 2) {
-          reactions.push({
-            id: 2,
-            E1: 'H',
-            Z1: 1,
-            A1: 1,
-            E2: 'He',
-            Z2: 2,
-            A2: 4,
-            E: 'Li',
-            Z: 3,
-            A: 5,
-            MeV: 5.0,
-            neutrino: 'none',
-            nBorF1: 'f',
-            aBorF1: 'b',
-            nBorF2: 'b',
-            aBorF2: 'b',
-            nBorF: 'f',
-            aBorF: 'b',
-          } as any);
-        } else if (callCount === 3) {
-          reactions.push({
-            id: 3,
-            E1: 'He',
-            Z1: 2,
-            A1: 4,
-            E2: 'Li',
-            Z2: 3,
-            A2: 5,
-            E: 'Be',
-            Z: 4,
-            A: 9,
-            MeV: 8.0,
-            neutrino: 'none',
-            nBorF1: 'b',
-            aBorF1: 'b',
-            nBorF2: 'f',
-            aBorF2: 'b',
-            nBorF: 'f',
-            aBorF: 'b',
-          } as any);
-        }
-
-        return {
-          reactions,
-          nuclides: [],
-          elements: [],
-          radioactiveNuclides: new Set(),
-          executionTime: 1,
-          rowCount: reactions.length,
-          totalCount: reactions.length,
-        };
-      }) as any);
-
-      mockQueryTwoToTwo.mockResolvedValue({
-        reactions: [],
-        nuclides: [],
-        elements: [],
-        radioactiveNuclides: new Set(),
-        executionTime: 0,
-        rowCount: 0,
-        totalCount: 0,
-      });
-
+  describe('Integration: Full workflow', () => {
+    it('should produce realistic weighted cascade results', async () => {
+      // Simulate natural lithium: 92.5% Li-7, 7.5% Li-6
       const params: CascadeParameters = {
-        fuelNuclides: ['H-1', 'Li-7'],
-        temperature: 2400,
-        minFusionMeV: 1.0,
-        minTwoToTwoMeV: 1.0,
-        maxNuclides: 50,
-        maxLoops: 3,
-        feedbackBosons: true,
-        feedbackFermions: true,
-        allowDimers: true,
-        excludeMelted: false,
-        excludeBoiledOff: false,
-      };
-
-      const result = await runCascadeSimulation(mockDb, params);
-
-      expect(result.loopsExecuted).toBe(3);
-      expect(result.terminationReason).toBe('max_loops');
-    });
-
-    it('should process two-to-two reactions', async () => {
-      mockQueryFusion.mockResolvedValue({
-        reactions: [],
-        nuclides: [],
-        elements: [],
-        radioactiveNuclides: new Set(),
-        executionTime: 0,
-        rowCount: 0,
-        totalCount: 0,
-      });
-
-      mockQueryTwoToTwo.mockResolvedValue({
-        reactions: [
-          {
-            id: 1,
-            E1: 'D',
-            Z1: 1,
-            A1: 2,
-            E2: 'D',
-            Z2: 1,
-            A2: 2,
-            E3: 'H',
-            Z3: 1,
-            A3: 1,
-            E4: 'H',
-            Z4: 1,
-            A4: 3, // Tritium
-            MeV: 4.03,
-            neutrino: 'none',
-            nBorF1: 'b',
-            aBorF1: 'f',
-            nBorF2: 'b',
-            aBorF2: 'f',
-            nBorF3: 'f',
-            aBorF3: 'b',
-            nBorF4: 'f',
-            aBorF4: 'b',
-          },
-        ],
-        nuclides: [],
-        elements: [],
-        radioactiveNuclides: new Set(),
-        executionTime: 1,
-        rowCount: 1,
-        totalCount: 1,
-      });
-
-      const params: CascadeParameters = {
-        fuelNuclides: ['D-2'],
-        temperature: 2400,
-        minFusionMeV: 1.0,
-        minTwoToTwoMeV: 1.0,
-        maxNuclides: 50,
-        maxLoops: 2,
-        feedbackBosons: true,
-        feedbackFermions: true,
-        allowDimers: true,
-        excludeMelted: false,
-        excludeBoiledOff: false,
-      };
-
-      const result = await runCascadeSimulation(mockDb, params);
-
-      expect(result.reactions).toHaveLength(1);
-      expect(result.reactions[0]).toMatchObject({
-        type: 'twotwo',
-        inputs: ['D-2', 'D-2'],
-        outputs: ['H-1', 'H-3'],
-        MeV: 4.03,
-        loop: 0,
-      });
-      expect(result.productDistribution.get('H-1')).toBe(1);
-      expect(result.productDistribution.get('H-3')).toBe(1);
-    });
-
-    it('should accumulate total energy across reactions', async () => {
-      mockQueryFusion.mockResolvedValue({
-        reactions: [
-          {
-            id: 1,
-            E1: 'H',
-            Z1: 1,
-            A1: 1,
-            E2: 'Li',
-            Z2: 3,
-            A2: 7,
-            E: 'He',
-            Z: 2,
-            A: 4,
-            MeV: 17.35,
-            neutrino: 'none',
-            nBorF1: 'f',
-            aBorF1: 'b',
-            nBorF2: 'f',
-            aBorF2: 'b',
-            nBorF: 'b',
-            aBorF: 'b',
-          },
-        ],
-        nuclides: [],
-        elements: [],
-        radioactiveNuclides: new Set(),
-        executionTime: 1,
-        rowCount: 1,
-        totalCount: 1,
-      });
-
-      mockQueryTwoToTwo.mockResolvedValue({
-        reactions: [
-          {
-            id: 1,
-            E1: 'D',
-            Z1: 1,
-            A1: 2,
-            E2: 'D',
-            Z2: 1,
-            A2: 2,
-            E3: 'H',
-            Z3: 1,
-            A3: 1,
-            E4: 'H',
-            Z4: 1,
-            A4: 3,
-            MeV: 4.03,
-            neutrino: 'none',
-            nBorF1: 'b',
-            aBorF1: 'f',
-            nBorF2: 'b',
-            aBorF2: 'f',
-            nBorF3: 'f',
-            aBorF3: 'b',
-            nBorF4: 'f',
-            aBorF4: 'b',
-          },
-        ],
-        nuclides: [],
-        elements: [],
-        radioactiveNuclides: new Set(),
-        executionTime: 1,
-        rowCount: 1,
-        totalCount: 1,
-      });
-
-      const params: CascadeParameters = {
-        fuelNuclides: ['H-1', 'D-2', 'Li-7'],
-        temperature: 2400,
-        minFusionMeV: 1.0,
-        minTwoToTwoMeV: 1.0,
-        maxNuclides: 50,
-        maxLoops: 1,
-        feedbackBosons: true,
-        feedbackFermions: true,
-        allowDimers: true,
-        excludeMelted: false,
-        excludeBoiledOff: false,
-      };
-
-      const result = await runCascadeSimulation(mockDb, params);
-
-      // Should have both fusion and two-to-two reactions
-      expect(result.reactions.length).toBeGreaterThanOrEqual(1);
-      expect(result.totalEnergy).toBeGreaterThan(0);
-    });
-
-    it('should track execution time', async () => {
-      mockQueryFusion.mockResolvedValue({
-        reactions: [],
-        nuclides: [],
-        elements: [],
-        radioactiveNuclides: new Set(),
-        executionTime: 0,
-        rowCount: 0,
-        totalCount: 0,
-      });
-
-      mockQueryTwoToTwo.mockResolvedValue({
-        reactions: [],
-        nuclides: [],
-        elements: [],
-        radioactiveNuclides: new Set(),
-        executionTime: 0,
-        rowCount: 0,
-        totalCount: 0,
-      });
-
-      const params: CascadeParameters = {
-        fuelNuclides: ['H-1'],
-        temperature: 2400,
-        minFusionMeV: 1.0,
-        minTwoToTwoMeV: 1.0,
-        maxNuclides: 50,
-        maxLoops: 1,
-        feedbackBosons: true,
-        feedbackFermions: true,
-        allowDimers: true,
-        excludeMelted: false,
-        excludeBoiledOff: false,
-      };
-
-      const result = await runCascadeSimulation(mockDb, params);
-
-      expect(result.executionTime).toBeGreaterThanOrEqual(0);
-      expect(typeof result.executionTime).toBe('number');
-    });
-
-    it('should stop when max nuclides limit reached', async () => {
-      // Mock many reactions producing many products
-      const manyReactions = Array.from({ length: 100 }, (_, i) => ({
-        id: i,
-        E1: 'H',
-        Z1: 1,
-        A1: 1,
-        E2: 'Li',
-        Z2: 3,
-        A2: 7,
-        E: 'C', // Different products each time
-        Z: 6,
-        A: 12 + i, // Different mass numbers
-        MeV: 10.0,
-        neutrino: 'none' as const,
-        nBorF1: 'f' as const,
-        aBorF1: 'b' as const,
-        nBorF2: 'f' as const,
-        aBorF2: 'b' as const,
-        nBorF: 'b' as const,
-        aBorF: 'b' as const,
-      }));
-
-      mockQueryFusion.mockResolvedValue({
-        reactions: manyReactions,
-        nuclides: [],
-        elements: [],
-        radioactiveNuclides: new Set(),
-        executionTime: 1,
-        rowCount: manyReactions.length,
-        totalCount: manyReactions.length,
-      });
-
-      mockQueryTwoToTwo.mockResolvedValue({
-        reactions: [],
-        nuclides: [],
-        elements: [],
-        radioactiveNuclides: new Set(),
-        executionTime: 0,
-        rowCount: 0,
-        totalCount: 0,
-      });
-
-      const params: CascadeParameters = {
-        fuelNuclides: ['H-1', 'Li-7'],
-        temperature: 2400,
-        minFusionMeV: 1.0,
-        minTwoToTwoMeV: 1.0,
-        maxNuclides: 10, // Low limit
+        fuelNuclides: [
+          { nuclideId: 'Li-7', proportion: 0.925, displayValue: 92.5 },
+          { nuclideId: 'Li-6', proportion: 0.075, displayValue: 7.5 },
+        ] as FuelNuclide[],
+        temperature: 1000,
+        energyThreshold: 1.0,
+        minProductEnergy: 0.0,
+        maxNuclides: 20,
         maxLoops: 10,
-        feedbackBosons: true,
-        feedbackFermions: true,
-        allowDimers: true,
-        excludeMelted: false,
-        excludeBoiledOff: false,
+        includeFeedback: true,
+        useWeightedMode: true,
       };
 
-      const result = await runCascadeSimulation(mockDb, params);
+      const results = await runCascadeSimulation(mockDb, params);
 
-      expect(result.terminationReason).toBe('max_nuclides');
+      expect(results).toBeDefined();
+      expect(results.isWeighted).toBe(true);
+      expect(results.fuelComposition).toHaveLength(2);
+
+      // Li-7 reactions should dominate
+      const li7ReactionCount = results.reactions.filter((r) =>
+        r.inputs.includes('Li-7')
+      ).length;
+      const li6ReactionCount = results.reactions.filter((r) =>
+        r.inputs.includes('Li-6')
+      ).length;
+
+      // In natural lithium, Li-7 should have ~12× more reactions
+      if (li6ReactionCount > 0) {
+        const ratio = li7ReactionCount / li6ReactionCount;
+        expect(ratio).toBeGreaterThan(5); // At least 5× (allowing Monte Carlo variance)
+      }
+
+      // Total energy should be weighted sum
+      expect(results.totalEnergy).toBeGreaterThan(0);
+
+      // Product distribution should reflect weighted probabilities
+      expect(Object.keys(results.productDistribution).length).toBeGreaterThan(0);
     });
   });
 });

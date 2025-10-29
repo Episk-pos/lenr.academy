@@ -7,7 +7,8 @@ import CascadeProgressCard from '../components/CascadeProgressCard'
 import CascadeTabs from '../components/CascadeTabs'
 import PeriodicTableSelector from '../components/PeriodicTableSelector'
 import { getAllElements } from '../services/queryService'
-import type { CascadeResults, Element } from '../types'
+import type { CascadeResults, Element, FuelNuclide } from '../types'
+import { createEqualProportionFuel } from '../utils/fuelProportions'
 
 export default function CascadesAll() {
   const { db } = useDatabase()
@@ -34,14 +35,22 @@ export default function CascadesAll() {
 
   const [availableElements, setAvailableElements] = useState<Element[]>([])
   const [fuelNuclides, setFuelNuclides] = useState<string[]>(['H-1', 'Li-7', 'Al-27', 'N-14', 'Ni-58', 'Ni-60', 'Ni-62', 'B-10', 'B-11'])
+  const [useWeightedMode, setUseWeightedMode] = useState(false)
+  const [fuelProportions, setFuelProportions] = useState<FuelNuclide[]>([])
   const [results, setResults] = useState<CascadeResults | null>(null)
   const [error, setError] = useState<string | null>(null)
 
   // Load available elements and restore state when database is ready
   useEffect(() => {
     if (db) {
-      const elements = getAllElements(db)
-      setAvailableElements(elements)
+      try {
+        const elements = getAllElements(db)
+        setAvailableElements(elements)
+      } catch (err) {
+        console.error('Failed to load elements from database:', err)
+        // Database might not be properly initialized yet
+        return
+      }
 
       // Restore state from context if not already done
       if (!hasRestoredFromContext) {
@@ -62,6 +71,14 @@ export default function CascadesAll() {
           setSliderMaxNuclides(savedState.maxNuclides)
           setSliderMaxLoops(savedState.maxLoops)
           setFuelNuclides(savedState.fuelNuclides)
+
+          // Restore weighted mode and proportions
+          if (savedState.useWeightedMode !== undefined) {
+            setUseWeightedMode(savedState.useWeightedMode)
+          }
+          if (savedState.fuelProportions) {
+            setFuelProportions(savedState.fuelProportions)
+          }
 
           // Restore simulation results if available
           if (savedState.results) {
@@ -89,6 +106,8 @@ export default function CascadesAll() {
       excludeMelted: params.excludeMelted,
       excludeBoiledOff: params.excludeBoiledOff,
       fuelNuclides,
+      useWeightedMode,
+      fuelProportions: fuelProportions.length > 0 ? fuelProportions : undefined,
       results: results || undefined,
     })
   }, [
@@ -104,6 +123,8 @@ export default function CascadesAll() {
     params.excludeMelted,
     params.excludeBoiledOff,
     fuelNuclides,
+    useWeightedMode,
+    fuelProportions,
     results,
     updateCascadeState,
   ])
@@ -123,12 +144,18 @@ export default function CascadesAll() {
         throw new Error('Please select at least one fuel nuclide')
       }
 
+      // Prepare fuel input based on mode
+      const fuelInput = useWeightedMode && fuelProportions.length > 0
+        ? fuelProportions
+        : fuelNuclides
+
       // Export database to ArrayBuffer for worker
       const dbBuffer = db.export().buffer
 
       // Run cascade in worker
       const cascadeResults = await runCascade({
-        fuelNuclides: fuelNuclides,
+        fuelNuclides: fuelInput,
+        useWeightedMode: useWeightedMode,
         ...params,
       }, dbBuffer as ArrayBuffer)
 
@@ -166,8 +193,21 @@ export default function CascadesAll() {
     // Build CSV content
     const lines: string[] = []
 
+    // Fuel composition (if weighted mode)
+    if (results.fuelComposition && results.isWeighted) {
+      lines.push('Fuel Composition')
+      lines.push('Nuclide,Proportion (%)')
+      results.fuelComposition.forEach((fuel) => {
+        lines.push(`${fuel.nuclideId},${(fuel.proportion * 100).toFixed(2)}`)
+      })
+      lines.push('')
+    }
+
     // Header
-    lines.push('Loop,Type,Input1,Input2,Output1,Output2,Energy_MeV,Neutrino')
+    const header = results.isWeighted
+      ? 'Loop,Type,Input1,Input2,Output1,Output2,Energy_MeV,Neutrino,Weight'
+      : 'Loop,Type,Input1,Input2,Output1,Output2,Energy_MeV,Neutrino'
+    lines.push(header)
 
     // Reactions
     results.reactions.forEach((reaction) => {
@@ -175,21 +215,24 @@ export default function CascadesAll() {
       const input2 = reaction.inputs[1] || ''
       const output1 = reaction.outputs[0] || ''
       const output2 = reaction.outputs[1] || ''
+      const weightStr = reaction.weight !== undefined ? `,${reaction.weight.toFixed(6)}` : ''
       lines.push(
-        `${reaction.loop},${reaction.type},${input1},${input2},${output1},${output2},${reaction.MeV},${reaction.neutrino}`
+        `${reaction.loop},${reaction.type},${input1},${input2},${output1},${output2},${reaction.MeV},${reaction.neutrino}${weightStr}`
       )
     })
 
     // Add blank line
     lines.push('')
     lines.push('Product Distribution')
-    lines.push('Nuclide,Count')
+    const countLabel = results.isWeighted ? 'Weighted Count' : 'Count'
+    lines.push(`Nuclide,${countLabel}`)
 
     // Product distribution
     Array.from(results.productDistribution.entries())
       .sort((a, b) => b[1] - a[1])
       .forEach(([nuclide, count]) => {
-        lines.push(`${nuclide},${count}`)
+        const countStr = results.isWeighted ? count.toFixed(4) : count.toString()
+        lines.push(`${nuclide},${countStr}`)
       })
 
     // Create blob and download
@@ -232,13 +275,143 @@ export default function CascadesAll() {
           label="Select specific isotopes for your fuel mixture"
           availableElements={availableElements}
           selectedElements={fuelNuclides}
-          onSelectionChange={setFuelNuclides}
+          onSelectionChange={(nuclides) => {
+            setFuelNuclides(nuclides)
+            // Auto-update proportions when nuclides change in weighted mode
+            if (useWeightedMode) {
+              setFuelProportions(createEqualProportionFuel(nuclides))
+            }
+          }}
           mode="nuclide"
           disableHydrogenIsotopes={true}
         />
         <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
           Click on elements to select specific isotopes. Color coding indicates natural abundance.
         </p>
+
+        {/* Weighted Mode Toggle */}
+        <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+          <label htmlFor="cascade-weighted-mode" className="flex items-center gap-3 cursor-pointer">
+            <input
+              id="cascade-weighted-mode"
+              name="useWeightedMode"
+              type="checkbox"
+              checked={useWeightedMode}
+              onChange={(e) => {
+                const checked = e.target.checked
+                setUseWeightedMode(checked)
+                if (checked && fuelNuclides.length > 0) {
+                  // Initialize with equal proportions
+                  setFuelProportions(createEqualProportionFuel(fuelNuclides))
+                }
+              }}
+              className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+            />
+            <div>
+              <span className="text-sm font-medium text-gray-900 dark:text-white">
+                Enable Weighted Proportions
+              </span>
+              <p className="text-xs text-gray-500 dark:text-gray-400">
+                Specify realistic fuel mixture ratios (e.g., natural isotopic abundances: Li-7 92.5%, Li-6 7.5%)
+              </p>
+            </div>
+          </label>
+        </div>
+
+        {/* Proportion Inputs */}
+        {useWeightedMode && fuelNuclides.length > 0 && (
+          <div className="mt-4 space-y-3">
+            <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300">
+              Fuel Proportions (%)
+            </h3>
+            <div className="grid gap-2">
+              {fuelNuclides.map((nuclide, index) => {
+                const fuelData = fuelProportions.find(f => f.nuclideId === nuclide)
+                const proportion = fuelData?.proportion ?? (1 / fuelNuclides.length)
+                const percentage = proportion * 100
+
+                return (
+                  <div key={nuclide} className="flex items-center gap-3">
+                    <label htmlFor={`cascade-proportion-${nuclide}`} className="w-20 text-sm font-mono text-gray-700 dark:text-gray-300">
+                      {nuclide}
+                    </label>
+                    <input
+                      id={`cascade-proportion-${nuclide}`}
+                      name={`proportion-${nuclide}`}
+                      type="number"
+                      step="0.1"
+                      min="0"
+                      max="100"
+                      value={percentage.toFixed(2)}
+                      onChange={(e) => {
+                        const newPercentage = parseFloat(e.target.value) || 0
+                        const newProportion = newPercentage / 100
+
+                        // Update this fuel's proportion
+                        const updated = fuelNuclides.map((n, i) => {
+                          if (i === index) {
+                            return {
+                              nuclideId: n,
+                              proportion: newProportion,
+                              displayValue: newPercentage,
+                              format: 'percentage' as const,
+                            }
+                          }
+                          const existing = fuelProportions.find(f => f.nuclideId === n)
+                          return existing ?? {
+                            nuclideId: n,
+                            proportion: 1 / fuelNuclides.length,
+                            displayValue: 100 / fuelNuclides.length,
+                            format: 'percentage' as const,
+                          }
+                        })
+                        setFuelProportions(updated)
+                      }}
+                      className="input flex-1"
+                    />
+                    <span className="text-sm text-gray-500 dark:text-gray-400 w-8">%</span>
+                    {/* Visual bar indicator */}
+                    <div className="flex-1 h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+                      <div
+                        className="h-full bg-blue-500 transition-all"
+                        style={{ width: `${Math.min(percentage, 100)}%` }}
+                      />
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+            <div className="flex items-center justify-between pt-2 border-t border-gray-200 dark:border-gray-700">
+              <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                Total:
+              </span>
+              <span className={`text-sm font-mono ${
+                Math.abs(fuelProportions.reduce((sum, f) => sum + f.proportion, 0) - 1.0) < 0.01
+                  ? 'text-green-600 dark:text-green-400'
+                  : 'text-red-600 dark:text-red-400'
+              }`}>
+                {(fuelProportions.reduce((sum, f) => sum + f.proportion, 0) * 100).toFixed(2)}%
+              </span>
+              <button
+                onClick={() => {
+                  // Normalize proportions to sum to 100%
+                  const sum = fuelProportions.reduce((acc, f) => acc + f.proportion, 0)
+                  if (sum > 0) {
+                    const normalized = fuelProportions.map(f => ({
+                      ...f,
+                      proportion: f.proportion / sum,
+                      displayValue: (f.proportion / sum) * 100,
+                    }))
+                    setFuelProportions(normalized)
+                  }
+                }}
+                className="text-xs px-3 py-1 bg-blue-100 hover:bg-blue-200 dark:bg-blue-900 dark:hover:bg-blue-800 text-blue-700 dark:text-blue-300 rounded transition-colors"
+              >
+                Normalize
+              </button>
+            </div>
+          </div>
+        )}
       </div>
 
       <div className="card p-6 mb-6">
@@ -249,10 +422,12 @@ export default function CascadesAll() {
 
         <div className="grid md:grid-cols-2 gap-6">
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <label htmlFor="cascade-temperature" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               Temperature (K)
             </label>
             <input
+              id="cascade-temperature"
+              name="temperature"
               type="number"
               className="input"
               value={params.temperature}
@@ -261,10 +436,12 @@ export default function CascadesAll() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <label htmlFor="cascade-min-fusion-mev" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               Minimum Fusion Energy (MeV)
             </label>
             <input
+              id="cascade-min-fusion-mev"
+              name="minFusionMeV"
               type="number"
               step="0.1"
               className="input"
@@ -274,10 +451,12 @@ export default function CascadesAll() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <label htmlFor="cascade-min-twotwo-mev" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               Minimum 2-2 Energy (MeV)
             </label>
             <input
+              id="cascade-min-twotwo-mev"
+              name="minTwoToTwoMeV"
               type="number"
               step="0.1"
               className="input"
@@ -287,10 +466,12 @@ export default function CascadesAll() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <label htmlFor="cascade-max-nuclides" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               Max Nuclides to Pair: {sliderMaxNuclides}
             </label>
             <input
+              id="cascade-max-nuclides"
+              name="maxNuclides"
               type="range"
               min="10"
               max="10000"
@@ -309,10 +490,12 @@ export default function CascadesAll() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <label htmlFor="cascade-max-loops" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               Max Cascade Loops: {sliderMaxLoops}
             </label>
             <input
+              id="cascade-max-loops"
+              name="maxLoops"
               type="range"
               min="1"
               max="100"
@@ -334,8 +517,10 @@ export default function CascadesAll() {
         <div className="mt-6">
           <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">Feedback Options</h3>
           <div className="space-y-3">
-            <label className="flex items-center">
+            <label htmlFor="cascade-feedback-bosons" className="flex items-center cursor-pointer">
               <input
+                id="cascade-feedback-bosons"
+                name="feedbackBosons"
                 type="checkbox"
                 checked={params.feedbackBosons}
                 onChange={(e) => setParams({...params, feedbackBosons: e.target.checked})}
@@ -343,8 +528,10 @@ export default function CascadesAll() {
               />
               <span className="text-sm">Feedback Bosons</span>
             </label>
-            <label className="flex items-center">
+            <label htmlFor="cascade-feedback-fermions" className="flex items-center cursor-pointer">
               <input
+                id="cascade-feedback-fermions"
+                name="feedbackFermions"
                 type="checkbox"
                 checked={params.feedbackFermions}
                 onChange={(e) => setParams({...params, feedbackFermions: e.target.checked})}
@@ -352,8 +539,10 @@ export default function CascadesAll() {
               />
               <span className="text-sm">Feedback Fermions</span>
             </label>
-            <label className="flex items-center">
+            <label htmlFor="cascade-allow-dimers" className="flex items-center cursor-pointer">
               <input
+                id="cascade-allow-dimers"
+                name="allowDimers"
                 type="checkbox"
                 checked={params.allowDimers}
                 onChange={(e) => setParams({...params, allowDimers: e.target.checked})}
@@ -361,8 +550,10 @@ export default function CascadesAll() {
               />
               <span className="text-sm">Allow Dimer Formation (H, N, O, F, Cl, Br, I)</span>
             </label>
-            <label className="flex items-center">
+            <label htmlFor="cascade-exclude-melted" className="flex items-center cursor-pointer">
               <input
+                id="cascade-exclude-melted"
+                name="excludeMelted"
                 type="checkbox"
                 checked={params.excludeMelted}
                 onChange={(e) => setParams({...params, excludeMelted: e.target.checked})}
@@ -370,8 +561,10 @@ export default function CascadesAll() {
               />
               <span className="text-sm">Exclude elements below melting point</span>
             </label>
-            <label className="flex items-center">
+            <label htmlFor="cascade-exclude-boiled" className="flex items-center cursor-pointer">
               <input
+                id="cascade-exclude-boiled"
+                name="excludeBoiledOff"
                 type="checkbox"
                 checked={params.excludeBoiledOff}
                 onChange={(e) => setParams({...params, excludeBoiledOff: e.target.checked})}
