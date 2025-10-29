@@ -413,8 +413,8 @@ test.describe('Decay Chain Visualization', () => {
       expect(rowCount).toBeLessThanOrEqual(6); // 4 preview rows + toggle row + buffer
     });
 
-    test('should only allow one expanded section at a time', async ({ page }) => {
-      // This test requires two isotopes with expandable decay tables
+    test('should maintain independent expansion state per nuclide', async ({ page }) => {
+      // Test that different nuclides maintain independent expansion state
       // Navigate to first isotope (Hf-182)
       await page.goto('/element-data?Z=72&A=182');
       await waitForDatabaseReady(page);
@@ -431,15 +431,14 @@ test.describe('Decay Chain Visualization', () => {
       await waitForDatabaseReady(page);
 
       // First isotope's expansion state should not persist
-      // (This is actually about different nuclides, so we're testing that
-      // each nuclide manages its own expansion state independently)
+      // Each nuclide manages its own expansion state independently
 
       // Check if U-235 has an expandable decay table
       const showMoreButton2 = page.getByRole('button', { name: /Show.*more decay mode/i });
       const hasExpandableTable = await showMoreButton2.isVisible({ timeout: 2000 }).catch(() => false);
 
       if (hasExpandableTable) {
-        // U-235 table should start collapsed
+        // U-235 table should start collapsed (not affected by Hf-182's expanded state)
         await expect(showMoreButton2).toBeVisible();
         
         // Not the "Hide" button
