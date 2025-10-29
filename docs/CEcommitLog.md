@@ -1,4 +1,4 @@
-# Cacade Development Summary
+# Cascade Development Summary
 ## Weighted Fuel Proportions & Decay Chain Testing
 ### Diadon's Git Commit Log
 **Project**: LENR Academy - Cascade Simulation Enhancements  
