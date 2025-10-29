@@ -111,12 +111,23 @@ This is a modern reimplementation of the original **Nanosoft Package** PHP web a
 
 **Original Application**: [nanosoft.co.nz](https://nanosoft.co.nz)
 
+## Documentation
+
+📚 **[Complete Documentation Index](docs/README.md)** - All project documentation organized by purpose
+
+### Quick Links
+- 🚀 **[Quick Start](QUICKSTART.md)** - Get started in 5 minutes
+- 🧪 **[Testing Guide](docs/testing/TESTING_GUIDE.md)** - User testing scenarios
+- ✨ **[Weighted Fuel Feature](docs/features/README_WEIGHTED_FUEL.md)** - New! Proportional fuel mixing
+- 📝 **[Three Session Summary](docs/THREE_SESSION_SUMMARY.md)** - Recent development (Oct 26-28, 2025)
+
 ## For Developers
 
 Interested in contributing or running locally?
 
 - 📖 **[Contributing Guide](CONTRIBUTING.md)** - How to contribute, setup instructions, development workflow
-- 🛠️ **[Developer Documentation](docs/DEVELOPMENT.md)** - Architecture, technology stack, deployment guides
+- 🛠️ **[Developer Documentation](docs/development/DEVELOPMENT.md)** - Architecture, technology stack, deployment guides
+- 📤 **[PR Submission Guide](docs/pr-submission/PULL_REQUEST_DOCUMENTATION.md)** - Pull request documentation
 - 💬 **[GitHub Discussions](https://github.com/Episk-pos/lenr.academy/discussions)** - Ask questions and share ideas
 
 ## Development Roadmap
