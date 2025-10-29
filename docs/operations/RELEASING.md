@@ -180,7 +180,7 @@ sudo pacman -S jq
 gh release delete v0.0.2 --yes
 
 # Delete remote tag
-git push gh --delete v0.0.2
+git push origin --delete v0.0.2
 
 # Delete local tag
 git tag -d v0.0.2
