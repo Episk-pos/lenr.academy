@@ -3,8 +3,8 @@ import {
   normalizeFuelProportions,
   calculateReactionWeight,
   createEqualProportionFuel,
-  type FuelNuclide,
 } from './fuelProportions';
+import type { FuelNuclide } from '../types';
 
 describe('fuelProportions', () => {
   describe('normalizeFuelProportions', () => {
@@ -120,7 +120,7 @@ describe('fuelProportions', () => {
         ['Li-7', 0.5],
       ]);
 
-      const weight = calculateReactionWeight(reaction, proportions);
+      const weight = calculateReactionWeight(reaction.inputs[0], reaction.inputs[1], proportions);
 
       // Weight = 0.5 × 0.5 = 0.25
       expect(weight).toBeCloseTo(0.25, 5);
@@ -138,7 +138,7 @@ describe('fuelProportions', () => {
         ['Li-7', 0.9],
       ]);
 
-      const weight = calculateReactionWeight(reaction, proportions);
+      const weight = calculateReactionWeight(reaction.inputs[0], reaction.inputs[1], proportions);
 
       // Weight = 0.1 × 0.9 = 0.09
       expect(weight).toBeCloseTo(0.09, 5);
@@ -156,7 +156,7 @@ describe('fuelProportions', () => {
         ['Li-7', 0.7],
       ]);
 
-      const weight = calculateReactionWeight(reaction, proportions);
+      const weight = calculateReactionWeight(reaction.inputs[0], reaction.inputs[1], proportions);
 
       // Weight = 0.3 × 0.7 = 0.21
       expect(weight).toBeCloseTo(0.21, 5);
@@ -171,7 +171,7 @@ describe('fuelProportions', () => {
 
       const proportions = new Map([['H-1', 0.5]]);
 
-      const weight = calculateReactionWeight(reaction, proportions);
+      const weight = calculateReactionWeight(reaction.inputs[0], reaction.inputs[1], proportions);
 
       // Unknown-99 not in map → defaults to 1.0
       // Weight = 0.5 × 1.0 = 0.5
@@ -190,7 +190,7 @@ describe('fuelProportions', () => {
         ['Li-7', 0.0],
       ]);
 
-      const weight = calculateReactionWeight(reaction, proportions);
+      const weight = calculateReactionWeight(reaction.inputs[0], reaction.inputs[1], proportions);
 
       // Weight = 1.0 × 0.0 = 0.0
       expect(weight).toBe(0.0);
@@ -208,7 +208,7 @@ describe('fuelProportions', () => {
         ['Li-6', 0.01],
       ]);
 
-      const weight = calculateReactionWeight(reaction, proportions);
+      const weight = calculateReactionWeight(reaction.inputs[0], reaction.inputs[1], proportions);
 
       // Weight = 0.99 × 0.01 = 0.0099
       expect(weight).toBeCloseTo(0.0099, 5);
@@ -226,7 +226,7 @@ describe('fuelProportions', () => {
         ['D-2', 0.5],
       ]);
 
-      const weight = calculateReactionWeight(reaction, proportions);
+      const weight = calculateReactionWeight(reaction.inputs[0], reaction.inputs[1], proportions);
 
       // Weight = 0.5 × 0.5 = 0.25
       expect(weight).toBeCloseTo(0.25, 5);
@@ -301,8 +301,8 @@ describe('fuelProportions', () => {
 
       proportions.set('H-1', 1.0); // Add H-1 for reaction
 
-      const weight1 = calculateReactionWeight(reaction1, proportions);
-      const weight2 = calculateReactionWeight(reaction2, proportions);
+      const weight1 = calculateReactionWeight(reaction1.inputs[0], reaction1.inputs[1], proportions);
+      const weight2 = calculateReactionWeight(reaction2.inputs[0], reaction2.inputs[1], proportions);
 
       // Weight1 = 1.0 × 0.9 = 0.9
       expect(weight1).toBeCloseTo(0.9, 5);
@@ -340,8 +340,8 @@ describe('fuelProportions', () => {
         outputs: ['He-4', 'He-3'],
       };
 
-      const weightLi7 = calculateReactionWeight(reactionLi7, proportions);
-      const weightLi6 = calculateReactionWeight(reactionLi6, proportions);
+      const weightLi7 = calculateReactionWeight(reactionLi7.inputs[0], reactionLi7.inputs[1], proportions);
+      const weightLi6 = calculateReactionWeight(reactionLi6.inputs[0], reactionLi6.inputs[1], proportions);
 
       // Li-7 reactions should be ~12.3× more common than Li-6
       expect(weightLi7).toBeCloseTo(0.925, 5);

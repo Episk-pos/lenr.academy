@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeAll } from 'vitest';
+import { describe, it, expect } from 'vitest';
 import { runCascadeSimulation } from './cascadeEngine';
 import type { CascadeParameters, FuelNuclide } from '../types';
 
@@ -41,11 +41,15 @@ describe('cascadeEngine - Weighted Mode', () => {
           { nuclideId: 'Li-6', proportion: 0.1, displayValue: 10 },
         ] as FuelNuclide[],
         temperature: 1000,
-        energyThreshold: 1.0,
-        minProductEnergy: 0.0,
+        minFusionMeV: 1.0,
+        minTwoToTwoMeV: 1.0,
         maxNuclides: 10,
         maxLoops: 5,
-        includeFeedback: true,
+        feedbackBosons: true,
+        feedbackFermions: true,
+        allowDimers: false,
+        excludeMelted: false,
+        excludeBoiledOff: false,
         useWeightedMode: true,
       };
 
@@ -81,11 +85,15 @@ describe('cascadeEngine - Weighted Mode', () => {
           { nuclideId: 'Li-6', proportion: 10, displayValue: 10 },
         ] as FuelNuclide[],
         temperature: 1000,
-        energyThreshold: 1.0,
-        minProductEnergy: 0.0,
+        minFusionMeV: 1.0,
+        minTwoToTwoMeV: 1.0,
         maxNuclides: 10,
         maxLoops: 5,
-        includeFeedback: true,
+        feedbackBosons: true,
+        feedbackFermions: true,
+        allowDimers: false,
+        excludeMelted: false,
+        excludeBoiledOff: false,
         useWeightedMode: true,
       };
 
@@ -103,11 +111,15 @@ describe('cascadeEngine - Weighted Mode', () => {
           { nuclideId: 'Li-6', proportion: 0.5, displayValue: 50 },
         ] as FuelNuclide[],
         temperature: 1000,
-        energyThreshold: 1.0,
-        minProductEnergy: 0.0,
+        minFusionMeV: 1.0,
+        minTwoToTwoMeV: 1.0,
         maxNuclides: 10,
         maxLoops: 5,
-        includeFeedback: true,
+        feedbackBosons: true,
+        feedbackFermions: true,
+        allowDimers: false,
+        excludeMelted: false,
+        excludeBoiledOff: false,
         useWeightedMode: true,
       };
 
@@ -143,11 +155,15 @@ describe('cascadeEngine - Weighted Mode', () => {
           { nuclideId: 'Li-7', proportion: 1.0, displayValue: 100 },
         ] as FuelNuclide[],
         temperature: 1000,
-        energyThreshold: 1.0,
-        minProductEnergy: 0.0,
+        minFusionMeV: 1.0,
+        minTwoToTwoMeV: 1.0,
         maxNuclides: 10,
         maxLoops: 5,
-        includeFeedback: true,
+        feedbackBosons: true,
+        feedbackFermions: true,
+        allowDimers: false,
+        excludeMelted: false,
+        excludeBoiledOff: false,
         useWeightedMode: true,
       };
 
@@ -174,11 +190,15 @@ describe('cascadeEngine - Weighted Mode', () => {
           { nuclideId: 'Li-6', proportion: 0.01, displayValue: 1 },
         ] as FuelNuclide[],
         temperature: 1000,
-        energyThreshold: 1.0,
-        minProductEnergy: 0.0,
+        minFusionMeV: 1.0,
+        minTwoToTwoMeV: 1.0,
         maxNuclides: 10,
         maxLoops: 5,
-        includeFeedback: true,
+        feedbackBosons: true,
+        feedbackFermions: true,
+        allowDimers: false,
+        excludeMelted: false,
+        excludeBoiledOff: false,
         useWeightedMode: true,
       };
 
@@ -214,11 +234,15 @@ describe('cascadeEngine - Weighted Mode', () => {
           { nuclideId: 'Li-6', proportion: 0.1, displayValue: 10 },
         ] as FuelNuclide[],
         temperature: 1000,
-        energyThreshold: 1.0,
-        minProductEnergy: 0.0,
+        minFusionMeV: 1.0,
+        minTwoToTwoMeV: 1.0,
         maxNuclides: 10,
         maxLoops: 5,
-        includeFeedback: true,
+        feedbackBosons: true,
+        feedbackFermions: true,
+        allowDimers: false,
+        excludeMelted: false,
+        excludeBoiledOff: false,
         useWeightedMode: true,
       };
 
@@ -228,8 +252,8 @@ describe('cascadeEngine - Weighted Mode', () => {
       expect(results.productDistribution).toBeDefined();
 
       // He-4 should have higher count (more common from Li-7 reactions)
-      if (results.productDistribution['He-4']) {
-        expect(results.productDistribution['He-4']).toBeGreaterThan(0);
+      if (results.productDistribution.get('He-4')) {
+        expect(results.productDistribution.get('He-4')).toBeGreaterThan(0);
       }
     });
   });
@@ -239,11 +263,15 @@ describe('cascadeEngine - Weighted Mode', () => {
       const params: CascadeParameters = {
         fuelNuclides: ['Li-7', 'Li-6'], // String array (unweighted)
         temperature: 1000,
-        energyThreshold: 1.0,
-        minProductEnergy: 0.0,
+        minFusionMeV: 1.0,
+        minTwoToTwoMeV: 1.0,
         maxNuclides: 10,
         maxLoops: 5,
-        includeFeedback: true,
+        feedbackBosons: true,
+        feedbackFermions: true,
+        allowDimers: false,
+        excludeMelted: false,
+        excludeBoiledOff: false,
         useWeightedMode: false, // Explicitly unweighted
       };
 
@@ -262,11 +290,15 @@ describe('cascadeEngine - Weighted Mode', () => {
       const params: CascadeParameters = {
         fuelNuclides: ['Li-7', 'Li-6'],
         temperature: 1000,
-        energyThreshold: 1.0,
-        minProductEnergy: 0.0,
+        minFusionMeV: 1.0,
+        minTwoToTwoMeV: 1.0,
         maxNuclides: 10,
         maxLoops: 5,
-        includeFeedback: true,
+        feedbackBosons: true,
+        feedbackFermions: true,
+        allowDimers: false,
+        excludeMelted: false,
+        excludeBoiledOff: false,
         // useWeightedMode not specified
       };
 
@@ -283,11 +315,15 @@ describe('cascadeEngine - Weighted Mode', () => {
           { nuclideId: 'Li-6', proportion: 0.1, displayValue: 10 },
         ] as FuelNuclide[],
         temperature: 1000,
-        energyThreshold: 1.0,
-        minProductEnergy: 0.0,
+        minFusionMeV: 1.0,
+        minTwoToTwoMeV: 1.0,
         maxNuclides: 10,
         maxLoops: 5,
-        includeFeedback: true,
+        feedbackBosons: true,
+        feedbackFermions: true,
+        allowDimers: false,
+        excludeMelted: false,
+        excludeBoiledOff: false,
         useWeightedMode: false, // User explicitly disabled weighting
       };
 
@@ -303,11 +339,15 @@ describe('cascadeEngine - Weighted Mode', () => {
       const params: CascadeParameters = {
         fuelNuclides: [],
         temperature: 1000,
-        energyThreshold: 1.0,
-        minProductEnergy: 0.0,
+        minFusionMeV: 1.0,
+        minTwoToTwoMeV: 1.0,
         maxNuclides: 10,
         maxLoops: 5,
-        includeFeedback: true,
+        feedbackBosons: true,
+        feedbackFermions: true,
+        allowDimers: false,
+        excludeMelted: false,
+        excludeBoiledOff: false,
         useWeightedMode: true,
       };
 
@@ -325,11 +365,15 @@ describe('cascadeEngine - Weighted Mode', () => {
           { nuclideId: 'Li-6', proportion: 0.1, displayValue: 10 },
         ] as FuelNuclide[],
         temperature: 1000,
-        energyThreshold: 0.0, // Accept all reactions
-        minProductEnergy: 0.0,
+        minFusionMeV: 0.0, // Accept all reactions
+        minTwoToTwoMeV: 0.0,
         maxNuclides: 10,
         maxLoops: 5,
-        includeFeedback: true,
+        feedbackBosons: true,
+        feedbackFermions: true,
+        allowDimers: false,
+        excludeMelted: false,
+        excludeBoiledOff: false,
         useWeightedMode: true,
       };
 
@@ -347,11 +391,15 @@ describe('cascadeEngine - Weighted Mode', () => {
           { nuclideId: 'Li-6', proportion: 0.5, displayValue: 50 },
         ] as FuelNuclide[],
         temperature: 1000,
-        energyThreshold: 1.0,
-        minProductEnergy: 0.0,
+        minFusionMeV: 1.0,
+        minTwoToTwoMeV: 1.0,
         maxNuclides: 50,
         maxLoops: 20, // Many loops
-        includeFeedback: true,
+        feedbackBosons: true,
+        feedbackFermions: true,
+        allowDimers: false,
+        excludeMelted: false,
+        excludeBoiledOff: false,
         useWeightedMode: true,
       };
 
@@ -359,7 +407,7 @@ describe('cascadeEngine - Weighted Mode', () => {
 
       expect(results.isWeighted).toBe(true);
       // Should complete without hanging
-      expect(results.loopCount).toBeLessThanOrEqual(20);
+      expect(results.loopsExecuted).toBeLessThanOrEqual(20);
     });
   });
 
@@ -372,11 +420,15 @@ describe('cascadeEngine - Weighted Mode', () => {
           { nuclideId: 'Li-6', proportion: 0.075, displayValue: 7.5 },
         ] as FuelNuclide[],
         temperature: 1000,
-        energyThreshold: 1.0,
-        minProductEnergy: 0.0,
+        minFusionMeV: 1.0,
+        minTwoToTwoMeV: 1.0,
         maxNuclides: 20,
         maxLoops: 10,
-        includeFeedback: true,
+        feedbackBosons: true,
+        feedbackFermions: true,
+        allowDimers: false,
+        excludeMelted: false,
+        excludeBoiledOff: false,
         useWeightedMode: true,
       };
 
