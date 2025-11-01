@@ -208,8 +208,18 @@ export interface HeatmapMetrics {
   inputOutputRatio: Map<string, { inputCount: number; outputCount: number; ratio: number }>; // Element symbol → input/output counts and ratio (0=pure input, 1=pure output)
 }
 
+// Weighted fuel nuclide types for realistic cascade simulations
+export type ProportionFormat = 'percentage' | 'atomic_ratio' | 'mass_ratio';
+
+export interface FuelNuclide {
+  nuclideId: string;           // Nuclide ID (e.g., "H-1", "Li-7")
+  proportion: number;          // Normalized proportion (0.0 to 1.0, sum = 1.0)
+  displayValue?: number;       // Original user input value (for UI display)
+  format?: ProportionFormat;   // How proportion was specified
+}
+
 export interface CascadeParameters {
-  fuelNuclides: string[];
+  fuelNuclides: string[] | FuelNuclide[];  // Simple strings or weighted nuclides
   temperature: number;
   minFusionMeV: number;
   minTwoToTwoMeV: number;
@@ -220,6 +230,7 @@ export interface CascadeParameters {
   allowDimers: boolean;
   excludeMelted: boolean;
   excludeBoiledOff: boolean;
+  useWeightedMode?: boolean;   // Enable probabilistic weighting (default: false for backward compatibility)
 }
 
 // Cascade simulation result types
@@ -230,17 +241,20 @@ export interface CascadeReaction {
   MeV: number;                       // Energy released/absorbed
   loop: number;                      // Which iteration produced this reaction (0 = initial)
   neutrino: NeutrinoType;            // Neutrino involvement
+  weight?: number;                   // Probabilistic weight (1.0 = unweighted, < 1.0 = weighted down)
 }
 
 export interface CascadeResults {
   reactions: CascadeReaction[];                    // All reactions in cascade
-  productDistribution: Map<string, number>;        // Nuclide ID → count of appearances
+  productDistribution: Map<string, number>;        // Nuclide ID → weighted count of appearances
   nuclides: Nuclide[];                             // All nuclides involved
   elements: Element[];                             // All elements involved
-  totalEnergy: number;                             // Sum of all MeV values
+  totalEnergy: number;                             // Sum of all MeV values (weighted)
   loopsExecuted: number;                           // Actual loops run (may be < maxLoops)
   executionTime: number;                           // Time in milliseconds
   terminationReason: 'max_loops' | 'no_new_products' | 'max_nuclides'; // Why cascade stopped
+  fuelComposition?: FuelNuclide[];                 // Original fuel composition (if weighted mode)
+  isWeighted?: boolean;                            // Whether weighted mode was used
 }
 
 // Decay chain types for multi-generation radioactive decay visualization
@@ -322,6 +336,10 @@ export interface CascadePageState {
 
   // Fuel nuclides
   fuelNuclides: string[];
+
+  // Weighted mode
+  useWeightedMode?: boolean;
+  fuelProportions?: FuelNuclide[];
 
   // Simulation results (optional - only present after running simulation)
   results?: CascadeResults;
