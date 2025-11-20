@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { AlertCircle, ChevronDown, ChevronRight, Copy, ExternalLink, RefreshCw, Search } from 'lucide-react';
+import * as Sentry from '@sentry/react';
 import { collectErrorContext, type ErrorContext } from '../utils/errorContext';
 import {
   getGitHubSearchUrl,
@@ -32,10 +33,47 @@ export default function ErrorDisplay({
   useEffect(() => {
     const context = collectErrorContext(error, errorBoundary);
     setErrorContext(context);
+
+    // Add Sentry tracking for module loading failures (Issue #109)
+    const isModuleError =
+      error.message.toLowerCase().includes('importing a module script failed') ||
+      error.message.toLowerCase().includes('failed to load database module') ||
+      error.message.toLowerCase().includes('content blocker') ||
+      (error.message.toLowerCase().includes('import') && error.message.toLowerCase().includes('failed'));
+
+    if (isModuleError) {
+      Sentry.captureException(error, {
+        tags: {
+          issue: '109',
+          errorType: 'module_loading_failure',
+          browser: context.browser,
+          os: context.os,
+          device: context.device,
+        },
+        contexts: {
+          issue109: {
+            errorMessage: error.message,
+            userAgent: navigator.userAgent,
+            url: window.location.href,
+            timestamp: context.timestamp,
+            // Check if user might have content blockers
+            possibleContentBlocker: navigator.userAgent.includes('Safari'),
+          },
+        },
+        fingerprint: ['module-loading-failure', context.fingerprint],
+      });
+    }
   }, [error, errorBoundary]);
 
   // Check if this is a database corruption error
   const isCorruptionError = isDatabaseError && error.message.toLowerCase().includes('file is not a database');
+
+  // Check if this is a module loading failure (Issue #109)
+  const isModuleLoadError =
+    error.message.toLowerCase().includes('importing a module script failed') ||
+    error.message.toLowerCase().includes('failed to load database module') ||
+    error.message.toLowerCase().includes('content blocker') ||
+    (error.message.toLowerCase().includes('import') && error.message.toLowerCase().includes('failed'));
 
   const handleSearchSimilar = () => {
     if (!errorContext) return;
@@ -252,6 +290,31 @@ export default function ErrorDisplay({
             </div>
           </div>
         </div>
+
+          {/* Module Loading Error Recovery Section (Issue #109) */}
+          {isModuleLoadError && (
+            <div className="mt-4 p-4 bg-yellow-100 dark:bg-yellow-900/40 rounded-md border border-yellow-200 dark:border-yellow-800">
+              <p className="text-sm text-yellow-900 dark:text-yellow-200 mb-3">
+                <strong>Module Loading Failed</strong>
+                <br />
+                This error commonly occurs on Safari (especially iOS) when content blockers or ad blockers
+                prevent JavaScript modules from loading.
+              </p>
+              <div className="space-y-2 text-sm text-yellow-800 dark:text-yellow-300">
+                <p><strong>Try these solutions:</strong></p>
+                <ol className="list-decimal list-inside space-y-1 ml-2">
+                  <li>Disable Safari content blockers for this site (Settings → Safari → Content Blockers)</li>
+                  <li>Disable browser extensions like AdBlock or similar ad blockers</li>
+                  <li>Try using Private Browsing mode or a different browser</li>
+                  <li>Check if Private Relay is interfering (iCloud Settings → Private Relay)</li>
+                  <li>Clear Safari cache and cookies, then reload</li>
+                </ol>
+              </div>
+              <p className="text-xs text-yellow-700 dark:text-yellow-400 mt-3">
+                <strong>Note:</strong> This affects approximately 0.6% of users and is usually resolved by disabling content blockers.
+              </p>
+            </div>
+          )}
 
           {/* Database Corruption Recovery Section */}
           {isCorruptionError && (

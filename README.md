@@ -111,6 +111,14 @@ This is a modern reimplementation of the original **Nanosoft Package** PHP web a
 
 **Original Application**: [nanosoft.co.nz](https://nanosoft.co.nz)
 
+## Support & Troubleshooting
+
+Having issues? Check our troubleshooting guide:
+
+- 🔧 **[Troubleshooting Guide](docs/TROUBLESHOOTING.md)** - Common issues and solutions (Safari/iOS errors, loading problems, performance)
+- 💬 **[GitHub Discussions](https://github.com/Episk-pos/lenr.academy/discussions)** - Ask questions and get community support
+- 🐛 **[Report a Bug](https://github.com/Episk-pos/lenr.academy/issues/new)** - Found an issue? Let us know!
+
 ## For Developers
 
 Interested in contributing or running locally?

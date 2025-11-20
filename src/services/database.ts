@@ -86,11 +86,23 @@ export async function initDatabase(
   // Request persistent storage
   await requestPersistentStorage();
 
-  // Dynamic import of sql.js
-  const initSqlJs = (await import('sql.js')).default;
-  const SQL: SqlJsStatic = await initSqlJs({
-    locateFile: (file) => `/${file}`,
-  });
+  // Dynamic import of sql.js with enhanced error handling for iOS Safari (#109)
+  let SQL: SqlJsStatic;
+  try {
+    const initSqlJs = (await import('sql.js')).default;
+    SQL = await initSqlJs({
+      locateFile: (file: string) => `/${file}`,
+    });
+  } catch (error) {
+    // Module loading failure - common on Safari with content blockers
+    const moduleError = new Error(
+      'Failed to load database module. If you are using Safari on iOS, please try disabling content blockers or ad blockers for this site. ' +
+      'You can do this in Safari Settings > Content Blockers.'
+    );
+    // Store original error for debugging
+    (moduleError as any).originalError = error;
+    throw moduleError;
+  }
 
   // OFFLINE-FIRST: Try to load from cache FIRST, before any network requests
   let cachedDB: CachedDatabase | null = null;
@@ -195,10 +207,23 @@ export async function downloadUpdate(
   try {
     console.log(`⬇️ Downloading database update to version ${targetVersion}...`);
 
-    const initSqlJs = (await import('sql.js')).default;
-    const SQL: SqlJsStatic = await initSqlJs({
-      locateFile: (file) => `/${file}`,
-    });
+    // Dynamic import of sql.js with enhanced error handling for iOS Safari (#109)
+    let SQL: SqlJsStatic;
+    try {
+      const initSqlJs = (await import('sql.js')).default;
+      SQL = await initSqlJs({
+        locateFile: (file: string) => `/${file}`,
+      });
+    } catch (error) {
+      // Module loading failure - common on Safari with content blockers
+      const moduleError = new Error(
+        'Failed to load database module. If you are using Safari on iOS, please try disabling content blockers or ad blockers for this site. ' +
+        'You can do this in Safari Settings > Content Blockers.'
+      );
+      // Store original error for debugging
+      (moduleError as any).originalError = error;
+      throw moduleError;
+    }
 
     // Download new version
     const data = await downloadDatabaseWithProgress(onProgress);
@@ -556,13 +581,23 @@ export function exportDatabase(): Uint8Array {
  * Import database from file
  */
 export async function importDatabase(data: Uint8Array): Promise<Database> {
-  // Dynamic import of sql.js - Vite will handle the CommonJS to ESM conversion
-  const initSqlJs = (await import('sql.js')).default;
-
-  // Initialize SQL.js - use local WASM file from public directory
-  const SQL: SqlJsStatic = await initSqlJs({
-    locateFile: (file) => `/${file}`,
-  });
+  // Dynamic import of sql.js with enhanced error handling for iOS Safari (#109)
+  let SQL: SqlJsStatic;
+  try {
+    const initSqlJs = (await import('sql.js')).default;
+    SQL = await initSqlJs({
+      locateFile: (file: string) => `/${file}`,
+    });
+  } catch (error) {
+    // Module loading failure - common on Safari with content blockers
+    const moduleError = new Error(
+      'Failed to load database module. If you are using Safari on iOS, please try disabling content blockers or ad blockers for this site. ' +
+      'You can do this in Safari Settings > Content Blockers.'
+    );
+    // Store original error for debugging
+    (moduleError as any).originalError = error;
+    throw moduleError;
+  }
 
   db = new SQL.Database(data);
   return db;
