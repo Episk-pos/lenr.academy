@@ -38,3 +38,7 @@ dist-ssr
 
 docs/screenshots/pr/
 .aider*
+
+# SpecStory test artifacts
+.specstory/
+*.specstory

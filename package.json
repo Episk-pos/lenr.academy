@@ -25,7 +25,7 @@
     "screenshots:helper": "tsx scripts/screenshot-helper.ts",
     "screenshots:helper:ai": "tsx scripts/screenshot-helper-ai.ts",
     "db:upload": "bash -c 'scripts/upload-db.sh \"${npm_config_version:-${VERSION}}\"'",
-    "db:download": "bash scripts/download-db.sh",
+    "db:download": "node scripts/download-db.js",
     "db:index": "bash scripts/generate-db-index.sh && npm run db:invalidate",
     "db:uncache": "aws cloudfront create-invalidation --distribution-id E2HHYQ6QJH13V0 --paths '/*'",
     "deploy": "npm run deploy:s3 && npm run deploy:uncache",
