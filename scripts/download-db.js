@@ -62,6 +62,8 @@ function downloadFile(url, outputPath) {
     
     protocol.get(url, (response) => {
       if (response.statusCode !== 200) {
+        // Destroy the response stream to prevent resource leaks
+        response.destroy();
         file.close();
         if (existsSync(outputPath)) {
           try {
