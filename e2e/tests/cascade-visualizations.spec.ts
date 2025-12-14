@@ -37,7 +37,11 @@ test.describe('Cascade Visualizations', () => {
       // Click Network tab (D3 force-directed diagram)
       await page.click('button:has-text("Network")');
       // Verify Network diagram is visible (should render SVG with D3)
-      await expect(page.locator('svg').first()).toBeVisible({ timeout: 10000 });
+      // Use a more specific selector: SVG inside the network graph container
+      // The Network diagram SVG is inside a div with specific classes: rounded-lg border relative overflow-hidden
+      // This avoids matching icon SVGs that appear earlier in the DOM
+      const networkDiagramContainer = page.locator('.rounded-lg.border.relative.overflow-hidden');
+      await expect(networkDiagramContainer.locator('svg')).toBeVisible({ timeout: 10000 });
 
       // Click Flow View tab (Sankey diagram)
       await page.click('button:has-text("Flow View")');
