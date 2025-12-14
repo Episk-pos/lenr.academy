@@ -34,10 +34,14 @@ test.describe('Cascade Visualizations', () => {
       // Default tab should be Summary
       await expect(page.locator('text=Reactions Found')).toBeVisible();
 
-      // NOTE: Network tab temporarily disabled for initial release
-      // TODO: Re-enable when Network visualization is added back
-      // await page.click('button:has-text("Network")');
-      // await expect(page.locator('svg').or(page.locator('canvas'))).toBeVisible();
+      // Click Network tab (D3 force-directed diagram)
+      await page.click('button:has-text("Network")');
+      // Verify Network diagram is visible (should render SVG with D3)
+      // Use a more specific selector: SVG inside the network graph container
+      // The Network diagram SVG is inside a div with specific classes: rounded-lg border relative overflow-hidden
+      // This avoids matching icon SVGs that appear earlier in the DOM
+      const networkDiagramContainer = page.locator('.rounded-lg.border.relative.overflow-hidden');
+      await expect(networkDiagramContainer.locator('svg')).toBeVisible({ timeout: 10000 });
 
       // Click Flow View tab (Sankey diagram)
       await page.click('button:has-text("Flow View")');
