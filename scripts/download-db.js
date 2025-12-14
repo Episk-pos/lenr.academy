@@ -49,22 +49,10 @@ function downloadFile(url, outputPath) {
     
     // Handle file write errors (disk full, permission denied, etc.)
     file.on('error', (err) => {
+      // Close the file stream and wait for 'close' event before deleting
+      // On Windows, you cannot delete an open file, so we must wait for close
       file.close();
-      if (existsSync(outputPath)) {
-        try {
-          unlinkSync(outputPath);
-        } catch (unlinkErr) {
-          // Ignore unlink errors
-        }
-      }
-      reject(new Error(`Failed to write file: ${err.message}`));
-    });
-    
-    protocol.get(url, (response) => {
-      if (response.statusCode !== 200) {
-        // Destroy the response stream to prevent resource leaks
-        response.destroy();
-        file.close();
+      file.once('close', () => {
         if (existsSync(outputPath)) {
           try {
             unlinkSync(outputPath);
@@ -72,7 +60,27 @@ function downloadFile(url, outputPath) {
             // Ignore unlink errors
           }
         }
-        reject(new Error(`Failed to download: ${response.statusCode} ${response.statusMessage}`));
+        reject(new Error(`Failed to write file: ${err.message}`));
+      });
+    });
+    
+    protocol.get(url, (response) => {
+      if (response.statusCode !== 200) {
+        // Destroy the response stream to prevent resource leaks
+        response.destroy();
+        // Close the file stream and wait for 'close' event before deleting
+        // On Windows, you cannot delete an open file, so we must wait for close
+        file.close();
+        file.once('close', () => {
+          if (existsSync(outputPath)) {
+            try {
+              unlinkSync(outputPath);
+            } catch (unlinkErr) {
+              // Ignore unlink errors
+            }
+          }
+          reject(new Error(`Failed to download: ${response.statusCode} ${response.statusMessage}`));
+        });
         return;
       }
       
@@ -89,22 +97,31 @@ function downloadFile(url, outputPath) {
       response.pipe(file);
       
       file.on('finish', () => {
+        // Close the file stream and wait for 'close' event before resolving
+        // This ensures the file descriptor is fully closed and data is flushed to disk
+        // before the promise resolves, preventing issues with subsequent file operations
         file.close();
-        if (totalBytes > 0) {
-          process.stdout.write('\n');
-        }
-        resolve();
+        file.once('close', () => {
+          if (totalBytes > 0) {
+            process.stdout.write('\n');
+          }
+          resolve();
+        });
       });
     }).on('error', (err) => {
+      // Close the file stream and wait for 'close' event before deleting
+      // On Windows, you cannot delete an open file, so we must wait for close
       file.close();
-      if (existsSync(outputPath)) {
-        try {
-          unlinkSync(outputPath);
-        } catch (unlinkErr) {
-          // Ignore unlink errors
+      file.once('close', () => {
+        if (existsSync(outputPath)) {
+          try {
+            unlinkSync(outputPath);
+          } catch (unlinkErr) {
+            // Ignore unlink errors
+          }
         }
-      }
-      reject(err);
+        reject(err);
+      });
     });
   });
 }
