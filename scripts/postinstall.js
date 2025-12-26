@@ -1,8 +1,9 @@
 #!/usr/bin/env node
 
 /**
- * Post-install script to download the latest database from S3
+ * Post-install script to download the latest database
  * Runs automatically after npm install
+ * Downloads from https://db.lenr.academy (no credentials required)
  */
 
 import { existsSync, mkdirSync } from 'fs';
@@ -29,22 +30,16 @@ const colors = {
   red: '\x1b[31m',
 };
 
+// Base URL for database downloads (static website hosting, no credentials required)
+const DB_BASE_URL = 'https://db.lenr.academy';
+
 function log(message, color = 'reset') {
   console.log(`${colors[color]}${message}${colors.reset}`);
 }
 
-async function checkAwsCli() {
-  try {
-    await execAsync('aws --version');
-    return true;
-  } catch {
-    return false;
-  }
-}
-
 async function downloadWithCurl(url, outputPath) {
   log(`  Downloading from ${url}...`, 'blue');
-  const command = `curl -f -L -o "${outputPath}" "${url}"`;
+  const command = `curl -f -L --progress-bar -o "${outputPath}" "${url}"`;
   await execAsync(command);
 }
 
@@ -73,28 +68,13 @@ async function downloadDatabase() {
     mkdirSync(publicDir, { recursive: true });
   }
 
-  const hasAwsCli = await checkAwsCli();
-
   try {
-    if (hasAwsCli) {
-      // Use AWS CLI if available (faster)
-      log('  Using AWS CLI for download...', 'blue');
-      await execAsync(`aws s3 cp s3://db.lenr.academy/latest/parkhomov.db "${dbPath}" --no-sign-request`);
-      if (shouldDownloadMeta) {
-        await execAsync(`aws s3 cp s3://db.lenr.academy/latest/parkhomov.db.meta.json "${metaPath}" --no-sign-request`);
-      } else {
-        log('  Metadata already tracked, skipping download (set FORCE_DB_META_DOWNLOAD=1 to override)', 'yellow');
-      }
+    // Download via HTTPS from db.lenr.academy (no credentials required)
+    await downloadWithCurl(`${DB_BASE_URL}/latest/parkhomov.db`, dbPath);
+    if (shouldDownloadMeta) {
+      await downloadWithCurl(`${DB_BASE_URL}/latest/parkhomov.db.meta.json`, metaPath);
     } else {
-      // Fallback to HTTPS download via curl
-      log('  AWS CLI not found, using HTTPS download...', 'blue');
-      log('  (Install AWS CLI for faster downloads)', 'yellow');
-      await downloadWithCurl('https://db.lenr.academy.s3.amazonaws.com/latest/parkhomov.db', dbPath);
-      if (shouldDownloadMeta) {
-        await downloadWithCurl('https://db.lenr.academy.s3.amazonaws.com/latest/parkhomov.db.meta.json', metaPath);
-      } else {
-        log('  Metadata already tracked, skipping download (set FORCE_DB_META_DOWNLOAD=1 to override)', 'yellow');
-      }
+      log('  Metadata already tracked, skipping download (set FORCE_DB_META_DOWNLOAD=1 to override)', 'yellow');
     }
 
     log('\n✅ Database downloaded successfully!', 'green');
