@@ -128,7 +128,7 @@ export async function initDatabase(
 
   try {
     cachedDB = await getCachedDB();
-      if (cachedDB) {
+    if (cachedDB) {
       console.log(`💾 Found cached database version: ${cachedDB.version}`);
 
       // Validate cached database before using it
