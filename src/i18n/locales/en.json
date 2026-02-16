@@ -820,6 +820,7 @@
     "executeQuery": "Execute Query",
     "clear": "Clear",
     "queryError": "Query Error",
+    "readOnlyError": "Only read-only queries (SELECT) are allowed. Statements like DROP, CREATE, ALTER, DELETE, INSERT, and UPDATE are blocked to protect the database.",
     "queryResults": "Query Results: {{count}} rows",
     "executedIn": "Executed in {{time}}ms",
     "exportCsv": "Export CSV",

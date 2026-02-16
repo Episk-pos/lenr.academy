@@ -23,8 +23,28 @@ export default function AllTables() {
     'SELECT E, COUNT(*) as ReactionCount FROM FusionAll GROUP BY E ORDER BY ReactionCount DESC',
   ]
 
+  const isReadOnlyQuery = (sql: string): boolean => {
+    // Normalize: strip comments and collapse whitespace
+    const normalized = sql
+      .replace(/--[^\n]*/g, '')
+      .replace(/\/\*[\s\S]*?\*\//g, '')
+      .trim()
+
+    // Check for destructive DDL/DML statements
+    const destructivePattern = /^\s*(DROP|CREATE|ALTER|DELETE|INSERT|UPDATE|REPLACE|TRUNCATE|ATTACH|DETACH|REINDEX|VACUUM|PRAGMA)\b/i
+    // Also check for multiple statements (could hide DDL after a SELECT)
+    const statements = normalized.split(';').filter(s => s.trim().length > 0)
+    return statements.every(stmt => !destructivePattern.test(stmt.trim()))
+  }
+
   const executeQuery = () => {
     if (!db || !sqlQuery.trim()) return
+
+    if (!isReadOnlyQuery(sqlQuery)) {
+      setError(t('allTables.readOnlyError'))
+      setResults(null)
+      return
+    }
 
     setIsExecuting(true)
     setError(null)
