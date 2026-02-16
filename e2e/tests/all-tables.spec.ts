@@ -102,11 +102,13 @@ test.describe('All Tables Query Tool', () => {
 
   test('should display available tables section', async ({ page }) => {
     await expect(page.getByText(/Available Tables/i)).toBeVisible();
-    await expect(page.getByText('FusionAll')).toBeVisible();
-    await expect(page.getByText('FissionAll')).toBeVisible();
-    await expect(page.getByText('TwoToTwoAll')).toBeVisible();
-    await expect(page.getByText('NuclidesPlus')).toBeVisible();
-    await expect(page.getByText('ElementsPlus')).toBeVisible();
+    // Scope assertions to the Available Tables section to avoid matching textarea/examples
+    const availableTablesSection = page.locator('h3', { hasText: /Available Tables/i }).locator('..');
+    await expect(availableTablesSection.getByText('FusionAll')).toBeVisible();
+    await expect(availableTablesSection.getByText('FissionAll')).toBeVisible();
+    await expect(availableTablesSection.getByText('TwoToTwoAll')).toBeVisible();
+    await expect(availableTablesSection.getByText('NuclidesPlus')).toBeVisible();
+    await expect(availableTablesSection.getByText('ElementsPlus')).toBeVisible();
   });
 
   test('should display SQL tips section', async ({ page }) => {
