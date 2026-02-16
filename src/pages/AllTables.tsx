@@ -30,11 +30,16 @@ export default function AllTables() {
       .replace(/\/\*[\s\S]*?\*\//g, '')
       .trim()
 
-    // Check for destructive DDL/DML statements
-    const destructivePattern = /^\s*(DROP|CREATE|ALTER|DELETE|INSERT|UPDATE|REPLACE|TRUNCATE|ATTACH|DETACH|REINDEX|VACUUM|PRAGMA)\b/i
-    // Also check for multiple statements (could hide DDL after a SELECT)
+    // Allowlist: each statement must start with SELECT, WITH, or EXPLAIN
+    const allowedPattern = /^\s*(SELECT|WITH|EXPLAIN)\b/i
+    // Blocklist: catch destructive keywords anywhere in statement (handles WITH...DELETE bypass)
+    const destructivePattern = /\b(DROP|CREATE|ALTER|DELETE|INSERT|UPDATE|REPLACE|TRUNCATE|ATTACH|DETACH|REINDEX|VACUUM|PRAGMA)\b/i
+    // Split on semicolons and validate each statement
     const statements = normalized.split(';').filter(s => s.trim().length > 0)
-    return statements.every(stmt => !destructivePattern.test(stmt.trim()))
+    return statements.every(stmt => {
+      const trimmed = stmt.trim()
+      return allowedPattern.test(trimmed) && !destructivePattern.test(trimmed)
+    })
   }
 
   const executeQuery = () => {
