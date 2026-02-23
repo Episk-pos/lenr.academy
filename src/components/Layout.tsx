@@ -1,6 +1,6 @@
 import { ReactNode, useEffect, useCallback, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
-import { Menu, X, Atom, Moon, Sun, ChevronLeft, ChevronRight, Home as HomeIcon, GitMerge, Scissors, ArrowLeftRight, FlaskConical, Table, TableProperties, Shield, Workflow, HelpCircle, Grid3x3 } from 'lucide-react'
+import { Menu, X, Atom, Moon, Sun, ChevronLeft, ChevronRight, Home as HomeIcon, GitMerge, Scissors, ArrowLeftRight, FlaskConical, Table, TableProperties, Shield, Workflow, HelpCircle } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { useTheme } from '../contexts/ThemeContext'
 import { useLayout } from '../contexts/LayoutContext'
@@ -27,7 +27,6 @@ interface NavigationItem {
 const navigationItems: NavigationItem[] = [
   { nameKey: 'navigation.home', path: '/', icon: HomeIcon },
   { nameKey: 'navigation.showElementData', path: '/element-data', icon: FlaskConical },
-  { nameKey: 'navigation.segreChart', path: '/segre-chart', icon: Grid3x3 },
   { nameKey: 'navigation.fusionReactions', path: '/fusion', icon: GitMerge },
   { nameKey: 'navigation.fissionReactions', path: '/fission', icon: Scissors },
   { nameKey: 'navigation.twoToTwoReactions', path: '/twotwo', icon: ArrowLeftRight },

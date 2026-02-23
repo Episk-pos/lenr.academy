@@ -18,6 +18,7 @@ export interface ChartNuclide {
 
 interface SegreChartDiagramProps {
   nuclides: ChartNuclide[]
+  onNuclideClick?: (nuclide: ChartNuclide) => void
 }
 
 const MAGIC_NUMBERS = [2, 8, 20, 28, 50, 82, 126]
@@ -38,7 +39,7 @@ function valleyOfStabilityN(Z: number): number {
   return Z + 0.006 * Z * Z
 }
 
-export default function SegreChartDiagram({ nuclides }: SegreChartDiagramProps) {
+export default function SegreChartDiagram({ nuclides, onNuclideClick }: SegreChartDiagramProps) {
   const navigate = useNavigate()
   const { t } = useTranslation()
   const { theme } = useTheme()
@@ -86,8 +87,12 @@ export default function SegreChartDiagram({ nuclides }: SegreChartDiagramProps) 
   }, [])
 
   const handleClick = useCallback((nuclide: ChartNuclide) => {
-    navigate(`/element-data?Z=${nuclide.Z}&A=${nuclide.A}`)
-  }, [navigate])
+    if (onNuclideClick) {
+      onNuclideClick(nuclide)
+    } else {
+      navigate(`/element-data?Z=${nuclide.Z}&A=${nuclide.A}`)
+    }
+  }, [navigate, onNuclideClick])
 
   const textColor = isDark ? '#9ca3af' : '#6b7280'
   const magicLineColor = isDark ? 'rgba(147, 197, 253, 0.3)' : 'rgba(59, 130, 246, 0.25)'

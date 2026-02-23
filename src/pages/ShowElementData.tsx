@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { Radiation } from 'lucide-react'
+import { Radiation, ChevronDown } from 'lucide-react'
 import { useDatabase } from '../contexts/DatabaseContext'
 import { useLayout } from '../contexts/LayoutContext'
 import type { Element, Nuclide, AtomicRadiiData, RadioactiveNuclideData, DisplayNuclide, RadioNuclideListItem } from '../types'
@@ -15,6 +15,7 @@ import FilterPanel, { FilterConfig, FilterPreset } from '../components/FilterPan
 import DatabaseLoadingCard from '../components/DatabaseLoadingCard'
 import Tooltip from '../components/Tooltip'
 import DecayChainDiagram from '../components/DecayChainDiagram'
+import SegreChartDiagram, { type ChartNuclide } from '../components/SegreChartDiagram'
 import ColumnToggle from '../components/ColumnToggle'
 import { useColumnVisibility } from '../hooks/useColumnVisibility'
 import {
@@ -178,6 +179,7 @@ export default function ShowElementData() {
   const [elementsCollapsed, setElementsCollapsed] = useState(true)
   const [nuclidesCollapsed, setNuclidesCollapsed] = useState(true)
   const [decaysCollapsed, setDecaysCollapsed] = useState(true)
+  const [segreExpanded, setSegreExpanded] = useState(false)
 
   // Search state (per tab, transient - not in URL)
   const [elementsSearch, setElementsSearch] = useState('')
@@ -229,6 +231,21 @@ export default function ShowElementData() {
     if (!db) return []
     return getAllNuclides(db)
   }, [db])
+
+  // Segre Chart nuclides (derived from allNuclides)
+  const chartNuclides: ChartNuclide[] = useMemo(() => {
+    return allNuclides.map(n => ({
+      Z: n.Z,
+      N: n.A - n.Z,
+      A: n.A,
+      E: n.E,
+      stability: (n.logHalfLife === undefined || n.logHalfLife === null) ? 'unknown' as const
+        : n.logHalfLife > 9 ? 'stable' as const
+        : n.logHalfLife > 2 ? 'long' as const
+        : 'short' as const,
+      logHalfLife: n.logHalfLife,
+    }))
+  }, [allNuclides])
 
   // Get all decays (memoized)
   const allDecays = useMemo(() => {
@@ -1039,6 +1056,16 @@ export default function ShowElementData() {
     }
   }
 
+  const handleSegreNuclideClick = (nuclide: ChartNuclide) => {
+    const newParams = new URLSearchParams(searchParams)
+    newParams.set('Z', nuclide.Z.toString())
+    newParams.set('A', nuclide.A.toString())
+    newParams.set('tab', 'integrated')
+    newParams.delete('iso')
+    newParams.delete('particle')
+    setSearchParams(newParams)
+  }
+
   const handleParticleClick = (particleId: string) => {
     if (!SPECIAL_PARTICLES_BY_ID[particleId]) return
     if (selectedElement !== null) {
@@ -1651,6 +1678,34 @@ export default function ShowElementData() {
             onElementClick={handleElementClick}
             onParticleClick={handleParticleClick}
           />
+
+          {/* Collapsible Segre Chart */}
+          {chartNuclides.length > 0 && (
+            <div className="card mt-6">
+              <button
+                onClick={() => setSegreExpanded(!segreExpanded)}
+                className="w-full flex items-center justify-between p-4 text-left hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors rounded-lg"
+              >
+                <div>
+                  <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+                    {t('segreChart.sectionTitle')}
+                  </h3>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+                    {t('segreChart.nuclideCount', { count: chartNuclides.length })}
+                  </p>
+                </div>
+                <ChevronDown className={`w-5 h-5 text-gray-400 transition-transform duration-200 ${segreExpanded ? 'rotate-180' : ''}`} />
+              </button>
+              <div className={`transition-all duration-300 ease-in-out overflow-hidden ${segreExpanded ? 'max-h-[900px] opacity-100' : 'max-h-0 opacity-0'}`}>
+                <div className="px-4 pb-4">
+                  <SegreChartDiagram nuclides={chartNuclides} onNuclideClick={handleSegreNuclideClick} />
+                  <p className="text-xs text-gray-400 dark:text-gray-500 mt-2 text-center">
+                    {t('segreChart.zoomControls')}
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
 
           {selectedParticleInfo && (
             <ParticleDetailsCard particle={selectedParticleInfo} nuclide={selectedParticleNuclide} />

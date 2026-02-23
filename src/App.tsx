@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
 import * as Sentry from '@sentry/react'
 import { DatabaseProvider } from './contexts/DatabaseContext'
 import { ThemeProvider } from './contexts/ThemeContext'
@@ -14,7 +14,6 @@ import ShowElementData from './pages/ShowElementData'
 import TablesInDetail from './pages/TablesInDetail'
 import AllTables from './pages/AllTables'
 import CascadesAll from './pages/CascadesAll'
-import SegreChart from './pages/SegreChart'
 import PrivacyPreferences from './pages/PrivacyPreferences'
 import Help from './pages/Help'
 import SentryTest from './pages/SentryTest'
@@ -64,7 +63,7 @@ function App() {
                 <Route path="/fission" element={<FissionQuery />} />
                 <Route path="/twotwo" element={<TwoToTwoQuery />} />
                 <Route path="/element-data" element={<ShowElementData />} />
-                <Route path="/segre-chart" element={<SegreChart />} />
+                <Route path="/segre-chart" element={<Navigate to="/element-data" replace />} />
                 <Route path="/tables" element={<TablesInDetail />} />
                 <Route path="/all-tables" element={<AllTables />} />
                 <Route path="/cascades" element={<CascadesAll />} />

@@ -455,6 +455,7 @@
   "segreChart": {
     "title": "Segre Chart (N-Z Diagram)",
     "description": "Interactive chart of nuclides plotted by proton number (Z) vs neutron number (N), color-coded by stability",
+    "sectionTitle": "核素图（塞格雷图）",
     "stable": "Stable (>10\u2079 years)",
     "longHalfLife": "Long half-life (>100 years)",
     "shortHalfLife": "Short half-life (<100 years)",
