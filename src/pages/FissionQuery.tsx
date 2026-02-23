@@ -1146,7 +1146,7 @@ export default function FissionQuery() {
                   )}
                 </p>
               </div>
-              <div className="flex gap-2">
+              <div className="flex flex-wrap gap-2">
                 <button
                   onClick={() => setShowBosonFermion(!showBosonFermion)}
                   className="btn btn-secondary px-4 py-2 text-sm"
