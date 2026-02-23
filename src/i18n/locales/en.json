@@ -383,7 +383,7 @@
     "hideBFTypes": "Hide B/F Types",
     "showBFTypes": "Show B/F Types",
     "exportCsv": "Export CSV",
-    "copyShareLink": "Copy Share Link",
+    "copyShareLink": "Copy Link",
     "copyShareLinkTitle": "Copy a shareable URL for this query to clipboard",
     "linkCopied": "Link Copied!",
     "exportJson": "Export JSON",
