@@ -39,9 +39,9 @@ test.describe('Cascade Visualizations', () => {
       // Verify Network diagram is visible (should render SVG with D3)
       // Use a more specific selector: SVG inside the network graph container
       // The Network diagram SVG is inside a div with specific classes: rounded-lg border relative overflow-hidden
-      // This avoids matching icon SVGs that appear earlier in the DOM
+      // Use svg.w-full.h-full to target only the diagram SVG, not zoom button icon SVGs
       const networkDiagramContainer = page.locator('.rounded-lg.border.relative.overflow-hidden');
-      await expect(networkDiagramContainer.locator('svg')).toBeVisible({ timeout: 10000 });
+      await expect(networkDiagramContainer.locator('svg.w-full.h-full')).toBeVisible({ timeout: 10000 });
 
       // Click Flow View tab (Sankey diagram)
       await page.click('button:has-text("Flow View")');
