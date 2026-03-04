@@ -69,6 +69,10 @@ vi.mock('../components/EnergyHistogram', () => ({
   default: () => <div data-testid="energy-histogram" />,
 }));
 
+vi.mock('../components/ReactionNetworkGraph', () => ({
+  default: () => <div data-testid="reaction-network-graph" />,
+}));
+
 vi.mock('../utils/exportUtils', () => ({
   exportToJSON: vi.fn(),
   exportToPDF: vi.fn(),

@@ -38,61 +38,48 @@ test.describe('Query History', () => {
   test('should show query history panel on fusion page after running a query', async ({ page }) => {
     await navigateToPage(page, 'Fusion');
 
-    // Run a query first — history panel only appears when history exists
-    const runButton = page.getByRole('button', { name: /Run Query|Search/i }).first();
-    if (await runButton.isVisible({ timeout: 3000 }).catch(() => false)) {
-      await runButton.click();
-      await waitForReactionResults(page, 'fusion');
-    }
+    // Queries auto-execute on page load — wait for results to appear
+    await waitForReactionResults(page, 'fusion');
 
     const historyToggle = page.getByText(/History/i).first();
-    await expect(historyToggle).toBeVisible({ timeout: 5000 });
+    await expect(historyToggle).toBeVisible({ timeout: 10000 });
   });
 
   test('should add query to history after running fusion query', async ({ page }) => {
     await navigateToPage(page, 'Fusion');
 
-    // Open Element 1 dropdown and select Hydrogen
+    // Queries auto-execute on page load — wait for initial results
+    await waitForReactionResults(page, 'fusion');
+
+    // Now select Hydrogen to trigger a new query
     await openDropdownAndSelectElement(page, 0, /^1\s+H$/i);
 
-    // Run the query
-    const runButton = page.getByRole('button', { name: /Run Query|Search/i }).first();
-    if (await runButton.isVisible({ timeout: 3000 }).catch(() => false)) {
-      await runButton.click();
-      await waitForReactionResults(page, 'fusion');
-    }
+    // Wait for re-query with the new filter
+    await waitForReactionResults(page, 'fusion');
 
-    // Check if history is visible
+    // Check if history is visible (should have at least 1 entry from auto-query)
     const historyText = page.getByText(/History/i).first();
-    await expect(historyText).toBeVisible();
+    await expect(historyText).toBeVisible({ timeout: 10000 });
   });
 
   test('should show query history panel on fission page after running a query', async ({ page }) => {
     await navigateToPage(page, 'Fission');
 
-    // Run a query first — history panel only appears when history exists
-    const runButton = page.getByRole('button', { name: /Run Query|Search/i }).first();
-    if (await runButton.isVisible({ timeout: 3000 }).catch(() => false)) {
-      await runButton.click();
-      await waitForReactionResults(page, 'fission');
-    }
+    // Queries auto-execute on page load — wait for results to appear
+    await waitForReactionResults(page, 'fission');
 
     const historyToggle = page.getByText(/History/i).first();
-    await expect(historyToggle).toBeVisible({ timeout: 5000 });
+    await expect(historyToggle).toBeVisible({ timeout: 10000 });
   });
 
   test('should show query history panel on two-to-two page after running a query', async ({ page }) => {
     await navigateToPage(page, 'Two');
 
-    // Run a query first — history panel only appears when history exists
-    const runButton = page.getByRole('button', { name: /Run Query|Search/i }).first();
-    if (await runButton.isVisible({ timeout: 3000 }).catch(() => false)) {
-      await runButton.click();
-      await waitForReactionResults(page, 'twotwo');
-    }
+    // Queries auto-execute on page load — wait for results to appear
+    await waitForReactionResults(page, 'twotwo');
 
     const historyToggle = page.getByText(/History/i).first();
-    await expect(historyToggle).toBeVisible({ timeout: 5000 });
+    await expect(historyToggle).toBeVisible({ timeout: 10000 });
   });
 });
 
