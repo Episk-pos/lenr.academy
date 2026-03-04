@@ -24,11 +24,11 @@ test.describe('Help Page', () => {
   });
 
   test('should show query type badges on example cards', async ({ page }) => {
-    // Query type badges are small spans inside the example queries section
-    const exampleSection = page.getByRole('heading', { name: /Example Queries/i }).locator('..');
-    await expect(exampleSection.locator('span', { hasText: 'fusion' }).first()).toBeVisible();
-    await expect(exampleSection.locator('span', { hasText: 'fission' }).first()).toBeVisible();
-    await expect(exampleSection.locator('span', { hasText: '2→2' }).first()).toBeVisible();
+    // Query type badges are spans inside each example card button in the section
+    const exampleSection = page.locator('section').filter({ has: page.getByRole('heading', { name: /Example Queries/i }) });
+    await expect(exampleSection.locator('button span', { hasText: 'fusion' }).first()).toBeVisible();
+    await expect(exampleSection.locator('button span', { hasText: 'fission' }).first()).toBeVisible();
+    await expect(exampleSection.locator('button span', { hasText: '2→2' }).first()).toBeVisible();
   });
 
   test('should navigate to fusion query when clicking fusion example', async ({ page }) => {

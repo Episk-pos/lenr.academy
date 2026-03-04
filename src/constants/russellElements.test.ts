@@ -6,7 +6,6 @@ import {
   getAllRussellElements,
   getRussellElementBySymbol,
   getPredictedElements,
-  type RussellElement,
 } from './russellElements'
 
 describe('russellElements constants', () => {

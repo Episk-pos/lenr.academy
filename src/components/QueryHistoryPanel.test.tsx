@@ -10,6 +10,7 @@ import type { SavedQuery } from '../types';
 
 const baseQuery: SavedQuery = {
   id: '1',
+  name: 'H + Li fusion',
   queryType: 'fusion',
   filter: {
     element1List: ['H'],

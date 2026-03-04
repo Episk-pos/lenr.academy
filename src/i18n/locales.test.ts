@@ -52,7 +52,6 @@ describe('i18n locale consistency', () => {
       it(`has top-level sections matching English`, () => {
         const enTopLevel = Object.keys(en);
         const localeTopLevel = Object.keys(translations);
-        const missingTopLevel = enTopLevel.filter(k => !localeTopLevel.includes(k));
         // Allow some missing sections (translations might be incomplete)
         // But at least the core sections should exist
         const coreSections = ['navigation', 'home'];

@@ -35,9 +35,16 @@ test.describe('Query History', () => {
     await waitForDatabaseReady(page);
   });
 
-  test('should show query history panel on fusion page', async ({ page }) => {
+  test('should show query history panel on fusion page after running a query', async ({ page }) => {
     await navigateToPage(page, 'Fusion');
-    // History panel or toggle should be present
+
+    // Run a query first — history panel only appears when history exists
+    const runButton = page.getByRole('button', { name: /Run Query|Search/i }).first();
+    if (await runButton.isVisible({ timeout: 3000 }).catch(() => false)) {
+      await runButton.click();
+      await waitForReactionResults(page, 'fusion');
+    }
+
     const historyToggle = page.getByText(/History/i).first();
     await expect(historyToggle).toBeVisible({ timeout: 5000 });
   });
@@ -60,14 +67,30 @@ test.describe('Query History', () => {
     await expect(historyText).toBeVisible();
   });
 
-  test('should show query history panel on fission page', async ({ page }) => {
+  test('should show query history panel on fission page after running a query', async ({ page }) => {
     await navigateToPage(page, 'Fission');
+
+    // Run a query first — history panel only appears when history exists
+    const runButton = page.getByRole('button', { name: /Run Query|Search/i }).first();
+    if (await runButton.isVisible({ timeout: 3000 }).catch(() => false)) {
+      await runButton.click();
+      await waitForReactionResults(page, 'fission');
+    }
+
     const historyToggle = page.getByText(/History/i).first();
     await expect(historyToggle).toBeVisible({ timeout: 5000 });
   });
 
-  test('should show query history panel on two-to-two page', async ({ page }) => {
+  test('should show query history panel on two-to-two page after running a query', async ({ page }) => {
     await navigateToPage(page, 'Two');
+
+    // Run a query first — history panel only appears when history exists
+    const runButton = page.getByRole('button', { name: /Run Query|Search/i }).first();
+    if (await runButton.isVisible({ timeout: 3000 }).catch(() => false)) {
+      await runButton.click();
+      await waitForReactionResults(page, 'twotwo');
+    }
+
     const historyToggle = page.getByText(/History/i).first();
     await expect(historyToggle).toBeVisible({ timeout: 5000 });
   });

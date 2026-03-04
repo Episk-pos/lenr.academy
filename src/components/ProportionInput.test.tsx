@@ -9,29 +9,29 @@ vi.mock('lucide-react', () => ({
   Info: () => <svg data-testid="info-icon" />,
 }));
 
-const mockValidateProportions = vi.fn(() => ({ isValid: true, errors: [] }));
+const mockValidateProportions = vi.fn(() => ({ isValid: true, errors: [] as Array<{ nuclideId?: string; message: string }> }));
 const mockNormalizeProportions = vi.fn((inputs: Array<{ nuclideId: string; value: number }>) =>
-  inputs.map((i) => ({ nuclideId: i.nuclideId, proportion: i.value, source: 'manual' as const }))
+  inputs.map((i) => ({ nuclideId: i.nuclideId, proportion: i.value, sourceType: 'manual' as const }))
 );
 const mockGetNaturalAbundances = vi.fn(() => [
-  { nuclideId: 'Li-6', proportion: 7.59, source: 'natural' as const },
-  { nuclideId: 'Li-7', proportion: 92.41, source: 'natural' as const },
+  { nuclideId: 'Li-6', proportion: 7.59, sourceType: 'natural' as const },
+  { nuclideId: 'Li-7', proportion: 92.41, sourceType: 'natural' as const },
 ]);
 const mockCreateEqualProportions = vi.fn((ids: string[]) =>
-  ids.map((id) => ({ nuclideId: id, proportion: 100 / ids.length, source: 'manual' as const }))
+  ids.map((id) => ({ nuclideId: id, proportion: 100 / ids.length, sourceType: 'manual' as const }))
 );
 const mockFormatProportion = vi.fn((val: number) => `${val.toFixed(1)}%`);
 const mockGetFormatLabel = vi.fn((fmt: string) => fmt === 'percentage' ? 'Percentage' : fmt);
 const mockGetFormatHelpText = vi.fn(() => 'Help text for proportions');
 
 vi.mock('../services/proportionService', () => ({
-  validateProportions: (...args: unknown[]) => mockValidateProportions(...args),
-  normalizeProportions: (...args: unknown[]) => mockNormalizeProportions(...args),
-  getNaturalAbundances: (...args: unknown[]) => mockGetNaturalAbundances(...args),
-  createEqualProportions: (...args: unknown[]) => mockCreateEqualProportions(...args),
-  formatProportion: (...args: unknown[]) => mockFormatProportion(...args),
-  getFormatLabel: (...args: unknown[]) => mockGetFormatLabel(...args),
-  getFormatHelpText: (...args: unknown[]) => mockGetFormatHelpText(...args),
+  validateProportions: (...args: Parameters<typeof mockValidateProportions>) => mockValidateProportions(...args),
+  normalizeProportions: (...args: Parameters<typeof mockNormalizeProportions>) => mockNormalizeProportions(...args),
+  getNaturalAbundances: (...args: Parameters<typeof mockGetNaturalAbundances>) => mockGetNaturalAbundances(...args),
+  createEqualProportions: (...args: Parameters<typeof mockCreateEqualProportions>) => mockCreateEqualProportions(...args),
+  formatProportion: (...args: Parameters<typeof mockFormatProportion>) => mockFormatProportion(...args),
+  getFormatLabel: (...args: Parameters<typeof mockGetFormatLabel>) => mockGetFormatLabel(...args),
+  getFormatHelpText: (...args: Parameters<typeof mockGetFormatHelpText>) => mockGetFormatHelpText(...args),
 }));
 
 vi.mock('../services/isotopeService', () => ({
@@ -48,8 +48,8 @@ describe('ProportionInput', () => {
   const defaultProps = {
     nuclideIds: ['Li-6', 'Li-7'],
     weightedNuclides: [
-      { nuclideId: 'Li-6', proportion: 30, source: 'manual' as const },
-      { nuclideId: 'Li-7', proportion: 70, source: 'manual' as const },
+      { nuclideId: 'Li-6', proportion: 30, sourceType: 'manual' as const },
+      { nuclideId: 'Li-7', proportion: 70, sourceType: 'manual' as const },
     ],
     onProportionsChange: vi.fn(),
     format: 'percentage' as const,

@@ -59,8 +59,8 @@ describe('exportUtils', () => {
     it('creates valid JSON output with correct structure', () => {
       let capturedBlob: Blob | null = null
 
-      vi.spyOn(URL, 'createObjectURL').mockImplementation((blob: Blob) => {
-        capturedBlob = blob
+      vi.spyOn(URL, 'createObjectURL').mockImplementation((blob: Blob | MediaSource) => {
+        capturedBlob = blob as Blob
         return 'blob:mock-url'
       })
 
@@ -86,8 +86,8 @@ describe('exportUtils', () => {
     it('creates a Blob with JSON content type for non-empty reactions', () => {
       let capturedBlob: Blob | null = null
 
-      vi.spyOn(URL, 'createObjectURL').mockImplementation((blob: Blob) => {
-        capturedBlob = blob
+      vi.spyOn(URL, 'createObjectURL').mockImplementation((blob: Blob | MediaSource) => {
+        capturedBlob = blob as Blob
         return 'blob:mock-url'
       })
 

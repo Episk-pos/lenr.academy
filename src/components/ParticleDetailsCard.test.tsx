@@ -16,20 +16,14 @@ const mockParticle: SpecialParticleInfo = {
 };
 
 const mockNuclide: Nuclide = {
+  id: 0,
   Z: 0,
   A: 0,
-  Symbol: 'e-',
-  Radius: null,
-  Abundance: null,
-  EBind: null,
-  EBind_per_A: null,
+  E: 'e-',
+  BE: 0,
   AMU: 0.000549,
-  ME_keV: null,
-  BE_per_A: null,
-  ME_MeV: null,
   SP: '1/2',
   MD: '-1.001',
-  LHL: null,
   nBorF: 'f',
   aBorF: 'f',
 };

@@ -10,12 +10,16 @@ import type { CascadeResults } from '../types';
 
 function makeMockResults(overrides?: Partial<CascadeResults>): CascadeResults {
   return {
-    generations: [],
-    totalReactions: 5,
-    totalUniqueNuclides: 10,
-    executionTimeMs: 42,
+    reactions: [],
+    productDistribution: new Map(),
+    nuclides: [],
+    elements: [],
+    totalEnergy: 5,
+    loopsExecuted: 10,
+    executionTime: 42,
+    terminationReason: 'max_loops' as const,
     ...overrides,
-  } as CascadeResults;
+  };
 }
 
 describe('cascadeResultsCache', () => {
@@ -43,23 +47,23 @@ describe('cascadeResultsCache', () => {
       await saveCascadeResults('tab-1', makeMockResults());
       const result = await getCascadeResults('tab-1');
       expect(result).not.toBeNull();
-      expect(result!.totalReactions).toBe(5);
+      expect(result!.totalEnergy).toBe(5);
     });
 
     it('overwrites results for same tab', async () => {
-      await saveCascadeResults('tab-1', makeMockResults({ totalReactions: 5 }));
-      await saveCascadeResults('tab-1', makeMockResults({ totalReactions: 99 }));
+      await saveCascadeResults('tab-1', makeMockResults({ totalEnergy: 5 }));
+      await saveCascadeResults('tab-1', makeMockResults({ totalEnergy: 99 }));
       const result = await getCascadeResults('tab-1');
-      expect(result!.totalReactions).toBe(99);
+      expect(result!.totalEnergy).toBe(99);
     });
 
     it('stores results for multiple tabs', async () => {
-      await saveCascadeResults('tab-1', makeMockResults({ totalReactions: 1 }));
-      await saveCascadeResults('tab-2', makeMockResults({ totalReactions: 2 }));
+      await saveCascadeResults('tab-1', makeMockResults({ totalEnergy: 1 }));
+      await saveCascadeResults('tab-2', makeMockResults({ totalEnergy: 2 }));
       const r1 = await getCascadeResults('tab-1');
       const r2 = await getCascadeResults('tab-2');
-      expect(r1!.totalReactions).toBe(1);
-      expect(r2!.totalReactions).toBe(2);
+      expect(r1!.totalEnergy).toBe(1);
+      expect(r2!.totalEnergy).toBe(2);
     });
   });
 
@@ -70,9 +74,9 @@ describe('cascadeResultsCache', () => {
     });
 
     it('returns stored results for existing tab', async () => {
-      await saveCascadeResults('tab-1', makeMockResults({ totalUniqueNuclides: 42 }));
+      await saveCascadeResults('tab-1', makeMockResults({ loopsExecuted: 42 }));
       const result = await getCascadeResults('tab-1');
-      expect(result!.totalUniqueNuclides).toBe(42);
+      expect(result!.loopsExecuted).toBe(42);
     });
   });
 
@@ -127,7 +131,7 @@ describe('cascadeResultsCache', () => {
     });
 
     it('keeps recent while deleting old results', async () => {
-      await saveCascadeResults('recent', makeMockResults({ totalReactions: 1 }));
+      await saveCascadeResults('recent', makeMockResults({ totalEnergy: 1 }));
 
       const req = indexedDB.open('CascadeResultsCache', 1);
       const db = await new Promise<IDBDatabase>((resolve) => {
@@ -136,7 +140,7 @@ describe('cascadeResultsCache', () => {
       const tx = db.transaction('results', 'readwrite');
       tx.objectStore('results').put({
         tabId: 'old',
-        results: makeMockResults({ totalReactions: 99 }),
+        results: makeMockResults({ totalEnergy: 99 }),
         savedAt: Date.now() - (10 * 24 * 60 * 60 * 1000),
       });
       await new Promise<void>((resolve) => {

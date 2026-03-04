@@ -35,7 +35,7 @@ describe('radiationTypes', () => {
   });
 
   it('all entries have required fields', () => {
-    Object.entries(RADIATION_TYPE_INFO).forEach(([key, info]) => {
+    Object.entries(RADIATION_TYPE_INFO).forEach(([_key, info]) => {
       expect(info.name).toBeTruthy();
       expect(info.description).toBeTruthy();
       expect(info.url).toMatch(/^https:\/\//);
