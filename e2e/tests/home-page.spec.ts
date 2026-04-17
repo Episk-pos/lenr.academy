@@ -17,8 +17,8 @@ test.describe('Home Page', () => {
     const featureHeadings = [
       /Query Nuclear Reactions/i,
       /Cascade Simulations/i,
-      /Element.*Nuclide Data/i,
-      /Advanced Queries/i,
+      /Elements.*Nuclides.*Decay/i,
+      /Muller Resonance/i,
     ];
     for (const heading of featureHeadings) {
       await expect(page.getByRole('heading', { name: heading })).toBeVisible();
@@ -58,7 +58,7 @@ test.describe('Home Page', () => {
 
   test('should have element data link', async ({ page }) => {
     const mainContent = page.getByRole('main');
-    const elementLink = mainContent.getByRole('link', { name: /Show Element Data/i });
+    const elementLink = mainContent.getByRole('link', { name: /Element.*Nuclide Explorer/i });
     await elementLink.scrollIntoViewIfNeeded();
     await expect(elementLink).toBeVisible();
   });
@@ -72,22 +72,22 @@ test.describe('Home Page', () => {
 
   test('should have all tables query tool link', async ({ page }) => {
     const mainContent = page.getByRole('main');
-    const allTablesLink = mainContent.getByRole('link', { name: /All Tables/i });
+    const allTablesLink = mainContent.getByRole('link', { name: /Custom SQL Queries/i });
     await allTablesLink.scrollIntoViewIfNeeded();
     await expect(allTablesLink).toBeVisible();
   });
 
-  test('should display Parkhomov tables section', async ({ page }) => {
-    // The Parkhomov tables section has a heading and describes the database contents
-    const sectionHeading = page.getByRole('heading', { name: /Parkhomov/i });
+  test('should display data heritage section', async ({ page }) => {
+    // The "About the Data" section summarizes Parkhomov's analysis and Nanosoft origins
+    const sectionHeading = page.getByRole('heading', { name: /About the Data/i });
     await sectionHeading.scrollIntoViewIfNeeded();
     await expect(sectionHeading).toBeVisible();
-    // Section contains a list of reaction types
-    await expect(page.locator('li', { hasText: /fusion/i }).first()).toBeVisible();
+    // Reaction counts are called out inline
+    await expect(page.getByText(/1,389 fusion/)).toBeVisible();
   });
 
-  test('should display original app section with external link', async ({ page }) => {
-    const nanosoftLink = page.getByRole('link', { name: /Visit|Nanosoft/i });
+  test('should display nanosoft external link in data heritage section', async ({ page }) => {
+    const nanosoftLink = page.getByRole('link', { name: /Visit Original Nanosoft Package/i });
     await nanosoftLink.scrollIntoViewIfNeeded();
     await expect(nanosoftLink).toBeVisible();
     await expect(nanosoftLink).toHaveAttribute('href', 'https://nanosoft.co.nz');
