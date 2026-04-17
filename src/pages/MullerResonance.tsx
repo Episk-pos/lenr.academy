@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useCallback } from 'react'
+import { useState, useEffect, useMemo, useCallback, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useSearchParams } from 'react-router-dom'
 import { useDatabase } from '../contexts/DatabaseContext'
@@ -27,18 +27,32 @@ type SortDirection = 'asc' | 'desc'
 export default function MullerResonance() {
   const { t } = useTranslation()
   const { db, isLoading: dbLoading, downloadProgress } = useDatabase()
-  const [searchParams] = useSearchParams()
+  const [searchParams, setSearchParams] = useSearchParams()
+  const isInitialMount = useRef(true)
   const [elements, setElements] = useState<Element[]>([])
-  const [selectedElement, setSelectedElement] = useState<string | null>(null)
-  const [threshold, setThreshold] = useState(5.0)
+
+  // Initialize state from URL params (read once on mount)
+  const [selectedElement, setSelectedElement] = useState<string | null>(
+    searchParams.get('element') || null
+  )
+  const [threshold, setThreshold] = useState(() => {
+    const p = searchParams.get('threshold')
+    return p ? parseFloat(p) : 5.0
+  })
 
   // Tab state
   const [activeTab, setActiveTab] = useState(searchParams.get('tab') || 'resonance')
 
   // NAE UI state
-  const [naeFilter, setNaeFilter] = useState(false)
-  const [naeSortColumn, setNaeSortColumn] = useState<SortColumn>('naeScore')
-  const [naeSortDirection, setNaeSortDirection] = useState<SortDirection>('asc')
+  const [naeFilter, setNaeFilter] = useState(searchParams.get('naeFilter') === 'true')
+  const [naeSortColumn, setNaeSortColumn] = useState<SortColumn>(() => {
+    const p = searchParams.get('sort') as SortColumn | null
+    return p && ['element', 'naeScore', 'wavelength', 'deuterium', 'phonon', 'reactions', 'lenr'].includes(p) ? p : 'naeScore'
+  })
+  const [naeSortDirection, setNaeSortDirection] = useState<SortDirection>(() => {
+    const p = searchParams.get('dir') as SortDirection | null
+    return p === 'desc' ? 'desc' : 'asc'
+  })
   const [expandedRow, setExpandedRow] = useState<number | null>(null)
 
   // Worker handles all heavy computation off the main thread
@@ -59,6 +73,22 @@ export default function MullerResonance() {
     { id: 'resonance', label: t('mullerResonance.tabs.resonancePairs') },
     { id: 'nae', label: t('mullerResonance.tabs.naePredictions') },
   ], [t])
+
+  // Sync state → URL params (skip initial mount to avoid replacing URL on load)
+  useEffect(() => {
+    if (isInitialMount.current) {
+      isInitialMount.current = false
+      return
+    }
+    const params = new URLSearchParams()
+    if (activeTab !== 'resonance') params.set('tab', activeTab)
+    if (selectedElement) params.set('element', selectedElement)
+    if (threshold !== 5.0) params.set('threshold', String(threshold))
+    if (naeFilter) params.set('naeFilter', 'true')
+    if (activeTab === 'nae' && naeSortColumn !== 'naeScore') params.set('sort', naeSortColumn)
+    if (activeTab === 'nae' && naeSortDirection !== 'asc') params.set('dir', naeSortDirection)
+    setSearchParams(params, { replace: true })
+  }, [activeTab, selectedElement, threshold, naeFilter, naeSortColumn, naeSortDirection, setSearchParams])
 
   // Load elements and initialize worker
   useEffect(() => {

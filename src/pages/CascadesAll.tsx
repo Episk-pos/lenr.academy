@@ -1,5 +1,6 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
+import { useSearchParams } from 'react-router-dom'
 import { Play, Settings, AlertCircle, CheckCircle, XCircle, Loader2, Download, Scale, BookOpen } from 'lucide-react'
 import { useDatabase } from '../contexts/DatabaseContext'
 import { useQueryState } from '../contexts/QueryStateContext'
@@ -12,42 +13,132 @@ import MaterialsCatalog from '../components/MaterialsCatalog'
 import DatabaseLoadingCard from '../components/DatabaseLoadingCard'
 import { getAllElements } from '../services/queryService'
 import { createEqualProportions } from '../services/proportionService'
+import { getMaterialById } from '../constants/materials'
 import type { CascadeResults, Element, WeightedNuclide, ProportionFormat } from '../types'
+
+// Parse URL search params into cascade state (returns null fields when param is absent)
+function parseUrlParams(searchParams: URLSearchParams) {
+  const has = searchParams.toString().length > 0
+  if (!has) return null
+
+  const str = (key: string) => searchParams.get(key)
+  const num = (key: string) => { const v = searchParams.get(key); return v !== null ? parseFloat(v) : undefined }
+  const bool = (key: string) => { const v = searchParams.get(key); return v !== null ? v === 'true' : undefined }
+  const list = (key: string) => { const v = searchParams.get(key); return v ? v.split(',') : undefined }
+
+  // Resolve ?material= to fuel nuclides + weighted mode
+  const materialId = str('material')
+  let materialFuel: WeightedNuclide[] | undefined
+  let materialNuclides: string[] | undefined
+  if (materialId) {
+    const mat = getMaterialById(materialId)
+    if (mat) {
+      materialFuel = mat.composition.map(c => ({
+        nuclideId: c.nuclideId,
+        proportion: c.proportion,
+        sourceType: 'material' as const,
+      }))
+      materialNuclides = mat.composition.map(c => c.nuclideId)
+    }
+  }
+
+  return {
+    fuel: list('fuel') ?? materialNuclides,
+    temperature: num('temp'),
+    minFusionMeV: num('minFusionMeV'),
+    minTwoToTwoMeV: num('minTwoToTwoMeV'),
+    maxLoops: num('maxLoops'),
+    maxNuclides: num('maxNuclides'),
+    feedbackBosons: bool('feedbackBosons'),
+    feedbackFermions: bool('feedbackFermions'),
+    allowDimers: bool('allowDimers'),
+    excludeMelted: bool('excludeMelted'),
+    excludeBoiledOff: bool('excludeBoiledOff'),
+    materialFuel,
+    useWeightedMode: materialFuel ? true : undefined,
+  }
+}
+
+const DEFAULT_PARAMS = {
+  temperature: 2400,
+  minFusionMeV: 1.0,
+  minTwoToTwoMeV: 1.0,
+  maxNuclides: 5000,
+  maxLoops: 25,
+  feedbackBosons: true,
+  feedbackFermions: true,
+  allowDimers: true,
+  excludeMelted: false,
+  excludeBoiledOff: true,
+}
+
+const DEFAULT_FUEL = ['H-1', 'Li-7', 'Al-27', 'N-14', 'Ni-58', 'Ni-60', 'Ni-62', 'B-10', 'B-11']
 
 export default function CascadesAll() {
   const { t } = useTranslation()
   const { db, isLoading: dbLoading, error: dbError, downloadProgress } = useDatabase()
   const { getCascadeState, updateCascadeState } = useQueryState()
   const { runCascade, cancelCascade, progress, isRunning, error: workerError } = useCascadeWorker()
+  const [searchParams, setSearchParams] = useSearchParams()
+  const hasUrlParams = useRef(searchParams.toString().length > 0)
+  const isInitialMount = useRef(true)
   const [hasRestoredFromContext, setHasRestoredFromContext] = useState(false)
 
-  const [params, setParams] = useState({
-    temperature: 2400,
-    minFusionMeV: 1.0,
-    minTwoToTwoMeV: 1.0,
-    maxNuclides: 5000,
-    maxLoops: 25,
-    feedbackBosons: true,
-    feedbackFermions: true,
-    allowDimers: true,
-    excludeMelted: false,
-    excludeBoiledOff: true,
+  // Parse URL params once on mount
+  const urlState = useRef(parseUrlParams(searchParams))
+
+  const [params, setParams] = useState(() => {
+    const u = urlState.current
+    if (!u) return { ...DEFAULT_PARAMS }
+    return {
+      temperature: u.temperature ?? DEFAULT_PARAMS.temperature,
+      minFusionMeV: u.minFusionMeV ?? DEFAULT_PARAMS.minFusionMeV,
+      minTwoToTwoMeV: u.minTwoToTwoMeV ?? DEFAULT_PARAMS.minTwoToTwoMeV,
+      maxNuclides: u.maxNuclides ?? DEFAULT_PARAMS.maxNuclides,
+      maxLoops: u.maxLoops ?? DEFAULT_PARAMS.maxLoops,
+      feedbackBosons: u.feedbackBosons ?? DEFAULT_PARAMS.feedbackBosons,
+      feedbackFermions: u.feedbackFermions ?? DEFAULT_PARAMS.feedbackFermions,
+      allowDimers: u.allowDimers ?? DEFAULT_PARAMS.allowDimers,
+      excludeMelted: u.excludeMelted ?? DEFAULT_PARAMS.excludeMelted,
+      excludeBoiledOff: u.excludeBoiledOff ?? DEFAULT_PARAMS.excludeBoiledOff,
+    }
   })
 
   // Local state for sliders during dragging (prevents performance issues)
-  const [sliderMaxNuclides, setSliderMaxNuclides] = useState(5000)
-  const [sliderMaxLoops, setSliderMaxLoops] = useState(25)
+  const [sliderMaxNuclides, setSliderMaxNuclides] = useState(() => urlState.current?.maxNuclides ?? DEFAULT_PARAMS.maxNuclides)
+  const [sliderMaxLoops, setSliderMaxLoops] = useState(() => urlState.current?.maxLoops ?? DEFAULT_PARAMS.maxLoops)
 
   const [availableElements, setAvailableElements] = useState<Element[]>([])
-  const [fuelNuclides, setFuelNuclides] = useState<string[]>(['H-1', 'Li-7', 'Al-27', 'N-14', 'Ni-58', 'Ni-60', 'Ni-62', 'B-10', 'B-11'])
+  const [fuelNuclides, setFuelNuclides] = useState<string[]>(() => urlState.current?.fuel ?? DEFAULT_FUEL)
   const [results, setResults] = useState<CascadeResults | null>(null)
   const [error, setError] = useState<string | null>(null)
 
   // Weighted mode state (Issue #96)
-  const [useWeightedMode, setUseWeightedMode] = useState(false)
-  const [weightedFuel, setWeightedFuel] = useState<WeightedNuclide[]>([])
+  const [useWeightedMode, setUseWeightedMode] = useState(() => urlState.current?.useWeightedMode ?? false)
+  const [weightedFuel, setWeightedFuel] = useState<WeightedNuclide[]>(() => urlState.current?.materialFuel ?? [])
   const [proportionFormat, setProportionFormat] = useState<ProportionFormat>('percentage')
   const [showMaterialsCatalog, setShowMaterialsCatalog] = useState(false)
+
+  // Sync state → URL params (skip initial mount)
+  useEffect(() => {
+    if (isInitialMount.current) {
+      isInitialMount.current = false
+      return
+    }
+    const p = new URLSearchParams()
+    if (fuelNuclides.join(',') !== DEFAULT_FUEL.join(',')) p.set('fuel', fuelNuclides.join(','))
+    if (params.temperature !== DEFAULT_PARAMS.temperature) p.set('temp', String(params.temperature))
+    if (params.minFusionMeV !== DEFAULT_PARAMS.minFusionMeV) p.set('minFusionMeV', String(params.minFusionMeV))
+    if (params.minTwoToTwoMeV !== DEFAULT_PARAMS.minTwoToTwoMeV) p.set('minTwoToTwoMeV', String(params.minTwoToTwoMeV))
+    if (params.maxLoops !== DEFAULT_PARAMS.maxLoops) p.set('maxLoops', String(params.maxLoops))
+    if (params.maxNuclides !== DEFAULT_PARAMS.maxNuclides) p.set('maxNuclides', String(params.maxNuclides))
+    if (params.feedbackBosons !== DEFAULT_PARAMS.feedbackBosons) p.set('feedbackBosons', String(params.feedbackBosons))
+    if (params.feedbackFermions !== DEFAULT_PARAMS.feedbackFermions) p.set('feedbackFermions', String(params.feedbackFermions))
+    if (params.allowDimers !== DEFAULT_PARAMS.allowDimers) p.set('allowDimers', String(params.allowDimers))
+    if (params.excludeMelted !== DEFAULT_PARAMS.excludeMelted) p.set('excludeMelted', String(params.excludeMelted))
+    if (params.excludeBoiledOff !== DEFAULT_PARAMS.excludeBoiledOff) p.set('excludeBoiledOff', String(params.excludeBoiledOff))
+    setSearchParams(p, { replace: true })
+  }, [fuelNuclides, params, setSearchParams])
 
   // Load available elements and restore state when database is ready
   useEffect(() => {
@@ -55,10 +146,10 @@ export default function CascadesAll() {
       const elements = getAllElements(db)
       setAvailableElements(elements)
 
-      // Restore state from context if not already done
+      // Restore state from context if not already done (skip if URL params provided)
       if (!hasRestoredFromContext) {
         const savedState = getCascadeState()
-        if (savedState) {
+        if (savedState && !hasUrlParams.current) {
           setParams({
             temperature: savedState.temperature,
             minFusionMeV: savedState.minFusionMeV,
@@ -216,21 +307,10 @@ export default function CascadesAll() {
   }
 
   const handleReset = () => {
-    setParams({
-      temperature: 2400,
-      minFusionMeV: 1.0,
-      minTwoToTwoMeV: 1.0,
-      maxNuclides: 5000,
-      maxLoops: 25,
-      feedbackBosons: true,
-      feedbackFermions: true,
-      allowDimers: true,
-      excludeMelted: false,
-      excludeBoiledOff: true,
-    })
-    setSliderMaxNuclides(5000)
-    setSliderMaxLoops(25)
-    setFuelNuclides(['H-1', 'Li-7', 'Al-27', 'N-14', 'Ni-58', 'Ni-60', 'Ni-62', 'B-10', 'B-11'])
+    setParams({ ...DEFAULT_PARAMS })
+    setSliderMaxNuclides(DEFAULT_PARAMS.maxNuclides)
+    setSliderMaxLoops(DEFAULT_PARAMS.maxLoops)
+    setFuelNuclides([...DEFAULT_FUEL])
     setResults(null)
     setError(null)
     // Reset weighted mode state
