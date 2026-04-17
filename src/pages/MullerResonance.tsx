@@ -637,6 +637,97 @@ export default function MullerResonance() {
             </div>
           </div>
 
+          {/* Expanded Row Detail — shown between periodic table and filters */}
+          {expandedRow !== null && (() => {
+            const pred = naePredictions.find(p => p.Z === expandedRow)
+            if (!pred) return null
+
+            return (
+              <div ref={expandedRowRef} className="card p-4 mb-6">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">
+                  {pred.E} (Z={pred.Z}) — {t('mullerResonance.nae.octaveDetail')}
+                </h3>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {/* Electron resonance octaves */}
+                  <div>
+                    <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      {t('mullerResonance.nae.electronOctaves')}
+                    </h4>
+                    <table className="w-full text-xs">
+                      <thead>
+                        <tr className="border-b border-gray-200 dark:border-gray-700">
+                          <th className="text-center py-1 px-2 text-gray-500 dark:text-gray-400">N</th>
+                          <th className="text-right py-1 px-2 text-gray-500 dark:text-gray-400">{t('mullerResonance.wavelength')}</th>
+                          <th className="text-center py-1 px-2 text-gray-500 dark:text-gray-400">{t('mullerResonance.nae.inNAERange')}</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {pred.electronResonances.map(res => {
+                          const inNAE = res.L >= NAE_GAP_MIN && res.L <= NAE_GAP_MAX
+                          return (
+                            <tr
+                              key={res.N}
+                              className={`border-b border-gray-50 dark:border-gray-800/50 ${
+                                inNAE ? 'bg-emerald-50 dark:bg-emerald-900/20 font-medium' : ''
+                              }`}
+                            >
+                              <td className="py-1 px-2 text-center text-gray-600 dark:text-gray-400">{res.N}</td>
+                              <td className="py-1 px-2 text-right font-mono text-gray-700 dark:text-gray-300">
+                                {formatWavelength(res.L)}
+                              </td>
+                              <td className="py-1 px-2 text-center">
+                                {inNAE ? (
+                                  <span className="text-emerald-600 dark:text-emerald-400">NAE</span>
+                                ) : null}
+                              </td>
+                            </tr>
+                          )
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+
+                  {/* Deuterium proton overlap */}
+                  <div>
+                    <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      {t('mullerResonance.nae.deuteriumProtonResonance')}
+                    </h4>
+                    {pred.naeWavelength !== null ? (
+                      <div className="space-y-2 text-xs text-gray-600 dark:text-gray-400">
+                        <p>
+                          {t('mullerResonance.nae.hostElectron')}: <strong className="text-gray-900 dark:text-white font-mono">{(pred.naeWavelength * 1e9).toFixed(2)} nm</strong> (N={pred.naeOctave})
+                        </p>
+                        {pred.deuteriumOverlapL !== null && (
+                          <>
+                            <p>
+                              {t('mullerResonance.nae.dProton')}: <strong className="text-gray-900 dark:text-white font-mono">{(pred.deuteriumOverlapL * 1e9).toFixed(2)} nm</strong> (N={pred.deuteriumOverlapN})
+                            </p>
+                            <p>
+                              {t('mullerResonance.nae.overlapMismatch')}: <strong className={`font-mono ${pred.deuteriumMismatch !== null && pred.deuteriumMismatch < 30 ? 'text-emerald-600 dark:text-emerald-400' : 'text-gray-900 dark:text-white'}`}>{pred.deuteriumMismatch?.toFixed(1)}%</strong>
+                            </p>
+                          </>
+                        )}
+                        {pred.phononFrequency !== null && pred.speedOfSound !== null && (
+                          <p>
+                            {t('mullerResonance.nae.phononCalc')}: {pred.speedOfSound.toLocaleString()} m/s / {(pred.naeWavelength * 1e9).toFixed(2)} nm = <strong className="text-gray-900 dark:text-white font-mono">{formatFrequency(pred.phononFrequency)}</strong>
+                          </p>
+                        )}
+                        {pred.lenrReference && (
+                          <p className="pt-1 border-t border-gray-200 dark:border-gray-700">
+                            {t('mullerResonance.nae.lenrRefs')}: <span className="text-gray-500 dark:text-gray-400">{pred.lenrReference}</span>
+                          </p>
+                        )}
+                      </div>
+                    ) : (
+                      <p className="text-xs text-gray-500 dark:text-gray-400">{t('mullerResonance.nae.noNAEResonance')}</p>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )
+          })()}
+
           {/* Filters */}
           <div className="card p-4 mb-6">
             <div className="flex flex-col sm:flex-row sm:items-center gap-3">
@@ -820,97 +911,6 @@ export default function MullerResonance() {
               </table>
             </div>
           </div>
-
-          {/* Expanded Row Detail */}
-          {expandedRow !== null && (() => {
-            const pred = naePredictions.find(p => p.Z === expandedRow)
-            if (!pred) return null
-
-            return (
-              <div ref={expandedRowRef} className="card p-4 mb-6">
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">
-                  {pred.E} (Z={pred.Z}) — {t('mullerResonance.nae.octaveDetail')}
-                </h3>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {/* Electron resonance octaves */}
-                  <div>
-                    <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                      {t('mullerResonance.nae.electronOctaves')}
-                    </h4>
-                    <table className="w-full text-xs">
-                      <thead>
-                        <tr className="border-b border-gray-200 dark:border-gray-700">
-                          <th className="text-center py-1 px-2 text-gray-500 dark:text-gray-400">N</th>
-                          <th className="text-right py-1 px-2 text-gray-500 dark:text-gray-400">{t('mullerResonance.wavelength')}</th>
-                          <th className="text-center py-1 px-2 text-gray-500 dark:text-gray-400">{t('mullerResonance.nae.inNAERange')}</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {pred.electronResonances.map(res => {
-                          const inNAE = res.L >= NAE_GAP_MIN && res.L <= NAE_GAP_MAX
-                          return (
-                            <tr
-                              key={res.N}
-                              className={`border-b border-gray-50 dark:border-gray-800/50 ${
-                                inNAE ? 'bg-emerald-50 dark:bg-emerald-900/20 font-medium' : ''
-                              }`}
-                            >
-                              <td className="py-1 px-2 text-center text-gray-600 dark:text-gray-400">{res.N}</td>
-                              <td className="py-1 px-2 text-right font-mono text-gray-700 dark:text-gray-300">
-                                {formatWavelength(res.L)}
-                              </td>
-                              <td className="py-1 px-2 text-center">
-                                {inNAE ? (
-                                  <span className="text-emerald-600 dark:text-emerald-400">NAE</span>
-                                ) : null}
-                              </td>
-                            </tr>
-                          )
-                        })}
-                      </tbody>
-                    </table>
-                  </div>
-
-                  {/* Deuterium proton overlap */}
-                  <div>
-                    <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                      {t('mullerResonance.nae.deuteriumProtonResonance')}
-                    </h4>
-                    {pred.naeWavelength !== null ? (
-                      <div className="space-y-2 text-xs text-gray-600 dark:text-gray-400">
-                        <p>
-                          {t('mullerResonance.nae.hostElectron')}: <strong className="text-gray-900 dark:text-white font-mono">{(pred.naeWavelength * 1e9).toFixed(2)} nm</strong> (N={pred.naeOctave})
-                        </p>
-                        {pred.deuteriumOverlapL !== null && (
-                          <>
-                            <p>
-                              {t('mullerResonance.nae.dProton')}: <strong className="text-gray-900 dark:text-white font-mono">{(pred.deuteriumOverlapL * 1e9).toFixed(2)} nm</strong> (N={pred.deuteriumOverlapN})
-                            </p>
-                            <p>
-                              {t('mullerResonance.nae.overlapMismatch')}: <strong className={`font-mono ${pred.deuteriumMismatch !== null && pred.deuteriumMismatch < 30 ? 'text-emerald-600 dark:text-emerald-400' : 'text-gray-900 dark:text-white'}`}>{pred.deuteriumMismatch?.toFixed(1)}%</strong>
-                            </p>
-                          </>
-                        )}
-                        {pred.phononFrequency !== null && pred.speedOfSound !== null && (
-                          <p>
-                            {t('mullerResonance.nae.phononCalc')}: {pred.speedOfSound.toLocaleString()} m/s / {(pred.naeWavelength * 1e9).toFixed(2)} nm = <strong className="text-gray-900 dark:text-white font-mono">{formatFrequency(pred.phononFrequency)}</strong>
-                          </p>
-                        )}
-                        {pred.lenrReference && (
-                          <p className="pt-1 border-t border-gray-200 dark:border-gray-700">
-                            {t('mullerResonance.nae.lenrRefs')}: <span className="text-gray-500 dark:text-gray-400">{pred.lenrReference}</span>
-                          </p>
-                        )}
-                      </div>
-                    ) : (
-                      <p className="text-xs text-gray-500 dark:text-gray-400">{t('mullerResonance.nae.noNAEResonance')}</p>
-                    )}
-                  </div>
-                </div>
-              </div>
-            )
-          })()}
 
           {/* NAE Explanation Card */}
           <div className="card p-6 mb-6">
