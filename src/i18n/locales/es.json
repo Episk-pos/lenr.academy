@@ -125,56 +125,44 @@
     "goHome": "Ir al inicio"
   },
   "home": {
-    "title": "El Paquete Nanosoft",
-    "subtitle": "Herramientas interactivas para explorar reacciones nucleares de baja energía (LENR) y vías de transmutación por fusión fría",
-    "basedOn": "Basado en el trabajo innovador del <parkhomovLink>Dr. Alexander Parkhomov</parkhomovLink>",
+    "title": "LENR Academy",
+    "subtitle": "Explore reacciones de transmutación nuclear de baja energía, modele procesos en cascada, visualice cadenas de desintegración e investigue fenómenos de resonancia — todo en su navegador",
+    "basedOn": "Construido sobre las <parkhomovLink>Tablas de Parkhomov</parkhomovLink> y el <nanosoftLink>Paquete Nanosoft</nanosoftLink> original de R.W. Greenyer y P.W. Power",
     "queryReactions": {
       "title": "Consultar reacciones nucleares",
-      "description": "Busque entre miles de reacciones de transmutación nuclear exotérmicas: fusión, fisión y dos a dos",
+      "description": "Busque entre miles de reacciones exotérmicas de fusión, fisión y transmutación dos a dos de las Tablas de Parkhomov",
       "fusionReactions": "Reacciones de fusión",
       "fissionReactions": "Reacciones de fisión",
       "twoToTwoReactions": "Reacciones dos a dos"
     },
     "cascadeSimulations": {
       "title": "Simulaciones en cascada",
-      "description": "Modele reacciones en cadena y prediga productos de reacción de procesos LENR en cascada",
+      "description": "Modele reacciones en cadena con un catálogo de materiales, ramificación ponderada y visualización de flujo Sankey",
       "runSimulations": "Ejecutar simulaciones en cascada"
     },
     "elementData": {
-      "title": "Datos de elementos y nucleidos",
-      "description": "Explore tablas completas de propiedades nucleares y químicas",
-      "showElementData": "Mostrar datos de elementos",
-      "tablesInDetail": "Tablas detalladas"
+      "title": "Elementos, nucleidos y desintegración",
+      "description": "Tabla periódica interactiva con propiedades detalladas de elementos e isótopos, más visualización de cadenas de desintegración multigeneracionales",
+      "showElementData": "Explorador de elementos y nucleidos",
+      "tablesInDetail": "Tablas detalladas",
+      "allTables": "Consultas SQL personalizadas"
     },
-    "advancedQueries": {
-      "title": "Consultas avanzadas",
-      "description": "Ejecute consultas SQL personalizadas en todas las tablas de reacciones y propiedades",
-      "allTables": "Herramienta de consulta de todas las tablas"
+    "mullerResonance": {
+      "title": "Explorador de resonancia Muller",
+      "description": "Investigue las resonancias de longitud de onda electrón-protón y prediga entornos nucleares activos (NAE)",
+      "explore": "Explorar resonancias"
     },
-    "parkhomovTables": {
-      "title": "Acerca de las tablas de Parkhomov",
-      "intro": "Este paquete está basado en el trabajo pionero del físico ruso <strong>Dr. Alexander Parkhomov</strong>, quien publicó tablas completas de posibles reacciones de transmutación nuclear fría en 2018.",
-      "analysisIntro": "Utilizando análisis por computadora de 280 nucleidos estables, el Dr. Parkhomov identificó:",
-      "fusionCount": "<strong>1.389 reacciones de fusión</strong> - combinación de elementos más ligeros",
-      "fissionCount": "<strong>817 reacciones de fisión</strong> - división de elementos más pesados",
-      "twoToTwoCount": "<strong>516.789 reacciones dos a dos</strong> - transformación de pares de nucleidos",
-      "exothermicNote": "Todas las reacciones en estas tablas son <strong>exotérmicas</strong> (productoras de energía) y representan vías termodinámicamente favorables para la transmutación nuclear a bajas energías.",
-      "developers": "Desarrollado por R.W. Greenyer y P.W. Power para el Proyecto Memorial Martin Fleischmann"
-    },
-    "originalApp": {
-      "title": "Aplicación original",
-      "description": "Esta es una reimplementación moderna del paquete Nanosoft original, que fue desarrollado como una aplicación web PHP para explorar las tablas de transmutación nuclear del Dr. Parkhomov.",
-      "findAt": "La aplicación original y la documentación completa se pueden encontrar en:",
-      "visitSite": "Visitar nanosoft.co.nz",
-      "gratitude": "Agradecemos a R. W. Greenyer y P. W. Power por su trabajo pionero en hacer accesible esta importante investigación."
+    "aboutData": {
+      "title": "Sobre los datos",
+      "description": "La base de datos de reacciones proviene del análisis de 2018 de <strong>Dr. Alexander Parkhomov</strong> sobre 280 nucleidos estables, identificando <strong>1,389 reacciones de fusión</strong>, <strong>817 de fisión</strong> y <strong>516,789 dos a dos</strong> exotérmicas — vías termodinámicamente favorables para la transmutación nuclear a bajas energías. Originalmente desarrollado como el <nanosoftLink>Paquete Nanosoft</nanosoftLink> por R.W. Greenyer y P.W. Power para el Proyecto Memorial Martin Fleischmann.",
+      "visitNanosoft": "Visitar el paquete Nanosoft original"
     },
     "openSource": {
-      "title": "Proyecto de código abierto",
-      "description": "Este proyecto es de código abierto y está licenciado bajo la GNU Affero General Public License v3.0 (AGPL-3.0). Damos la bienvenida a contribuciones, informes de errores y solicitudes de funciones de la comunidad.",
+      "title": "Código abierto",
+      "description": "Licenciado bajo AGPL-3.0. Se aceptan contribuciones, informes de errores y solicitudes de funciones.",
       "viewGitHub": "Ver en GitHub",
       "joinDiscussions": "Unirse a las discusiones",
-      "reportIssue": "Reportar problema",
-      "requestFeature": "Solicitar función"
+      "reportIssue": "Reportar problema"
     }
   },
   "query": {

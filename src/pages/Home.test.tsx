@@ -63,12 +63,17 @@ describe('Home', () => {
 
   it('renders nanosoft link', () => {
     renderWithRouter();
-    const nanosoftLink = screen.getByText(en.home.originalApp.visitSite);
+    const nanosoftLink = screen.getByText(`→ ${en.home.aboutData.visitNanosoft}`);
     expect(nanosoftLink.closest('a')).toHaveAttribute('href', 'https://nanosoft.co.nz');
   });
 
-  it('renders Parkhomov tables section', () => {
+  it('renders about data section', () => {
     renderWithRouter();
-    expect(screen.getByText(en.home.parkhomovTables.title)).toBeInTheDocument();
+    expect(screen.getByText(en.home.aboutData.title)).toBeInTheDocument();
+  });
+
+  it('renders Muller Resonance section', () => {
+    renderWithRouter();
+    expect(screen.getByText(en.home.mullerResonance.title)).toBeInTheDocument();
   });
 });

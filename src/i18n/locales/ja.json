@@ -125,56 +125,44 @@
     "goHome": "ホームに戻る"
   },
   "home": {
-    "title": "Nanosoftパッケージ",
-    "subtitle": "低エネルギー核反応（LENR）と常温核融合変換経路を探索するためのインタラクティブツール",
-    "basedOn": "<parkhomovLink>アレクサンダー・パルホモフ博士</parkhomovLink>の画期的な研究に基づく",
+    "title": "LENR Academy",
+    "subtitle": "低エネルギー核変換反応の探索、カスケードプロセスのモデル化、崩壊連鎖の可視化、共鳴現象の調査 — すべてブラウザ上で",
+    "basedOn": "<parkhomovLink>パルホモフ・テーブル</parkhomovLink>とR.W. Greenyer & P.W. Powerによるオリジナルの<nanosoftLink>Nanosoftパッケージ</nanosoftLink>に基づいて構築",
     "queryReactions": {
       "title": "核反応を検索",
-      "description": "数千の発熱核融合反応、核分裂反応、2対2核変換反応を検索",
+      "description": "パルホモフ・テーブルから数千の発熱核融合、核分裂、2対2変換反応を検索",
       "fusionReactions": "核融合反応",
       "fissionReactions": "核分裂反応",
       "twoToTwoReactions": "2対2反応"
     },
     "cascadeSimulations": {
       "title": "カスケードシミュレーション",
-      "description": "連鎖反応をモデル化し、カスケードLENRプロセスからの反応生成物を予測",
+      "description": "材料カタログ、重み付き分岐、サンキーフロー可視化を使用して連鎖反応をモデル化",
       "runSimulations": "カスケードシミュレーションを実行"
     },
     "elementData": {
-      "title": "元素・核種データ",
-      "description": "核特性と化学特性の包括的なテーブルを閲覧",
-      "showElementData": "元素データを表示",
-      "tablesInDetail": "詳細テーブル"
+      "title": "元素・核種・崩壊",
+      "description": "詳細な元素・同位体特性を備えたインタラクティブ周期表と多世代崩壊連鎖の可視化",
+      "showElementData": "元素・核種エクスプローラー",
+      "tablesInDetail": "詳細テーブル",
+      "allTables": "カスタムSQLクエリ"
     },
-    "advancedQueries": {
-      "title": "高度なクエリ",
-      "description": "すべての反応および特性テーブルにカスタムSQLクエリを実行",
-      "allTables": "全テーブルクエリツール"
+    "mullerResonance": {
+      "title": "ミュラー共鳴エクスプローラー",
+      "description": "電子-陽子波長共鳴を調査し、核活性環境（NAE）を予測",
+      "explore": "共鳴を探索"
     },
-    "parkhomovTables": {
-      "title": "パルホモフ・テーブルについて",
-      "intro": "このパッケージは、2018年に常温核変換反応の可能性に関する包括的なテーブルを発表したロシアの物理学者<strong>アレクサンダー・パルホモフ博士</strong>の先駆的な研究に基づいています。",
-      "analysisIntro": "280の安定核種のコンピュータ解析を用いて、パルホモフ博士は以下を特定しました：",
-      "fusionCount": "<strong>1,389の核融合反応</strong> - より軽い元素の結合",
-      "fissionCount": "<strong>817の核分裂反応</strong> - より重い元素の分裂",
-      "twoToTwoCount": "<strong>516,789の2対2反応</strong> - 核種ペアの変換",
-      "exothermicNote": "これらのテーブルのすべての反応は<strong>発熱反応</strong>（エネルギー生成）であり、低エネルギーでの核変換の熱力学的に有利な経路を表しています。",
-      "developers": "マーティン・フライシュマン記念プロジェクトのためにR.W. GreenyerとP.W. Powerが開発"
-    },
-    "originalApp": {
-      "title": "オリジナルアプリケーション",
-      "description": "これは、パルホモフ博士の核変換テーブルを探索するためにPHPウェブアプリケーションとして開発されたオリジナルのNanosoftパッケージの現代的な再実装です。",
-      "findAt": "オリジナルのアプリケーションと包括的なドキュメントは以下で見つけることができます：",
-      "visitSite": "nanosoft.co.nzを訪問",
-      "gratitude": "この重要な研究をアクセス可能にする先駆的な取り組みに対して、R. W. GreenyerとP. W. Powerに感謝いたします。"
+    "aboutData": {
+      "title": "データについて",
+      "description": "反応データベースは、<strong>アレクサンダー・パルホモフ博士</strong>による2018年の280安定核種の解析に基づき、<strong>1,389の核融合</strong>、<strong>817の核分裂</strong>、<strong>516,789の2対2</strong>発熱反応を特定しています — 低エネルギーでの核変換の熱力学的に有利な経路です。もとはマーティン・フライシュマン記念プロジェクトのためにR.W. GreenyerとP.W. Powerが<nanosoftLink>Nanosoftパッケージ</nanosoftLink>として開発しました。",
+      "visitNanosoft": "オリジナルのNanosoftパッケージを訪問"
     },
     "openSource": {
-      "title": "オープンソースプロジェクト",
-      "description": "このプロジェクトはオープンソースであり、GNU Affero General Public License v3.0（AGPL-3.0）の下でライセンスされています。コミュニティからの貢献、バグ報告、機能リクエストを歓迎します。",
+      "title": "オープンソース",
+      "description": "AGPL-3.0ライセンス。貢献、バグ報告、機能リクエストを歓迎します。",
       "viewGitHub": "GitHubで表示",
       "joinDiscussions": "ディスカッションに参加",
-      "reportIssue": "問題を報告",
-      "requestFeature": "機能をリクエスト"
+      "reportIssue": "問題を報告"
     }
   },
   "query": {

@@ -16,3 +16,9 @@ export const mfmpLink = (
     target="_blank" rel="noopener noreferrer"
     className={linkClass} />
 )
+
+export const nanosoftLink = (
+  <a href="https://nanosoft.co.nz"
+    target="_blank" rel="noopener noreferrer"
+    className={linkClass} />
+)

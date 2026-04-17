@@ -125,56 +125,44 @@
     "goHome": "返回主页"
   },
   "home": {
-    "title": "Nanosoft软件包",
-    "subtitle": "探索低能核反应（LENR）和冷聚变嬗变途径的交互式工具",
-    "basedOn": "基于<parkhomovLink>亚历山大·帕尔霍莫夫博士</parkhomovLink>的开创性研究",
+    "title": "LENR Academy",
+    "subtitle": "探索低能核嬗变反应、模拟级联过程、可视化衰变链并研究共振现象 — 一切尽在浏览器中",
+    "basedOn": "基于<parkhomovLink>帕尔霍莫夫表</parkhomovLink>和R.W. Greenyer & P.W. Power的原始<nanosoftLink>Nanosoft软件包</nanosoftLink>构建",
     "queryReactions": {
       "title": "查询核反应",
-      "description": "搜索数千种放热聚变、裂变和二对二核嬗变反应",
+      "description": "从帕尔霍莫夫表中搜索数千种放热聚变、裂变和二对二嬗变反应",
       "fusionReactions": "聚变反应",
       "fissionReactions": "裂变反应",
       "twoToTwoReactions": "二对二反应"
     },
     "cascadeSimulations": {
       "title": "级联模拟",
-      "description": "模拟链式反应并预测级联LENR过程的反应产物",
+      "description": "使用材料目录、加权分支和桑基流程可视化模拟链式反应",
       "runSimulations": "运行级联模拟"
     },
     "elementData": {
-      "title": "元素和核素数据",
-      "description": "浏览核性质和化学性质的综合表格",
-      "showElementData": "显示元素数据",
-      "tablesInDetail": "详细表格"
+      "title": "元素、核素与衰变",
+      "description": "交互式元素周期表，包含详细的元素和同位素属性，以及多代衰变链可视化",
+      "showElementData": "元素与核素浏览器",
+      "tablesInDetail": "详细表格",
+      "allTables": "自定义SQL查询"
     },
-    "advancedQueries": {
-      "title": "高级查询",
-      "description": "在所有反应和属性表上执行自定义SQL查询",
-      "allTables": "全表查询工具"
+    "mullerResonance": {
+      "title": "穆勒共振探索器",
+      "description": "研究电子-质子波长共振并预测核活性环境（NAE）",
+      "explore": "探索共振"
     },
-    "parkhomovTables": {
-      "title": "关于帕尔霍莫夫表",
-      "intro": "本软件包基于俄罗斯物理学家<strong>亚历山大·帕尔霍莫夫博士</strong>的开创性工作，他于2018年发表了可能的冷核嬗变反应的综合表格。",
-      "analysisIntro": "通过对280种稳定核素的计算机分析，帕尔霍莫夫博士确定了：",
-      "fusionCount": "<strong>1,389种聚变反应</strong> - 轻元素的结合",
-      "fissionCount": "<strong>817种裂变反应</strong> - 重元素的分裂",
-      "twoToTwoCount": "<strong>516,789种二对二反应</strong> - 核素对的转化",
-      "exothermicNote": "这些表中的所有反应都是<strong>放热反应</strong>（产生能量），代表了低能量下核嬗变的热力学有利途径。",
-      "developers": "由R.W. Greenyer和P.W. Power为马丁·弗莱施曼纪念项目开发"
-    },
-    "originalApp": {
-      "title": "原始应用程序",
-      "description": "这是原始Nanosoft软件包的现代重新实现，原版是作为PHP Web应用程序开发的，用于探索帕尔霍莫夫博士的核嬗变表。",
-      "findAt": "原始应用程序和完整文档可在以下位置找到：",
-      "visitSite": "访问nanosoft.co.nz",
-      "gratitude": "我们感谢R. W. Greenyer和P. W. Power在使这项重要研究变得可访问方面所做的开创性工作。"
+    "aboutData": {
+      "title": "关于数据",
+      "description": "反应数据库来自<strong>亚历山大·帕尔霍莫夫博士</strong>2018年对280种稳定核素的分析，识别出<strong>1,389种聚变</strong>、<strong>817种裂变</strong>和<strong>516,789种二对二</strong>放热反应 — 低能核嬗变的热力学有利途径。最初由R.W. Greenyer和P.W. Power为马丁·弗莱施曼纪念项目开发为<nanosoftLink>Nanosoft软件包</nanosoftLink>。",
+      "visitNanosoft": "访问原始Nanosoft软件包"
     },
     "openSource": {
-      "title": "开源项目",
-      "description": "本项目是开源的，采用GNU Affero通用公共许可证v3.0（AGPL-3.0）授权。我们欢迎社区的贡献、错误报告和功能请求。",
+      "title": "开源",
+      "description": "采用AGPL-3.0许可证。欢迎贡献、错误报告和功能请求。",
       "viewGitHub": "在GitHub上查看",
       "joinDiscussions": "加入讨论",
-      "reportIssue": "报告问题",
-      "requestFeature": "请求功能"
+      "reportIssue": "报告问题"
     }
   },
   "query": {

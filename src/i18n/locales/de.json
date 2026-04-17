@@ -125,56 +125,44 @@
     "goHome": "Zur Startseite"
   },
   "home": {
-    "title": "Das Nanosoft-Paket",
-    "subtitle": "Interaktive Werkzeuge zur Erforschung von Niedrigenergie-Kernreaktionen (LENR) und Kalte-Fusion-Transmutationspfaden",
-    "basedOn": "Basierend auf der bahnbrechenden Arbeit von <parkhomovLink>Dr. Alexander Parkhomov</parkhomovLink>",
+    "title": "LENR Academy",
+    "subtitle": "Erkunden Sie Niedrigenergie-Kerntransmutationsreaktionen, modellieren Sie Kaskadenprozesse, visualisieren Sie Zerfallsketten und untersuchen Sie Resonanzphänomene — alles in Ihrem Browser",
+    "basedOn": "Basierend auf den <parkhomovLink>Parkhomov-Tabellen</parkhomovLink> und dem ursprünglichen <nanosoftLink>Nanosoft-Paket</nanosoftLink> von R.W. Greenyer & P.W. Power",
     "queryReactions": {
       "title": "Kernreaktionen abfragen",
-      "description": "Durchsuchen Sie Tausende exothermer Fusions-, Spaltungs- und Zwei-zu-Zwei-Kerntransmutationsreaktionen",
+      "description": "Durchsuchen Sie Tausende exothermer Fusions-, Spaltungs- und Zwei-zu-Zwei-Transmutationsreaktionen aus den Parkhomov-Tabellen",
       "fusionReactions": "Fusionsreaktionen",
       "fissionReactions": "Spaltungsreaktionen",
       "twoToTwoReactions": "Zwei-zu-Zwei-Reaktionen"
     },
     "cascadeSimulations": {
       "title": "Kaskadensimulationen",
-      "description": "Modellieren Sie Kettenreaktionen und prognostizieren Sie Reaktionsprodukte aus kaskadierenden LENR-Prozessen",
+      "description": "Modellieren Sie Kettenreaktionen mit einem Materialkatalog, gewichteter Verzweigung und Sankey-Flussvisualisierung",
       "runSimulations": "Kaskadensimulationen ausführen"
     },
     "elementData": {
-      "title": "Element- & Nukliddaten",
-      "description": "Durchsuchen Sie umfassende Tabellen nuklearer und chemischer Eigenschaften",
-      "showElementData": "Elementdaten anzeigen",
-      "tablesInDetail": "Detaillierte Tabellen"
+      "title": "Elemente, Nuklide & Zerfall",
+      "description": "Interaktives Periodensystem mit detaillierten Element- und Isotopeneigenschaften sowie Mehrgenerationen-Zerfallskettenvisualisierung",
+      "showElementData": "Element- & Nuklid-Explorer",
+      "tablesInDetail": "Detaillierte Tabellen",
+      "allTables": "Benutzerdefinierte SQL-Abfragen"
     },
-    "advancedQueries": {
-      "title": "Erweiterte Abfragen",
-      "description": "Führen Sie benutzerdefinierte SQL-Abfragen über alle Reaktions- und Eigenschaftstabellen aus",
-      "allTables": "Abfragewerkzeug für alle Tabellen"
+    "mullerResonance": {
+      "title": "Muller-Resonanz-Explorer",
+      "description": "Untersuchen Sie Elektron-Proton-Wellenlängenresonanzen und prognostizieren Sie nuklear aktive Umgebungen (NAE)",
+      "explore": "Resonanzen erkunden"
     },
-    "parkhomovTables": {
-      "title": "Über die Parkhomov-Tabellen",
-      "intro": "Dieses Paket basiert auf der Pionierarbeit des russischen Physikers <strong>Dr. Alexander Parkhomov</strong>, der 2018 umfassende Tabellen möglicher kalter Kerntransmutationsreaktionen veröffentlichte.",
-      "analysisIntro": "Durch Computeranalyse von 280 stabilen Nukliden identifizierte Dr. Parkhomov:",
-      "fusionCount": "<strong>1.389 Fusionsreaktionen</strong> - Kombination leichterer Elemente",
-      "fissionCount": "<strong>817 Spaltungsreaktionen</strong> - Spaltung schwererer Elemente",
-      "twoToTwoCount": "<strong>516.789 Zwei-zu-Zwei-Reaktionen</strong> - Transformation von Nuklidpaaren",
-      "exothermicNote": "Alle Reaktionen in diesen Tabellen sind <strong>exotherm</strong> (energieerzeugend) und repräsentieren thermodynamisch günstige Wege für Kerntransmutation bei niedrigen Energien.",
-      "developers": "Entwickelt von R.W. Greenyer und P.W. Power für das Martin Fleischmann Gedächtnisprojekt"
-    },
-    "originalApp": {
-      "title": "Originalanwendung",
-      "description": "Dies ist eine moderne Neuimplementierung des ursprünglichen Nanosoft-Pakets, das als PHP-Webanwendung zur Erforschung von Dr. Parkhomovs Kerntransmutationstabellen entwickelt wurde.",
-      "findAt": "Die Originalanwendung und umfassende Dokumentation finden Sie unter:",
-      "visitSite": "nanosoft.co.nz besuchen",
-      "gratitude": "Wir danken R. W. Greenyer und P. W. Power für ihre Pionierarbeit bei der Zugänglichmachung dieser wichtigen Forschung."
+    "aboutData": {
+      "title": "Über die Daten",
+      "description": "Die Reaktionsdatenbank stammt aus der Analyse von <strong>Dr. Alexander Parkhomov</strong> aus dem Jahr 2018 über 280 stabile Nuklide und identifiziert <strong>1.389 Fusions-</strong>, <strong>817 Spaltungs-</strong> und <strong>516.789 Zwei-zu-Zwei-</strong>Reaktionen — thermodynamisch günstige Wege für Kerntransmutation bei niedrigen Energien. Ursprünglich entwickelt als <nanosoftLink>Nanosoft-Paket</nanosoftLink> von R.W. Greenyer und P.W. Power für das Martin Fleischmann Gedächtnisprojekt.",
+      "visitNanosoft": "Originales Nanosoft-Paket besuchen"
     },
     "openSource": {
-      "title": "Open-Source-Projekt",
-      "description": "Dieses Projekt ist Open Source und unter der GNU Affero General Public License v3.0 (AGPL-3.0) lizenziert. Wir begrüßen Beiträge, Fehlerberichte und Funktionswünsche aus der Community.",
+      "title": "Open Source",
+      "description": "Lizenziert unter AGPL-3.0. Beiträge, Fehlerberichte und Funktionswünsche willkommen.",
       "viewGitHub": "Auf GitHub ansehen",
       "joinDiscussions": "An Diskussionen teilnehmen",
-      "reportIssue": "Problem melden",
-      "requestFeature": "Funktion anfragen"
+      "reportIssue": "Problem melden"
     }
   },
   "query": {

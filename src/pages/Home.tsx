@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom'
 import { useTranslation, Trans } from 'react-i18next'
-import { Atom, Database, Beaker, Zap } from 'lucide-react'
-import { parkhomovLink } from '../components/ExternalLinks'
+import { Atom, Beaker, Zap, Database, Activity } from 'lucide-react'
+import { parkhomovLink, nanosoftLink } from '../components/ExternalLinks'
 
 export default function Home() {
   const { t } = useTranslation()
@@ -22,7 +22,8 @@ export default function Home() {
           <Trans
             i18nKey="home.basedOn"
             components={{
-              parkhomovLink
+              parkhomovLink,
+              nanosoftLink
             }}
           />
         </p>
@@ -31,8 +32,8 @@ export default function Home() {
       <div className="grid md:grid-cols-2 gap-6 mb-12">
         <div className="card p-6">
           <div className="flex items-start gap-4">
-            <div className="p-3 bg-blue-100 rounded-lg">
-              <Beaker className="w-6 h-6 text-blue-600" />
+            <div className="p-3 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
+              <Beaker className="w-6 h-6 text-blue-600 dark:text-blue-400" />
             </div>
             <div className="flex-1">
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
@@ -58,8 +59,8 @@ export default function Home() {
 
         <div className="card p-6">
           <div className="flex items-start gap-4">
-            <div className="p-3 bg-green-100 rounded-lg">
-              <Zap className="w-6 h-6 text-green-600" />
+            <div className="p-3 bg-green-100 dark:bg-green-900/30 rounded-lg">
+              <Zap className="w-6 h-6 text-green-600 dark:text-green-400" />
             </div>
             <div className="flex-1">
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
@@ -79,8 +80,8 @@ export default function Home() {
 
         <div className="card p-6">
           <div className="flex items-start gap-4">
-            <div className="p-3 bg-purple-100 rounded-lg">
-              <Database className="w-6 h-6 text-purple-600" />
+            <div className="p-3 bg-purple-100 dark:bg-purple-900/30 rounded-lg">
+              <Database className="w-6 h-6 text-purple-600 dark:text-purple-400" />
             </div>
             <div className="flex-1">
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
@@ -96,6 +97,9 @@ export default function Home() {
                 <Link to="/tables" className="block text-primary-600 hover:text-primary-700 text-sm font-medium">
                   → {t('home.elementData.tablesInDetail')}
                 </Link>
+                <Link to="/all-tables" className="block text-primary-600 hover:text-primary-700 text-sm font-medium">
+                  → {t('home.elementData.allTables')}
+                </Link>
               </div>
             </div>
           </div>
@@ -103,19 +107,19 @@ export default function Home() {
 
         <div className="card p-6">
           <div className="flex items-start gap-4">
-            <div className="p-3 bg-orange-100 rounded-lg">
-              <Database className="w-6 h-6 text-orange-600" />
+            <div className="p-3 bg-teal-100 dark:bg-teal-900/30 rounded-lg">
+              <Activity className="w-6 h-6 text-teal-600 dark:text-teal-400" />
             </div>
             <div className="flex-1">
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-                {t('home.advancedQueries.title')}
+                {t('home.mullerResonance.title')}
               </h3>
               <p className="text-gray-600 dark:text-gray-400 text-sm mb-4">
-                {t('home.advancedQueries.description')}
+                {t('home.mullerResonance.description')}
               </p>
               <div className="space-y-2">
-                <Link to="/all-tables" className="block text-primary-600 hover:text-primary-700 text-sm font-medium">
-                  → {t('home.advancedQueries.allTables')}
+                <Link to="/muller-resonance" className="block text-primary-600 hover:text-primary-700 text-sm font-medium">
+                  → {t('home.mullerResonance.explore')}
                 </Link>
               </div>
             </div>
@@ -124,48 +128,28 @@ export default function Home() {
       </div>
 
       <div className="card p-6 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20">
-        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
-          {t('home.parkhomovTables.title')}
+        <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-3">
+          {t('home.aboutData.title')}
         </h2>
         <div className="prose prose-sm max-w-none text-gray-700 dark:text-gray-300">
-          <p className="mb-3" dangerouslySetInnerHTML={{ __html: t('home.parkhomovTables.intro') }} />
-          <p className="mb-3">{t('home.parkhomovTables.analysisIntro')}</p>
-          <ul className="list-disc list-inside mb-3 space-y-1">
-            <li dangerouslySetInnerHTML={{ __html: t('home.parkhomovTables.fusionCount') }} />
-            <li dangerouslySetInnerHTML={{ __html: t('home.parkhomovTables.fissionCount') }} />
-            <li dangerouslySetInnerHTML={{ __html: t('home.parkhomovTables.twoToTwoCount') }} />
-          </ul>
-          <p className="mb-3" dangerouslySetInnerHTML={{ __html: t('home.parkhomovTables.exothermicNote') }} />
-          <p className="text-sm text-gray-600 dark:text-gray-400">
-            {t('home.parkhomovTables.developers')}
+          <p className="mb-3">
+            <Trans
+              i18nKey="home.aboutData.description"
+              components={{
+                strong: <strong />,
+                nanosoftLink
+              }}
+            />
           </p>
         </div>
-      </div>
-
-      <div className="card p-6 mt-6 border-2 border-gray-200 dark:border-gray-700">
-        <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-3">
-          {t('home.originalApp.title')}
-        </h2>
-        <p className="text-gray-700 dark:text-gray-300 mb-3">
-          {t('home.originalApp.description')}
-        </p>
-        <p className="text-gray-700 dark:text-gray-300 mb-4">
-          {t('home.originalApp.findAt')}
-        </p>
         <a
           href="https://nanosoft.co.nz"
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center gap-2 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors font-medium"
+          className="inline-flex items-center gap-2 mt-2 text-sm text-primary-600 hover:text-primary-700 font-medium"
         >
-          {t('home.originalApp.visitSite')}
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-          </svg>
+          → {t('home.aboutData.visitNanosoft')}
         </a>
-        <p className="text-sm text-gray-500 dark:text-gray-400 mt-4">
-          {t('home.originalApp.gratitude')}
-        </p>
       </div>
 
       <div className="card p-6 mt-6 bg-gradient-to-r from-gray-50 to-blue-50 dark:from-gray-800 dark:to-blue-900/20">
@@ -202,14 +186,6 @@ export default function Home() {
             className="inline-flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border-2 border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors font-medium"
           >
             {t('home.openSource.reportIssue')}
-          </a>
-          <a
-            href="https://github.com/Episk-pos/lenr.academy/issues/new?labels=enhancement"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border-2 border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors font-medium"
-          >
-            {t('home.openSource.requestFeature')}
           </a>
         </div>
       </div>

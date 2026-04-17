@@ -125,56 +125,44 @@
     "goHome": "Go to Home"
   },
   "home": {
-    "title": "The Nanosoft Package",
-    "subtitle": "Interactive tools for exploring Low Energy Nuclear Reactions (LENR) and cold fusion transmutation pathways",
-    "basedOn": "Based on the groundbreaking work of <parkhomovLink>Dr. Alexander Parkhomov</parkhomovLink>",
+    "title": "LENR Academy",
+    "subtitle": "Explore low-energy nuclear transmutation reactions, model cascade processes, visualize decay chains, and investigate resonance phenomena — all in your browser",
+    "basedOn": "Built on the <parkhomovLink>Parkhomov Tables</parkhomovLink> and the original <nanosoftLink>Nanosoft Package</nanosoftLink> by R.W. Greenyer & P.W. Power",
     "queryReactions": {
       "title": "Query Nuclear Reactions",
-      "description": "Search through thousands of exothermic fusion, fission, and two-to-two nuclear transmutation reactions",
+      "description": "Search thousands of exothermic fusion, fission, and two-to-two transmutation reactions from the Parkhomov Tables",
       "fusionReactions": "Fusion Reactions",
       "fissionReactions": "Fission Reactions",
       "twoToTwoReactions": "Two-To-Two Reactions"
     },
     "cascadeSimulations": {
       "title": "Cascade Simulations",
-      "description": "Model chain reactions and predict reaction products from cascading LENR processes",
+      "description": "Model chain reactions with a materials catalog, weighted branching, and Sankey flow visualization",
       "runSimulations": "Run Cascade Simulations"
     },
     "elementData": {
-      "title": "Element & Nuclide Data",
-      "description": "Browse comprehensive tables of nuclear and chemical properties",
-      "showElementData": "Show Element Data",
-      "tablesInDetail": "Tables in Detail"
+      "title": "Elements, Nuclides & Decay",
+      "description": "Interactive periodic table with detailed element and isotope properties, plus multi-generation decay chain visualization",
+      "showElementData": "Element & Nuclide Explorer",
+      "tablesInDetail": "Tables in Detail",
+      "allTables": "Custom SQL Queries"
     },
-    "advancedQueries": {
-      "title": "Advanced Queries",
-      "description": "Execute custom SQL queries across all reaction and property tables",
-      "allTables": "All Tables Query Tool"
+    "mullerResonance": {
+      "title": "Muller Resonance Explorer",
+      "description": "Investigate electron-proton wavelength resonances and predict nuclear active environments (NAE)",
+      "explore": "Explore Resonances"
     },
-    "parkhomovTables": {
-      "title": "About the Parkhomov Tables",
-      "intro": "This package is based on the pioneering work of Russian physicist <strong>Dr. Alexander Parkhomov</strong>, who published comprehensive tables of possible cold nuclear transmutation reactions in 2018.",
-      "analysisIntro": "Using computer analysis of 280 stable nuclides, Dr. Parkhomov identified:",
-      "fusionCount": "<strong>1,389 fusion reactions</strong> - combining lighter elements",
-      "fissionCount": "<strong>817 fission reactions</strong> - splitting heavier elements",
-      "twoToTwoCount": "<strong>516,789 two-to-two reactions</strong> - transforming pairs of nuclides",
-      "exothermicNote": "All reactions in these tables are <strong>exothermic</strong> (energy-producing) and represent thermodynamically favorable pathways for nuclear transmutation at low energies.",
-      "developers": "Developed by R.W. Greenyer and P.W. Power for the Martin Fleischmann Memorial Project"
-    },
-    "originalApp": {
-      "title": "Original Application",
-      "description": "This is a modern reimplementation of the original Nanosoft Package, which was developed as a PHP web application to explore Dr. Parkhomov's nuclear transmutation tables.",
-      "findAt": "The original application and comprehensive documentation can be found at:",
-      "visitSite": "Visit nanosoft.co.nz",
-      "gratitude": "We are grateful to R. W. Greenyer and P. W. Power for their pioneering work in making this important research accessible."
+    "aboutData": {
+      "title": "About the Data",
+      "description": "The reaction database comes from <strong>Dr. Alexander Parkhomov's</strong> 2018 analysis of 280 stable nuclides, identifying <strong>1,389 fusion</strong>, <strong>817 fission</strong>, and <strong>516,789 two-to-two</strong> exothermic reactions — thermodynamically favorable pathways for nuclear transmutation at low energies. Originally developed as the <nanosoftLink>Nanosoft Package</nanosoftLink> by R.W. Greenyer and P.W. Power for the Martin Fleischmann Memorial Project.",
+      "visitNanosoft": "Visit Original Nanosoft Package"
     },
     "openSource": {
-      "title": "Open Source Project",
-      "description": "This project is open source and licensed under the GNU Affero General Public License v3.0 (AGPL-3.0). We welcome contributions, bug reports, and feature requests from the community.",
+      "title": "Open Source",
+      "description": "Licensed under AGPL-3.0. Contributions, bug reports, and feature requests welcome.",
       "viewGitHub": "View on GitHub",
       "joinDiscussions": "Join Discussions",
-      "reportIssue": "Report Issue",
-      "requestFeature": "Request Feature"
+      "reportIssue": "Report Issue"
     }
   },
   "query": {
