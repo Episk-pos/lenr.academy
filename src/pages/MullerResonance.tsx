@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo, useCallback, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useSearchParams } from 'react-router-dom'
+import { Search } from 'lucide-react'
 import { useDatabase } from '../contexts/DatabaseContext'
 import { getAllElements } from '../services/queryService'
 import { useMullerWorker } from '../hooks/useMullerWorker'
@@ -56,6 +57,8 @@ export default function MullerResonance() {
     return p === 'desc' ? 'desc' : 'asc'
   })
   const [expandedRow, setExpandedRow] = useState<number | null>(null)
+  const [naeSearch, setNaeSearch] = useState(searchParams.get('search') || '')
+  const expandedRowRef = useRef<HTMLDivElement>(null)
 
   // Worker handles all heavy computation off the main thread
   const {
@@ -89,8 +92,9 @@ export default function MullerResonance() {
     if (naeFilter) params.set('naeFilter', 'true')
     if (activeTab === 'nae' && naeSortColumn !== 'naeScore') params.set('sort', naeSortColumn)
     if (activeTab === 'nae' && naeSortDirection !== 'asc') params.set('dir', naeSortDirection)
+    if (activeTab === 'nae' && naeSearch) params.set('search', naeSearch)
     setSearchParams(params, { replace: true })
-  }, [activeTab, selectedElement, threshold, naeFilter, naeSortColumn, naeSortDirection, setSearchParams])
+  }, [activeTab, selectedElement, threshold, naeFilter, naeSortColumn, naeSortDirection, naeSearch, setSearchParams])
 
   // Load elements and initialize worker
   useEffect(() => {
@@ -106,6 +110,19 @@ export default function MullerResonance() {
   const handleElementClick = useCallback((symbol: string) => {
     setSelectedElement(prev => prev === symbol ? null : symbol)
   }, [])
+
+  // On NAE tab: auto-expand the selected element's detail row and scroll to it
+  useEffect(() => {
+    if (activeTab !== 'nae' || !selectedElement) return
+    const pred = naePredictions.find(p => p.E === selectedElement)
+    if (pred) {
+      setExpandedRow(pred.Z)
+      // Scroll after React renders the expanded row
+      requestAnimationFrame(() => {
+        expandedRowRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+      })
+    }
+  }, [activeTab, selectedElement, naePredictions])
 
   // Delegate element selection/clearing to worker
   useEffect(() => {
@@ -304,10 +321,16 @@ export default function MullerResonance() {
   const sortedNAEPredictions = useMemo(() => {
     let filtered = naePredictions
     if (naeFilter) {
-      filtered = naePredictions.filter(p =>
+      filtered = filtered.filter(p =>
         p.naeWavelength !== null &&
         p.naeWavelength >= NAE_GAP_MIN &&
         p.naeWavelength <= NAE_GAP_MAX
+      )
+    }
+    if (naeSearch) {
+      const lower = naeSearch.toLowerCase()
+      filtered = filtered.filter(p =>
+        p.E.toLowerCase().includes(lower)
       )
     }
 
@@ -332,7 +355,7 @@ export default function MullerResonance() {
         default: return 0
       }
     })
-  }, [naePredictions, naeFilter, naeSortColumn, naeSortDirection, reactionCounts])
+  }, [naePredictions, naeFilter, naeSearch, naeSortColumn, naeSortDirection, reactionCounts])
 
   const handleNAESort = useCallback((col: SortColumn) => {
     setNaeSortColumn(prev => {
@@ -593,7 +616,7 @@ export default function MullerResonance() {
             </p>
             <PeriodicTable
               availableElements={elements}
-              selectedElement={null}
+              selectedElement={selectedElement}
               onElementClick={handleElementClick}
               heatmapData={naeHeatmapData}
               heatmapMetrics={naeHeatmapMetrics}
@@ -614,22 +637,34 @@ export default function MullerResonance() {
             </div>
           </div>
 
-          {/* Filter toggle */}
+          {/* Filters */}
           <div className="card p-4 mb-6">
-            <label className="flex items-center gap-2 cursor-pointer">
-              <input
-                type="checkbox"
-                checked={naeFilter}
-                onChange={(e) => setNaeFilter(e.target.checked)}
-                className="rounded border-gray-300 dark:border-gray-600 text-primary-600 focus:ring-primary-500"
-              />
-              <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                {t('mullerResonance.nae.showNAEOnly')}
-              </span>
-              <span className="text-xs text-gray-500 dark:text-gray-400">
-                (0.5–2.0 nm)
-              </span>
-            </label>
+            <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+              <div className="relative flex-1 max-w-xs">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                <input
+                  type="text"
+                  value={naeSearch}
+                  onChange={(e) => setNaeSearch(e.target.value)}
+                  placeholder={t('mullerResonance.nae.searchPlaceholder')}
+                  className="w-full pl-9 pr-3 py-1.5 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                />
+              </div>
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={naeFilter}
+                  onChange={(e) => setNaeFilter(e.target.checked)}
+                  className="rounded border-gray-300 dark:border-gray-600 text-primary-600 focus:ring-primary-500"
+                />
+                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                  {t('mullerResonance.nae.showNAEOnly')}
+                </span>
+                <span className="text-xs text-gray-500 dark:text-gray-400">
+                  (0.5–2.0 nm)
+                </span>
+              </label>
+            </div>
           </div>
 
           {/* NAE Predictions Table */}
@@ -792,7 +827,7 @@ export default function MullerResonance() {
             if (!pred) return null
 
             return (
-              <div className="card p-4 mb-6">
+              <div ref={expandedRowRef} className="card p-4 mb-6">
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">
                   {pred.E} (Z={pred.Z}) — {t('mullerResonance.nae.octaveDetail')}
                 </h3>
