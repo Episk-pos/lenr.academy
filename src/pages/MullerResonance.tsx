@@ -37,7 +37,9 @@ export default function MullerResonance() {
   )
   const [threshold, setThreshold] = useState(() => {
     const p = searchParams.get('threshold')
-    return p ? parseFloat(p) : 5.0
+    if (!p) return 5.0
+    const n = parseFloat(p)
+    return isNaN(n) ? 5.0 : n
   })
 
   // Tab state
