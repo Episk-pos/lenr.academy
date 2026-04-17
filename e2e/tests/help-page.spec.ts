@@ -19,7 +19,7 @@ test.describe('Help Page', () => {
 
   test('should display example query cards with names and descriptions', async ({ page }) => {
     await expect(page.getByText('Hydrogen-Lithium Fusion')).toBeVisible();
-    await expect(page.getByText('Deuterium-Deuterium Fusion')).toBeVisible();
+    await expect(page.getByText('Nickel-Hydrogen Fusion')).toBeVisible();
     await expect(page.getByText('Uranium Fission Pathways')).toBeVisible();
   });
 
