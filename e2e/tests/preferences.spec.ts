@@ -342,6 +342,6 @@ test.describe('User Preferences Persistence', () => {
     await waitForDatabaseReady(page);
 
     // App should function normally - check for home page heading
-    await expect(page.getByRole('heading', { name: /The Nanosoft Package/i })).toBeVisible();
+    await expect(page.getByRole('heading', { name: /LENR Academy/i })).toBeVisible();
   });
 });

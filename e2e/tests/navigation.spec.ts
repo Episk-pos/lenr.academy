@@ -16,7 +16,7 @@ test.describe('Navigation and Routing', () => {
 
   test('should navigate to all main routes', async ({ page }) => {
     const routes = [
-      { path: '/', name: 'Home', heading: /The Nanosoft Package/i, needsDb: false },
+      { path: '/', name: 'Home', heading: /LENR Academy/i, needsDb: false },
       { path: '/fusion', name: 'Fusion', heading: /Fusion Reactions/i, needsDb: true },
       { path: '/fission', name: 'Fission', heading: /Fission Reactions/i, needsDb: true },
       { path: '/twotwo', name: 'Two-to-Two', heading: /Two-to-Two Reactions/i, needsDb: true },

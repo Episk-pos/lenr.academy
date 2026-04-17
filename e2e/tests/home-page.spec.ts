@@ -10,7 +10,7 @@ test.describe('Home Page', () => {
   });
 
   test('should display the main title', async ({ page }) => {
-    await expect(page.getByRole('heading', { name: /Nanosoft Package/i })).toBeVisible();
+    await expect(page.getByRole('heading', { name: /LENR Academy/i })).toBeVisible();
   });
 
   test('should display four feature cards', async ({ page }) => {
