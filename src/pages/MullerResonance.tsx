@@ -331,10 +331,12 @@ export default function MullerResonance() {
       )
     }
     if (naeSearch) {
-      const lower = naeSearch.toLowerCase()
-      filtered = filtered.filter(p =>
-        p.E.toLowerCase().includes(lower)
-      )
+      const terms = naeSearch.split(',').map(s => s.trim().toLowerCase()).filter(Boolean)
+      if (terms.length > 0) {
+        filtered = filtered.filter(p =>
+          terms.some(term => p.E.toLowerCase().includes(term))
+        )
+      }
     }
 
     return [...filtered].sort((a, b) => {
