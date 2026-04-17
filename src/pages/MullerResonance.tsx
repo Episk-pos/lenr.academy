@@ -113,11 +113,14 @@ export default function MullerResonance() {
 
   // On NAE tab: auto-expand the selected element's detail row and scroll to it
   useEffect(() => {
-    if (activeTab !== 'nae' || !selectedElement) return
+    if (activeTab !== 'nae') return
+    if (!selectedElement) {
+      setExpandedRow(null)
+      return
+    }
     const pred = naePredictions.find(p => p.E === selectedElement)
     if (pred) {
       setExpandedRow(pred.Z)
-      // Scroll after React renders the expanded row
       requestAnimationFrame(() => {
         expandedRowRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' })
       })
