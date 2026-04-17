@@ -68,6 +68,10 @@ export default function Help() {
       navigate(`/muller-resonance?${params.toString()}`);
       return;
     }
+
+    // Exhaustiveness check — ensures all queryType values are handled
+    const _exhaustive: never = query.queryType;
+    console.warn(`Unhandled query type: ${_exhaustive}`);
   };
 
   return (
