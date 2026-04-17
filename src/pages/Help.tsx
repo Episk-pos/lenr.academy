@@ -27,16 +27,47 @@ export default function Help() {
 
   const handleTryQuery = (query: ExampleQuery) => {
     const params = new URLSearchParams();
-    if (query.element1List?.length) params.set('e1', query.element1List.join(','));
-    if (query.element2List?.length) params.set('e2', query.element2List.join(','));
-    if (query.outputElementList?.length) params.set('e', query.outputElementList.join(','));
-    if (query.filter.elements?.length) params.set('e', query.filter.elements.join(','));
-    if (query.filter.minMeV !== undefined) params.set('minMeV', String(query.filter.minMeV));
-    if (query.filter.maxMeV !== undefined) params.set('maxMeV', String(query.filter.maxMeV));
 
-    const routes = { fusion: '/fusion', fission: '/fission', twotwo: '/twotwo' };
-    const search = params.toString();
-    navigate(`${routes[query.queryType]}${search ? `?${search}` : ''}`);
+    // Reaction query types (fusion, fission, twotwo)
+    if (query.queryType === 'fusion' || query.queryType === 'fission' || query.queryType === 'twotwo') {
+      if (query.element1List?.length) params.set('e1', query.element1List.join(','));
+      if (query.element2List?.length) params.set('e2', query.element2List.join(','));
+      if (query.outputElementList?.length) params.set('e', query.outputElementList.join(','));
+      if (query.filter.elements?.length) params.set('e', query.filter.elements.join(','));
+      if (query.filter.minMeV !== undefined) params.set('minMeV', String(query.filter.minMeV));
+      if (query.filter.maxMeV !== undefined) params.set('maxMeV', String(query.filter.maxMeV));
+
+      const routes = { fusion: '/fusion', fission: '/fission', twotwo: '/twotwo' } as const;
+      const search = params.toString();
+      navigate(`${routes[query.queryType]}${search ? `?${search}` : ''}`);
+      return;
+    }
+
+    // Element data links
+    if (query.queryType === 'element-data') {
+      if (query.elementZ !== undefined) params.set('Z', String(query.elementZ));
+      if (query.elementA !== undefined) params.set('A', String(query.elementA));
+      navigate(`/element-data?${params.toString()}`);
+      return;
+    }
+
+    // Cascades links
+    if (query.queryType === 'cascades') {
+      if (query.materialId) params.set('material', query.materialId);
+      navigate(`/cascades?${params.toString()}`);
+      return;
+    }
+
+    // Muller Resonance links
+    if (query.queryType === 'muller-resonance') {
+      if (query.mullerParams) {
+        for (const [key, val] of Object.entries(query.mullerParams)) {
+          params.set(key, val);
+        }
+      }
+      navigate(`/muller-resonance?${params.toString()}`);
+      return;
+    }
   };
 
   return (
@@ -74,7 +105,7 @@ export default function Help() {
                   {query.name}
                 </h3>
                 <span className="text-xs px-1.5 py-0.5 rounded bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 shrink-0 ml-2">
-                  {query.queryType === 'twotwo' ? '2→2' : query.queryType}
+                  {{ fusion: 'fusion', fission: 'fission', twotwo: '2→2', 'element-data': 'element', cascades: 'cascade', 'muller-resonance': 'resonance' }[query.queryType]}
                 </span>
               </div>
               <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">
