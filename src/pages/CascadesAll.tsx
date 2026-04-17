@@ -22,7 +22,7 @@ function parseUrlParams(searchParams: URLSearchParams) {
   if (!has) return null
 
   const str = (key: string) => searchParams.get(key)
-  const num = (key: string) => { const v = searchParams.get(key); return v !== null ? parseFloat(v) : undefined }
+  const num = (key: string) => { const v = searchParams.get(key); if (v === null) return undefined; const n = parseFloat(v); return isNaN(n) ? undefined : n }
   const bool = (key: string) => { const v = searchParams.get(key); return v !== null ? v === 'true' : undefined }
   const list = (key: string) => { const v = searchParams.get(key); return v ? v.split(',') : undefined }
 
