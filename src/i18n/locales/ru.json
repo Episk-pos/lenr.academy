@@ -1057,6 +1057,7 @@
       "knownLENR": "Известный LENR",
       "parkhomovReactions": "Реакции Пархомова",
       "showNAEOnly": "Показать только элементы с резонансом в диапазоне NAE",
+      "searchPlaceholder": "Фильтр по элементу (через запятую)...",
       "elementsInRange": "Элементы в диапазоне NAE (0,5–2,0 нм)",
       "withDOverlap": "С перекрытием D (<30%)",
       "confirmedLENR": "Известные LENR-активные",

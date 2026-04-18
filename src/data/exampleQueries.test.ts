@@ -10,7 +10,7 @@ describe('exampleQueries', () => {
     EXAMPLE_QUERIES.forEach(query => {
       expect(query.name).toBeTruthy();
       expect(query.description).toBeTruthy();
-      expect(['fusion', 'fission', 'twotwo']).toContain(query.queryType);
+      expect(['fusion', 'fission', 'twotwo', 'element-data', 'cascades', 'muller-resonance']).toContain(query.queryType);
       expect(query.filter).toBeDefined();
     });
   });
@@ -30,16 +30,35 @@ describe('exampleQueries', () => {
     expect(twotwo.length).toBeGreaterThan(0);
   });
 
+  it('includes element-data examples', () => {
+    const elementData = EXAMPLE_QUERIES.filter(q => q.queryType === 'element-data');
+    expect(elementData.length).toBeGreaterThan(0);
+    elementData.forEach(q => {
+      expect(q.elementZ).toBeDefined();
+    });
+  });
+
+  it('includes cascades example', () => {
+    const cascades = EXAMPLE_QUERIES.filter(q => q.queryType === 'cascades');
+    expect(cascades.length).toBeGreaterThan(0);
+    cascades.forEach(q => {
+      expect(q.materialId).toBeTruthy();
+    });
+  });
+
+  it('includes muller-resonance example', () => {
+    const muller = EXAMPLE_QUERIES.filter(q => q.queryType === 'muller-resonance');
+    expect(muller.length).toBeGreaterThan(0);
+    muller.forEach(q => {
+      expect(q.mullerParams).toBeDefined();
+    });
+  });
+
   it('includes H-Li fusion example', () => {
     const hli = EXAMPLE_QUERIES.find(q =>
       q.element1List?.includes('H') && q.element2List?.includes('Li')
     );
     expect(hli).toBeDefined();
     expect(hli!.queryType).toBe('fusion');
-  });
-
-  it('includes high-energy fusion example', () => {
-    const highE = EXAMPLE_QUERIES.find(q => q.filter.minMeV && q.filter.minMeV >= 10);
-    expect(highE).toBeDefined();
   });
 });

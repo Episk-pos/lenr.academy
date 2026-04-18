@@ -1057,6 +1057,7 @@
       "knownLENR": "Bekannte LENR",
       "parkhomovReactions": "Parkhomov-Rxn.",
       "showNAEOnly": "Nur Elemente mit Resonanz im NAE-Bereich anzeigen",
+      "searchPlaceholder": "Nach Element filtern (kommagetrennt)...",
       "elementsInRange": "Elemente im NAE-Bereich (0,5–2,0 nm)",
       "withDOverlap": "Mit D-Überlappung (<30%)",
       "confirmedLENR": "Bekannte LENR-aktive",

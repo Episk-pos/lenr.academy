@@ -1057,6 +1057,7 @@
       "knownLENR": "既知のLENR",
       "parkhomovReactions": "パルホモフ反応",
       "showNAEOnly": "NAE範囲に共鳴を持つ元素のみ表示",
+      "searchPlaceholder": "元素で絞り込み（カンマ区切り）...",
       "elementsInRange": "NAE範囲内の元素 (0.5–2.0 nm)",
       "withDOverlap": "D重複あり (<30%)",
       "confirmedLENR": "既知のLENR活性",

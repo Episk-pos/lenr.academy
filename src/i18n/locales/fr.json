@@ -1057,6 +1057,7 @@
       "knownLENR": "LENR connue",
       "parkhomovReactions": "Rxns Parkhomov",
       "showNAEOnly": "Afficher uniquement les éléments avec résonance dans la plage NAE",
+      "searchPlaceholder": "Filtrer par élément (séparé par virgules)...",
       "elementsInRange": "Éléments dans la plage NAE (0,5–2,0 nm)",
       "withDOverlap": "Avec chevauchement D (<30%)",
       "confirmedLENR": "LENR active connue",

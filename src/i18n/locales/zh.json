@@ -1057,6 +1057,7 @@
       "knownLENR": "已知LENR",
       "parkhomovReactions": "帕尔霍莫夫反应",
       "showNAEOnly": "仅显示NAE范围内有共振的元素",
+      "searchPlaceholder": "按元素筛选（逗号分隔）...",
       "elementsInRange": "NAE范围内元素（0.5–2.0 nm）",
       "withDOverlap": "有D重叠（<30%）",
       "confirmedLENR": "已知LENR活性",
