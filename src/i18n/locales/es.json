@@ -871,7 +871,7 @@
   },
   "cycleDiscovery": {
     "databaseNotLoaded": "Base de datos no cargada. Por favor espere a que la base de datos termine de cargarse.",
-    "pageTitle": "Descubrimiento de Ciclos de Retroalimentación",
+    "pageTitle": "Catalytic Cycle Discovery",
     "pageDescription": "Descubra ciclos de reacciones nucleares catalíticas donde los productos intermedios se regeneran, permitiendo reacciones en cadena autosostenidas.",
     "howItWorksTitle": "Cómo funciona",
     "howItWorksDescription": "Esta herramienta busca en la base de datos de reacciones de Parkhomov ciclos donde un nucleido se consume en una reacción y se regenera en una reacción posterior — similar a cómo el carbono-12 se recicla en el ciclo CNO.",
@@ -908,9 +908,9 @@
     "noResults": "No se encontraron ciclos",
     "noResultsDescription": "Intente ajustar sus parámetros de búsqueda — reducir los umbrales de energía, aumentar la profundidad del ciclo o ampliar los filtros de elementos puede revelar más ciclos.",
     "columnFuel": "Combustible",
-    "columnDepth": "Profundidad",
+    "columnDepth": "Steps",
     "columnEnergy": "Energía (MeV)",
-    "columnFeedback": "Retroalimentación",
+    "columnFeedback": "Catalyst Recovery",
     "columnAbundance": "Abundancia",
     "columnStability": "Estabilidad",
     "resultsTitle": "Ciclos descubiertos ({{count}})",
@@ -921,11 +921,11 @@
     "fuelLabel": "Combustible",
     "runFullCascade": "Ejecutar cascada completa",
     "metricEnergy": "Energía total",
-    "metricFeedback": "Ratio de retroalimentación",
+    "metricFeedback": "Catalyst Recovery",
     "metricAbundance": "Puntuación de abundancia",
     "metricStability": "Puntuación de estabilidad",
     "reactionSteps": "Pasos de reacción",
-    "feedbackLabel": "RETROALIMENTACIÓN",
-    "transformationChain": "Cadena de transformación"
+    "feedbackLabel": "CATALYST RECOVERED",
+    "transformationChain": "Catalytic Cycle Diagram"
   }
 }

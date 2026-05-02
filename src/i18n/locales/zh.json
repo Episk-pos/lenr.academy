@@ -869,7 +869,7 @@
   },
   "cycleDiscovery": {
     "databaseNotLoaded": "数据库未加载。请等待数据库加载完成。",
-    "pageTitle": "反馈循环发现",
+    "pageTitle": "Catalytic Cycle Discovery",
     "pageDescription": "发现催化核反应循环，其中中间产物被再生，使自持链式反应成为可能。",
     "howItWorksTitle": "工作原理",
     "howItWorksDescription": "此工具搜索帕尔霍莫夫反应数据库，查找核素在一个反应中被消耗并在后续反应中被再生的循环 — 类似于碳-12在CNO循环中的回收方式。",
@@ -906,9 +906,9 @@
     "noResults": "未找到循环",
     "noResultsDescription": "尝试调整搜索参数 — 降低能量阈值、增加循环深度或扩大元素筛选范围可能会发现更多循环。",
     "columnFuel": "燃料",
-    "columnDepth": "深度",
+    "columnDepth": "Steps",
     "columnEnergy": "能量（MeV）",
-    "columnFeedback": "反馈",
+    "columnFeedback": "Catalyst Recovery",
     "columnAbundance": "丰度",
     "columnStability": "稳定性",
     "resultsTitle": "已发现的循环（{{count}}）",
@@ -919,11 +919,11 @@
     "fuelLabel": "燃料",
     "runFullCascade": "运行完整级联",
     "metricEnergy": "总能量",
-    "metricFeedback": "反馈比率",
+    "metricFeedback": "Catalyst Recovery",
     "metricAbundance": "丰度评分",
     "metricStability": "稳定性评分",
     "reactionSteps": "反应步骤",
-    "feedbackLabel": "反馈",
-    "transformationChain": "转化链"
+    "feedbackLabel": "CATALYST RECOVERED",
+    "transformationChain": "Catalytic Cycle Diagram"
   }
 }

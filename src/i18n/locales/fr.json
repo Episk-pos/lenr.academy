@@ -871,7 +871,7 @@
   },
   "cycleDiscovery": {
     "databaseNotLoaded": "Base de données non chargée. Veuillez attendre la fin du chargement de la base de données.",
-    "pageTitle": "Découverte de Cycles de Rétroaction",
+    "pageTitle": "Catalytic Cycle Discovery",
     "pageDescription": "Découvrez des cycles de réactions nucléaires catalytiques où les produits intermédiaires sont régénérés, permettant des réactions en chaîne auto-entretenues.",
     "howItWorksTitle": "Comment ça marche",
     "howItWorksDescription": "Cet outil recherche dans la base de données de réactions de Parkhomov des cycles où un nucléide est consommé dans une réaction et régénéré par une réaction ultérieure — similaire au recyclage du carbone-12 dans le cycle CNO.",
@@ -908,9 +908,9 @@
     "noResults": "Aucun cycle trouvé",
     "noResultsDescription": "Essayez d'ajuster vos paramètres de recherche — réduire les seuils d'énergie, augmenter la profondeur du cycle ou élargir les filtres d'éléments peut révéler plus de cycles.",
     "columnFuel": "Combustible",
-    "columnDepth": "Profondeur",
+    "columnDepth": "Steps",
     "columnEnergy": "Énergie (MeV)",
-    "columnFeedback": "Rétroaction",
+    "columnFeedback": "Catalyst Recovery",
     "columnAbundance": "Abondance",
     "columnStability": "Stabilité",
     "resultsTitle": "Cycles découverts ({{count}})",
@@ -921,11 +921,11 @@
     "fuelLabel": "Combustible",
     "runFullCascade": "Exécuter la cascade complète",
     "metricEnergy": "Énergie totale",
-    "metricFeedback": "Ratio de rétroaction",
+    "metricFeedback": "Catalyst Recovery",
     "metricAbundance": "Score d'abondance",
     "metricStability": "Score de stabilité",
     "reactionSteps": "Étapes de réaction",
-    "feedbackLabel": "RÉTROACTION",
-    "transformationChain": "Chaîne de transformation"
+    "feedbackLabel": "CATALYST RECOVERED",
+    "transformationChain": "Catalytic Cycle Diagram"
   }
 }

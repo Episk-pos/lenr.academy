@@ -866,7 +866,7 @@
   },
   "cycleDiscovery": {
     "databaseNotLoaded": "Datenbank nicht geladen. Bitte warten Sie, bis die Datenbank fertig geladen ist.",
-    "pageTitle": "Rückkopplungszyklus-Entdeckung",
+    "pageTitle": "Catalytic Cycle Discovery",
     "pageDescription": "Entdecken Sie katalytische Kernreaktionszyklen, bei denen Zwischenprodukte regeneriert werden und selbsterhaltende Kettenreaktionen ermöglichen.",
     "howItWorksTitle": "So funktioniert es",
     "howItWorksDescription": "Dieses Tool durchsucht die Parkhomov-Reaktionsdatenbank nach Zyklen, in denen ein Nuklid in einer Reaktion verbraucht und durch eine nachfolgende Reaktion regeneriert wird — ähnlich wie Kohlenstoff-12 im CNO-Zyklus recycelt wird.",
@@ -903,9 +903,9 @@
     "noResults": "Keine Zyklen gefunden",
     "noResultsDescription": "Versuchen Sie, Ihre Suchparameter anzupassen — Energieschwellen senken, Zyklustiefe erhöhen oder Elementfilter erweitern kann mehr Zyklen aufdecken.",
     "columnFuel": "Brennstoff",
-    "columnDepth": "Tiefe",
+    "columnDepth": "Steps",
     "columnEnergy": "Energie (MeV)",
-    "columnFeedback": "Rückkopplung",
+    "columnFeedback": "Catalyst Recovery",
     "columnAbundance": "Häufigkeit",
     "columnStability": "Stabilität",
     "resultsTitle": "Entdeckte Zyklen ({{count}})",
@@ -916,11 +916,11 @@
     "fuelLabel": "Brennstoff",
     "runFullCascade": "Vollständige Kaskade ausführen",
     "metricEnergy": "Gesamtenergie",
-    "metricFeedback": "Rückkopplungsverhältnis",
+    "metricFeedback": "Catalyst Recovery",
     "metricAbundance": "Häufigkeitswert",
     "metricStability": "Stabilitätswert",
     "reactionSteps": "Reaktionsschritte",
-    "feedbackLabel": "RÜCKKOPPLUNG",
-    "transformationChain": "Umwandlungskette"
+    "feedbackLabel": "CATALYST RECOVERED",
+    "transformationChain": "Catalytic Cycle Diagram"
   }
 }

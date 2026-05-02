@@ -869,7 +869,7 @@
   },
   "cycleDiscovery": {
     "databaseNotLoaded": "データベースが読み込まれていません。データベースの読み込みが完了するまでお待ちください。",
-    "pageTitle": "フィードバックサイクル発見",
+    "pageTitle": "Catalytic Cycle Discovery",
     "pageDescription": "中間生成物が再生される触媒的核反応サイクルを発見し、自己持続的な連鎖反応を可能にします。",
     "howItWorksTitle": "仕組み",
     "howItWorksDescription": "このツールはパルホモフ反応データベースを検索し、核種が一つの反応で消費され、後続の反応で再生されるサイクルを見つけます — CNOサイクルで炭素-12がリサイクルされるのと同様です。",
@@ -906,9 +906,9 @@
     "noResults": "サイクルが見つかりません",
     "noResultsDescription": "検索パラメータを調整してみてください — エネルギー閾値を下げる、サイクル深度を増やす、または元素フィルターを広げることで、より多くのサイクルが見つかる可能性があります。",
     "columnFuel": "燃料",
-    "columnDepth": "深度",
+    "columnDepth": "Steps",
     "columnEnergy": "エネルギー（MeV）",
-    "columnFeedback": "フィードバック",
+    "columnFeedback": "Catalyst Recovery",
     "columnAbundance": "存在度",
     "columnStability": "安定性",
     "resultsTitle": "発見されたサイクル（{{count}}）",
@@ -919,11 +919,11 @@
     "fuelLabel": "燃料",
     "runFullCascade": "フルカスケードを実行",
     "metricEnergy": "総エネルギー",
-    "metricFeedback": "フィードバック比",
+    "metricFeedback": "Catalyst Recovery",
     "metricAbundance": "存在度スコア",
     "metricStability": "安定性スコア",
     "reactionSteps": "反応ステップ",
-    "feedbackLabel": "フィードバック",
-    "transformationChain": "変換チェーン"
+    "feedbackLabel": "CATALYST RECOVERED",
+    "transformationChain": "Catalytic Cycle Diagram"
   }
 }

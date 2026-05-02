@@ -866,7 +866,7 @@
   },
   "cycleDiscovery": {
     "databaseNotLoaded": "База данных не загружена. Пожалуйста, дождитесь завершения загрузки базы данных.",
-    "pageTitle": "Обнаружение циклов обратной связи",
+    "pageTitle": "Catalytic Cycle Discovery",
     "pageDescription": "Обнаружьте каталитические циклы ядерных реакций, в которых промежуточные продукты регенерируются, обеспечивая самоподдерживающиеся цепные реакции.",
     "howItWorksTitle": "Как это работает",
     "howItWorksDescription": "Этот инструмент ищет в базе данных реакций Пархомова циклы, в которых нуклид потребляется в одной реакции и регенерируется в последующей — подобно тому, как углерод-12 перерабатывается в цикле CNO.",
@@ -903,9 +903,9 @@
     "noResults": "Циклы не найдены",
     "noResultsDescription": "Попробуйте изменить параметры поиска — снижение энергетических порогов, увеличение глубины цикла или расширение фильтров элементов может выявить больше циклов.",
     "columnFuel": "Топливо",
-    "columnDepth": "Глубина",
+    "columnDepth": "Steps",
     "columnEnergy": "Энергия (МэВ)",
-    "columnFeedback": "Обратная связь",
+    "columnFeedback": "Catalyst Recovery",
     "columnAbundance": "Распространённость",
     "columnStability": "Стабильность",
     "resultsTitle": "Обнаруженные циклы ({{count}})",
@@ -916,11 +916,11 @@
     "fuelLabel": "Топливо",
     "runFullCascade": "Запустить полный каскад",
     "metricEnergy": "Общая энергия",
-    "metricFeedback": "Коэффициент обратной связи",
+    "metricFeedback": "Catalyst Recovery",
     "metricAbundance": "Показатель распространённости",
     "metricStability": "Показатель стабильности",
     "reactionSteps": "Шаги реакции",
-    "feedbackLabel": "ОБРАТНАЯ СВЯЗЬ",
-    "transformationChain": "Цепочка превращений"
+    "feedbackLabel": "CATALYST RECOVERED",
+    "transformationChain": "Catalytic Cycle Diagram"
   }
 }
