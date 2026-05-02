@@ -224,45 +224,57 @@ function ReactionTypeBadge({ type }: { type: CycleReaction['type'] }) {
 }
 
 // ---------------------------------------------------------------------------
-// SVG Cycle Ring Diagram
+// SVG Cycle Loop Diagram
 // ---------------------------------------------------------------------------
 
-function CycleRingDiagram({
+/**
+ * Closed-loop diagram: catalyst nuclides sit in the center as the "core"
+ * being recycled, reaction nodes wrap the perimeter, and a single bold
+ * amber arrow flows around the perimeter (last step back to first), making
+ * the closure visually unmistakable.
+ */
+function CycleLoopDiagram({
   cycle,
   flows,
   feedbackNuclides,
   nuclideColorMap,
+  byproducts,
   hoveredNuclide,
 }: {
   cycle: DiscoveredCycle
   flows: FlowEdge[]
   feedbackNuclides: Set<NuclideKey>
   nuclideColorMap: Map<NuclideKey, number>
+  byproducts: Map<number, NuclideKey[]>
   hoveredNuclide: NuclideKey | null
 }) {
+  const { t } = useTranslation()
   const { reactions } = cycle
   const n = reactions.length
 
-  // Layout: reactions as nodes around a circle
-  const cx = 260
-  const cy = 240
-  const radius = Math.min(180, 100 + n * 20)
+  // Layout
+  const cx = 320
+  const cy = 280
+  const radius = Math.min(200, 110 + n * 22)
   const nodeW = 200
   const nodeH = 56
 
   // Angle for each reaction node (starting from top, going clockwise)
   const angles = reactions.map((_, i) => (i / n) * 2 * Math.PI - Math.PI / 2)
 
-  // Node positions (center of each node)
+  // Node centre positions
   const nodePositions = angles.map((a) => ({
     x: cx + radius * Math.cos(a),
     y: cy + radius * Math.sin(a),
   }))
 
-  const svgW = cx * 2 + 20
-  const svgH = cy * 2 + 20
+  const svgW = cx * 2 + 40
+  const svgH = cy * 2 + 40
 
-  // Build flow arcs between nodes
+  // Outer perimeter radius (where bold cycle arrows hug the outside of nodes)
+  const perimeterRadius = radius + Math.max(nodeH, nodeW * 0.35) * 0.6
+
+  // Build flow arcs (intermediary, demoted to hairlines through the centre)
   const flowArcs = flows.map((f) => {
     const from = nodePositions[f.fromStep]
     const to = nodePositions[f.toStep]
@@ -271,68 +283,120 @@ function CycleRingDiagram({
     return { ...f, from, to, color }
   })
 
-  // Feedback arc: from last step back to step 0
-  const feedbackArc = feedbackNuclides.size > 0 ? {
-    from: nodePositions[n - 1],
-    to: nodePositions[0],
-    nuclideKeys: Array.from(feedbackNuclides),
-  } : null
+  // Build perimeter arrows: from step i -> step (i+1) % n
+  // Each arrow follows an arc that hugs the OUTSIDE of the ring.
+  const perimeterArrows = reactions.map((_, i) => {
+    const fromAngle = angles[i]
+    const toAngle = angles[(i + 1) % n]
+    // Start/end points sit on the perimeterRadius circle, slightly offset so
+    // the arrow does not visually collide with the rectangle nodes.
+    const fromAngleEdge = fromAngle + (Math.PI / n) * 0.45
+    const toAngleEdge = toAngle - (Math.PI / n) * 0.45
+    const from = {
+      x: cx + perimeterRadius * Math.cos(fromAngleEdge),
+      y: cy + perimeterRadius * Math.sin(fromAngleEdge),
+    }
+    const to = {
+      x: cx + perimeterRadius * Math.cos(toAngleEdge),
+      y: cy + perimeterRadius * Math.sin(toAngleEdge),
+    }
+    // Use SVG arc command sweeping along the perimeter circle
+    return { from, to }
+  })
+
+  // Outgoing byproduct rays
+  type BPRay = { stepIdx: number; nuclideKey: NuclideKey; from: { x: number; y: number }; to: { x: number; y: number } }
+  const byproductRays: BPRay[] = []
+  byproducts.forEach((keys, stepIdx) => {
+    const a = angles[stepIdx]
+    keys.forEach((key, i) => {
+      // Stagger multiple byproducts by spreading them along a small arc
+      const spread = (i - (keys.length - 1) / 2) * 0.12
+      const rayAngle = a + spread
+      const rayStartR = radius + nodeH * 0.55
+      const rayEndR = perimeterRadius + 32
+      byproductRays.push({
+        stepIdx,
+        nuclideKey: key,
+        from: {
+          x: cx + rayStartR * Math.cos(rayAngle),
+          y: cy + rayStartR * Math.sin(rayAngle),
+        },
+        to: {
+          x: cx + rayEndR * Math.cos(rayAngle),
+          y: cy + rayEndR * Math.sin(rayAngle),
+        },
+      })
+    })
+  })
+
+  // Resolve byproduct keys back to {E, A} via a quick lookup over outputs
+  const nuclideLabelByKey = new Map<NuclideKey, string>()
+  for (const r of reactions) {
+    for (const out of r.outputs) {
+      const k = nKey(out)
+      if (!nuclideLabelByKey.has(k)) nuclideLabelByKey.set(k, `${out.A}${out.E}`)
+    }
+  }
 
   return (
     <svg
       viewBox={`0 0 ${svgW} ${svgH}`}
-      className="w-full max-w-2xl mx-auto"
-      style={{ maxHeight: 520 }}
+      className="w-full max-w-3xl mx-auto"
+      style={{ maxHeight: 600 }}
     >
       <defs>
-        <marker id="arrowFlow" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
-          <path d="M0,0 L8,3 L0,6" className="fill-gray-400 dark:fill-gray-500" />
+        <marker
+          id="arrowPerimeter"
+          markerWidth="14"
+          markerHeight="10"
+          refX="11"
+          refY="5"
+          orient="auto"
+          markerUnits="userSpaceOnUse"
+        >
+          <path
+            d="M0,0 L14,5 L0,10 Z"
+            className="fill-amber-500 dark:fill-amber-400"
+          />
         </marker>
-        <marker id="arrowFeedback" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
-          <path d="M0,0 L10,3.5 L0,7" className="fill-amber-500 dark:fill-amber-400" />
+        <marker
+          id="arrowByproduct"
+          markerWidth="8"
+          markerHeight="6"
+          refX="7"
+          refY="3"
+          orient="auto"
+        >
+          <path
+            d="M0,0 L8,3 L0,6"
+            className="fill-gray-400 dark:fill-gray-500"
+          />
         </marker>
       </defs>
 
-      {/* Connection arcs between steps (sequential) */}
-      {reactions.map((_, i) => {
-        if (i >= n - 1) return null
-        const from = nodePositions[i]
-        const to = nodePositions[i + 1]
-        // Straight line along the ring
-        return (
-          <line
-            key={`seq-${i}`}
-            x1={from.x}
-            y1={from.y}
-            x2={to.x}
-            y2={to.y}
-            className="stroke-gray-200 dark:stroke-gray-700"
-            strokeWidth={2}
-            strokeDasharray="6 4"
-          />
-        )
-      })}
+      {/* Subtle background ring (visual hint of the loop circumference) */}
+      <circle
+        cx={cx}
+        cy={cy}
+        r={perimeterRadius}
+        fill="none"
+        className="stroke-amber-100 dark:stroke-amber-900/40"
+        strokeWidth={1}
+        strokeDasharray="4 6"
+      />
 
-      {/* Flow arcs showing nuclide transfer */}
+      {/* Demoted intermediary flow arcs (hairlines through the centre) */}
       {flowArcs.map((arc, i) => {
-        const dx = arc.to.x - arc.from.x
-        const dy = arc.to.y - arc.from.y
-        const dist = Math.sqrt(dx * dx + dy * dy)
-        // Curve outward from center
+        // Curve gently toward the centre so they sit "inside" the ring
         const midX = (arc.from.x + arc.to.x) / 2
         const midY = (arc.from.y + arc.to.y) / 2
-        const perpX = -dy / dist
-        const perpY = dx / dist
-        // Curve away from center
-        const toCenterX = cx - midX
-        const toCenterY = cy - midY
-        const dot = perpX * toCenterX + perpY * toCenterY
-        const sign = dot > 0 ? -1 : 1
-        const curveAmount = Math.min(40, dist * 0.3)
-        const ctrlX = midX + sign * perpX * curveAmount
-        const ctrlY = midY + sign * perpY * curveAmount
+        const ctrlX = midX + (cx - midX) * 0.5
+        const ctrlY = midY + (cy - midY) * 0.5
 
-        const isActive = hoveredNuclide === arc.nuclideKey || !hoveredNuclide
+        const isHovered = hoveredNuclide === arc.nuclideKey
+        const opacity = isHovered ? 0.8 : 0.2
+        const strokeWidth = isHovered ? 2 : 1
 
         return (
           <path
@@ -340,47 +404,59 @@ function CycleRingDiagram({
             d={`M${arc.from.x},${arc.from.y} Q${ctrlX},${ctrlY} ${arc.to.x},${arc.to.y}`}
             fill="none"
             stroke={arc.color.line}
-            strokeWidth={isActive ? 3 : 1.5}
-            strokeOpacity={isActive ? 0.8 : 0.15}
-            markerEnd="url(#arrowFlow)"
+            strokeWidth={strokeWidth}
+            strokeOpacity={opacity}
             className="transition-all duration-150"
           />
         )
       })}
 
-      {/* Feedback arc (cycle closure) */}
-      {feedbackArc && (() => {
-        const from = feedbackArc.from
-        const to = feedbackArc.to
-        const dx = to.x - from.x
-        const dy = to.y - from.y
-        const dist = Math.sqrt(dx * dx + dy * dy)
-        const midX = (from.x + to.x) / 2
-        const midY = (from.y + to.y) / 2
-        const perpX = -dy / dist
-        const perpY = dx / dist
-        const toCenterX = cx - midX
-        const toCenterY = cy - midY
-        const dot = perpX * toCenterX + perpY * toCenterY
-        const sign = dot > 0 ? -1 : 1
-        const curveAmount = Math.max(50, dist * 0.4)
-        const ctrlX = midX + sign * perpX * curveAmount
-        const ctrlY = midY + sign * perpY * curveAmount
-
-        const isActive = !hoveredNuclide || feedbackArc.nuclideKeys.some(k => k === hoveredNuclide)
-
+      {/* Bold perimeter cycle arrows (one of which closes the loop). */}
+      {perimeterArrows.map((arrow, i) => {
+        // SVG arc: large-arc=0, sweep=1 (clockwise) along the perimeter circle
+        const d = `M${arrow.from.x},${arrow.from.y} A${perimeterRadius},${perimeterRadius} 0 0 1 ${arrow.to.x},${arrow.to.y}`
         return (
           <path
-            d={`M${from.x},${from.y} Q${ctrlX},${ctrlY} ${to.x},${to.y}`}
+            key={`peri-${i}`}
+            d={d}
             fill="none"
-            className="stroke-amber-500 dark:stroke-amber-400 transition-all duration-150"
-            strokeWidth={isActive ? 3.5 : 2}
-            strokeOpacity={isActive ? 0.9 : 0.2}
-            strokeDasharray="8 4"
-            markerEnd="url(#arrowFeedback)"
+            className="stroke-amber-500 dark:stroke-amber-400"
+            strokeWidth={4}
+            strokeLinecap="round"
+            markerEnd="url(#arrowPerimeter)"
           />
         )
-      })()}
+      })}
+
+      {/* Byproduct rays */}
+      {byproductRays.map((ray, i) => {
+        const isHovered = hoveredNuclide === ray.nuclideKey
+        return (
+          <g key={`bp-${i}`} className="transition-all duration-150">
+            <line
+              x1={ray.from.x}
+              y1={ray.from.y}
+              x2={ray.to.x}
+              y2={ray.to.y}
+              className="stroke-gray-400 dark:stroke-gray-500"
+              strokeWidth={isHovered ? 1.6 : 1}
+              strokeOpacity={isHovered ? 0.9 : 0.55}
+              markerEnd="url(#arrowByproduct)"
+            />
+            <text
+              x={ray.to.x}
+              y={ray.to.y}
+              textAnchor={ray.to.x < cx ? 'end' : 'start'}
+              dx={ray.to.x < cx ? -4 : 4}
+              dy={4}
+              className="fill-gray-500 dark:fill-gray-400 text-[10px] font-semibold"
+              style={{ fontFamily: 'system-ui, sans-serif' }}
+            >
+              {nuclideLabelByKey.get(ray.nuclideKey) ?? ray.nuclideKey}
+            </text>
+          </g>
+        )
+      })}
 
       {/* Reaction nodes */}
       {reactions.map((reaction, i) => {
@@ -388,8 +464,8 @@ function CycleRingDiagram({
         const x = pos.x - nodeW / 2
         const y = pos.y - nodeH / 2
 
-        const inputStr = reaction.inputs.map(n => `${n.A}${n.E}`).join(' + ')
-        const outputStr = reaction.outputs.map(n => `${n.A}${n.E}`).join(' + ')
+        const inputStr = reaction.inputs.map((nn) => `${nn.A}${nn.E}`).join(' + ')
+        const outputStr = reaction.outputs.map((nn) => `${nn.A}${nn.E}`).join(' + ')
 
         const isFeedback = reaction.isFeedback
         const borderColor = isFeedback
@@ -412,7 +488,11 @@ function CycleRingDiagram({
               cx={x + 16}
               cy={y + 16}
               r={11}
-              className={`${isFeedback ? 'fill-amber-100 dark:fill-amber-900/60 stroke-amber-400 dark:stroke-amber-600' : 'fill-gray-100 dark:fill-gray-700 stroke-gray-300 dark:stroke-gray-600'}`}
+              className={`${
+                isFeedback
+                  ? 'fill-amber-100 dark:fill-amber-900/60 stroke-amber-400 dark:stroke-amber-600'
+                  : 'fill-gray-100 dark:fill-gray-700 stroke-gray-300 dark:stroke-gray-600'
+              }`}
               strokeWidth={1}
             />
             <text
@@ -429,9 +509,11 @@ function CycleRingDiagram({
               x={x + 32}
               y={y + 20}
               className={`text-[9px] font-bold uppercase ${
-                reaction.type === 'fusion' ? 'fill-blue-600 dark:fill-blue-400'
-                : reaction.type === 'twotwo' ? 'fill-purple-600 dark:fill-purple-400'
-                : 'fill-red-600 dark:fill-red-400'
+                reaction.type === 'fusion'
+                  ? 'fill-blue-600 dark:fill-blue-400'
+                  : reaction.type === 'twotwo'
+                    ? 'fill-purple-600 dark:fill-purple-400'
+                    : 'fill-red-600 dark:fill-red-400'
               }`}
               style={{ fontFamily: 'system-ui, sans-serif', letterSpacing: '0.05em' }}
             >
@@ -445,7 +527,8 @@ function CycleRingDiagram({
               className="fill-green-600 dark:fill-green-400 text-[10px] font-semibold"
               style={{ fontFamily: 'ui-monospace, monospace' }}
             >
-              {reaction.MeV >= 0 ? '+' : ''}{reaction.MeV.toFixed(1)} MeV
+              {reaction.MeV >= 0 ? '+' : ''}
+              {reaction.MeV.toFixed(1)} MeV
             </text>
             {/* Equation */}
             <text
@@ -459,41 +542,73 @@ function CycleRingDiagram({
               <tspan className="fill-gray-400 dark:fill-gray-500"> → </tspan>
               {outputStr}
             </text>
-            {/* Feedback glow */}
-            {isFeedback && (
-              <text
-                x={x + nodeW / 2}
-                y={y - 6}
-                textAnchor="middle"
-                className="fill-amber-600 dark:fill-amber-400 text-[9px] font-bold uppercase"
-                style={{ fontFamily: 'system-ui, sans-serif', letterSpacing: '0.08em' }}
-              >
-                ↻ REGENERATES CATALYST
-              </text>
-            )}
           </g>
         )
       })}
 
-      {/* Center label */}
-      <text
-        x={cx}
-        y={cy - 8}
-        textAnchor="middle"
-        className="fill-gray-400 dark:fill-gray-500 text-[11px] font-medium uppercase"
-        style={{ fontFamily: 'system-ui, sans-serif', letterSpacing: '0.1em' }}
-      >
-        Catalytic
-      </text>
-      <text
-        x={cx}
-        y={cy + 8}
-        textAnchor="middle"
-        className="fill-gray-400 dark:fill-gray-500 text-[11px] font-medium uppercase"
-        style={{ fontFamily: 'system-ui, sans-serif', letterSpacing: '0.1em' }}
-      >
-        Cycle
-      </text>
+      {/* Centre catalyst — the recycled core */}
+      <g>
+        {/* Catalyst chips (rendered as foreignObject to reuse NuclideBadge styling
+            would force layout shifts; use raw SVG circles + text instead). */}
+        {(() => {
+          const fuelList = cycle.fuelNuclides
+          const slotW = 60
+          const totalW = fuelList.length * slotW
+          const startX = cx - totalW / 2 + slotW / 2
+          return fuelList.map((nn, i) => {
+            const fx = startX + i * slotW
+            const fy = cy - 8
+            const isHovered = hoveredNuclide === nKey(nn)
+            const fbHas = feedbackNuclides.has(nKey(nn))
+            return (
+              <g key={`catalyst-${i}`}>
+                <rect
+                  x={fx - 26}
+                  y={fy - 14}
+                  width={52}
+                  height={28}
+                  rx={14}
+                  className={`fill-amber-100 dark:fill-amber-900/50 ${
+                    fbHas ? 'stroke-amber-500 dark:stroke-amber-400' : 'stroke-amber-300 dark:stroke-amber-700'
+                  }`}
+                  strokeWidth={isHovered ? 2.5 : fbHas ? 2 : 1.5}
+                />
+                <text
+                  x={fx}
+                  y={fy + 5}
+                  textAnchor="middle"
+                  className="fill-amber-800 dark:fill-amber-200 text-[12px] font-semibold"
+                  style={{ fontFamily: 'system-ui, sans-serif' }}
+                >
+                  <tspan className="text-[9px]" dy={-3}>
+                    {nn.A}
+                  </tspan>
+                  <tspan dy={3}>{nn.E}</tspan>
+                </text>
+              </g>
+            )
+          })
+        })()}
+        {/* Caption below catalyst */}
+        <text
+          x={cx}
+          y={cy + 32}
+          textAnchor="middle"
+          className="fill-amber-700 dark:fill-amber-400 text-[10px] font-bold uppercase"
+          style={{ fontFamily: 'system-ui, sans-serif', letterSpacing: '0.1em' }}
+        >
+          {t('cycleDiscovery.catalystCenterLabel')}
+        </text>
+        <text
+          x={cx}
+          y={cy + 48}
+          textAnchor="middle"
+          className="fill-gray-500 dark:fill-gray-400 text-[10px] italic"
+          style={{ fontFamily: 'system-ui, sans-serif' }}
+        >
+          ← reactions cycle around catalyst →
+        </text>
+      </g>
     </svg>
   )
 }
@@ -999,11 +1114,12 @@ export default function CycleVisualization({
           <p className="text-xs text-gray-500 dark:text-gray-400 mb-4">
             {t('cycleDiscovery.transformationChainDesc')}
           </p>
-          <CycleRingDiagram
+          <CycleLoopDiagram
             cycle={cycle}
             flows={flows}
             feedbackNuclides={feedbackNuclides}
             nuclideColorMap={nuclideColorMap}
+            byproducts={byproducts}
             hoveredNuclide={hoveredNuclide}
           />
           <div className="mt-4">
