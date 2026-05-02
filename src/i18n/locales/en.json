@@ -949,6 +949,13 @@
     "reactionTypeFusion": "FUSION",
     "reactionTypeTwoToTwo": "TWO-TO-TWO",
     "reactionTypeFission": "FISSION",
-    "reactionTypeTwoToTwoShort": "2→2"
+    "reactionTypeTwoToTwoShort": "2→2",
+    "netCycleSummary": "Net Cycle Transformation",
+    "netCycleSummaryCaption": "Fuel is recovered each cycle, releasing energy and byproducts.",
+    "netLabelFuelIn": "FUEL IN",
+    "netLabelFuelOut": "FUEL OUT (recovered)",
+    "netLabelEnergy": "NET ENERGY",
+    "netLabelByproducts": "BYPRODUCTS",
+    "netLabelNoByproducts": "(none)"
   }
 }

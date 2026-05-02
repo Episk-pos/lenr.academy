@@ -924,6 +924,13 @@
     "metricStability": "稳定性评分",
     "reactionSteps": "反应步骤",
     "feedbackLabel": "CATALYST RECOVERED",
-    "transformationChain": "Catalytic Cycle Diagram"
+    "transformationChain": "Catalytic Cycle Diagram",
+    "netCycleSummary": "Net Cycle Transformation",
+    "netCycleSummaryCaption": "Fuel is recovered each cycle, releasing energy and byproducts.",
+    "netLabelFuelIn": "FUEL IN",
+    "netLabelFuelOut": "FUEL OUT (recovered)",
+    "netLabelEnergy": "NET ENERGY",
+    "netLabelByproducts": "BYPRODUCTS",
+    "netLabelNoByproducts": "(none)"
   }
 }

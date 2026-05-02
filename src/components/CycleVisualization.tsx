@@ -711,6 +711,137 @@ function FlowLegend({ feedbackNuclides }: { feedbackNuclides: Set<NuclideKey> })
 }
 
 // ---------------------------------------------------------------------------
+// Net Cycle Summary (hero panel)
+// ---------------------------------------------------------------------------
+
+function NetCycleSummary({
+  cycle,
+  byproducts,
+}: {
+  cycle: DiscoveredCycle
+  byproducts: Map<number, NuclideKey[]>
+  feedbackNuclides: Set<NuclideKey>
+}) {
+  const { t } = useTranslation()
+
+  // Build a lookup of all nuclide objects by NuclideKey from reaction outputs
+  // so we can resolve byproduct keys back to {E, Z, A}.
+  const nuclideByKey = useMemo(() => {
+    const map = new Map<NuclideKey, { E: string; Z: number; A: number }>()
+    for (const reaction of cycle.reactions) {
+      for (const out of reaction.outputs) {
+        const key = nKey(out)
+        if (!map.has(key)) map.set(key, out)
+      }
+      for (const inp of reaction.inputs) {
+        const key = nKey(inp)
+        if (!map.has(key)) map.set(key, inp)
+      }
+    }
+    return map
+  }, [cycle.reactions])
+
+  // Flatten byproduct keys (preserve order, dedupe)
+  const byproductNuclides = useMemo(() => {
+    const seen = new Set<NuclideKey>()
+    const result: Array<{ E: string; Z: number; A: number }> = []
+    for (const keys of byproducts.values()) {
+      for (const key of keys) {
+        if (!seen.has(key)) {
+          seen.add(key)
+          const n = nuclideByKey.get(key)
+          if (n) result.push(n)
+        }
+      }
+    }
+    return result
+  }, [byproducts, nuclideByKey])
+
+  return (
+    <div className="card p-6 bg-gradient-to-br from-amber-50 to-amber-100/50 dark:from-amber-900/20 dark:to-amber-900/5 border-amber-200 dark:border-amber-800/40">
+      <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-1">
+        {t('cycleDiscovery.netCycleSummary')}
+      </h3>
+      <p className="text-xs text-gray-600 dark:text-gray-400 mb-4">
+        {t('cycleDiscovery.netCycleSummaryCaption')}
+      </p>
+
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 md:gap-3">
+        {/* FUEL IN */}
+        <div className="flex flex-col items-center md:items-start gap-1.5 flex-shrink-0">
+          <span className="text-[10px] font-bold uppercase tracking-wider text-amber-700 dark:text-amber-400">
+            {t('cycleDiscovery.netLabelFuelIn')}
+          </span>
+          <div className="flex flex-wrap gap-1 justify-center md:justify-start">
+            {cycle.fuelNuclides.map((n, i) => (
+              <NuclideBadge key={`fin-${i}`} nuclide={n} variant="fuel" />
+            ))}
+          </div>
+        </div>
+
+        {/* Arrow + cycle symbol */}
+        <div className="flex items-center justify-center gap-2 text-amber-600 dark:text-amber-400 flex-shrink-0">
+          <ArrowRight className="w-5 h-5" />
+          <RefreshCw className="w-6 h-6" />
+          <ArrowRight className="w-5 h-5" />
+        </div>
+
+        {/* FUEL OUT (recovered) */}
+        <div className="flex flex-col items-center md:items-start gap-1.5 flex-shrink-0">
+          <span className="text-[10px] font-bold uppercase tracking-wider text-amber-700 dark:text-amber-400">
+            {t('cycleDiscovery.netLabelFuelOut')}
+          </span>
+          <div className="flex flex-wrap gap-1 justify-center md:justify-start">
+            {cycle.fuelNuclides.map((n, i) => (
+              <NuclideBadge key={`fout-${i}`} nuclide={n} variant="fuel" />
+            ))}
+          </div>
+        </div>
+
+        {/* Plus separator */}
+        <div className="flex items-center justify-center text-2xl text-gray-400 dark:text-gray-500 font-light flex-shrink-0">
+          +
+        </div>
+
+        {/* NET ENERGY */}
+        <div className="flex flex-col items-center md:items-start gap-1.5 flex-shrink-0">
+          <span className="text-[10px] font-bold uppercase tracking-wider text-green-700 dark:text-green-400">
+            {t('cycleDiscovery.netLabelEnergy')}
+          </span>
+          <span className="font-mono text-base font-semibold text-green-700 dark:text-green-400">
+            {cycle.totalEnergy >= 0 ? '+' : ''}
+            {cycle.totalEnergy.toFixed(2)} MeV
+          </span>
+        </div>
+
+        {/* Plus separator */}
+        <div className="flex items-center justify-center text-2xl text-gray-400 dark:text-gray-500 font-light flex-shrink-0">
+          +
+        </div>
+
+        {/* BYPRODUCTS */}
+        <div className="flex flex-col items-center md:items-start gap-1.5 flex-shrink-0">
+          <span className="text-[10px] font-bold uppercase tracking-wider text-gray-600 dark:text-gray-400">
+            {t('cycleDiscovery.netLabelByproducts')}
+          </span>
+          <div className="flex flex-wrap gap-1 justify-center md:justify-start">
+            {byproductNuclides.length > 0 ? (
+              byproductNuclides.map((n, i) => (
+                <NuclideBadge key={`bp-${i}`} nuclide={n} variant="byproduct" />
+              ))
+            ) : (
+              <span className="text-xs italic text-gray-500 dark:text-gray-500">
+                {t('cycleDiscovery.netLabelNoByproducts')}
+              </span>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// ---------------------------------------------------------------------------
 // Main Component
 // ---------------------------------------------------------------------------
 
@@ -793,6 +924,13 @@ export default function CycleVisualization({
           </button>
         </div>
       </div>
+
+      {/* Net Cycle Transformation hero panel */}
+      <NetCycleSummary
+        cycle={cycle}
+        byproducts={byproducts}
+        feedbackNuclides={feedbackNuclides}
+      />
 
       {/* Metric cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
