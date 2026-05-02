@@ -5,6 +5,7 @@ import {
   Play,
   Zap,
   RefreshCw,
+  RotateCcw,
   Gem,
   Shield,
   ArrowRight,
@@ -676,6 +677,31 @@ function EnhancedStepList({
           </div>
         )
       })}
+
+      {/* Cycle closure footer */}
+      <div className="px-6 py-4 border-t-2 border-dashed border-amber-300 dark:border-amber-700 bg-amber-50/40 dark:bg-amber-900/10">
+        <div className="flex items-center justify-center gap-3 flex-wrap">
+          <RotateCcw className="w-5 h-5 text-amber-600 dark:text-amber-400 flex-shrink-0" />
+          <span className="text-sm font-medium text-amber-800 dark:text-amber-300">
+            {t('cycleDiscovery.cycleClosesLabel')}
+          </span>
+          {(() => {
+            // Resolve feedbackNuclides keys back to {E, Z, A} objects via cycle.fuelNuclides
+            const fuelByKey = new Map(cycle.fuelNuclides.map((n) => [nKey(n), n]))
+            const closedNuclides = Array.from(feedbackNuclides)
+              .map((k) => fuelByKey.get(k))
+              .filter((n): n is { E: string; Z: number; A: number } => !!n)
+            if (closedNuclides.length === 0) return null
+            return (
+              <div className="flex flex-wrap gap-1 items-center">
+                {closedNuclides.map((n, i) => (
+                  <NuclideBadge key={`close-${i}`} nuclide={n} variant="feedback" />
+                ))}
+              </div>
+            )
+          })()}
+        </div>
+      </div>
     </div>
   )
 }

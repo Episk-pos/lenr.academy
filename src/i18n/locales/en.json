@@ -956,6 +956,7 @@
     "netLabelFuelOut": "FUEL OUT (recovered)",
     "netLabelEnergy": "NET ENERGY",
     "netLabelByproducts": "BYPRODUCTS",
-    "netLabelNoByproducts": "(none)"
+    "netLabelNoByproducts": "(none)",
+    "cycleClosesLabel": "Cycle closes — fuel returned to start"
   }
 }
