@@ -46,7 +46,8 @@
     "openMenu": "メニューを開く",
     "closeMenu": "メニューを閉じる",
     "help": "ヘルプ＆用語集",
-    "mullerResonance": "ミュラー共鳴"
+    "mullerResonance": "ミュラー共鳴",
+    "transmutations": "核種変換"
   },
   "theme": {
     "lightMode": "ライトモード",

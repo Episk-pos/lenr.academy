@@ -46,7 +46,8 @@
     "openMenu": "Открыть меню",
     "closeMenu": "Закрыть меню",
     "help": "Справка и глоссарий",
-    "mullerResonance": "Резонанс Мюллера"
+    "mullerResonance": "Резонанс Мюллера",
+    "transmutations": "Трансмутации"
   },
   "theme": {
     "lightMode": "Светлая тема",
