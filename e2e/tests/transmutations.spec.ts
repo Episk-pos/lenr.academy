@@ -1,0 +1,59 @@
+import { test, expect } from '@playwright/test';
+import {
+  acceptPrivacyConsent,
+  waitForDatabaseReady,
+} from '../fixtures/test-helpers';
+
+test.describe('Transmutations Page', () => {
+  test.beforeEach(async ({ page }) => {
+    await acceptPrivacyConsent(page);
+    await page.goto('/transmutations');
+    await waitForDatabaseReady(page);
+  });
+
+  test('renders the page title and disclaimer banner', async ({ page }) => {
+    await expect(
+      page.getByRole('heading', { name: /Transmutation Pathway Explorer/i })
+    ).toBeVisible();
+    await expect(
+      page.getByText(/Documented claims, not verified mechanisms/i)
+    ).toBeVisible();
+  });
+
+  test('renders documented transmutation cards', async ({ page }) => {
+    // Iwamura Cs → Pr is the headline entry
+    await expect(page.getByText(/Cs-133/).first()).toBeVisible();
+    await expect(page.getByText(/Pr-141/).first()).toBeVisible();
+    await expect(
+      page.getByText(/Iwamura.*Mitsubishi/i).first()
+    ).toBeVisible();
+  });
+
+  test('finds Parkhomov pathways for first card without errors', async ({ page }) => {
+    // Click the first "Find pathways" button (Iwamura Cs → Pr)
+    const firstButton = page
+      .getByTestId(/find-pathways-/)
+      .first();
+    await expect(firstButton).toBeEnabled();
+    await firstButton.click();
+
+    // Wait for either pathway results or "no pathways found" to appear.
+    // We don't assert which — both are valid outcomes for the first cut.
+    await expect(
+      page
+        .getByText(/Candidate pathways|No 1- or 2-step pathway found/i)
+        .first()
+    ).toBeVisible({ timeout: 30000 });
+  });
+
+  test('category filter narrows the visible cards', async ({ page }) => {
+    // Click the Biological filter
+    await page.getByRole('button', { name: 'Biological', exact: true }).click();
+
+    // Vysotskii biological entries should still be visible
+    await expect(page.getByText(/Vysotskii/i).first()).toBeVisible();
+
+    // Iwamura (thin-film) should now be hidden
+    await expect(page.getByText(/Iwamura/i)).toHaveCount(0);
+  });
+});
