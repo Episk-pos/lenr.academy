@@ -2,6 +2,8 @@ import { X } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import type { Element, AtomicRadiiData } from '../types'
+import CitationBadge from './CitationBadge'
+import { getCitationsForElement } from '../services/citationsService'
 
 interface ElementDetailsCardProps {
   element: Element | null
@@ -12,6 +14,8 @@ interface ElementDetailsCardProps {
 export default function ElementDetailsCard({ element, atomicRadii, onClose }: ElementDetailsCardProps) {
   const { t } = useTranslation()
   if (!element) return null
+
+  const elementCitations = getCitationsForElement(element.Z)
 
   return (
     <div className="card p-6 animate-fade-in">
@@ -237,6 +241,28 @@ export default function ElementDetailsCard({ element, atomicRadii, onClose }: El
           </div>
         )}
       </div>
+
+      {elementCitations.length > 0 && (
+        <div className="mt-6 pt-4 border-t border-gray-200 dark:border-gray-700">
+          <h3 className="font-semibold text-gray-900 dark:text-white mb-3 text-sm uppercase tracking-wide flex items-center gap-2">
+            {t('citations.documentedIn', { defaultValue: 'Documented in' })}
+            <CitationBadge
+              citationIds={elementCitations.map((c) => c.id)}
+              placement="corner"
+            />
+          </h3>
+          <ul className="space-y-1.5 text-sm text-gray-700 dark:text-gray-300">
+            {elementCitations.map((c) => (
+              <li key={c.id} className="leading-snug">
+                <span className="font-medium text-gray-900 dark:text-gray-100">
+                  {c.authors} ({c.year}):
+                </span>{' '}
+                {c.excerpt}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
     </div>
   )
 }
