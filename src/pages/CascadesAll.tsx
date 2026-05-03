@@ -183,6 +183,20 @@ export default function CascadesAll() {
           }
         }
         setHasRestoredFromContext(true)
+
+        // Check for prefilled fuel from cycle discovery "Run Full Cascade" button
+        const prefillJson = sessionStorage.getItem('cascade-prefill-fuel')
+        if (prefillJson) {
+          try {
+            const prefillIds = JSON.parse(prefillJson) as string[]
+            if (Array.isArray(prefillIds) && prefillIds.length > 0) {
+              setFuelNuclides(prefillIds)
+            }
+          } catch {
+            // Ignore malformed JSON
+          }
+          sessionStorage.removeItem('cascade-prefill-fuel')
+        }
       }
     }
   }, [db, hasRestoredFromContext, getCascadeState])

@@ -14,6 +14,7 @@ import ShowElementData from './pages/ShowElementData'
 import TablesInDetail from './pages/TablesInDetail'
 import AllTables from './pages/AllTables'
 import CascadesAll from './pages/CascadesAll'
+import CycleDiscovery from './pages/CycleDiscovery'
 import PrivacyPreferences from './pages/PrivacyPreferences'
 import Help from './pages/Help'
 import MullerResonance from './pages/MullerResonance'
@@ -68,6 +69,7 @@ function App() {
                 <Route path="/tables" element={<TablesInDetail />} />
                 <Route path="/all-tables" element={<AllTables />} />
                 <Route path="/cascades" element={<CascadesAll />} />
+                <Route path="/cycles" element={<CycleDiscovery />} />
                 <Route path="/muller-resonance" element={<MullerResonance />} />
                 <Route path="/help" element={<Help />} />
                 <Route path="/privacy" element={<PrivacyPreferences />} />

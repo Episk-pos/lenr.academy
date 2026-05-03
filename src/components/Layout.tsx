@@ -1,6 +1,6 @@
 import { ReactNode, useEffect, useCallback, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
-import { Menu, X, Atom, Moon, Sun, ChevronLeft, ChevronRight, Home as HomeIcon, GitMerge, Scissors, ArrowLeftRight, FlaskConical, Table, TableProperties, Shield, Workflow, HelpCircle, Waves } from 'lucide-react'
+import { Menu, X, Atom, Moon, Sun, ChevronLeft, ChevronRight, Home as HomeIcon, GitMerge, Scissors, ArrowLeftRight, FlaskConical, Table, TableProperties, Shield, Workflow, HelpCircle, Waves, RefreshCw } from 'lucide-react'
 import { useTranslation, Trans } from 'react-i18next'
 import { useTheme } from '../contexts/ThemeContext'
 import { useLayout } from '../contexts/LayoutContext'
@@ -32,6 +32,7 @@ const navigationItems: NavigationItem[] = [
   { nameKey: 'navigation.fissionReactions', path: '/fission', icon: Scissors },
   { nameKey: 'navigation.twoToTwoReactions', path: '/twotwo', icon: ArrowLeftRight },
   { nameKey: 'navigation.cascades', path: '/cascades', icon: Workflow },
+  { nameKey: 'navigation.cycleDiscovery', path: '/cycles', icon: RefreshCw },
   { nameKey: 'navigation.tablesInDetail', path: '/tables', icon: Table },
   { nameKey: 'navigation.allTables', path: '/all-tables', icon: TableProperties },
   { nameKey: 'navigation.mullerResonance', path: '/muller-resonance', icon: Waves },

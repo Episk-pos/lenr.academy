@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect, useCallback, ReactNode, useRef } from 'react';
-import { AllQueryStates, QueryPageState, CascadePageState } from '../types';
+import { AllQueryStates, QueryPageState, CascadePageState, CycleDiscoveryPageState } from '../types';
 import {
   saveCascadeResults,
   getCascadeResults,
@@ -27,12 +27,14 @@ interface QueryStateContextType {
   updateFissionState: (state: Partial<QueryPageState>) => void;
   updateTwoToTwoState: (state: Partial<QueryPageState>) => void;
   updateCascadeState: (state: Partial<CascadePageState>) => void;
+  updateCycleDiscoveryState: (state: Partial<CycleDiscoveryPageState>) => void;
   getFusionState: () => QueryPageState | undefined;
   getFissionState: () => QueryPageState | undefined;
   getTwoToTwoState: () => QueryPageState | undefined;
   getCascadeState: () => CascadePageState | undefined;
+  getCycleDiscoveryState: () => CycleDiscoveryPageState | undefined;
   clearAllStates: () => void;
-  clearPageState: (page: 'fusion' | 'fission' | 'twotwo' | 'cascade') => void;
+  clearPageState: (page: 'fusion' | 'fission' | 'twotwo' | 'cascade' | 'cycleDiscovery') => void;
 }
 
 const QueryStateContext = createContext<QueryStateContextType | undefined>(undefined);
@@ -65,6 +67,7 @@ export function QueryStateProvider({ children }: { children: ReactNode }) {
       fission: undefined,
       twotwo: undefined,
       cascade: undefined,
+      cycleDiscovery: undefined,
     };
   });
 
@@ -238,6 +241,17 @@ export function QueryStateProvider({ children }: { children: ReactNode }) {
     });
   }, []);
 
+  const updateCycleDiscoveryState = useCallback((state: Partial<CycleDiscoveryPageState>) => {
+    setQueryStates(prev => ({
+      ...prev,
+      cycleDiscovery: {
+        ...prev.cycleDiscovery,
+        ...state,
+        lastUpdated: Date.now(),
+      } as CycleDiscoveryPageState,
+    }));
+  }, []);
+
   const getFusionState = useCallback(() => queryStates.fusion, [queryStates.fusion]);
   const getFissionState = useCallback(() => queryStates.fission, [queryStates.fission]);
   const getTwoToTwoState = useCallback(() => queryStates.twotwo, [queryStates.twotwo]);
@@ -259,6 +273,8 @@ export function QueryStateProvider({ children }: { children: ReactNode }) {
     return state;
   }, [queryStates.cascade]);
 
+  const getCycleDiscoveryState = useCallback(() => queryStates.cycleDiscovery, [queryStates.cycleDiscovery]);
+
   const clearAllStates = useCallback(() => {
     setQueryStates({
       version: CURRENT_VERSION,
@@ -266,6 +282,7 @@ export function QueryStateProvider({ children }: { children: ReactNode }) {
       fission: undefined,
       twotwo: undefined,
       cascade: undefined,
+      cycleDiscovery: undefined,
     });
 
     // Also delete cascade results from IndexedDB
@@ -274,7 +291,7 @@ export function QueryStateProvider({ children }: { children: ReactNode }) {
     });
   }, []);
 
-  const clearPageState = useCallback((page: 'fusion' | 'fission' | 'twotwo' | 'cascade') => {
+  const clearPageState = useCallback((page: 'fusion' | 'fission' | 'twotwo' | 'cascade' | 'cycleDiscovery') => {
     setQueryStates(prev => ({
       ...prev,
       [page]: undefined,
@@ -294,10 +311,12 @@ export function QueryStateProvider({ children }: { children: ReactNode }) {
     updateFissionState,
     updateTwoToTwoState,
     updateCascadeState,
+    updateCycleDiscoveryState,
     getFusionState,
     getFissionState,
     getTwoToTwoState,
     getCascadeState,
+    getCycleDiscoveryState,
     clearAllStates,
     clearPageState,
   };

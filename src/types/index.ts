@@ -345,6 +345,7 @@ export interface AllQueryStates {
   fission?: QueryPageState;
   twotwo?: QueryPageState;
   cascade?: CascadePageState;
+  cycleDiscovery?: CycleDiscoveryPageState;
   version?: number;  // For future migration if state structure changes
 }
 
@@ -504,4 +505,79 @@ export interface SavedQuery {
   timestamp: number;
   isBookmarked: boolean;
   resultCount?: number;
+}
+
+// ============================================================================
+// Cycle Discovery Types (Issue #92)
+// ============================================================================
+
+/**
+ * Parameters controlling the cycle discovery search
+ */
+export interface CycleDiscoveryParameters {
+  minFusionMeV: number;          // Minimum energy for fusion reactions (default: 1.0)
+  minTwoToTwoMeV: number;        // Minimum energy for 2->2 reactions (default: 0.5)
+  maxCycleDepth: number;          // Maximum reactions in a cycle (3-10, default: 6)
+  includeFission: boolean;        // Include fission reactions (default: false)
+  minFissionMeV?: number;         // Minimum energy for fission (when enabled)
+  elementFilters?: {
+    abundantOnly?: boolean;       // Only include naturally abundant nuclides
+    excludeRadioactive?: boolean; // Exclude radioactive nuclides (logHalfLife <= 9)
+    allowedElements?: string[];   // Restrict search to these elements
+  };
+  maxCycles: number;              // Max cycles to return (default: 100)
+}
+
+/**
+ * A single reaction step within a discovered cycle
+ */
+export interface CycleReaction {
+  type: 'fusion' | 'twotwo' | 'fission';
+  inputs: Array<{ E: string; Z: number; A: number }>;
+  outputs: Array<{ E: string; Z: number; A: number }>;
+  MeV: number;
+  isFeedback: boolean;           // True if this reaction's output regenerates a catalyst
+}
+
+/**
+ * A discovered catalytic or self-sustaining cycle
+ */
+export interface DiscoveredCycle {
+  id: string;                     // Unique identifier (hash of reactions)
+  fuelNuclides: Array<{ E: string; Z: number; A: number }>;
+  reactions: CycleReaction[];
+  totalEnergy: number;            // Sum of MeV across all reactions
+  feedbackRatio: number;          // 0-100, percentage of reactions that are feedback
+  cycleDepth: number;             // Number of reactions in the cycle
+  abundanceScore: number;         // 0-100, based on solar ppm
+  stabilityScore: number;         // 0-100, fraction of stable nuclides
+}
+
+/**
+ * Results from a cycle discovery search
+ */
+export interface CycleDiscoveryResults {
+  cycles: DiscoveredCycle[];
+  executionTime: number;
+  totalCyclesFound: number;
+}
+
+/**
+ * Progress update during cycle discovery
+ */
+export interface CycleDiscoveryProgress {
+  phase: 'building_graph' | 'searching_cycles' | 'ranking';
+  cyclesFound: number;
+  fuelCombinationsChecked: number;
+  totalCombinations: number;
+  percentage: number;
+}
+
+/**
+ * State persistence for the cycle discovery page
+ */
+export interface CycleDiscoveryPageState {
+  params: CycleDiscoveryParameters;
+  results?: CycleDiscoveryResults;
+  lastUpdated?: number;
 }
