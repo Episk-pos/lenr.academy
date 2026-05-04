@@ -247,4 +247,33 @@ test.describe('Catalytic Cycle Discovery UX', () => {
     // "Feedback Ratio" must NOT appear anywhere on the page.
     await expect(page.getByText(/feedback ratio/i)).not.toBeVisible()
   })
+
+  // -------------------------------------------------------------------------
+  // Test 7: Row click opens cycle detail (alternative to eyeball button)
+  // Asserts the entire <tr> is clickable as a redundant affordance.
+  // -------------------------------------------------------------------------
+
+  test('row click opens cycle detail (alternative to eyeball)', async ({ page }) => {
+    await page.goto('/fusion')
+    await waitForDatabaseReady(page, 120000)
+
+    await navigateToPage(page, 'Cycle Discovery')
+    await expect(page).toHaveURL('/cycles')
+
+    const discoverBtn = page.getByRole('button', { name: /discover cycles/i })
+    await discoverBtn.waitFor({ state: 'visible', timeout: 10000 })
+    await discoverBtn.click()
+
+    await expect(page.getByText('Discovery Complete')).toBeVisible({ timeout: 90000 })
+
+    // Click the first row's first data cell (NOT a button) to confirm
+    // the row-level click handler — not just the eyeball — opens detail.
+    const firstRow = page.locator('table tbody tr').first()
+    await firstRow.waitFor({ state: 'visible', timeout: 10000 })
+    await firstRow.locator('td').first().click()
+
+    await expect(
+      page.getByRole('heading', { name: /Net Cycle Transformation/i })
+    ).toBeVisible({ timeout: 10000 })
+  })
 })

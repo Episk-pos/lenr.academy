@@ -911,6 +911,7 @@
     "resultsTitle": "Entdeckte Zyklen ({{count}})",
     "columnActions": "Aktionen",
     "viewCycle": "Zyklusdetails anzeigen",
+    "viewCycleAriaLabel": "Details zu Zyklus {{id}} anzeigen",
     "simulateCycle": "Kaskadensimulation starten",
     "cycleDetail": "Zyklusdetail",
     "fuelLabel": "Brennstoff",

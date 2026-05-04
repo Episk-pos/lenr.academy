@@ -911,6 +911,7 @@
     "resultsTitle": "Обнаруженные циклы ({{count}})",
     "columnActions": "Действия",
     "viewCycle": "Просмотреть детали цикла",
+    "viewCycleAriaLabel": "Просмотреть детали цикла {{id}}",
     "simulateCycle": "Запустить каскадное моделирование",
     "cycleDetail": "Детали цикла",
     "fuelLabel": "Топливо",
