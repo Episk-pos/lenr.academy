@@ -1139,6 +1139,7 @@
     "resultsTitle": "Cycles découverts ({{count}})",
     "columnActions": "Actions",
     "viewCycle": "Voir les détails du cycle",
+    "viewCycleAriaLabel": "Voir les détails du cycle {{id}}",
     "simulateCycle": "Lancer une simulation en cascade",
     "cycleDetail": "Détail du cycle",
     "fuelLabel": "Combustible",

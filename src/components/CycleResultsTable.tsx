@@ -227,7 +227,22 @@ export default function CycleResultsTable({
           </thead>
           <tbody>
             {sorted.map((cycle) => (
-              <tr key={cycle.id}>
+              <tr
+                key={cycle.id}
+                onClick={() => onViewCycle(cycle)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    onViewCycle(cycle)
+                  } else if (e.key === ' ') {
+                    e.preventDefault()
+                    onViewCycle(cycle)
+                  }
+                }}
+                tabIndex={0}
+                role="button"
+                aria-label={t('cycleDiscovery.viewCycleAriaLabel', { id: cycle.id })}
+                className="cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
+              >
                 <td>
                   <div className="flex items-start gap-2">
                     <CyclePreviewIcon steps={cycle.cycleDepth} />
@@ -279,14 +294,20 @@ export default function CycleResultsTable({
                 <td>
                   <div className="flex items-center gap-1">
                     <button
-                      onClick={() => onViewCycle(cycle)}
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        onViewCycle(cycle)
+                      }}
                       className="p-1.5 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-400 hover:text-primary-600 dark:hover:text-primary-400 transition-colors"
                       title={t('cycleDiscovery.viewCycle')}
                     >
                       <Eye className="w-4 h-4" />
                     </button>
                     <button
-                      onClick={() => onRunSimulation(cycle)}
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        onRunSimulation(cycle)
+                      }}
                       className="p-1.5 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-400 hover:text-green-600 dark:hover:text-green-400 transition-colors"
                       title={t('cycleDiscovery.simulateCycle')}
                     >

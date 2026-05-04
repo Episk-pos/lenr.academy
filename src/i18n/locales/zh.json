@@ -1139,6 +1139,7 @@
     "resultsTitle": "已发现的循环（{{count}}）",
     "columnActions": "操作",
     "viewCycle": "查看循环详情",
+    "viewCycleAriaLabel": "查看循环 {{id}} 详情",
     "simulateCycle": "运行级联模拟",
     "cycleDetail": "循环详情",
     "fuelLabel": "燃料",

@@ -1139,6 +1139,7 @@
     "resultsTitle": "発見されたサイクル（{{count}}）",
     "columnActions": "アクション",
     "viewCycle": "サイクルの詳細を表示",
+    "viewCycleAriaLabel": "サイクル {{id}} の詳細を表示",
     "simulateCycle": "カスケードシミュレーションを実行",
     "cycleDetail": "サイクル詳細",
     "fuelLabel": "燃料",
