@@ -1,5 +1,12 @@
 import { useMemo, useState } from 'react'
-import { AlertTriangle, FlaskConical, Search, BookOpen, Loader2 } from 'lucide-react'
+import {
+  AlertTriangle,
+  FlaskConical,
+  Search,
+  BookOpen,
+  Loader2,
+  ExternalLink,
+} from 'lucide-react'
 import { useDatabase } from '../contexts/DatabaseContext'
 import {
   DOCUMENTED_TRANSMUTATIONS,
@@ -13,6 +20,7 @@ import {
   type Pathway,
 } from '../services/transmutationPathwayService'
 import TransmutationArrow from '../components/TransmutationArrow'
+import NuclideEquation from '../components/NuclideEquation'
 
 const CATEGORY_LABELS: Record<TransmutationCategory, string> = {
   'solid-state': 'Solid-state',
@@ -238,90 +246,148 @@ interface CardProps {
   onFindPathways: () => void
 }
 
+/**
+ * Split a hypothesized-mechanism string into a leading prose description and
+ * the equation that follows, using the first ":" as the delimiter. When no
+ * ":" is present the entire string is treated as prose with no equation.
+ */
+function splitMechanism(raw: string): { prose: string; equation: string | null } {
+  const idx = raw.indexOf(':')
+  if (idx === -1) return { prose: raw.trim(), equation: null }
+  const prose = raw.slice(0, idx).trim()
+  const equation = raw.slice(idx + 1).trim()
+  return { prose, equation: equation.length > 0 ? equation : null }
+}
+
 function TransmutationCard({ transmutation: t, search, dbReady, onFindPathways }: CardProps) {
   const isLoading = search?.status === 'loading'
   const hasResults = search?.status === 'done'
   const hasError = search?.status === 'error'
 
+  const mechanism = t.hypothesizedMechanism
+    ? splitMechanism(t.hypothesizedMechanism)
+    : null
+
   return (
-    <div className="card p-4">
-      <div className="flex flex-col lg:flex-row lg:items-start gap-4">
-        {/* Left: arrow + metadata */}
-        <div className="flex-1 min-w-0">
-          <div className="flex flex-wrap items-center gap-3 mb-3">
-            <TransmutationArrow
-              fromSymbol={t.fromElement}
-              fromA={t.fromA}
-              toSymbol={t.toElement}
-              toA={t.toA}
-            />
-            <span className="text-xs px-2 py-0.5 rounded bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400">
-              {CATEGORY_LABELS[t.category]}
-            </span>
-            <span className="text-xs text-gray-500 dark:text-gray-400 font-mono">
-              ΔZ = {t.deltaZ >= 0 ? `+${t.deltaZ}` : t.deltaZ}
-              {t.deltaA !== undefined && (
-                <>{' '}· ΔA = {t.deltaA >= 0 ? `+${t.deltaA}` : t.deltaA}</>
-              )}
-            </span>
-          </div>
+    <div className="card p-4 sm:p-5">
+      {/* ZONE A — Header: arrow + identity chips */}
+      <div className="flex flex-wrap items-center gap-3 mb-4">
+        <TransmutationArrow
+          fromSymbol={t.fromElement}
+          fromA={t.fromA}
+          toSymbol={t.toElement}
+          toA={t.toA}
+        />
+        <span className="inline-flex items-center px-2 py-0.5 rounded text-xs border border-gray-200 dark:border-gray-700 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200">
+          {CATEGORY_LABELS[t.category]}
+        </span>
+        <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-mono border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-300">
+          ΔZ = {t.deltaZ >= 0 ? `+${t.deltaZ}` : t.deltaZ}
+        </span>
+        {t.deltaA !== undefined && (
+          <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-mono border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-300">
+            ΔA = {t.deltaA >= 0 ? `+${t.deltaA}` : t.deltaA}
+          </span>
+        )}
+      </div>
 
-          <div className="text-sm text-gray-700 dark:text-gray-300 space-y-1">
-            <p>
-              <span className="font-medium">Source:</span>{' '}
-              {t.doiOrUrl ? (
-                <a
-                  href={t.doiOrUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-primary-600 dark:text-primary-400 hover:underline"
-                >
-                  {t.source}
-                </a>
-              ) : (
-                t.source
-              )}
-            </p>
-            <p>
-              <span className="font-medium">Setup:</span> {t.setup}
-            </p>
-            {t.hypothesizedMechanism && (
-              <p>
-                <span className="font-medium">Hypothesized mechanism:</span>{' '}
-                <span className="font-mono text-xs">{t.hypothesizedMechanism}</span>
-              </p>
+      {/* ZONE B — Citation block */}
+      <div className="mb-4 rounded-md border border-gray-200 dark:border-gray-700 border-l-4 border-l-primary-200 dark:border-l-primary-800 bg-gray-50 dark:bg-gray-800/50 p-3">
+        <div className="flex flex-wrap items-start justify-between gap-2">
+          <p className="text-sm text-gray-800 dark:text-gray-200 min-w-0">
+            <BookOpen className="inline-block w-3.5 h-3.5 mr-1.5 -mt-0.5 text-gray-400 dark:text-gray-500" />
+            {t.source}
+          </p>
+          <div className="flex items-center gap-2 flex-shrink-0">
+            {t.sourceTag && (
+              <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium bg-primary-50 dark:bg-primary-900/30 border border-primary-200 dark:border-primary-700 text-primary-700 dark:text-primary-300">
+                {t.sourceTag}
+              </span>
             )}
-            {t.replicatedBy && t.replicatedBy.length > 0 && (
-              <p>
-                <span className="font-medium">Replicated by:</span>{' '}
-                {t.replicatedBy.join(', ')}
-              </p>
-            )}
-            {t.notes && (
-              <p className="text-xs text-gray-500 dark:text-gray-400 italic">
-                {t.notes}
-              </p>
+            {t.doiOrUrl && (
+              <a
+                href={t.doiOrUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-primary-700 dark:text-primary-300 hover:bg-primary-50 dark:hover:bg-primary-900/30 hover:border-primary-300 dark:hover:border-primary-700 transition-colors"
+              >
+                <span>View source</span>
+                <ExternalLink className="w-3 h-3" />
+              </a>
             )}
           </div>
         </div>
+        {t.replicatedBy && t.replicatedBy.length > 0 && (
+          <div className="mt-2.5 flex flex-wrap items-center gap-1.5">
+            <span className="text-[11px] uppercase tracking-wide text-gray-500 dark:text-gray-400">
+              Replicated by
+            </span>
+            {t.replicatedBy.map((lab) => (
+              <span
+                key={lab}
+                className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200"
+              >
+                {lab}
+              </span>
+            ))}
+          </div>
+        )}
+      </div>
 
-        {/* Right: action button */}
-        <div className="flex-shrink-0">
-          <button
-            type="button"
-            onClick={onFindPathways}
-            disabled={!dbReady || isLoading}
-            className="btn btn-primary flex items-center gap-2 px-3 py-1.5 text-sm rounded-md bg-primary-600 hover:bg-primary-700 text-white disabled:bg-gray-300 dark:disabled:bg-gray-600 disabled:cursor-not-allowed transition-colors"
-            data-testid={`find-pathways-${t.id}`}
-          >
-            {isLoading ? (
-              <Loader2 className="w-4 h-4 animate-spin" />
-            ) : (
-              <Search className="w-4 h-4" />
-            )}
-            <span>{isLoading ? 'Searching...' : 'Find Parkhomov pathways'}</span>
-          </button>
-        </div>
+      {/* ZONE C — Mechanism + setup definition list */}
+      <dl className="grid grid-cols-1 sm:grid-cols-[max-content_1fr] gap-x-4 gap-y-2 text-sm mb-4">
+        <dt className="text-[11px] uppercase tracking-wide font-medium text-gray-500 dark:text-gray-400 pt-0.5">
+          Setup
+        </dt>
+        <dd className="text-gray-700 dark:text-gray-300">{t.setup}</dd>
+
+        {mechanism && (
+          <>
+            <dt className="text-[11px] uppercase tracking-wide font-medium text-gray-500 dark:text-gray-400 pt-0.5">
+              Mechanism
+            </dt>
+            <dd>
+              <div className="rounded border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/70 p-3 text-sm text-gray-800 dark:text-gray-200">
+                {mechanism.prose && (
+                  <span className="block sm:inline">{mechanism.prose}</span>
+                )}
+                {mechanism.equation && (
+                  <>
+                    {mechanism.prose && <span className="hidden sm:inline">: </span>}
+                    <NuclideEquation
+                      input={mechanism.equation}
+                      className="font-mono"
+                    />
+                  </>
+                )}
+              </div>
+            </dd>
+          </>
+        )}
+      </dl>
+
+      {t.notes && (
+        <p className="text-xs text-gray-500 dark:text-gray-400 italic mb-4">
+          {t.notes}
+        </p>
+      )}
+
+      {/* ZONE D — CTA footer */}
+      <div className="flex flex-col sm:flex-row sm:justify-end gap-2 pt-3 border-t border-gray-200 dark:border-gray-700">
+        <button
+          type="button"
+          onClick={onFindPathways}
+          disabled={!dbReady || isLoading}
+          className="btn btn-primary inline-flex items-center justify-center gap-2 px-3 py-1.5 text-sm rounded-md bg-primary-600 hover:bg-primary-700 text-white disabled:bg-gray-300 dark:disabled:bg-gray-600 disabled:cursor-not-allowed transition-colors"
+          data-testid={`find-pathways-${t.id}`}
+        >
+          {isLoading ? (
+            <Loader2 className="w-4 h-4 animate-spin" />
+          ) : (
+            <Search className="w-4 h-4" />
+          )}
+          <span>{isLoading ? 'Searching...' : 'Find Parkhomov pathways'}</span>
+        </button>
       </div>
 
       {/* Pathway results */}
