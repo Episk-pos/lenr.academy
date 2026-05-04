@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react'
+import { Link } from 'react-router-dom'
 import {
   AlertTriangle,
   FlaskConical,
@@ -407,43 +408,65 @@ function TransmutationCard({ transmutation: t, search, dbReady, onFindPathways }
 function PathwayResults({ pathways }: { pathways: Pathway[] }) {
   if (pathways.length === 0) {
     return (
-      <div className="mt-4 p-3 rounded border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 text-sm text-gray-600 dark:text-gray-400">
-        <div className="flex items-center gap-2">
-          <BookOpen className="w-4 h-4" />
-          <span>No 1- or 2-step pathway found in the Parkhomov database for the listed isotopes.</span>
+      <div className="mt-4 p-4 rounded-md border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50">
+        <div className="flex items-start gap-2.5 text-sm text-gray-700 dark:text-gray-300">
+          <BookOpen className="w-4 h-4 flex-shrink-0 mt-0.5 text-gray-400 dark:text-gray-500" />
+          <div>
+            <p className="font-medium">
+              No 1- or 2-step pathway found in the Parkhomov database for the listed isotopes.
+            </p>
+            <p className="mt-1.5 text-xs text-gray-500 dark:text-gray-400">
+              A reported transmutation can still be valid via routes outside the
+              Parkhomov tabulation (multi-step beyond depth 2, neutron capture
+              chains, beta-decay branches). For multi-step pathways with
+              cycling intermediates, try the{' '}
+              <Link
+                to="/cascades"
+                className="text-primary-600 dark:text-primary-400 hover:underline font-medium"
+              >
+                Cycle Discovery
+              </Link>{' '}
+              tool.
+            </p>
+          </div>
         </div>
-        <p className="mt-1 text-xs text-gray-500 dark:text-gray-500">
-          A reported transmutation can still be valid via routes outside the
-          Parkhomov tabulation (multi-step beyond depth 2, neutron capture
-          chains, beta-decay branches).
-        </p>
       </div>
     )
   }
 
   return (
-    <div className="mt-4 border-t border-gray-200 dark:border-gray-700 pt-3">
-      <p className="text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
-        Candidate pathways ({pathways.length}):
+    <div className="mt-4 rounded-md border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 p-3">
+      <p className="text-xs font-medium text-gray-700 dark:text-gray-300 mb-2.5">
+        Candidate pathways ({pathways.length})
       </p>
-      <ul className="space-y-1.5 text-sm">
-        {pathways.map((p, i) => (
-          <li
-            key={i}
-            className="font-mono text-xs p-2 rounded bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 text-gray-800 dark:text-gray-200"
-          >
-            <div className="flex flex-wrap items-center gap-2">
-              <span className="text-[10px] uppercase tracking-wide text-gray-500 dark:text-gray-400">
-                {p.steps.length === 1 ? '1-step' : `${p.steps.length}-step`}
+      <ol className="space-y-2 text-sm">
+        {pathways.map((p, i) => {
+          // formatPathway emits multi-step segments joined by " | ".
+          const segments = formatPathway(p).split(' | ')
+          return (
+            <li
+              key={i}
+              className="flex items-start gap-2.5 p-2.5 rounded border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800"
+            >
+              <span className="inline-flex items-center justify-center flex-shrink-0 w-6 h-6 rounded-full bg-primary-100 dark:bg-primary-900/40 border border-primary-200 dark:border-primary-700 text-primary-700 dark:text-primary-300 text-xs font-semibold">
+                {i + 1}
               </span>
-              <span className="text-[10px] text-gray-500 dark:text-gray-400">
-                ΣMeV = {p.totalMeV.toFixed(2)}
+              <div className="flex-1 min-w-0 space-y-1">
+                {segments.map((seg, j) => (
+                  <NuclideEquation
+                    key={j}
+                    input={seg}
+                    className="block font-mono text-xs sm:text-sm text-gray-800 dark:text-gray-100"
+                  />
+                ))}
+              </div>
+              <span className="inline-flex items-center flex-shrink-0 px-2 py-0.5 rounded-full text-[11px] font-mono bg-amber-50 dark:bg-amber-900/30 border border-amber-200 dark:border-amber-700 text-amber-800 dark:text-amber-200">
+                ΣMeV {p.totalMeV.toFixed(2)}
               </span>
-            </div>
-            <div className="mt-1 break-all">{formatPathway(p)}</div>
-          </li>
-        ))}
-      </ul>
+            </li>
+          )
+        })}
+      </ol>
     </div>
   )
 }
