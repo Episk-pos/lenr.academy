@@ -42,8 +42,18 @@ export interface DocumentedTransmutation {
   replicatedBy?: string[];
   /** Coarse experimental category for filtering */
   category: TransmutationCategory;
-  /** DOI or URL to original publication, when available */
+  /**
+   * DOI or URL to the original publication, or a deterministic search URL on
+   * a known LENR archive (e.g., lenr-canr.org) when a direct DOI is not
+   * available with high confidence. Every entry should provide a value so the
+   * UI can always render a "View source" affordance.
+   */
   doiOrUrl?: string;
+  /**
+   * Short publication tag rendered as a chip alongside the citation
+   * (e.g., "JJAP 2002", "ICCF-12"). Optional; only set when high confidence.
+   */
+  sourceTag?: string;
   /** Free-form notes (e.g., "tritium production, not strictly transmutation") */
   notes?: string;
 }
@@ -63,6 +73,7 @@ export const DOCUMENTED_TRANSMUTATIONS: DocumentedTransmutation[] = [
     replicatedBy: ['Toyota Central R&D (2013)', 'Osaka University (2003)'],
     category: 'thin-film',
     doiOrUrl: 'https://doi.org/10.1143/JJAP.41.4642',
+    sourceTag: 'JJAP 2002',
   },
   {
     id: 'iwamura-sr-mo',
@@ -78,6 +89,7 @@ export const DOCUMENTED_TRANSMUTATIONS: DocumentedTransmutation[] = [
     replicatedBy: ['Toyota Central R&D (2013)'],
     category: 'thin-film',
     doiOrUrl: 'https://doi.org/10.1143/JJAP.41.4642',
+    sourceTag: 'JJAP 2002',
   },
   {
     id: 'iwamura-ba-sm',
@@ -91,6 +103,8 @@ export const DOCUMENTED_TRANSMUTATIONS: DocumentedTransmutation[] = [
     setup: 'Pd/CaO multilayer thin film with deuterium permeation',
     hypothesizedMechanism: 'Multi-step alpha-capture: 138Ba + 3 × 4He → 150Sm',
     category: 'thin-film',
+    doiOrUrl:
+      'https://lenr-canr.org/wordpress/?s=Iwamura+Ba+Sm+transmutation',
   },
   {
     id: 'iwamura-w-pt',
@@ -104,6 +118,8 @@ export const DOCUMENTED_TRANSMUTATIONS: DocumentedTransmutation[] = [
     setup: 'Pd/CaO multilayer thin film with deuterium permeation',
     hypothesizedMechanism: 'Sequential alpha-capture: 184W + 2 × 4He → 192Pt',
     category: 'thin-film',
+    doiOrUrl:
+      'https://lenr-canr.org/wordpress/?s=Iwamura+tungsten+platinum+transmutation',
   },
   {
     id: 'vysotskii-cs-ba',
@@ -119,6 +135,8 @@ export const DOCUMENTED_TRANSMUTATIONS: DocumentedTransmutation[] = [
     hypothesizedMechanism:
       'Microbial-catalyzed beta-decay-like transmutation; biological coherent correlated states proposed',
     category: 'biological',
+    doiOrUrl:
+      'https://lenr-canr.org/wordpress/?s=Vysotskii+Kornilova+cesium+barium',
     notes:
       'Reported reduction of Cs-137 activity correlated with Ba-138 appearance in growth medium.',
   },
@@ -136,6 +154,8 @@ export const DOCUMENTED_TRANSMUTATIONS: DocumentedTransmutation[] = [
     hypothesizedMechanism:
       'Net reaction proposed as 55Mn + d → 57Fe via biologically-mediated low-energy fusion',
     category: 'biological',
+    doiOrUrl:
+      'https://lenr-canr.org/wordpress/?s=Vysotskii+Kornilova+manganese+iron',
   },
   {
     id: 'miley-multi-element',
@@ -148,6 +168,8 @@ export const DOCUMENTED_TRANSMUTATIONS: DocumentedTransmutation[] = [
     hypothesizedMechanism:
       'Broad transmutation product spectrum; no single mechanism proposed (fission of compound nucleus suggested)',
     category: 'thin-film',
+    doiOrUrl:
+      'https://lenr-canr.org/wordpress/?s=Miley+Patterson+nuclear+transmutation',
     notes:
       'Catch-all entry: Miley reported a wide product distribution. Ni→Cu used here as the most-cited single pair; ~50 elements were observed.',
   },
@@ -164,6 +186,8 @@ export const DOCUMENTED_TRANSMUTATIONS: DocumentedTransmutation[] = [
     hypothesizedMechanism:
       'Multiple pathways proposed including neutron-like processes and electron-screened weak interaction',
     category: 'glow-discharge',
+    doiOrUrl:
+      'https://lenr-canr.org/wordpress/?s=Savvatimova+palladium+glow+discharge',
     notes: 'Savvatimova reported Pd → Rh, Ru, Ag, Cd; Pd→Ag captured here.',
   },
   {
@@ -178,6 +202,8 @@ export const DOCUMENTED_TRANSMUTATIONS: DocumentedTransmutation[] = [
     setup: 'Glow-discharge bombardment of Pd cathodes in deuterium plasma',
     hypothesizedMechanism: 'Net loss of (p + 2n) reported; mechanism unresolved',
     category: 'glow-discharge',
+    doiOrUrl:
+      'https://lenr-canr.org/wordpress/?s=Savvatimova+palladium+rhodium',
   },
   {
     id: 'spawar-tritium',
@@ -193,6 +219,8 @@ export const DOCUMENTED_TRANSMUTATIONS: DocumentedTransmutation[] = [
     hypothesizedMechanism:
       'D + D → T + p reported; not strictly elemental transmutation but an anomalous nuclear process',
     category: 'co-deposition',
+    doiOrUrl:
+      'https://lenr-canr.org/wordpress/?s=Mosier-Boss+SPAWAR+co-deposition+CR-39',
     notes:
       'Included as a reference anomalous-nuclear-process claim. Net transmutation is D → T (neutron capture-like).',
   },
