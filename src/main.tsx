@@ -17,6 +17,7 @@ import ReactDOM from 'react-dom/client'
 import * as Sentry from '@sentry/react'
 import App from './App.tsx'
 import './index.css'
+import 'katex/dist/katex.min.css'
 import { loadUmamiScript } from './utils/analytics'
 import { generateErrorFingerprint } from './utils/errorFingerprint'
 import './i18n/config' // Initialize i18n
