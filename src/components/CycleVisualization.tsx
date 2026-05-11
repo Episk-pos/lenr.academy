@@ -127,11 +127,12 @@ function analyzeFlow(
 // Consistent nuclide colors for flow visualization
 // ---------------------------------------------------------------------------
 
+// Intermediary flow palette. Amber is reserved for FUEL; teal is reserved
+// for CATALYST. Neither should appear here, or the role coding collapses.
 const FLOW_COLORS = [
   { line: '#0ea5e9', bg: 'bg-sky-100 dark:bg-sky-900/40', text: 'text-sky-700 dark:text-sky-300', ring: 'ring-sky-400 dark:ring-sky-600' },
   { line: '#8b5cf6', bg: 'bg-violet-100 dark:bg-violet-900/40', text: 'text-violet-700 dark:text-violet-300', ring: 'ring-violet-400 dark:ring-violet-600' },
   { line: '#10b981', bg: 'bg-emerald-100 dark:bg-emerald-900/40', text: 'text-emerald-700 dark:text-emerald-300', ring: 'ring-emerald-400 dark:ring-emerald-600' },
-  { line: '#f59e0b', bg: 'bg-amber-100 dark:bg-amber-900/40', text: 'text-amber-700 dark:text-amber-300', ring: 'ring-amber-400 dark:ring-amber-600' },
   { line: '#ef4444', bg: 'bg-red-100 dark:bg-red-900/40', text: 'text-red-700 dark:text-red-300', ring: 'ring-red-400 dark:ring-red-600' },
   { line: '#ec4899', bg: 'bg-pink-100 dark:bg-pink-900/40', text: 'text-pink-700 dark:text-pink-300', ring: 'ring-pink-400 dark:ring-pink-600' },
 ]
@@ -153,7 +154,7 @@ function NuclideBadge({
   colorClass,
 }: {
   nuclide: { E: string; Z: number; A: number }
-  variant?: 'default' | 'fuel' | 'feedback' | 'byproduct'
+  variant?: 'default' | 'fuel' | 'catalyst' | 'feedback' | 'byproduct'
   isHighlighted?: boolean
   isDimmed?: boolean
   onHover?: (key: NuclideKey | null) => void
@@ -163,8 +164,12 @@ function NuclideBadge({
 
   const variantClasses = {
     default: 'bg-primary-100 dark:bg-primary-900/40 text-primary-800 dark:text-primary-200',
+    // FUEL: amber. Consumed each cycle iteration, never regenerated.
     fuel: 'bg-amber-100 dark:bg-amber-900/40 text-amber-800 dark:text-amber-200 ring-1 ring-amber-300 dark:ring-amber-700',
-    feedback: 'bg-amber-100 dark:bg-amber-900/40 text-amber-800 dark:text-amber-200 ring-2 ring-amber-400 dark:ring-amber-500',
+    // CATALYST: teal. Consumed at one step, regenerated at a later step. Defines the cycle's identity.
+    catalyst: 'bg-teal-100 dark:bg-teal-900/40 text-teal-800 dark:text-teal-200 ring-2 ring-teal-400 dark:ring-teal-500',
+    // Legacy alias — kept to avoid drive-by churn in unrelated call sites. Prefer 'catalyst'.
+    feedback: 'bg-teal-100 dark:bg-teal-900/40 text-teal-800 dark:text-teal-200 ring-2 ring-teal-400 dark:ring-teal-500',
     byproduct: 'bg-gray-100 dark:bg-gray-700/60 text-gray-500 dark:text-gray-400',
   }
 
@@ -493,13 +498,23 @@ function CycleLoopDiagram({
       {closingEdges.map((edge, i) => {
         const midX = (edge.from.x + edge.to.x) / 2
         const midY = (edge.from.y + edge.to.y) / 2
-        // Pull the control point hard toward the centre so the arc sweeps
-        // through the catalyst-label area.
         const ctrlX = midX + (cx - midX) * 1.15
         const ctrlY = midY + (cy - midY) * 1.15
         const color =
-          edge.colorIdx !== undefined ? getFlowColor(edge.colorIdx).line : '#d97706' // amber-600 fallback
+          edge.colorIdx !== undefined ? getFlowColor(edge.colorIdx).line : '#14b8a6' // teal fallback
         const isHovered = hoveredNuclide === edge.nuclideKey
+        // Label position: 40% along the curve from the producer step toward
+        // the control point — sits between the producer node and the centre,
+        // off the catalyst-chip apex so it doesn't stack on the chip.
+        const labelT = 0.4
+        const labelX =
+          (1 - labelT) * (1 - labelT) * edge.from.x +
+          2 * (1 - labelT) * labelT * ctrlX +
+          labelT * labelT * edge.to.x
+        const labelY =
+          (1 - labelT) * (1 - labelT) * edge.from.y +
+          2 * (1 - labelT) * labelT * ctrlY +
+          labelT * labelT * edge.to.y
         return (
           <g key={`close-${i}`} className="transition-all duration-150">
             <path
@@ -512,23 +527,22 @@ function CycleLoopDiagram({
               strokeLinecap="round"
               markerEnd="url(#arrowClosing)"
             />
-            {/* Label at the control point: nuclide symbol + "regenerated" */}
+            {/* Label offset from the apex to leave room for the catalyst chip */}
             <g>
               <rect
-                x={ctrlX - 28}
-                y={ctrlY - 9}
+                x={labelX - 28}
+                y={labelY - 9}
                 width={56}
                 height={18}
                 rx={9}
-                fill="white"
                 className="fill-white dark:fill-gray-800"
                 stroke={color}
                 strokeWidth={1}
                 strokeOpacity={0.85}
               />
               <text
-                x={ctrlX}
-                y={ctrlY + 4}
+                x={labelX}
+                y={labelY + 4}
                 textAnchor="middle"
                 className="fill-gray-700 dark:fill-gray-200 text-[10px] font-semibold"
                 style={{ fontFamily: 'system-ui, sans-serif' }}
@@ -701,7 +715,7 @@ function CycleLoopDiagram({
                   rx={14}
                   className={
                     isCatalyst
-                      ? 'fill-amber-100 dark:fill-amber-900/50 stroke-amber-500 dark:stroke-amber-400'
+                      ? 'fill-teal-100 dark:fill-teal-900/50 stroke-teal-500 dark:stroke-teal-400'
                       : 'fill-amber-100 dark:fill-amber-900/50 stroke-amber-300 dark:stroke-amber-700'
                   }
                   strokeWidth={isHovered ? 2.5 : isCatalyst ? 2 : 1.5}
@@ -710,7 +724,11 @@ function CycleLoopDiagram({
                   x={fx}
                   y={fy + 5}
                   textAnchor="middle"
-                  className="fill-amber-800 dark:fill-amber-200 text-[12px] font-semibold"
+                  className={
+                    isCatalyst
+                      ? 'fill-teal-800 dark:fill-teal-200 text-[12px] font-semibold'
+                      : 'fill-amber-800 dark:fill-amber-200 text-[12px] font-semibold'
+                  }
                   style={{ fontFamily: 'system-ui, sans-serif' }}
                 >
                   <tspan className="text-[9px]" dy={-3}>
@@ -727,7 +745,11 @@ function CycleLoopDiagram({
           x={cx}
           y={cy + 32}
           textAnchor="middle"
-          className="fill-amber-700 dark:fill-amber-400 text-[10px] font-bold uppercase"
+          className={
+            catalysts.length > 0
+              ? 'fill-teal-700 dark:fill-teal-400 text-[10px] font-bold uppercase'
+              : 'fill-amber-700 dark:fill-amber-400 text-[10px] font-bold uppercase'
+          }
           style={{ fontFamily: 'system-ui, sans-serif', letterSpacing: '0.1em' }}
         >
           {catalysts.length > 0
@@ -880,17 +902,35 @@ function EnhancedStepList({
                     const colorIdx = nuclideColorMap.get(key)
                     const flowColor = colorIdx !== undefined ? getFlowColor(colorIdx) : null
 
-                    const variant = isFeedbackNuclide
-                      ? 'feedback' as const
-                      : isByproduct
-                        ? 'byproduct' as const
-                        : isFuel
-                          ? 'fuel' as const
-                          : 'default' as const
+                    // Role/identity split:
+                    //   chip color = nuclide identity (per-nuclide flow color)
+                    //   ring thickness = role (catalyst = ring-2, intermediary = ring-1)
+                    const variant = isByproduct
+                      ? 'byproduct' as const
+                      : isFuel
+                        ? 'fuel' as const
+                        : 'default' as const
 
-                    const colorClass = (!isFuel && !isFeedbackNuclide && !isByproduct && flowColor)
-                      ? `${flowColor.bg} ${flowColor.text} ring-1 ${flowColor.ring}`
+                    const colorClass = (!isFuel && !isByproduct && flowColor)
+                      ? `${flowColor.bg} ${flowColor.text} ${isFeedbackNuclide ? 'ring-2' : 'ring-1'} ${flowColor.ring}`
                       : undefined
+
+                    // Combined annotation: catalyst-and-forward gets a single
+                    // line "regenerated · → step X" instead of two stacked
+                    // labels at the same vertical position.
+                    const annotationParts: string[] = []
+                    if (isFeedbackNuclide) annotationParts.push(t('cycleDiscovery.flowRegenerated'))
+                    if (destinations && destinations.length > 0) {
+                      annotationParts.push(
+                        t('cycleDiscovery.flowToStep', {
+                          step: destinations.map((d) => d + 1).join(', '),
+                        })
+                      )
+                    }
+                    const annotationText = annotationParts.join(' · ')
+                    const annotationColor = isFeedbackNuclide
+                      ? (flowColor ? flowColor.text : 'text-gray-700 dark:text-gray-300')
+                      : (flowColor ? flowColor.text : 'text-gray-400')
 
                     return (
                       <span key={`out-${i}`} className="flex items-center gap-1">
@@ -904,14 +944,9 @@ function EnhancedStepList({
                             isDimmed={hoveredNuclide !== null && hoveredNuclide !== key}
                             onHover={onHover}
                           />
-                          {destinations && destinations.length > 0 && (
-                            <span className={`absolute -bottom-4 left-1/2 -translate-x-1/2 text-[9px] font-semibold whitespace-nowrap ${flowColor ? flowColor.text : 'text-gray-400'}`}>
-                              {t('cycleDiscovery.flowToStep', { step: destinations.map(d => d + 1).join(', ') })}
-                            </span>
-                          )}
-                          {isFeedbackNuclide && (
-                            <span className="absolute -bottom-4 left-1/2 -translate-x-1/2 text-[9px] font-bold whitespace-nowrap text-amber-600 dark:text-amber-400">
-                              {t('cycleDiscovery.flowRegenerated')}
+                          {annotationText && !isByproduct && (
+                            <span className={`absolute -bottom-4 left-1/2 -translate-x-1/2 text-[9px] ${isFeedbackNuclide ? 'font-bold' : 'font-semibold'} whitespace-nowrap ${annotationColor}`}>
+                              {annotationText}
                             </span>
                           )}
                           {isByproduct && (
@@ -972,7 +1007,7 @@ function FlowLegend({ feedbackNuclides }: { feedbackNuclides: Set<NuclideKey> })
       </span>
       {feedbackNuclides.size > 0 && (
         <span className="flex items-center gap-1.5">
-          <span className="w-3 h-3 rounded-full bg-amber-200 dark:bg-amber-800 ring-2 ring-amber-400 dark:ring-amber-500" />
+          <span className="w-3 h-3 rounded-full bg-teal-200 dark:bg-teal-800 ring-2 ring-teal-400 dark:ring-teal-500" />
           {t('cycleDiscovery.legendRegenerated')}
         </span>
       )}
