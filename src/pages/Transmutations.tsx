@@ -421,7 +421,7 @@ function PathwayResults({ pathways }: { pathways: Pathway[] }) {
               chains, beta-decay branches). For multi-step pathways with
               cycling intermediates, try the{' '}
               <Link
-                to="/cascades"
+                to="/cycles"
                 className="text-primary-600 dark:text-primary-400 hover:underline font-medium"
               >
                 Cycle Discovery
