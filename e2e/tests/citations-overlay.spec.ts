@@ -33,18 +33,21 @@ test.describe('Annotated bibliography overlay', () => {
     const element1Button = page.getByRole('button', { name: /Any/i }).first();
     await element1Button.click({ force: true });
     const deuteriumE1 = page
-      .getByRole('button', { name: /^1\s+D$/i })
+      .getByRole('button', { name: /^D$/i })
       .first();
     await deuteriumE1.waitFor({ state: 'visible', timeout: 5000 });
     await deuteriumE1.click();
     await page.keyboard.press('Escape');
     await page.waitForTimeout(250);
 
-    // Select Deuterium for Element 2
-    const element2Button = page.getByRole('button', { name: /Any/i }).nth(1);
+    // Select Deuterium for Element 2.
+    // After E1 was set to D, only two "Any" buttons remain (E2 and the output E),
+    // so the first one is E2. (Using .nth(1) here would target the output E
+    // and produce a 1-input query that doesn't include D + D → He-4.)
+    const element2Button = page.getByRole('button', { name: /Any/i }).first();
     await element2Button.click({ force: true });
     const deuteriumE2 = page
-      .getByRole('button', { name: /^1\s+D$/i })
+      .getByRole('button', { name: /^D$/i })
       .first();
     await deuteriumE2.waitFor({ state: 'visible', timeout: 5000 });
     await deuteriumE2.click();
