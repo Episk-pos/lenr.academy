@@ -347,21 +347,19 @@ function TransmutationCard({ transmutation: t, search, dbReady, onFindPathways }
             <dt className="text-[11px] uppercase tracking-wide font-medium text-gray-500 dark:text-gray-400 pt-0.5">
               Mechanism
             </dt>
-            <dd>
-              <div className="rounded border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/70 p-3 text-sm text-gray-800 dark:text-gray-200">
-                {mechanism.prose && (
-                  <span className="block sm:inline">{mechanism.prose}</span>
-                )}
-                {mechanism.equation && (
-                  <>
-                    {mechanism.prose && <span className="hidden sm:inline">: </span>}
-                    <NuclideEquation
-                      input={mechanism.equation}
-                      className="font-mono"
-                    />
-                  </>
-                )}
-              </div>
+            <dd className="text-gray-700 dark:text-gray-300">
+              {mechanism.prose && (
+                <span className="block sm:inline">{mechanism.prose}</span>
+              )}
+              {mechanism.equation && (
+                <>
+                  {mechanism.prose && <span className="hidden sm:inline">: </span>}
+                  <NuclideEquation
+                    input={mechanism.equation}
+                    className="font-mono"
+                  />
+                </>
+              )}
             </dd>
           </>
         )}
@@ -374,7 +372,7 @@ function TransmutationCard({ transmutation: t, search, dbReady, onFindPathways }
       )}
 
       {/* ZONE D — CTA footer */}
-      <div className="flex flex-col sm:flex-row sm:justify-end gap-2 pt-3 border-t border-gray-200 dark:border-gray-700">
+      <div className="flex flex-col sm:flex-row sm:justify-end gap-2">
         <button
           type="button"
           onClick={onFindPathways}
