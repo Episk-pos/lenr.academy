@@ -31,6 +31,24 @@ function nKey(n: { E: string; A: number }): NuclideKey {
   return `${n.E}-${n.A}`
 }
 
+/**
+ * Build a NuclideKey -> {E,Z,A} lookup from all inputs and outputs across the
+ * cycle's reactions, so callers can resolve a key (e.g., from feedbackNuclides
+ * or byproducts) back to the full nuclide object for rendering.
+ */
+function buildNuclideMap(
+  reactions: CycleReaction[]
+): Map<NuclideKey, { E: string; Z: number; A: number }> {
+  const map = new Map<NuclideKey, { E: string; Z: number; A: number }>()
+  for (const r of reactions) {
+    for (const ref of [...r.inputs, ...r.outputs]) {
+      const k = nKey(ref)
+      if (!map.has(k)) map.set(k, ref)
+    }
+  }
+  return map
+}
+
 interface FlowEdge {
   nuclideKey: NuclideKey
   fromStep: number // reaction index that produced it
@@ -240,6 +258,7 @@ function CycleLoopDiagram({
   nuclideColorMap,
   byproducts,
   hoveredNuclide,
+  catalysts,
 }: {
   cycle: DiscoveredCycle
   flows: FlowEdge[]
@@ -247,6 +266,7 @@ function CycleLoopDiagram({
   nuclideColorMap: Map<NuclideKey, number>
   byproducts: Map<number, NuclideKey[]>
   hoveredNuclide: NuclideKey | null
+  catalysts: Array<{ E: string; Z: number; A: number }>
 }) {
   const { t } = useTranslation()
   const { reactions } = cycle
@@ -339,6 +359,47 @@ function CycleLoopDiagram({
     }
   }
 
+  // Closing edges: for each catalyst, the arc from the regeneration step's
+  // output back to the consumption step's input. This is what makes the cycle
+  // visually a cycle rather than a tree.
+  interface ClosingEdge {
+    nuclideKey: NuclideKey
+    fromStep: number // regeneration (later)
+    toStep: number   // consumption (earlier)
+    from: { x: number; y: number }
+    to: { x: number; y: number }
+    colorIdx: number | undefined
+    label: string
+  }
+  const closingEdges: ClosingEdge[] = []
+  for (const key of feedbackNuclides) {
+    let consumerStep = -1
+    for (let i = 0; i < reactions.length; i++) {
+      if (reactions[i].inputs.some((inp) => nKey(inp) === key)) {
+        consumerStep = i
+        break
+      }
+    }
+    if (consumerStep < 0) continue
+    let producerStep = -1
+    for (let i = reactions.length - 1; i > consumerStep; i--) {
+      if (reactions[i].outputs.some((out) => nKey(out) === key)) {
+        producerStep = i
+        break
+      }
+    }
+    if (producerStep < 0) continue
+    closingEdges.push({
+      nuclideKey: key,
+      fromStep: producerStep,
+      toStep: consumerStep,
+      from: nodePositions[producerStep],
+      to: nodePositions[consumerStep],
+      colorIdx: nuclideColorMap.get(key),
+      label: nuclideLabelByKey.get(key) ?? key,
+    })
+  }
+
   return (
     <svg
       viewBox={`0 0 ${svgW} ${svgH}`}
@@ -371,6 +432,20 @@ function CycleLoopDiagram({
           <path
             d="M0,0 L8,3 L0,6"
             className="fill-gray-400 dark:fill-gray-500"
+          />
+        </marker>
+        <marker
+          id="arrowClosing"
+          markerWidth="10"
+          markerHeight="8"
+          refX="8"
+          refY="4"
+          orient="auto"
+          markerUnits="userSpaceOnUse"
+        >
+          <path
+            d="M0,0 L10,4 L0,8 Z"
+            className="fill-amber-600 dark:fill-amber-300"
           />
         </marker>
       </defs>
@@ -408,6 +483,60 @@ function CycleLoopDiagram({
             strokeOpacity={opacity}
             className="transition-all duration-150"
           />
+        )
+      })}
+
+      {/* Closing edges: the regeneration arcs that make this a cycle.
+          For each catalyst, draws an arc from the step that regenerates it
+          back to the step that consumed it. The arc curves through the
+          centre, visually showing the catalyst returning to be re-used. */}
+      {closingEdges.map((edge, i) => {
+        const midX = (edge.from.x + edge.to.x) / 2
+        const midY = (edge.from.y + edge.to.y) / 2
+        // Pull the control point hard toward the centre so the arc sweeps
+        // through the catalyst-label area.
+        const ctrlX = midX + (cx - midX) * 1.15
+        const ctrlY = midY + (cy - midY) * 1.15
+        const color =
+          edge.colorIdx !== undefined ? getFlowColor(edge.colorIdx).line : '#d97706' // amber-600 fallback
+        const isHovered = hoveredNuclide === edge.nuclideKey
+        return (
+          <g key={`close-${i}`} className="transition-all duration-150">
+            <path
+              d={`M${edge.from.x},${edge.from.y} Q${ctrlX},${ctrlY} ${edge.to.x},${edge.to.y}`}
+              fill="none"
+              stroke={color}
+              strokeWidth={isHovered ? 3 : 2.25}
+              strokeDasharray="6 4"
+              strokeOpacity={isHovered ? 0.95 : 0.75}
+              strokeLinecap="round"
+              markerEnd="url(#arrowClosing)"
+            />
+            {/* Label at the control point: nuclide symbol + "regenerated" */}
+            <g>
+              <rect
+                x={ctrlX - 28}
+                y={ctrlY - 9}
+                width={56}
+                height={18}
+                rx={9}
+                fill="white"
+                className="fill-white dark:fill-gray-800"
+                stroke={color}
+                strokeWidth={1}
+                strokeOpacity={0.85}
+              />
+              <text
+                x={ctrlX}
+                y={ctrlY + 4}
+                textAnchor="middle"
+                className="fill-gray-700 dark:fill-gray-200 text-[10px] font-semibold"
+                style={{ fontFamily: 'system-ui, sans-serif' }}
+              >
+                {edge.label}
+              </text>
+            </g>
+          </g>
         )
       })}
 
@@ -546,32 +675,36 @@ function CycleLoopDiagram({
         )
       })}
 
-      {/* Centre catalyst — the recycled core */}
+      {/* Centre — the recycled catalyst(s), or fuel if no catalysts detected.
+          A catalyst is consumed at one step and regenerated at a later step,
+          so it is what defines this as a cycle. Fuel (cycle.fuelNuclides) is
+          the search seed: net consumed, not regenerated — distinct from the
+          catalyst and shown elsewhere. */}
       <g>
-        {/* Catalyst chips (rendered as foreignObject to reuse NuclideBadge styling
-            would force layout shifts; use raw SVG circles + text instead). */}
         {(() => {
-          const fuelList = cycle.fuelNuclides
+          const centerList = catalysts.length > 0 ? catalysts : cycle.fuelNuclides
+          const isCatalyst = catalysts.length > 0
           const slotW = 60
-          const totalW = fuelList.length * slotW
+          const totalW = centerList.length * slotW
           const startX = cx - totalW / 2 + slotW / 2
-          return fuelList.map((nn, i) => {
+          return centerList.map((nn, i) => {
             const fx = startX + i * slotW
             const fy = cy - 8
             const isHovered = hoveredNuclide === nKey(nn)
-            const fbHas = feedbackNuclides.has(nKey(nn))
             return (
-              <g key={`catalyst-${i}`}>
+              <g key={`center-${i}`}>
                 <rect
                   x={fx - 26}
                   y={fy - 14}
                   width={52}
                   height={28}
                   rx={14}
-                  className={`fill-amber-100 dark:fill-amber-900/50 ${
-                    fbHas ? 'stroke-amber-500 dark:stroke-amber-400' : 'stroke-amber-300 dark:stroke-amber-700'
-                  }`}
-                  strokeWidth={isHovered ? 2.5 : fbHas ? 2 : 1.5}
+                  className={
+                    isCatalyst
+                      ? 'fill-amber-100 dark:fill-amber-900/50 stroke-amber-500 dark:stroke-amber-400'
+                      : 'fill-amber-100 dark:fill-amber-900/50 stroke-amber-300 dark:stroke-amber-700'
+                  }
+                  strokeWidth={isHovered ? 2.5 : isCatalyst ? 2 : 1.5}
                 />
                 <text
                   x={fx}
@@ -589,7 +722,7 @@ function CycleLoopDiagram({
             )
           })
         })()}
-        {/* Caption below catalyst */}
+        {/* Caption below — labels what the centre actually is */}
         <text
           x={cx}
           y={cy + 32}
@@ -597,7 +730,9 @@ function CycleLoopDiagram({
           className="fill-amber-700 dark:fill-amber-400 text-[10px] font-bold uppercase"
           style={{ fontFamily: 'system-ui, sans-serif', letterSpacing: '0.1em' }}
         >
-          {t('cycleDiscovery.catalystCenterLabel')}
+          {catalysts.length > 0
+            ? t('cycleDiscovery.catalystCenterLabel')
+            : t('cycleDiscovery.fuelLabel')}
         </text>
         <text
           x={cx}
@@ -626,6 +761,7 @@ function EnhancedStepList({
   nuclideColorMap,
   hoveredNuclide,
   onHover,
+  catalysts,
 }: {
   cycle: DiscoveredCycle
   fuelKeys: Set<NuclideKey>
@@ -635,6 +771,7 @@ function EnhancedStepList({
   nuclideColorMap: Map<NuclideKey, number>
   hoveredNuclide: NuclideKey | null
   onHover: (key: NuclideKey | null) => void
+  catalysts: Array<{ E: string; Z: number; A: number }>
 }) {
   const { t } = useTranslation()
 
@@ -800,21 +937,13 @@ function EnhancedStepList({
           <span className="text-sm font-medium text-amber-800 dark:text-amber-300">
             {t('cycleDiscovery.cycleClosesLabel')}
           </span>
-          {(() => {
-            // Resolve feedbackNuclides keys back to {E, Z, A} objects via cycle.fuelNuclides
-            const fuelByKey = new Map(cycle.fuelNuclides.map((n) => [nKey(n), n]))
-            const closedNuclides = Array.from(feedbackNuclides)
-              .map((k) => fuelByKey.get(k))
-              .filter((n): n is { E: string; Z: number; A: number } => !!n)
-            if (closedNuclides.length === 0) return null
-            return (
-              <div className="flex flex-wrap gap-1 items-center">
-                {closedNuclides.map((n, i) => (
-                  <NuclideBadge key={`close-${i}`} nuclide={n} variant="feedback" />
-                ))}
-              </div>
-            )
-          })()}
+          {catalysts.length > 0 && (
+            <div className="flex flex-wrap gap-1 items-center">
+              {catalysts.map((n, i) => (
+                <NuclideBadge key={`close-${i}`} nuclide={n} variant="feedback" />
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </div>
@@ -858,10 +987,12 @@ function FlowLegend({ feedbackNuclides }: { feedbackNuclides: Set<NuclideKey> })
 function NetCycleSummary({
   cycle,
   byproducts,
+  catalysts,
 }: {
   cycle: DiscoveredCycle
   byproducts: Map<number, NuclideKey[]>
   feedbackNuclides: Set<NuclideKey>
+  catalysts: Array<{ E: string; Z: number; A: number }>
 }) {
   const { t } = useTranslation()
 
@@ -927,14 +1058,16 @@ function NetCycleSummary({
           <ArrowRight className="w-5 h-5" />
         </div>
 
-        {/* FUEL OUT (recovered) */}
+        {/* CATALYST RECOVERED — the species regenerated each iteration */}
         <div className="flex flex-col items-center md:items-start gap-1.5 flex-shrink-0">
           <span className="text-[10px] font-bold uppercase tracking-wider text-amber-700 dark:text-amber-400">
-            {t('cycleDiscovery.netLabelFuelOut')}
+            {catalysts.length > 0
+              ? t('cycleDiscovery.netLabelCatalystOut')
+              : t('cycleDiscovery.netLabelFuelOut')}
           </span>
           <div className="flex flex-wrap gap-1 justify-center md:justify-start">
-            {cycle.fuelNuclides.map((n, i) => (
-              <NuclideBadge key={`fout-${i}`} nuclide={n} variant="fuel" />
+            {(catalysts.length > 0 ? catalysts : cycle.fuelNuclides).map((n, i) => (
+              <NuclideBadge key={`cout-${i}`} nuclide={n} variant="feedback" />
             ))}
           </div>
         </div>
@@ -1018,6 +1151,26 @@ export default function CycleVisualization({
     return map
   }, [flows])
 
+  // Full nuclide lookup across the cycle's reactions
+  const nuclideMap = useMemo(
+    () => buildNuclideMap(cycle.reactions),
+    [cycle.reactions]
+  )
+
+  // The actual CATALYSTS of this cycle: nuclides consumed at one step and
+  // regenerated at a later step (computed by analyzeFlow as feedbackNuclides).
+  // These define the cycle's identity and belong in the center of the diagram.
+  // Distinct from cycle.fuelNuclides, which is the search seed (net consumed,
+  // not regenerated).
+  const catalysts = useMemo(() => {
+    const list: Array<{ E: string; Z: number; A: number }> = []
+    for (const key of feedbackNuclides) {
+      const n = nuclideMap.get(key)
+      if (n) list.push(n)
+    }
+    return list
+  }, [feedbackNuclides, nuclideMap])
+
   const onHover = useCallback((key: NuclideKey | null) => {
     setHoveredNuclide(key)
   }, [])
@@ -1071,6 +1224,7 @@ export default function CycleVisualization({
         cycle={cycle}
         byproducts={byproducts}
         feedbackNuclides={feedbackNuclides}
+        catalysts={catalysts}
       />
 
       {/* Metric cards */}
@@ -1121,6 +1275,7 @@ export default function CycleVisualization({
             nuclideColorMap={nuclideColorMap}
             byproducts={byproducts}
             hoveredNuclide={hoveredNuclide}
+            catalysts={catalysts}
           />
           <div className="mt-4">
             <FlowLegend feedbackNuclides={feedbackNuclides} />
@@ -1148,6 +1303,7 @@ export default function CycleVisualization({
           nuclideColorMap={nuclideColorMap}
           hoveredNuclide={hoveredNuclide}
           onHover={onHover}
+          catalysts={catalysts}
         />
       </div>
     </div>
