@@ -437,6 +437,7 @@ function CycleLoopDiagram({
   }
   interface ClosingLabelData {
     key: string
+    nuclideKey: NuclideKey
     x: number
     y: number
     text: string
@@ -636,6 +637,7 @@ function CycleLoopDiagram({
 
         closingLabelData.push({
           key: `close-mid-${i}`,
+          nuclideKey: edge.nuclideKey,
           x: midLabelX,
           y: midLabelY,
           text: edge.label,
@@ -647,6 +649,7 @@ function CycleLoopDiagram({
         })
         closingLabelData.push({
           key: `close-tip-${i}`,
+          nuclideKey: edge.nuclideKey,
           x: tipX,
           y: tipY,
           text: `→ step ${edge.toStep + 1}`,
@@ -819,7 +822,13 @@ function CycleLoopDiagram({
           top of node rectangles, never clipped by them. Data was queued
           into flowLabelData / closingLabelData during the arc passes. */}
       {flowLabelData.map((lbl) => (
-        <g key={lbl.key} opacity={lbl.isHovered ? 1 : 0.75} style={{ pointerEvents: 'none' }}>
+        <g
+          key={lbl.key}
+          opacity={lbl.isHovered ? 1 : 0.75}
+          onMouseEnter={() => onHover(lbl.nuclideKey)}
+          onMouseLeave={() => onHover(null)}
+          style={{ cursor: 'pointer' }}
+        >
           <rect
             x={lbl.x - 18}
             y={lbl.y - 7}
@@ -843,7 +852,12 @@ function CycleLoopDiagram({
         </g>
       ))}
       {closingLabelData.map((lbl) => (
-        <g key={lbl.key} style={{ pointerEvents: 'none' }}>
+        <g
+          key={lbl.key}
+          onMouseEnter={() => onHover(lbl.nuclideKey)}
+          onMouseLeave={() => onHover(null)}
+          style={{ cursor: 'pointer' }}
+        >
           <rect
             x={lbl.x - lbl.width / 2}
             y={lbl.y - lbl.height / 2}
