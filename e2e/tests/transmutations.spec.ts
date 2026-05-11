@@ -50,10 +50,17 @@ test.describe('Transmutations Page', () => {
     // Click the Biological filter
     await page.getByRole('button', { name: 'Biological', exact: true }).click();
 
-    // Vysotskii biological entries should still be visible
-    await expect(page.getByText(/Vysotskii/i).first()).toBeVisible();
+    // Scope assertions to transmutation card content (avoid matching against
+    // the hidden lab-filter <select>'s <option> elements, which contain
+    // every author name regardless of which category is active).
+    const transmutationCards = page.locator('div.card').filter({
+      has: page.locator('[data-testid^="find-pathways-"]'),
+    });
 
-    // Iwamura (thin-film) should now be hidden
-    await expect(page.getByText(/Iwamura/i)).toHaveCount(0);
+    // Vysotskii biological entries should still be visible in cards.
+    await expect(transmutationCards.filter({ hasText: /Vysotskii/i }).first()).toBeVisible();
+
+    // Iwamura (thin-film) should now be hidden from card content.
+    await expect(transmutationCards.filter({ hasText: /Iwamura/i })).toHaveCount(0);
   });
 });
