@@ -491,11 +491,16 @@ function CycleLoopDiagram({
       {/* Intermediary flow arcs (hairlines through the centre).
           Each arc is directional (arrowhead) and labelled with its nuclide. */}
       {flowArcs.map((arc, i) => {
-        // Curve gently toward the centre so they sit "inside" the ring
+        // Curve toward the centre — bend amount scales with arc length so
+        // adjacent-step arcs (short chord) hug the perimeter without yanking
+        // sharply inward, while opposite-side arcs still bow through the
+        // middle to avoid crossing unrelated nodes.
         const midX = (arc.from.x + arc.to.x) / 2
         const midY = (arc.from.y + arc.to.y) / 2
-        const ctrlX = midX + (cx - midX) * 0.5
-        const ctrlY = midY + (cy - midY) * 0.5
+        const chordLen = Math.hypot(arc.to.x - arc.from.x, arc.to.y - arc.from.y)
+        const bendFactor = 0.2 + 0.4 * Math.min(1, chordLen / (2 * radius))
+        const ctrlX = midX + (cx - midX) * bendFactor
+        const ctrlY = midY + (cy - midY) * bendFactor
 
         const isHovered = arcHit(arc.nuclideKey, arc.fromStep, arc.toStep)
         const opacity = isHovered ? 0.85 : 0.4
@@ -505,13 +510,21 @@ function CycleLoopDiagram({
         // Shorten the destination so the arrowhead clears the node rectangle
         const toShort = shortenedEndpoint(arc.to, { x: ctrlX, y: ctrlY })
 
-        // Label at the Bezier midpoint of the FULL (un-shortened) curve so
-        // labels stay where the user expects them.
+        // Label at the Bezier midpoint, then offset perpendicular to the
+        // chord toward the centre so adjacent-step labels sit in the open
+        // space inside the ring rather than overlapping node rectangles.
         const t = 0.5
-        const lx =
+        const bx =
           (1 - t) * (1 - t) * arc.from.x + 2 * (1 - t) * t * ctrlX + t * t * arc.to.x
-        const ly =
+        const by =
           (1 - t) * (1 - t) * arc.from.y + 2 * (1 - t) * t * ctrlY + t * t * arc.to.y
+        // Perpendicular unit vector, oriented toward the diagram centre.
+        const perpX = -(arc.to.y - arc.from.y) / (chordLen || 1)
+        const perpY = (arc.to.x - arc.from.x) / (chordLen || 1)
+        const sign = (cx - bx) * perpX + (cy - by) * perpY >= 0 ? 1 : -1
+        const labelOffset = 14
+        const lx = bx + perpX * sign * labelOffset
+        const ly = by + perpY * sign * labelOffset
         const arcLabel = nuclideLabelByKey.get(arc.nuclideKey) ?? arc.nuclideKey
 
         return (
