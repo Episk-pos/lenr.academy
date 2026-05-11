@@ -12,6 +12,8 @@ import {
   GitMerge,
   ArrowLeftRight,
   Scissors,
+  ChevronLeft,
+  ChevronRight,
 } from 'lucide-react'
 import type { DiscoveredCycle, CycleReaction } from '../types'
 
@@ -19,6 +21,10 @@ interface CycleVisualizationProps {
   cycle: DiscoveredCycle
   onRunSimulation: (cycle: DiscoveredCycle) => void
   onBack: () => void
+  onPrev?: () => void
+  onNext?: () => void
+  currentIndex?: number
+  totalCount?: number
 }
 
 // ---------------------------------------------------------------------------
@@ -1158,6 +1164,10 @@ export default function CycleVisualization({
   cycle,
   onRunSimulation,
   onBack,
+  onPrev,
+  onNext,
+  currentIndex,
+  totalCount,
 }: CycleVisualizationProps) {
   const { t } = useTranslation()
   const [hoveredNuclide, setHoveredNuclide] = useState<NuclideKey | null>(null)
@@ -1227,6 +1237,31 @@ export default function CycleVisualization({
               <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
                 {t('cycleDiscovery.cycleDetail')}
               </h2>
+              {typeof totalCount === 'number' && totalCount > 1 && (
+                <div className="flex items-center gap-1 ml-2">
+                  <button
+                    onClick={onPrev}
+                    disabled={!onPrev}
+                    className="p-1.5 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-400 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                    title={t('common.previous')}
+                    aria-label={t('common.previous')}
+                  >
+                    <ChevronLeft className="w-5 h-5" />
+                  </button>
+                  <span className="text-sm text-gray-500 dark:text-gray-400 tabular-nums min-w-[3.5rem] text-center">
+                    {(currentIndex ?? 0) + 1} / {totalCount}
+                  </span>
+                  <button
+                    onClick={onNext}
+                    disabled={!onNext}
+                    className="p-1.5 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-400 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                    title={t('common.next')}
+                    aria-label={t('common.next')}
+                  >
+                    <ChevronRight className="w-5 h-5" />
+                  </button>
+                </div>
+              )}
             </div>
             <div className="flex flex-wrap items-center gap-1 ml-10">
               <span className="text-sm text-gray-500 dark:text-gray-400 mr-1">
