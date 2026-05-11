@@ -927,6 +927,7 @@
     "netCycleSummaryCaption": "Fuel is recovered each cycle, releasing energy and byproducts.",
     "netLabelFuelIn": "FUEL IN",
     "netLabelFuelOut": "FUEL OUT (recovered)",
+    "netLabelCatalystOut": "CATALYST RECOVERED",
     "netLabelEnergy": "NET ENERGY",
     "netLabelByproducts": "BYPRODUCTS",
     "netLabelNoByproducts": "(none)",
