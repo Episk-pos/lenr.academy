@@ -423,6 +423,32 @@ function CycleLoopDiagram({
     })
   }
 
+  // Label-data accumulators, populated during the arc passes below and
+  // re-rendered in a final pass AFTER reaction nodes so labels always paint
+  // on top of node rectangles instead of being partially clipped by them.
+  interface FlowLabelData {
+    key: string
+    nuclideKey: NuclideKey
+    x: number
+    y: number
+    text: string
+    color: string
+    isHovered: boolean
+  }
+  interface ClosingLabelData {
+    key: string
+    x: number
+    y: number
+    text: string
+    color: string
+    width: number
+    height: number
+    rx: number
+    fontSize: number
+  }
+  const flowLabelData: FlowLabelData[] = []
+  const closingLabelData: ClosingLabelData[] = []
+
   return (
     <svg
       viewBox={`0 0 ${svgW} ${svgH}`}
@@ -510,22 +536,32 @@ function CycleLoopDiagram({
         // Shorten the destination so the arrowhead clears the node rectangle
         const toShort = shortenedEndpoint(arc.to, { x: ctrlX, y: ctrlY })
 
-        // Label at the Bezier midpoint, then offset perpendicular to the
-        // chord toward the centre so adjacent-step labels sit in the open
-        // space inside the ring rather than overlapping node rectangles.
+        // Compute label position: Bezier midpoint offset perpendicular
+        // toward the centre so adjacent-step labels sit in the open inside-
+        // ring area rather than along the line between adjacent nodes.
         const t = 0.5
         const bx =
           (1 - t) * (1 - t) * arc.from.x + 2 * (1 - t) * t * ctrlX + t * t * arc.to.x
         const by =
           (1 - t) * (1 - t) * arc.from.y + 2 * (1 - t) * t * ctrlY + t * t * arc.to.y
-        // Perpendicular unit vector, oriented toward the diagram centre.
         const perpX = -(arc.to.y - arc.from.y) / (chordLen || 1)
         const perpY = (arc.to.x - arc.from.x) / (chordLen || 1)
         const sign = (cx - bx) * perpX + (cy - by) * perpY >= 0 ? 1 : -1
-        const labelOffset = 14
+        const labelOffset = 20
         const lx = bx + perpX * sign * labelOffset
         const ly = by + perpY * sign * labelOffset
         const arcLabel = nuclideLabelByKey.get(arc.nuclideKey) ?? arc.nuclideKey
+
+        // Queue label for the final pass (rendered after reaction nodes)
+        flowLabelData.push({
+          key: `flow-${i}`,
+          nuclideKey: arc.nuclideKey,
+          x: lx,
+          y: ly,
+          text: arcLabel,
+          color: arc.color.line,
+          isHovered,
+        })
 
         return (
           <g
@@ -545,28 +581,6 @@ function CycleLoopDiagram({
               markerEnd={`url(#arrowFlow-${colorIdx % 5})`}
               style={{ pointerEvents: 'stroke' }}
             />
-            <g opacity={isHovered ? 1 : 0.55}>
-              <rect
-                x={lx - 18}
-                y={ly - 7}
-                width={36}
-                height={14}
-                rx={7}
-                className="fill-white dark:fill-gray-800"
-                stroke={arc.color.line}
-                strokeWidth={0.75}
-                strokeOpacity={0.7}
-              />
-              <text
-                x={lx}
-                y={ly + 3}
-                textAnchor="middle"
-                className="fill-gray-700 dark:fill-gray-200 text-[9px] font-semibold"
-                style={{ fontFamily: 'system-ui, sans-serif' }}
-              >
-                {arcLabel}
-              </text>
-            </g>
           </g>
         )
       })}
@@ -597,6 +611,52 @@ function CycleLoopDiagram({
           labelT * labelT * edge.to.y
         // Shorten the destination so the arrowhead clears the node rectangle
         const toShortClose = shortenedEndpoint(edge.to, { x: ctrlX, y: ctrlY })
+
+        // Mid-arc nuclide label — offset perpendicular toward the centre
+        // so it sits off the curve in clear space.
+        const closeChordLen = Math.hypot(edge.to.x - edge.from.x, edge.to.y - edge.from.y)
+        const cPerpX = -(edge.to.y - edge.from.y) / (closeChordLen || 1)
+        const cPerpY = (edge.to.x - edge.from.x) / (closeChordLen || 1)
+        const cSign =
+          (cx - labelX) * cPerpX + (cy - labelY) * cPerpY >= 0 ? 1 : -1
+        const lblOffset = 18
+        const midLabelX = labelX + cPerpX * cSign * lblOffset
+        const midLabelY = labelY + cPerpY * cSign * lblOffset
+
+        // Destination-step label near the arrow tip
+        const tipT = 0.88
+        const tipX =
+          (1 - tipT) * (1 - tipT) * edge.from.x +
+          2 * (1 - tipT) * tipT * ctrlX +
+          tipT * tipT * edge.to.x
+        const tipY =
+          (1 - tipT) * (1 - tipT) * edge.from.y +
+          2 * (1 - tipT) * tipT * ctrlY +
+          tipT * tipT * edge.to.y
+
+        closingLabelData.push({
+          key: `close-mid-${i}`,
+          x: midLabelX,
+          y: midLabelY,
+          text: edge.label,
+          color,
+          width: 56,
+          height: 18,
+          rx: 9,
+          fontSize: 10,
+        })
+        closingLabelData.push({
+          key: `close-tip-${i}`,
+          x: tipX,
+          y: tipY,
+          text: `→ step ${edge.toStep + 1}`,
+          color,
+          width: 44,
+          height: 14,
+          rx: 7,
+          fontSize: 9,
+        })
+
         return (
           <g
             key={`close-${i}`}
@@ -616,68 +676,6 @@ function CycleLoopDiagram({
               markerEnd="url(#arrowClosing)"
               style={{ pointerEvents: 'stroke' }}
             />
-            {/* Mid-arc nuclide label, off the apex so it leaves room for
-                the catalyst chip in the centre. */}
-            <g>
-              <rect
-                x={labelX - 28}
-                y={labelY - 9}
-                width={56}
-                height={18}
-                rx={9}
-                className="fill-white dark:fill-gray-800"
-                stroke={color}
-                strokeWidth={1}
-                strokeOpacity={0.85}
-              />
-              <text
-                x={labelX}
-                y={labelY + 4}
-                textAnchor="middle"
-                className="fill-gray-700 dark:fill-gray-200 text-[10px] font-semibold"
-                style={{ fontFamily: 'system-ui, sans-serif' }}
-              >
-                {edge.label}
-              </text>
-            </g>
-            {/* Destination-step label near the arrow tip (~88% along the
-                curve), making it unambiguous which step the catalyst returns
-                to. */}
-            {(() => {
-              const t = 0.88
-              const tx =
-                (1 - t) * (1 - t) * edge.from.x +
-                2 * (1 - t) * t * ctrlX +
-                t * t * edge.to.x
-              const ty =
-                (1 - t) * (1 - t) * edge.from.y +
-                2 * (1 - t) * t * ctrlY +
-                t * t * edge.to.y
-              return (
-                <g>
-                  <rect
-                    x={tx - 22}
-                    y={ty - 7}
-                    width={44}
-                    height={14}
-                    rx={7}
-                    className="fill-white dark:fill-gray-800"
-                    stroke={color}
-                    strokeWidth={0.75}
-                    strokeOpacity={0.7}
-                  />
-                  <text
-                    x={tx}
-                    y={ty + 3}
-                    textAnchor="middle"
-                    className="fill-gray-700 dark:fill-gray-200 text-[9px] font-semibold"
-                    style={{ fontFamily: 'system-ui, sans-serif' }}
-                  >
-                    → step {edge.toStep + 1}
-                  </text>
-                </g>
-              )
-            })()}
           </g>
         )
       })}
@@ -816,6 +814,58 @@ function CycleLoopDiagram({
           </g>
         )
       })}
+
+      {/* Arc labels — rendered AFTER reaction nodes so they always paint on
+          top of node rectangles, never clipped by them. Data was queued
+          into flowLabelData / closingLabelData during the arc passes. */}
+      {flowLabelData.map((lbl) => (
+        <g key={lbl.key} opacity={lbl.isHovered ? 1 : 0.75} style={{ pointerEvents: 'none' }}>
+          <rect
+            x={lbl.x - 18}
+            y={lbl.y - 7}
+            width={36}
+            height={14}
+            rx={7}
+            className="fill-white dark:fill-gray-800"
+            stroke={lbl.color}
+            strokeWidth={0.75}
+            strokeOpacity={0.7}
+          />
+          <text
+            x={lbl.x}
+            y={lbl.y + 3}
+            textAnchor="middle"
+            className="fill-gray-700 dark:fill-gray-200 text-[9px] font-semibold"
+            style={{ fontFamily: 'system-ui, sans-serif' }}
+          >
+            {lbl.text}
+          </text>
+        </g>
+      ))}
+      {closingLabelData.map((lbl) => (
+        <g key={lbl.key} style={{ pointerEvents: 'none' }}>
+          <rect
+            x={lbl.x - lbl.width / 2}
+            y={lbl.y - lbl.height / 2}
+            width={lbl.width}
+            height={lbl.height}
+            rx={lbl.rx}
+            className="fill-white dark:fill-gray-800"
+            stroke={lbl.color}
+            strokeWidth={lbl.fontSize >= 10 ? 1 : 0.75}
+            strokeOpacity={lbl.fontSize >= 10 ? 0.85 : 0.7}
+          />
+          <text
+            x={lbl.x}
+            y={lbl.y + (lbl.fontSize === 10 ? 4 : 3)}
+            textAnchor="middle"
+            className={`fill-gray-700 dark:fill-gray-200 ${lbl.fontSize === 10 ? 'text-[10px]' : 'text-[9px]'} font-semibold`}
+            style={{ fontFamily: 'system-ui, sans-serif' }}
+          >
+            {lbl.text}
+          </text>
+        </g>
+      ))}
 
       {/* Centre — the recycled catalyst(s), or fuel if no catalysts detected.
           A catalyst is consumed at one step and regenerated at a later step,
