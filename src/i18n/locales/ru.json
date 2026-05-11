@@ -932,6 +932,9 @@
     "netLabelByproducts": "BYPRODUCTS",
     "netLabelNoByproducts": "(none)",
     "cycleClosesLabel": "Cycle closes — fuel returned to start",
+    "legendCatalyst": "Catalyst",
+    "legendFlowSolid": "Intermediary flow (produced → consumed)",
+    "legendFlowDashed": "Regeneration (catalyst returns)",
     "catalystCenterLabel": "Catalyst (recycled)",
     "byproductLabel": "byproduct"
   }
