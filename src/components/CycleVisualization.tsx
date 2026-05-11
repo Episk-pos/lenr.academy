@@ -269,7 +269,10 @@ function CycleLoopDiagram({
   nuclideColorMap,
   byproducts,
   hoveredNuclide,
+  hoveredStep,
   catalysts,
+  onHover,
+  onStepHover,
 }: {
   cycle: DiscoveredCycle
   flows: FlowEdge[]
@@ -277,8 +280,17 @@ function CycleLoopDiagram({
   nuclideColorMap: Map<NuclideKey, number>
   byproducts: Map<number, NuclideKey[]>
   hoveredNuclide: NuclideKey | null
+  hoveredStep: number | null
   catalysts: Array<{ E: string; Z: number; A: number }>
+  onHover: (key: NuclideKey | null) => void
+  onStepHover: (idx: number | null) => void
 }) {
+  // Centralised hit-state for arcs: an arc is highlighted when its nuclide
+  // is hovered, or when either of its endpoint steps is hovered.
+  const arcHit = (nuclideKey: NuclideKey, fromStep: number, toStep: number) =>
+    hoveredNuclide === nuclideKey ||
+    hoveredStep === fromStep ||
+    hoveredStep === toStep
   const { t } = useTranslation()
   const { reactions } = cycle
   const n = reactions.length
@@ -464,7 +476,7 @@ function CycleLoopDiagram({
         const ctrlX = midX + (cx - midX) * 0.5
         const ctrlY = midY + (cy - midY) * 0.5
 
-        const isHovered = hoveredNuclide === arc.nuclideKey
+        const isHovered = arcHit(arc.nuclideKey, arc.fromStep, arc.toStep)
         const opacity = isHovered ? 0.85 : 0.4
         const strokeWidth = isHovered ? 2 : 1.25
         const colorIdx = nuclideColorMap.get(arc.nuclideKey) ?? 0
@@ -478,14 +490,22 @@ function CycleLoopDiagram({
         const arcLabel = nuclideLabelByKey.get(arc.nuclideKey) ?? arc.nuclideKey
 
         return (
-          <g key={`flow-${i}`} className="transition-all duration-150">
+          <g
+            key={`flow-${i}`}
+            className="transition-all duration-150"
+            onMouseEnter={() => onHover(arc.nuclideKey)}
+            onMouseLeave={() => onHover(null)}
+            style={{ cursor: 'pointer' }}
+          >
             <path
               d={`M${arc.from.x},${arc.from.y} Q${ctrlX},${ctrlY} ${arc.to.x},${arc.to.y}`}
               fill="none"
               stroke={arc.color.line}
               strokeWidth={strokeWidth}
               strokeOpacity={opacity}
+              strokeLinecap="round"
               markerEnd={`url(#arrowFlow-${colorIdx % 5})`}
+              style={{ pointerEvents: 'stroke' }}
             />
             <g opacity={isHovered ? 1 : 0.55}>
               <rect
@@ -524,7 +544,7 @@ function CycleLoopDiagram({
         const ctrlY = midY + (cy - midY) * 1.15
         const color =
           edge.colorIdx !== undefined ? getFlowColor(edge.colorIdx).line : '#14b8a6' // teal fallback
-        const isHovered = hoveredNuclide === edge.nuclideKey
+        const isHovered = arcHit(edge.nuclideKey, edge.fromStep, edge.toStep)
         // Label position: 40% along the curve from the producer step toward
         // the control point — sits between the producer node and the centre,
         // off the catalyst-chip apex so it doesn't stack on the chip.
@@ -538,7 +558,13 @@ function CycleLoopDiagram({
           2 * (1 - labelT) * labelT * ctrlY +
           labelT * labelT * edge.to.y
         return (
-          <g key={`close-${i}`} className="transition-all duration-150">
+          <g
+            key={`close-${i}`}
+            className="transition-all duration-150"
+            onMouseEnter={() => onHover(edge.nuclideKey)}
+            onMouseLeave={() => onHover(null)}
+            style={{ cursor: 'pointer' }}
+          >
             <path
               d={`M${edge.from.x},${edge.from.y} Q${ctrlX},${ctrlY} ${edge.to.x},${edge.to.y}`}
               fill="none"
@@ -548,6 +574,7 @@ function CycleLoopDiagram({
               strokeOpacity={isHovered ? 0.95 : 0.75}
               strokeLinecap="round"
               markerEnd="url(#arrowClosing)"
+              style={{ pointerEvents: 'stroke' }}
             />
             {/* Mid-arc nuclide label, off the apex so it leaves room for
                 the catalyst chip in the centre. */}
@@ -617,9 +644,16 @@ function CycleLoopDiagram({
 
       {/* Byproduct rays */}
       {byproductRays.map((ray, i) => {
-        const isHovered = hoveredNuclide === ray.nuclideKey
+        const isHovered =
+          hoveredNuclide === ray.nuclideKey || hoveredStep === ray.stepIdx
         return (
-          <g key={`bp-${i}`} className="transition-all duration-150">
+          <g
+            key={`bp-${i}`}
+            className="transition-all duration-150"
+            onMouseEnter={() => onHover(ray.nuclideKey)}
+            onMouseLeave={() => onHover(null)}
+            style={{ cursor: 'pointer' }}
+          >
             <line
               x1={ray.from.x}
               y1={ray.from.y}
@@ -629,6 +663,7 @@ function CycleLoopDiagram({
               strokeWidth={isHovered ? 1.6 : 1}
               strokeOpacity={isHovered ? 0.9 : 0.55}
               markerEnd="url(#arrowByproduct)"
+              style={{ pointerEvents: 'stroke' }}
             />
             <text
               x={ray.to.x}
@@ -655,12 +690,21 @@ function CycleLoopDiagram({
         const outputStr = reaction.outputs.map((nn) => `${nn.A}${nn.E}`).join(' + ')
 
         const isFeedback = reaction.isFeedback
-        const borderColor = isFeedback
-          ? 'stroke-amber-400 dark:stroke-amber-500'
-          : 'stroke-gray-300 dark:stroke-gray-600'
+        const isStepHovered = hoveredStep === i
+        const borderColor = isStepHovered
+          ? 'stroke-primary-500 dark:stroke-primary-400'
+          : isFeedback
+            ? 'stroke-amber-400 dark:stroke-amber-500'
+            : 'stroke-gray-300 dark:stroke-gray-600'
 
         return (
-          <g key={`node-${i}`}>
+          <g
+            key={`node-${i}`}
+            onMouseEnter={() => onStepHover(i)}
+            onMouseLeave={() => onStepHover(null)}
+            style={{ cursor: 'pointer' }}
+            className="transition-all duration-150"
+          >
             <rect
               x={x}
               y={y}
@@ -668,7 +712,7 @@ function CycleLoopDiagram({
               height={nodeH}
               rx={10}
               className={`fill-white dark:fill-gray-800 ${borderColor}`}
-              strokeWidth={isFeedback ? 2.5 : 1.5}
+              strokeWidth={isStepHovered ? 2.5 : isFeedback ? 2.5 : 1.5}
             />
             {/* Step number badge */}
             <circle
@@ -826,7 +870,9 @@ function EnhancedStepList({
   feedbackNuclides,
   nuclideColorMap,
   hoveredNuclide,
+  hoveredStep,
   onHover,
+  onStepHover,
   catalysts,
 }: {
   cycle: DiscoveredCycle
@@ -836,7 +882,9 @@ function EnhancedStepList({
   feedbackNuclides: Set<NuclideKey>
   nuclideColorMap: Map<NuclideKey, number>
   hoveredNuclide: NuclideKey | null
+  hoveredStep: number | null
   onHover: (key: NuclideKey | null) => void
+  onStepHover: (idx: number | null) => void
   catalysts: Array<{ E: string; Z: number; A: number }>
 }) {
   const { t } = useTranslation()
@@ -861,11 +909,20 @@ function EnhancedStepList({
     <div className="divide-y divide-gray-200 dark:divide-gray-700">
       {cycle.reactions.map((reaction, index) => {
         const isFeedback = reaction.isFeedback
+        const isStepHovered = hoveredStep === index
 
         return (
           <div
             key={index}
-            className={`px-6 py-5 ${isFeedback ? 'bg-amber-50/50 dark:bg-amber-900/10' : ''}`}
+            onMouseEnter={() => onStepHover(index)}
+            onMouseLeave={() => onStepHover(null)}
+            className={`px-6 py-5 transition-colors duration-150 cursor-default ${
+              isStepHovered
+                ? 'bg-primary-50 dark:bg-primary-900/20'
+                : isFeedback
+                  ? 'bg-amber-50/50 dark:bg-amber-900/10'
+                  : ''
+            }`}
           >
             <div className="flex items-start gap-4">
               {/* Step number with vertical connector */}
@@ -1223,6 +1280,7 @@ export default function CycleVisualization({
 }: CycleVisualizationProps) {
   const { t } = useTranslation()
   const [hoveredNuclide, setHoveredNuclide] = useState<NuclideKey | null>(null)
+  const [hoveredStep, setHoveredStep] = useState<number | null>(null)
 
   const fuelKeys = useMemo(
     () => new Set(cycle.fuelNuclides.map((n) => nKey(n))),
@@ -1270,6 +1328,10 @@ export default function CycleVisualization({
 
   const onHover = useCallback((key: NuclideKey | null) => {
     setHoveredNuclide(key)
+  }, [])
+
+  const onStepHover = useCallback((idx: number | null) => {
+    setHoveredStep(idx)
   }, [])
 
   return (
@@ -1397,7 +1459,10 @@ export default function CycleVisualization({
             nuclideColorMap={nuclideColorMap}
             byproducts={byproducts}
             hoveredNuclide={hoveredNuclide}
+            hoveredStep={hoveredStep}
             catalysts={catalysts}
+            onHover={onHover}
+            onStepHover={onStepHover}
           />
           <div className="mt-4">
             <FlowLegend feedbackNuclides={feedbackNuclides} />
@@ -1424,7 +1489,9 @@ export default function CycleVisualization({
           feedbackNuclides={feedbackNuclides}
           nuclideColorMap={nuclideColorMap}
           hoveredNuclide={hoveredNuclide}
+          hoveredStep={hoveredStep}
           onHover={onHover}
+          onStepHover={onStepHover}
           catalysts={catalysts}
         />
       </div>
