@@ -1,4 +1,4 @@
-import { X } from 'lucide-react'
+import { X, ExternalLink } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import type { Element, AtomicRadiiData } from '../types'
@@ -252,14 +252,28 @@ export default function ElementDetailsCard({ element, atomicRadii, onClose }: El
             />
           </h3>
           <ul className="space-y-1.5 text-sm text-gray-700 dark:text-gray-300">
-            {elementCitations.map((c) => (
-              <li key={c.id} className="leading-snug">
-                <span className="font-medium text-gray-900 dark:text-gray-100">
-                  {c.authors} ({c.year}):
-                </span>{' '}
-                {c.excerpt}
-              </li>
-            ))}
+            {elementCitations.map((c) => {
+              const href = c.doi ? `https://doi.org/${c.doi}` : c.url
+              return (
+                <li key={c.id} className="leading-snug">
+                  <span className="font-medium text-gray-900 dark:text-gray-100">
+                    {c.authors} ({c.year}):
+                  </span>{' '}
+                  {c.excerpt}
+                  {href && (
+                    <a
+                      href={href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="ml-1.5 inline-flex items-center gap-0.5 text-primary-600 dark:text-primary-400 hover:underline text-xs whitespace-nowrap"
+                    >
+                      view source
+                      <ExternalLink className="w-3 h-3" />
+                    </a>
+                  )}
+                </li>
+              )
+            })}
           </ul>
         </div>
       )}
