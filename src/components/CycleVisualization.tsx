@@ -314,22 +314,30 @@ function CycleLoopDiagram({
   // Shorten an arc endpoint so it stops at the node's bounding rectangle
   // (plus a small margin) instead of at the node's centre. Without this,
   // arrowhead markers render inside the rectangle and are invisible.
-  // Tangent at the Bezier endpoint is approximated as ctrl → to.
-  function shortenedEndpoint(
+  //
+  // Snaps the endpoint to the MIDPOINT of the closest cardinal face (top,
+  // bottom, left, or right) of the destination node, rather than wherever
+  // the line from ctrl to dest happens to cross the rect. Result: arrows
+  // always enter destinations head-on at a face midpoint, never glancing
+  // off a corner. The closest face is chosen by comparing the line's
+  // slope to the node's aspect ratio.
+  function snapToFaceMidpoint(
     to: { x: number; y: number },
     ctrl: { x: number; y: number },
     margin = 8
   ): { x: number; y: number } {
     const dx = to.x - ctrl.x
     const dy = to.y - ctrl.y
-    const len = Math.hypot(dx, dy)
-    if (len < 0.001) return to
-    const ux = dx / len
-    const uy = dy / len
-    const tx = Math.abs(ux) > 0.001 ? (nodeW / 2 + margin) / Math.abs(ux) : Infinity
-    const ty = Math.abs(uy) > 0.001 ? (nodeH / 2 + margin) / Math.abs(uy) : Infinity
-    const t = Math.min(tx, ty)
-    return { x: to.x - ux * t, y: to.y - uy * t }
+    if (Math.abs(dx) < 0.001 && Math.abs(dy) < 0.001) return to
+    // Horizontal motion dominates iff |dx|/W > |dy|/H, i.e. we'd hit a
+    // left/right face before a top/bottom face when backtracking.
+    const hitsVerticalFace = Math.abs(dx) * nodeH > Math.abs(dy) * nodeW
+    if (hitsVerticalFace) {
+      const faceX = to.x - Math.sign(dx) * (nodeW / 2 + margin)
+      return { x: faceX, y: to.y }
+    }
+    const faceY = to.y - Math.sign(dy) * (nodeH / 2 + margin)
+    return { x: to.x, y: faceY }
   }
 
   const svgW = cx * 2 + 40
@@ -535,7 +543,7 @@ function CycleLoopDiagram({
         const colorIdx = nuclideColorMap.get(arc.nuclideKey) ?? 0
 
         // Shorten the destination so the arrowhead clears the node rectangle
-        const toShort = shortenedEndpoint(arc.to, { x: ctrlX, y: ctrlY })
+        const toShort = snapToFaceMidpoint(arc.to, { x: ctrlX, y: ctrlY })
 
         // Compute label position: Bezier midpoint offset perpendicular
         // toward the centre so adjacent-step labels sit in the open inside-
@@ -611,7 +619,7 @@ function CycleLoopDiagram({
           2 * (1 - labelT) * labelT * ctrlY +
           labelT * labelT * edge.to.y
         // Shorten the destination so the arrowhead clears the node rectangle
-        const toShortClose = shortenedEndpoint(edge.to, { x: ctrlX, y: ctrlY })
+        const toShortClose = snapToFaceMidpoint(edge.to, { x: ctrlX, y: ctrlY })
 
         // Mid-arc nuclide label — offset perpendicular toward the centre
         // so it sits off the curve in clear space.
@@ -624,16 +632,12 @@ function CycleLoopDiagram({
         const midLabelX = labelX + cPerpX * cSign * lblOffset
         const midLabelY = labelY + cPerpY * cSign * lblOffset
 
-        // Destination-step label near the arrow tip
-        const tipT = 0.88
-        const tipX =
-          (1 - tipT) * (1 - tipT) * edge.from.x +
-          2 * (1 - tipT) * tipT * ctrlX +
-          tipT * tipT * edge.to.x
-        const tipY =
-          (1 - tipT) * (1 - tipT) * edge.from.y +
-          2 * (1 - tipT) * tipT * ctrlY +
-          tipT * tipT * edge.to.y
+        // Destination-step label sits OUTSIDE the destination node, just
+        // past the arrowhead's face-midpoint entry. Snap to the same face
+        // with a larger margin so the label clears the box cleanly.
+        const tipPos = snapToFaceMidpoint(edge.to, { x: ctrlX, y: ctrlY }, 24)
+        const tipX = tipPos.x
+        const tipY = tipPos.y
 
         closingLabelData.push({
           key: `close-mid-${i}`,
