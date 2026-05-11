@@ -138,28 +138,32 @@ export default function CycleDiscovery() {
         </p>
       </div>
 
-      {/* Info banner */}
-      <div className="card p-6 mb-6 bg-blue-50 dark:bg-blue-900/20">
-        <div className="flex items-start gap-3">
-          <AlertCircle className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
-          <div className="text-sm text-gray-700 dark:text-gray-300">
-            <strong>{t('cycleDiscovery.howItWorksTitle')}:</strong>{' '}
-            {t('cycleDiscovery.howItWorksDescription')}
+      {!selectedCycle && (
+        <>
+          {/* Info banner */}
+          <div className="card p-6 mb-6 bg-blue-50 dark:bg-blue-900/20">
+            <div className="flex items-start gap-3">
+              <AlertCircle className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
+              <div className="text-sm text-gray-700 dark:text-gray-300">
+                <strong>{t('cycleDiscovery.howItWorksTitle')}:</strong>{' '}
+                {t('cycleDiscovery.howItWorksDescription')}
+              </div>
+            </div>
           </div>
-        </div>
-      </div>
 
-      {/* Search form */}
-      <div className="mb-6">
-        <CycleDiscoverySearch
-          params={params}
-          onParamsChange={setParams}
-          onSearch={handleSearch}
-          onCancel={cancelDiscovery}
-          isSearching={isRunning}
-          progress={progress}
-        />
-      </div>
+          {/* Search form */}
+          <div className="mb-6">
+            <CycleDiscoverySearch
+              params={params}
+              onParamsChange={setParams}
+              onSearch={handleSearch}
+              onCancel={cancelDiscovery}
+              isSearching={isRunning}
+              progress={progress}
+            />
+          </div>
+        </>
+      )}
 
       {/* Error display */}
       {displayError && (
