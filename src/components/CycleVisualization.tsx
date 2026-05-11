@@ -545,10 +545,12 @@ function CycleLoopDiagram({
         // Shorten the destination so the arrowhead clears the node rectangle
         const toShort = snapToFaceMidpoint(arc.to, { x: ctrlX, y: ctrlY })
 
-        // Compute label position: Bezier midpoint offset perpendicular
-        // toward the centre so adjacent-step labels sit in the open inside-
-        // ring area rather than along the line between adjacent nodes.
-        const t = 0.5
+        // Compute label position: Bezier point shifted toward the SOURCE
+        // side (t=0.4) and offset perpendicular toward the centre. The
+        // source-side shift keeps the label clear of the arrowhead landing
+        // at the destination face; the perpendicular offset keeps it off
+        // the line between adjacent nodes.
+        const t = 0.4
         const bx =
           (1 - t) * (1 - t) * arc.from.x + 2 * (1 - t) * t * ctrlX + t * t * arc.to.x
         const by =
@@ -628,7 +630,7 @@ function CycleLoopDiagram({
         const cPerpY = (edge.to.x - edge.from.x) / (closeChordLen || 1)
         const cSign =
           (cx - labelX) * cPerpX + (cy - labelY) * cPerpY >= 0 ? 1 : -1
-        const lblOffset = 18
+        const lblOffset = 22
         const midLabelX = labelX + cPerpX * cSign * lblOffset
         const midLabelY = labelY + cPerpY * cSign * lblOffset
 
@@ -646,10 +648,10 @@ function CycleLoopDiagram({
           y: midLabelY,
           text: edge.label,
           color,
-          width: 56,
-          height: 18,
-          rx: 9,
-          fontSize: 10,
+          width: 64,
+          height: 20,
+          rx: 10,
+          fontSize: 12,
         })
         closingLabelData.push({
           key: `close-tip-${i}`,
@@ -658,10 +660,10 @@ function CycleLoopDiagram({
           y: tipY,
           text: `→ step ${edge.toStep + 1}`,
           color,
-          width: 44,
-          height: 14,
-          rx: 7,
-          fontSize: 9,
+          width: 56,
+          height: 18,
+          rx: 9,
+          fontSize: 11,
         })
 
         return (
@@ -834,56 +836,61 @@ function CycleLoopDiagram({
           style={{ cursor: 'pointer' }}
         >
           <rect
-            x={lbl.x - 18}
-            y={lbl.y - 7}
-            width={36}
-            height={14}
-            rx={7}
+            x={lbl.x - 22}
+            y={lbl.y - 9}
+            width={44}
+            height={18}
+            rx={9}
             className="fill-white dark:fill-gray-800"
             stroke={lbl.color}
-            strokeWidth={0.75}
-            strokeOpacity={0.7}
+            strokeWidth={1}
+            strokeOpacity={0.8}
           />
           <text
             x={lbl.x}
-            y={lbl.y + 3}
+            y={lbl.y + 4}
             textAnchor="middle"
-            className="fill-gray-700 dark:fill-gray-200 text-[9px] font-semibold"
+            className="fill-gray-700 dark:fill-gray-200 text-[11px] font-semibold"
             style={{ fontFamily: 'system-ui, sans-serif' }}
           >
             {lbl.text}
           </text>
         </g>
       ))}
-      {closingLabelData.map((lbl) => (
-        <g
-          key={lbl.key}
-          onMouseEnter={() => onHover(lbl.nuclideKey)}
-          onMouseLeave={() => onHover(null)}
-          style={{ cursor: 'pointer' }}
-        >
-          <rect
-            x={lbl.x - lbl.width / 2}
-            y={lbl.y - lbl.height / 2}
-            width={lbl.width}
-            height={lbl.height}
-            rx={lbl.rx}
-            className="fill-white dark:fill-gray-800"
-            stroke={lbl.color}
-            strokeWidth={lbl.fontSize >= 10 ? 1 : 0.75}
-            strokeOpacity={lbl.fontSize >= 10 ? 0.85 : 0.7}
-          />
-          <text
-            x={lbl.x}
-            y={lbl.y + (lbl.fontSize === 10 ? 4 : 3)}
-            textAnchor="middle"
-            className={`fill-gray-700 dark:fill-gray-200 ${lbl.fontSize === 10 ? 'text-[10px]' : 'text-[9px]'} font-semibold`}
-            style={{ fontFamily: 'system-ui, sans-serif' }}
+      {closingLabelData.map((lbl) => {
+        const fontClass =
+          lbl.fontSize >= 12 ? 'text-[12px]' : lbl.fontSize === 11 ? 'text-[11px]' : 'text-[10px]'
+        const yOffset = lbl.fontSize >= 12 ? 4 : 4
+        return (
+          <g
+            key={lbl.key}
+            onMouseEnter={() => onHover(lbl.nuclideKey)}
+            onMouseLeave={() => onHover(null)}
+            style={{ cursor: 'pointer' }}
           >
-            {lbl.text}
-          </text>
-        </g>
-      ))}
+            <rect
+              x={lbl.x - lbl.width / 2}
+              y={lbl.y - lbl.height / 2}
+              width={lbl.width}
+              height={lbl.height}
+              rx={lbl.rx}
+              className="fill-white dark:fill-gray-800"
+              stroke={lbl.color}
+              strokeWidth={1}
+              strokeOpacity={0.85}
+            />
+            <text
+              x={lbl.x}
+              y={lbl.y + yOffset}
+              textAnchor="middle"
+              className={`fill-gray-700 dark:fill-gray-200 ${fontClass} font-semibold`}
+              style={{ fontFamily: 'system-ui, sans-serif' }}
+            >
+              {lbl.text}
+            </text>
+          </g>
+        )
+      })}
 
       {/* Centre — the recycled catalyst(s), or fuel if no catalysts detected.
           A catalyst is consumed at one step and regenerated at a later step,
