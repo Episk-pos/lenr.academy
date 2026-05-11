@@ -96,6 +96,21 @@ export default function CycleDiscovery() {
     window.history.pushState({ cycleDetail: true, cycleIndex }, '')
   }
 
+  // Prev/next navigation while on the detail view. Uses replaceState rather
+  // than pushState so browser-back from any cycle returns to the list rather
+  // than retracing every prev/next click.
+  const handleNavigateCycle = (delta: number) => {
+    if (!results || !selectedCycle) return
+    const idx = results.cycles.indexOf(selectedCycle)
+    const next = results.cycles[idx + delta]
+    if (!next) return
+    setSelectedCycle(next)
+    window.history.replaceState(
+      { cycleDetail: true, cycleIndex: idx + delta },
+      ''
+    )
+  }
+
   // Listen for browser back/forward to toggle cycle detail view
   useEffect(() => {
     const onPopState = (e: PopStateEvent) => {
@@ -188,6 +203,19 @@ export default function CycleDiscovery() {
           cycle={selectedCycle}
           onRunSimulation={handleRunSimulation}
           onBack={handleBack}
+          onPrev={
+            results && results.cycles.indexOf(selectedCycle) > 0
+              ? () => handleNavigateCycle(-1)
+              : undefined
+          }
+          onNext={
+            results &&
+            results.cycles.indexOf(selectedCycle) < results.cycles.length - 1
+              ? () => handleNavigateCycle(1)
+              : undefined
+          }
+          currentIndex={results?.cycles.indexOf(selectedCycle) ?? 0}
+          totalCount={results?.cycles.length ?? 0}
         />
       ) : results ? (
         <div className="space-y-6">
