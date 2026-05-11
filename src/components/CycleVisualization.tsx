@@ -314,27 +314,6 @@ function CycleLoopDiagram({
     return { ...f, from, to, color }
   })
 
-  // Build perimeter arrows: from step i -> step (i+1) % n
-  // Each arrow follows an arc that hugs the OUTSIDE of the ring.
-  const perimeterArrows = reactions.map((_, i) => {
-    const fromAngle = angles[i]
-    const toAngle = angles[(i + 1) % n]
-    // Start/end points sit on the perimeterRadius circle, slightly offset so
-    // the arrow does not visually collide with the rectangle nodes.
-    const fromAngleEdge = fromAngle + (Math.PI / n) * 0.45
-    const toAngleEdge = toAngle - (Math.PI / n) * 0.45
-    const from = {
-      x: cx + perimeterRadius * Math.cos(fromAngleEdge),
-      y: cy + perimeterRadius * Math.sin(fromAngleEdge),
-    }
-    const to = {
-      x: cx + perimeterRadius * Math.cos(toAngleEdge),
-      y: cy + perimeterRadius * Math.sin(toAngleEdge),
-    }
-    // Use SVG arc command sweeping along the perimeter circle
-    return { from, to }
-  })
-
   // Outgoing byproduct rays
   type BPRay = { stepIdx: number; nuclideKey: NuclideKey; from: { x: number; y: number }; to: { x: number; y: number } }
   const byproductRays: BPRay[] = []
@@ -419,20 +398,6 @@ function CycleLoopDiagram({
     >
       <defs>
         <marker
-          id="arrowPerimeter"
-          markerWidth="14"
-          markerHeight="10"
-          refX="11"
-          refY="5"
-          orient="auto"
-          markerUnits="userSpaceOnUse"
-        >
-          <path
-            d="M0,0 L14,5 L0,10 Z"
-            className="fill-amber-500 dark:fill-amber-400"
-          />
-        </marker>
-        <marker
           id="arrowByproduct"
           markerWidth="8"
           markerHeight="6"
@@ -459,6 +424,24 @@ function CycleLoopDiagram({
             className="fill-amber-600 dark:fill-amber-300"
           />
         </marker>
+        {/* Per-flow arrowheads: one marker per FLOW_COLOR so each
+            intermediary hairline gets a directional chevron in its own color.
+            referenced as url(#arrowFlow-N) by index. */}
+        <marker id="arrowFlow-0" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto" markerUnits="userSpaceOnUse">
+          <path d="M0,0 L8,3 L0,6 Z" fill="#0ea5e9" />
+        </marker>
+        <marker id="arrowFlow-1" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto" markerUnits="userSpaceOnUse">
+          <path d="M0,0 L8,3 L0,6 Z" fill="#8b5cf6" />
+        </marker>
+        <marker id="arrowFlow-2" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto" markerUnits="userSpaceOnUse">
+          <path d="M0,0 L8,3 L0,6 Z" fill="#10b981" />
+        </marker>
+        <marker id="arrowFlow-3" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto" markerUnits="userSpaceOnUse">
+          <path d="M0,0 L8,3 L0,6 Z" fill="#ef4444" />
+        </marker>
+        <marker id="arrowFlow-4" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto" markerUnits="userSpaceOnUse">
+          <path d="M0,0 L8,3 L0,6 Z" fill="#ec4899" />
+        </marker>
       </defs>
 
       {/* Subtle background ring (visual hint of the loop circumference) */}
@@ -472,7 +455,8 @@ function CycleLoopDiagram({
         strokeDasharray="4 6"
       />
 
-      {/* Demoted intermediary flow arcs (hairlines through the centre) */}
+      {/* Intermediary flow arcs (hairlines through the centre).
+          Each arc is directional (arrowhead) and labelled with its nuclide. */}
       {flowArcs.map((arc, i) => {
         // Curve gently toward the centre so they sit "inside" the ring
         const midX = (arc.from.x + arc.to.x) / 2
@@ -481,19 +465,51 @@ function CycleLoopDiagram({
         const ctrlY = midY + (cy - midY) * 0.5
 
         const isHovered = hoveredNuclide === arc.nuclideKey
-        const opacity = isHovered ? 0.8 : 0.2
-        const strokeWidth = isHovered ? 2 : 1
+        const opacity = isHovered ? 0.85 : 0.4
+        const strokeWidth = isHovered ? 2 : 1.25
+        const colorIdx = nuclideColorMap.get(arc.nuclideKey) ?? 0
+
+        // Label at the Bezier midpoint (t=0.5)
+        const t = 0.5
+        const lx =
+          (1 - t) * (1 - t) * arc.from.x + 2 * (1 - t) * t * ctrlX + t * t * arc.to.x
+        const ly =
+          (1 - t) * (1 - t) * arc.from.y + 2 * (1 - t) * t * ctrlY + t * t * arc.to.y
+        const arcLabel = nuclideLabelByKey.get(arc.nuclideKey) ?? arc.nuclideKey
 
         return (
-          <path
-            key={`flow-${i}`}
-            d={`M${arc.from.x},${arc.from.y} Q${ctrlX},${ctrlY} ${arc.to.x},${arc.to.y}`}
-            fill="none"
-            stroke={arc.color.line}
-            strokeWidth={strokeWidth}
-            strokeOpacity={opacity}
-            className="transition-all duration-150"
-          />
+          <g key={`flow-${i}`} className="transition-all duration-150">
+            <path
+              d={`M${arc.from.x},${arc.from.y} Q${ctrlX},${ctrlY} ${arc.to.x},${arc.to.y}`}
+              fill="none"
+              stroke={arc.color.line}
+              strokeWidth={strokeWidth}
+              strokeOpacity={opacity}
+              markerEnd={`url(#arrowFlow-${colorIdx % 5})`}
+            />
+            <g opacity={isHovered ? 1 : 0.55}>
+              <rect
+                x={lx - 18}
+                y={ly - 7}
+                width={36}
+                height={14}
+                rx={7}
+                className="fill-white dark:fill-gray-800"
+                stroke={arc.color.line}
+                strokeWidth={0.75}
+                strokeOpacity={0.7}
+              />
+              <text
+                x={lx}
+                y={ly + 3}
+                textAnchor="middle"
+                className="fill-gray-700 dark:fill-gray-200 text-[9px] font-semibold"
+                style={{ fontFamily: 'system-ui, sans-serif' }}
+              >
+                {arcLabel}
+              </text>
+            </g>
+          </g>
         )
       })}
 
@@ -533,7 +549,8 @@ function CycleLoopDiagram({
               strokeLinecap="round"
               markerEnd="url(#arrowClosing)"
             />
-            {/* Label offset from the apex to leave room for the catalyst chip */}
+            {/* Mid-arc nuclide label, off the apex so it leaves room for
+                the catalyst chip in the centre. */}
             <g>
               <rect
                 x={labelX - 28}
@@ -556,24 +573,45 @@ function CycleLoopDiagram({
                 {edge.label}
               </text>
             </g>
+            {/* Destination-step label near the arrow tip (~88% along the
+                curve), making it unambiguous which step the catalyst returns
+                to. */}
+            {(() => {
+              const t = 0.88
+              const tx =
+                (1 - t) * (1 - t) * edge.from.x +
+                2 * (1 - t) * t * ctrlX +
+                t * t * edge.to.x
+              const ty =
+                (1 - t) * (1 - t) * edge.from.y +
+                2 * (1 - t) * t * ctrlY +
+                t * t * edge.to.y
+              return (
+                <g>
+                  <rect
+                    x={tx - 22}
+                    y={ty - 7}
+                    width={44}
+                    height={14}
+                    rx={7}
+                    className="fill-white dark:fill-gray-800"
+                    stroke={color}
+                    strokeWidth={0.75}
+                    strokeOpacity={0.7}
+                  />
+                  <text
+                    x={tx}
+                    y={ty + 3}
+                    textAnchor="middle"
+                    className="fill-gray-700 dark:fill-gray-200 text-[9px] font-semibold"
+                    style={{ fontFamily: 'system-ui, sans-serif' }}
+                  >
+                    → step {edge.toStep + 1}
+                  </text>
+                </g>
+              )
+            })()}
           </g>
-        )
-      })}
-
-      {/* Bold perimeter cycle arrows (one of which closes the loop). */}
-      {perimeterArrows.map((arrow, i) => {
-        // SVG arc: large-arc=0, sweep=1 (clockwise) along the perimeter circle
-        const d = `M${arrow.from.x},${arrow.from.y} A${perimeterRadius},${perimeterRadius} 0 0 1 ${arrow.to.x},${arrow.to.y}`
-        return (
-          <path
-            key={`peri-${i}`}
-            d={d}
-            fill="none"
-            className="stroke-amber-500 dark:stroke-amber-400"
-            strokeWidth={4}
-            strokeLinecap="round"
-            markerEnd="url(#arrowPerimeter)"
-          />
         )
       })}
 
@@ -998,23 +1036,37 @@ function EnhancedStepList({
 function FlowLegend({ feedbackNuclides }: { feedbackNuclides: Set<NuclideKey> }) {
   const { t } = useTranslation()
   return (
-    <div className="flex flex-wrap gap-4 text-xs text-gray-500 dark:text-gray-400">
+    <div className="flex flex-wrap gap-x-4 gap-y-2 text-xs text-gray-500 dark:text-gray-400">
+      {/* Role pills */}
       <span className="flex items-center gap-1.5">
         <span className="w-3 h-3 rounded-full bg-amber-200 dark:bg-amber-800 ring-1 ring-amber-400 dark:ring-amber-600" />
         {t('cycleDiscovery.legendFuel')}
       </span>
-      <span className="flex items-center gap-1.5">
-        <span className="w-3 h-3 rounded-full bg-sky-200 dark:bg-sky-800 ring-1 ring-sky-400 dark:ring-sky-600" />
-        {t('cycleDiscovery.legendIntermediary')}
-      </span>
+      {feedbackNuclides.size > 0 && (
+        <span className="flex items-center gap-1.5">
+          <span className="w-3 h-3 rounded-full bg-teal-200 dark:bg-teal-800 ring-2 ring-teal-400 dark:ring-teal-500" />
+          {t('cycleDiscovery.legendCatalyst')}
+        </span>
+      )}
       <span className="flex items-center gap-1.5">
         <span className="w-3 h-3 rounded-full bg-gray-200 dark:bg-gray-600" />
         {t('cycleDiscovery.legendByproduct')}
       </span>
+      {/* Arc treatments */}
+      <span className="flex items-center gap-1.5">
+        <svg width="22" height="8" className="flex-shrink-0">
+          <line x1="0" y1="4" x2="18" y2="4" stroke="#0ea5e9" strokeWidth="1.5" />
+          <path d="M16,1 L21,4 L16,7 Z" fill="#0ea5e9" />
+        </svg>
+        {t('cycleDiscovery.legendFlowSolid')}
+      </span>
       {feedbackNuclides.size > 0 && (
         <span className="flex items-center gap-1.5">
-          <span className="w-3 h-3 rounded-full bg-teal-200 dark:bg-teal-800 ring-2 ring-teal-400 dark:ring-teal-500" />
-          {t('cycleDiscovery.legendRegenerated')}
+          <svg width="22" height="8" className="flex-shrink-0">
+            <line x1="0" y1="4" x2="18" y2="4" stroke="#14b8a6" strokeWidth="2" strokeDasharray="4 2" />
+            <path d="M16,1 L21,4 L16,7 Z" fill="#14b8a6" />
+          </svg>
+          {t('cycleDiscovery.legendFlowDashed')}
         </span>
       )}
     </div>
