@@ -11,6 +11,7 @@ export const citations: Citation[] = [
   // ─── Excess heat / electrolytic ───────────────────────────────────────────
   {
     id: 'fleischmann-pons-1989',
+    doi: '10.1016/0022-0728(89)80006-3',
     authors: 'Fleischmann, M. & Pons, S.',
     year: 1989,
     title: 'Electrochemically induced nuclear fusion of deuterium',
@@ -22,6 +23,7 @@ export const citations: Citation[] = [
   },
   {
     id: 'fleischmann-1992-heat-after-death',
+    url: 'https://lenr-canr.org/acrobat/PonsSheatafterd.pdf',
     authors: 'Fleischmann, M.',
     year: 1992,
     institution: 'IMRA Europe',
@@ -32,6 +34,7 @@ export const citations: Citation[] = [
   },
   {
     id: 'mckubre-1990-loading-ratio',
+    url: 'https://lenr-canr.org/acrobat/McKubreMCHexcesspowe.pdf',
     authors: 'McKubre, M. C. H. et al.',
     year: 1994,
     institution: 'SRI International',
@@ -44,6 +47,7 @@ export const citations: Citation[] = [
   // ─── He-4 correlated with heat ────────────────────────────────────────────
   {
     id: 'miles-1990-he4',
+    doi: '10.1016/0022-0728(93)85006-3',
     authors: 'Miles, M. et al.',
     year: 1993,
     institution: 'Naval Air Warfare Center, China Lake',
@@ -55,6 +59,7 @@ export const citations: Citation[] = [
   },
   {
     id: 'hubler-violante-2014',
+    url: 'https://www.currentscience.ac.in/Volumes/108/04/0540.pdf',
     authors: 'Hubler, G. K. & Violante, V.',
     year: 2014,
     title: 'Anomalous effects in deuterium/metal systems',
@@ -69,6 +74,7 @@ export const citations: Citation[] = [
   // ─── Plasma electrolysis / Ni-H ───────────────────────────────────────────
   {
     id: 'mizuno-2000-plasma',
+    doi: '10.1143/JJAP.39.6055',
     authors: 'Mizuno, T.',
     year: 2000,
     institution: 'Hokkaido University, Japan',
@@ -79,6 +85,7 @@ export const citations: Citation[] = [
   },
   {
     id: 'cleanplanet-tohoku-2024',
+    doi: '10.35848/1347-4065/ad2622',
     authors: 'Iwamura, Y. et al. (Tohoku U. / Clean Planet)',
     year: 2024,
     institution: 'Tohoku University & Clean Planet Inc.',
@@ -91,6 +98,7 @@ export const citations: Citation[] = [
   // ─── Tritium ──────────────────────────────────────────────────────────────
   {
     id: 'barc-1989-tritium',
+    url: 'https://lenr-canr.org/acrobat/IyengarPKbhabhaatom.pdf',
     authors: 'Bhabha Atomic Research Centre teams',
     year: 1989,
     institution: 'BARC, India',
@@ -101,6 +109,7 @@ export const citations: Citation[] = [
   },
   {
     id: 'spawar-2002-triple-tracks',
+    doi: '10.1007/s00114-008-0449-x',
     authors: 'Mosier-Boss, P. A. et al. (SPAWAR)',
     year: 2007,
     institution: 'SPAWAR Systems Center, San Diego',
@@ -113,6 +122,7 @@ export const citations: Citation[] = [
   // ─── Transmutation: Iwamura series ────────────────────────────────────────
   {
     id: 'iwamura-2002-cs-pr',
+    doi: '10.1143/JJAP.41.4642',
     authors: 'Iwamura, Y. et al.',
     year: 2002,
     title:
@@ -127,6 +137,7 @@ export const citations: Citation[] = [
   },
   {
     id: 'iwamura-2002-sr-mo',
+    doi: '10.1143/JJAP.41.4642',
     authors: 'Iwamura, Y. et al.',
     year: 2002,
     journal: 'Jpn. J. Appl. Phys. 41, 4642',
@@ -139,6 +150,7 @@ export const citations: Citation[] = [
   },
   {
     id: 'iwamura-2002-w-pt',
+    url: 'https://jcmns.org/article/72216-recent-advances-in-deuterium-permeation-transmutation-experiments',
     authors: 'Iwamura, Y. et al.',
     year: 2006,
     institution: 'Mitsubishi Heavy Industries',
@@ -150,6 +162,7 @@ export const citations: Citation[] = [
   },
   {
     id: 'toyota-2013-replication',
+    doi: '10.7567/JJAP.52.107301',
     authors: 'Hioki, T. et al. (Toyota Central R&D)',
     year: 2013,
     institution: 'Toyota Central R&D Labs',
@@ -163,6 +176,7 @@ export const citations: Citation[] = [
   // ─── Biological transmutation (Vysotskii) ─────────────────────────────────
   {
     id: 'vysotskii-1996-cs-ba',
+    doi: '10.1016/j.anucene.2013.02.008',
     authors: 'Vysotskii, V. I. & Kornilova, A. A.',
     year: 2003,
     title: 'Nuclear Transmutation of Stable and Radioactive Isotopes in Biological Systems',
@@ -174,6 +188,7 @@ export const citations: Citation[] = [
   },
   {
     id: 'vysotskii-mn-fe',
+    doi: '10.1016/j.anucene.2013.02.008',
     authors: 'Vysotskii, V. I. & Kornilova, A. A.',
     year: 2010,
     phenomenon: 'transmutation',
@@ -186,6 +201,7 @@ export const citations: Citation[] = [
   // ─── Multi-element & glow-discharge transmutation ─────────────────────────
   {
     id: 'miley-1996-multi-element',
+    url: 'https://www.lenr-canr.org/acrobat/MileyGHnucleartra.pdf',
     authors: 'Miley, G. H. & Patterson, J. A.',
     year: 1996,
     institution: 'University of Illinois Urbana-Champaign',
@@ -196,6 +212,7 @@ export const citations: Citation[] = [
   },
   {
     id: 'savvatimova-pd-products',
+    doi: '10.70923/001c.72170',
     authors: 'Savvatimova, I. B.',
     year: 2008,
     institution: 'LUCH Scientific-Industrial Association',
@@ -209,6 +226,7 @@ export const citations: Citation[] = [
   // ─── Theory ───────────────────────────────────────────────────────────────
   {
     id: 'takahashi-tsc-theory',
+    doi: '10.70923/001c.72286',
     authors: 'Takahashi, A.',
     year: 2009,
     institution: 'Osaka University',
@@ -222,6 +240,7 @@ export const citations: Citation[] = [
   // ─── Strange / anomalous radiation ────────────────────────────────────────
   {
     id: 'urutskoev-2002-strange-radiation',
+    url: 'https://arxiv.org/abs/physics/0101089',
     authors: 'Urutskoev, L. I. et al.',
     year: 2002,
     institution: 'RECOM (Russia)',
