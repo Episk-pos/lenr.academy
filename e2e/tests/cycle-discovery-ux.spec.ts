@@ -140,54 +140,33 @@ test.describe('Catalytic Cycle Discovery UX', () => {
   // This is the load-bearing UX assertion for the whole feature.
   // -------------------------------------------------------------------------
 
-  test('net cycle transformation hero shows fuel-in equals fuel-out', async ({ page }) => {
+  test('net cycle transformation hero shows fuel in and catalyst recovered', async ({ page }) => {
     await runDiscoveryAndOpenFirst(page)
 
     // Hero panel heading.
     await expect(page.getByText('Net Cycle Transformation')).toBeVisible()
 
-    // --- FUEL IN section ---
-    // The label is a small tracking-wide span with text "FUEL IN".
-    // Its parent div wraps the label + nuclide chips.
+    // --- FUEL IN section: must have at least one nuclide chip ---
     const fuelInLabel = page.locator('span').filter({ hasText: /^FUEL IN$/i }).first()
     await expect(fuelInLabel).toBeVisible()
     const fuelInSection = fuelInLabel.locator('..')
-
-    // NuclideBadge renders <span><sup>{A}</sup>{E}</span> — textContent e.g. "10B".
     const fuelInChips = fuelInSection.locator('span').filter({ has: page.locator('sup') })
-    const fuelInCount = await fuelInChips.count()
-    expect(fuelInCount).toBeGreaterThan(0)
+    expect(await fuelInChips.count()).toBeGreaterThan(0)
 
-    const fuelInTexts: string[] = []
-    for (let i = 0; i < fuelInCount; i++) {
-      const txt = await fuelInChips.nth(i).textContent()
-      if (txt) fuelInTexts.push(txt.trim())
-    }
-
-    // --- FUEL OUT (recovered) section ---
-    const fuelOutLabel = page.locator('span').filter({ hasText: /^FUEL OUT \(recovered\)$/i }).first()
-    await expect(fuelOutLabel).toBeVisible()
-    const fuelOutSection = fuelOutLabel.locator('..')
-
-    const fuelOutChips = fuelOutSection.locator('span').filter({ has: page.locator('sup') })
-    const fuelOutCount = await fuelOutChips.count()
-    expect(fuelOutCount).toBeGreaterThan(0)
-
-    const fuelOutTexts: string[] = []
-    for (let i = 0; i < fuelOutCount; i++) {
-      const txt = await fuelOutChips.nth(i).textContent()
-      if (txt) fuelOutTexts.push(txt.trim())
-    }
-
-    // CORE UX ASSERTION: catalyst is recovered — fuel-in equals fuel-out (sorted).
-    expect([...fuelInTexts].sort()).toEqual([...fuelOutTexts].sort())
+    // --- CATALYST RECOVERED section (replaces the old "FUEL OUT (recovered)"
+    // label whenever the cycle has true catalysts, which the algorithm
+    // guarantees for any emitted cycle). Must have at least one chip. ---
+    const catalystLabel = page.locator('span').filter({ hasText: /^CATALYST RECOVERED$/i }).first()
+    await expect(catalystLabel).toBeVisible()
+    const catalystSection = catalystLabel.locator('..')
+    const catalystChips = catalystSection.locator('span').filter({ has: page.locator('sup') })
+    expect(await catalystChips.count()).toBeGreaterThan(0)
 
     // NET ENERGY section shows a numeric MeV value (e.g. "+12.34 MeV").
     const netEnergyLabel = page.locator('span').filter({ hasText: /^NET ENERGY$/i }).first()
     await expect(netEnergyLabel).toBeVisible()
     const netEnergySection = netEnergyLabel.locator('..')
-    const netEnergyText = await netEnergySection.textContent()
-    expect(netEnergyText).toMatch(/[\d.]+\s*MeV/)
+    expect(await netEnergySection.textContent()).toMatch(/[\d.]+\s*MeV/)
 
     // BYPRODUCTS section present (may show "(none)" — both acceptable).
     const byproductsLabel = page.locator('span').filter({ hasText: /^BYPRODUCTS$/i }).first()
@@ -229,7 +208,7 @@ test.describe('Catalytic Cycle Discovery UX', () => {
     await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight))
 
     await expect(
-      page.getByText('Cycle closes — fuel returned to start')
+      page.getByText('Cycle closes — catalyst regenerated')
     ).toBeVisible({ timeout: 5000 })
   })
 
