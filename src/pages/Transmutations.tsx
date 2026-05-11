@@ -61,14 +61,39 @@ export default function Transmutations() {
     })
   }, [categoryFilter, labFilter])
 
+  // Hydrogen isotopes are stored in NuclidesPlus but not as separate
+  // entries in ElementPropertiesPlus (all share Z=1 = elemental H), so
+  // getElementBySymbol returns null for 'D' / 'T'. Map them directly here.
+  const HYDROGEN_ISOTOPES: Record<string, { Z: number; defaultA: number }> = {
+    H: { Z: 1, defaultA: 1 },
+    D: { Z: 1, defaultA: 2 },
+    T: { Z: 1, defaultA: 3 },
+  }
+
+  const resolveSymbol = (
+    symbol: string
+  ): { Z: number; defaultA?: number } | null => {
+    if (HYDROGEN_ISOTOPES[symbol]) return HYDROGEN_ISOTOPES[symbol]
+    const elem = getElementBySymbol(db!, symbol)
+    return elem ? { Z: elem.Z } : null
+  }
+
+  const handleClearPathways = (id: string) => {
+    setSearches(prev => {
+      const next = { ...prev }
+      delete next[id]
+      return next
+    })
+  }
+
   const handleFindPathways = async (t: DocumentedTransmutation) => {
     if (!db) return
     setSearches(prev => ({ ...prev, [t.id]: { status: 'loading' } }))
 
     try {
       // Resolve atomic numbers from element symbols.
-      const fromElem = getElementBySymbol(db, t.fromElement)
-      const toElem = getElementBySymbol(db, t.toElement)
+      const fromElem = resolveSymbol(t.fromElement)
+      const toElem = resolveSymbol(t.toElement)
 
       if (!fromElem || !toElem) {
         setSearches(prev => ({
@@ -82,8 +107,8 @@ export default function Transmutations() {
       }
 
       // Resolve mass numbers — fall back to most-abundant isotope when unspecified.
-      let fromA = t.fromA
-      let toA = t.toA
+      let fromA = t.fromA ?? fromElem.defaultA
+      let toA = t.toA ?? toElem.defaultA
 
       if (fromA === undefined) {
         const candidate = inferMassNumber(db, t.fromElement)
@@ -205,6 +230,7 @@ export default function Transmutations() {
               search={searches[t.id]}
               dbReady={!!db && !dbLoading}
               onFindPathways={() => handleFindPathways(t)}
+              onClearPathways={() => handleClearPathways(t.id)}
             />
           ))
         )}
@@ -245,6 +271,7 @@ interface CardProps {
   search?: PathwaySearchState
   dbReady: boolean
   onFindPathways: () => void
+  onClearPathways: () => void
 }
 
 /**
@@ -260,7 +287,7 @@ function splitMechanism(raw: string): { prose: string; equation: string | null }
   return { prose, equation: equation.length > 0 ? equation : null }
 }
 
-function TransmutationCard({ transmutation: t, search, dbReady, onFindPathways }: CardProps) {
+function TransmutationCard({ transmutation: t, search, dbReady, onFindPathways, onClearPathways }: CardProps) {
   const isLoading = search?.status === 'loading'
   const hasResults = search?.status === 'done'
   const hasError = search?.status === 'error'
@@ -391,42 +418,59 @@ function TransmutationCard({ transmutation: t, search, dbReady, onFindPathways }
 
       {/* Pathway results */}
       {hasError && (
-        <div className="mt-4 p-3 rounded border border-red-300 dark:border-red-700 bg-red-50 dark:bg-red-900/20 text-sm text-red-800 dark:text-red-200">
-          {search?.error}
+        <div className="mt-4 p-3 rounded border border-red-300 dark:border-red-700 bg-red-50 dark:bg-red-900/20 text-sm text-red-800 dark:text-red-200 flex items-start justify-between gap-3">
+          <span>{search?.error}</span>
+          <button
+            onClick={onClearPathways}
+            className="text-red-700 dark:text-red-300 hover:underline text-xs flex-shrink-0"
+            type="button"
+          >
+            Dismiss
+          </button>
         </div>
       )}
 
       {hasResults && search?.pathways && (
-        <PathwayResults pathways={search.pathways} />
+        <PathwayResults pathways={search.pathways} onClear={onClearPathways} />
       )}
     </div>
   )
 }
 
-function PathwayResults({ pathways }: { pathways: Pathway[] }) {
+function PathwayResults({ pathways, onClear }: { pathways: Pathway[]; onClear: () => void }) {
   if (pathways.length === 0) {
     return (
       <div className="mt-4 p-4 rounded-md border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50">
-        <div className="flex items-start gap-2.5 text-sm text-gray-700 dark:text-gray-300">
-          <BookOpen className="w-4 h-4 flex-shrink-0 mt-0.5 text-gray-400 dark:text-gray-500" />
-          <div>
-            <p className="font-medium">
-              No 1- or 2-step pathway found in the Parkhomov database for the listed isotopes.
-            </p>
-            <p className="mt-1.5 text-xs text-gray-500 dark:text-gray-400">
-              A reported transmutation can still be valid via routes outside the
-              Parkhomov tabulation (multi-step beyond depth 2, neutron capture
-              chains, beta-decay branches). For multi-step pathways with
-              cycling intermediates, try the{' '}
-              <Link
-                to="/cycles"
-                className="text-primary-600 dark:text-primary-400 hover:underline font-medium"
-              >
-                Cycle Discovery
-              </Link>{' '}
-              tool.
-            </p>
+        <div className="flex items-start justify-between gap-3">
+          <div className="flex items-start gap-2.5 text-sm text-gray-700 dark:text-gray-300">
+            <BookOpen className="w-4 h-4 flex-shrink-0 mt-0.5 text-gray-400 dark:text-gray-500" />
+            <div>
+              <p className="font-medium">
+                No 1- or 2-step pathway found in the Parkhomov database for the listed isotopes.
+              </p>
+              <p className="mt-1.5 text-xs text-gray-500 dark:text-gray-400">
+                A reported transmutation can still be valid via routes outside the
+                Parkhomov tabulation (multi-step beyond depth 2, neutron capture
+                chains, beta-decay branches). For multi-step pathways with
+                cycling intermediates, try the{' '}
+                <Link
+                  to="/cycles"
+                  className="text-primary-600 dark:text-primary-400 hover:underline font-medium"
+                >
+                  Cycle Discovery
+                </Link>{' '}
+                tool.
+              </p>
+            </div>
           </div>
+          <button
+            onClick={onClear}
+            className="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 text-xs flex-shrink-0"
+            type="button"
+            aria-label="Dismiss"
+          >
+            ✕
+          </button>
         </div>
       </div>
     )
@@ -434,9 +478,19 @@ function PathwayResults({ pathways }: { pathways: Pathway[] }) {
 
   return (
     <div className="mt-4 rounded-md border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 p-3">
-      <p className="text-xs font-medium text-gray-700 dark:text-gray-300 mb-2.5">
-        Candidate pathways ({pathways.length})
-      </p>
+      <div className="flex items-center justify-between mb-2.5">
+        <p className="text-xs font-medium text-gray-700 dark:text-gray-300">
+          Candidate pathways ({pathways.length})
+        </p>
+        <button
+          onClick={onClear}
+          className="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 text-xs"
+          type="button"
+          aria-label="Dismiss pathway results"
+        >
+          ✕
+        </button>
+      </div>
       <ol className="space-y-2 text-sm">
         {pathways.map((p, i) => {
           // formatPathway emits multi-step segments joined by " | ".
