@@ -19,6 +19,10 @@ import {
  * reaction (`miles-1990-he4`, `hubler-violante-2014`).
  */
 test.describe('Annotated bibliography overlay', () => {
+  // Cold-cache DB load in beforeEach plus query execution exceeds the 60s
+  // global timeout. Bump per-suite to 3 minutes.
+  test.describe.configure({ timeout: 180_000 });
+
   test.beforeEach(async ({ page }) => {
     await acceptPrivacyConsent(page);
     await page.goto('/fusion');
