@@ -30,11 +30,15 @@ test.describe('Transmutations Page', () => {
   });
 
   test('finds Parkhomov pathways for first card without errors', async ({ page }) => {
-    // Click the first "Find pathways" button (Iwamura Cs → Pr)
+    // Click the first "Find pathways" button (Iwamura Cs → Pr).
+    // The button is disabled until the React context's dbReady flag flips,
+    // which can lag behind the database-loading DOM marker waitForDatabaseReady
+    // checks for — especially on Firefox with a fresh (uncached) DB download.
+    // Use a generous timeout so the test doesn't flake on cold-cache CI runs.
     const firstButton = page
       .getByTestId(/find-pathways-/)
       .first();
-    await expect(firstButton).toBeEnabled();
+    await expect(firstButton).toBeEnabled({ timeout: 30000 });
     await firstButton.click();
 
     // Wait for either pathway results or "no pathways found" to appear.
