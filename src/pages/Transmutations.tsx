@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
+import { Trans, useTranslation } from 'react-i18next'
 import {
   AlertTriangle,
   FlaskConical,
@@ -23,7 +24,15 @@ import {
 import TransmutationArrow from '../components/TransmutationArrow'
 import NuclideEquation from '../components/NuclideEquation'
 
-const CATEGORY_LABELS: Record<TransmutationCategory, string> = {
+const CATEGORY_KEYS: TransmutationCategory[] = [
+  'solid-state',
+  'biological',
+  'glow-discharge',
+  'thin-film',
+  'co-deposition',
+]
+
+const CATEGORY_LABEL_FALLBACKS: Record<TransmutationCategory, string> = {
   'solid-state': 'Solid-state',
   'biological': 'Biological',
   'glow-discharge': 'Glow discharge',
@@ -38,25 +47,31 @@ interface PathwaySearchState {
 }
 
 export default function Transmutations() {
+  const { t } = useTranslation()
   const { db, isLoading: dbLoading } = useDatabase()
   const [categoryFilter, setCategoryFilter] = useState<'all' | TransmutationCategory>('all')
   const [labFilter, setLabFilter] = useState<string>('all')
   const [searches, setSearches] = useState<Record<string, PathwaySearchState>>({})
 
+  const categoryLabel = (cat: TransmutationCategory) =>
+    t(`transmutations.categories.${cat}`, {
+      defaultValue: CATEGORY_LABEL_FALLBACKS[cat],
+    })
+
   const allLabs = useMemo(() => {
     const set = new Set<string>()
-    DOCUMENTED_TRANSMUTATIONS.forEach(t => {
+    DOCUMENTED_TRANSMUTATIONS.forEach(entry => {
       // First word(s) before "et al" or "(" — coarse but works for current dataset.
-      const lab = t.source.split(/,| \(/)[0].trim()
+      const lab = entry.source.split(/,| \(/)[0].trim()
       set.add(lab)
     })
     return Array.from(set).sort()
   }, [])
 
   const filteredTransmutations = useMemo(() => {
-    return DOCUMENTED_TRANSMUTATIONS.filter(t => {
-      if (categoryFilter !== 'all' && t.category !== categoryFilter) return false
-      if (labFilter !== 'all' && !t.source.startsWith(labFilter)) return false
+    return DOCUMENTED_TRANSMUTATIONS.filter(entry => {
+      if (categoryFilter !== 'all' && entry.category !== categoryFilter) return false
+      if (labFilter !== 'all' && !entry.source.startsWith(labFilter)) return false
       return true
     })
   }, [categoryFilter, labFilter])
@@ -86,45 +101,51 @@ export default function Transmutations() {
     })
   }
 
-  const handleFindPathways = async (t: DocumentedTransmutation) => {
+  const handleFindPathways = async (entry: DocumentedTransmutation) => {
     if (!db) return
-    setSearches(prev => ({ ...prev, [t.id]: { status: 'loading' } }))
+    setSearches(prev => ({ ...prev, [entry.id]: { status: 'loading' } }))
 
     try {
       // Resolve atomic numbers from element symbols.
-      const fromElem = resolveSymbol(t.fromElement)
-      const toElem = resolveSymbol(t.toElement)
+      const fromElem = resolveSymbol(entry.fromElement)
+      const toElem = resolveSymbol(entry.toElement)
 
       if (!fromElem || !toElem) {
         setSearches(prev => ({
           ...prev,
-          [t.id]: {
+          [entry.id]: {
             status: 'error',
-            error: `Element ${!fromElem ? t.fromElement : t.toElement} not found in database.`,
+            error: t('transmutations.errors.elementNotFound', {
+              defaultValue: 'Element {{symbol}} not found in database.',
+              symbol: !fromElem ? entry.fromElement : entry.toElement,
+            }),
           },
         }))
         return
       }
 
       // Resolve mass numbers — fall back to most-abundant isotope when unspecified.
-      let fromA = t.fromA ?? fromElem.defaultA
-      let toA = t.toA ?? toElem.defaultA
+      let fromA = entry.fromA ?? fromElem.defaultA
+      let toA = entry.toA ?? toElem.defaultA
 
       if (fromA === undefined) {
-        const candidate = inferMassNumber(db, t.fromElement)
+        const candidate = inferMassNumber(db, entry.fromElement)
         if (candidate !== null) fromA = candidate
       }
       if (toA === undefined) {
-        const candidate = inferMassNumber(db, t.toElement)
+        const candidate = inferMassNumber(db, entry.toElement)
         if (candidate !== null) toA = candidate
       }
 
       if (fromA === undefined || toA === undefined) {
         setSearches(prev => ({
           ...prev,
-          [t.id]: {
+          [entry.id]: {
             status: 'error',
-            error: 'Could not resolve a specific isotope for this transmutation.',
+            error: t('transmutations.errors.isotopeUnresolved', {
+              defaultValue:
+                'Could not resolve a specific isotope for this transmutation.',
+            }),
           },
         }))
         return
@@ -139,14 +160,19 @@ export default function Transmutations() {
 
       setSearches(prev => ({
         ...prev,
-        [t.id]: { status: 'done', pathways },
+        [entry.id]: { status: 'done', pathways },
       }))
     } catch (err) {
       setSearches(prev => ({
         ...prev,
-        [t.id]: {
+        [entry.id]: {
           status: 'error',
-          error: err instanceof Error ? err.message : 'Unknown error',
+          error:
+            err instanceof Error
+              ? err.message
+              : t('transmutations.errors.unknown', {
+                  defaultValue: 'Unknown error',
+                }),
         },
       }))
     }
@@ -159,12 +185,16 @@ export default function Transmutations() {
         <div className="flex items-center gap-2 mb-2">
           <FlaskConical className="w-6 h-6 text-primary-600" />
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-            Transmutation Pathway Explorer
+            {t('transmutations.title', {
+              defaultValue: 'Transmutation Pathway Explorer',
+            })}
           </h1>
         </div>
         <p className="text-gray-600 dark:text-gray-400">
-          Documented LENR transmutation claims from primary sources, paired with
-          candidate two-step pathways from the Parkhomov reaction database.
+          {t('transmutations.subtitle', {
+            defaultValue:
+              'Documented LENR transmutation claims from primary sources, paired with candidate two-step pathways from the Parkhomov reaction database.',
+          })}
         </p>
       </div>
 
@@ -173,14 +203,17 @@ export default function Transmutations() {
         <div className="flex items-start gap-3">
           <AlertTriangle className="w-5 h-5 text-amber-600 dark:text-amber-400 flex-shrink-0 mt-0.5" />
           <div className="text-sm text-amber-900 dark:text-amber-200">
-            <p className="font-medium mb-1">Documented claims, not verified mechanisms.</p>
+            <p className="font-medium mb-1">
+              {t('transmutations.disclaimerTitle', {
+                defaultValue: 'Documented claims, not verified mechanisms.',
+              })}
+            </p>
             <p>
-              The transmutations listed below were reported in primary literature.
-              The Parkhomov database may show A+B → C+D pathways permitting these
-              net transformations; this does <strong>not</strong> prove the
-              originally hypothesized mechanism is correct. Pathways are
-              candidate routes through allowed elementary reactions, not
-              experimental evidence.
+              <Trans
+                i18nKey="transmutations.disclaimerText"
+                defaults="The transmutations listed below were reported in primary literature. The Parkhomov database may show A+B → C+D pathways permitting these net transformations; this does <0>not</0> prove the originally hypothesized mechanism is correct. Pathways are candidate routes through allowed elementary reactions, not experimental evidence."
+                components={[<strong key="0" />]}
+              />
             </p>
           </div>
         </div>
@@ -190,14 +223,16 @@ export default function Transmutations() {
       <div className="flex flex-col sm:flex-row gap-3 mb-6">
         <div className="flex flex-wrap gap-1.5">
           <FilterButton
-            label="All categories"
+            label={t('transmutations.filterAllCategories', {
+              defaultValue: 'All categories',
+            })}
             active={categoryFilter === 'all'}
             onClick={() => setCategoryFilter('all')}
           />
-          {(Object.keys(CATEGORY_LABELS) as TransmutationCategory[]).map(cat => (
+          {CATEGORY_KEYS.map(cat => (
             <FilterButton
               key={cat}
-              label={CATEGORY_LABELS[cat]}
+              label={categoryLabel(cat)}
               active={categoryFilter === cat}
               onClick={() => setCategoryFilter(cat)}
             />
@@ -207,9 +242,13 @@ export default function Transmutations() {
           value={labFilter}
           onChange={e => setLabFilter(e.target.value)}
           className="px-3 py-1.5 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-          aria-label="Filter by source lab"
+          aria-label={t('transmutations.filterByLab', {
+            defaultValue: 'Filter by source lab',
+          })}
         >
-          <option value="all">All sources</option>
+          <option value="all">
+            {t('transmutations.filterAllSources', { defaultValue: 'All sources' })}
+          </option>
           {allLabs.map(lab => (
             <option key={lab} value={lab}>{lab}</option>
           ))}
@@ -220,33 +259,41 @@ export default function Transmutations() {
       <div className="space-y-4">
         {filteredTransmutations.length === 0 ? (
           <p className="text-sm text-gray-500 dark:text-gray-400 py-4 text-center">
-            No transmutations match the current filters.
+            {t('transmutations.noResults', {
+              defaultValue: 'No transmutations match the current filters.',
+            })}
           </p>
         ) : (
-          filteredTransmutations.map(t => (
+          filteredTransmutations.map(entry => (
             <TransmutationCard
-              key={t.id}
-              transmutation={t}
-              search={searches[t.id]}
+              key={entry.id}
+              transmutation={entry}
+              search={searches[entry.id]}
               dbReady={!!db && !dbLoading}
-              onFindPathways={() => handleFindPathways(t)}
-              onClearPathways={() => handleClearPathways(t.id)}
+              categoryLabel={categoryLabel(entry.category)}
+              onFindPathways={() => handleFindPathways(entry)}
+              onClearPathways={() => handleClearPathways(entry.id)}
             />
           ))
         )}
       </div>
 
       <p className="text-xs text-gray-400 dark:text-gray-500 mt-8 text-center">
-        Curated from the{' '}
-        <a
-          href="https://humanscholars.online/research/lenr-low-energy-nuclear-reactions"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="hover:text-primary-600 dark:hover:text-primary-400 underline"
-        >
-          HumanScholars LENR literature review
-        </a>
-        . {DOCUMENTED_TRANSMUTATIONS.length} entries.
+        <Trans
+          i18nKey="transmutations.curatedFrom"
+          values={{ count: DOCUMENTED_TRANSMUTATIONS.length }}
+          defaults="Curated from the <1>HumanScholars LENR literature review</1>. {{count}} entries."
+          components={[
+            <span key="0" />,
+            <a
+              key="1"
+              href="https://humanscholars.online/research/lenr-low-energy-nuclear-reactions"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-primary-600 dark:hover:text-primary-400 underline"
+            />,
+          ]}
+        />
       </p>
     </div>
   )
@@ -270,6 +317,7 @@ interface CardProps {
   transmutation: DocumentedTransmutation
   search?: PathwaySearchState
   dbReady: boolean
+  categoryLabel: string
   onFindPathways: () => void
   onClearPathways: () => void
 }
@@ -287,13 +335,51 @@ function splitMechanism(raw: string): { prose: string; equation: string | null }
   return { prose, equation: equation.length > 0 ? equation : null }
 }
 
-function TransmutationCard({ transmutation: t, search, dbReady, onFindPathways, onClearPathways }: CardProps) {
+function TransmutationCard({
+  transmutation,
+  search,
+  dbReady,
+  categoryLabel,
+  onFindPathways,
+  onClearPathways,
+}: CardProps) {
+  const { t } = useTranslation()
   const isLoading = search?.status === 'loading'
   const hasResults = search?.status === 'done'
   const hasError = search?.status === 'error'
 
-  const mechanism = t.hypothesizedMechanism
-    ? splitMechanism(t.hypothesizedMechanism)
+  const translatedSource = t(
+    `transmutations.entries.${transmutation.id}.source`,
+    { defaultValue: transmutation.source }
+  )
+  const translatedSetup = t(
+    `transmutations.entries.${transmutation.id}.setup`,
+    { defaultValue: transmutation.setup }
+  )
+  const translatedHypothesis = transmutation.hypothesizedMechanism
+    ? t(`transmutations.entries.${transmutation.id}.hypothesizedMechanism`, {
+        defaultValue: transmutation.hypothesizedMechanism,
+      })
+    : null
+  const translatedSourceTag = transmutation.sourceTag
+    ? t(`transmutations.entries.${transmutation.id}.sourceTag`, {
+        defaultValue: transmutation.sourceTag,
+      })
+    : null
+  const translatedNotes = transmutation.notes
+    ? t(`transmutations.entries.${transmutation.id}.notes`, {
+        defaultValue: transmutation.notes,
+      })
+    : null
+  const translatedReplicatedBy =
+    transmutation.replicatedBy && transmutation.replicatedBy.length > 0
+      ? t(`transmutations.entries.${transmutation.id}.replicatedBy`, {
+          defaultValue: transmutation.replicatedBy.join(', '),
+        })
+      : null
+
+  const mechanism = translatedHypothesis
+    ? splitMechanism(translatedHypothesis)
     : null
 
   return (
@@ -301,20 +387,20 @@ function TransmutationCard({ transmutation: t, search, dbReady, onFindPathways, 
       {/* ZONE A — Header: arrow + identity chips */}
       <div className="flex flex-wrap items-center gap-3 mb-4">
         <TransmutationArrow
-          fromSymbol={t.fromElement}
-          fromA={t.fromA}
-          toSymbol={t.toElement}
-          toA={t.toA}
+          fromSymbol={transmutation.fromElement}
+          fromA={transmutation.fromA}
+          toSymbol={transmutation.toElement}
+          toA={transmutation.toA}
         />
         <span className="inline-flex items-center px-2 py-0.5 rounded text-xs border border-gray-200 dark:border-gray-700 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200">
-          {CATEGORY_LABELS[t.category]}
+          {categoryLabel}
         </span>
         <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-mono border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-300">
-          ΔZ = {t.deltaZ >= 0 ? `+${t.deltaZ}` : t.deltaZ}
+          ΔZ = {transmutation.deltaZ >= 0 ? `+${transmutation.deltaZ}` : transmutation.deltaZ}
         </span>
-        {t.deltaA !== undefined && (
+        {transmutation.deltaA !== undefined && (
           <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-mono border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-300">
-            ΔA = {t.deltaA >= 0 ? `+${t.deltaA}` : t.deltaA}
+            ΔA = {transmutation.deltaA >= 0 ? `+${transmutation.deltaA}` : transmutation.deltaA}
           </span>
         )}
       </div>
@@ -324,33 +410,39 @@ function TransmutationCard({ transmutation: t, search, dbReady, onFindPathways, 
         <div className="flex flex-wrap items-start justify-between gap-2">
           <p className="text-sm text-gray-800 dark:text-gray-200 min-w-0">
             <BookOpen className="inline-block w-3.5 h-3.5 mr-1.5 -mt-0.5 text-gray-400 dark:text-gray-500" />
-            {t.source}
+            {translatedSource}
           </p>
           <div className="flex items-center gap-2 flex-shrink-0">
-            {t.sourceTag && (
+            {translatedSourceTag && (
               <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium bg-primary-50 dark:bg-primary-900/30 border border-primary-200 dark:border-primary-700 text-primary-700 dark:text-primary-300">
-                {t.sourceTag}
+                {translatedSourceTag}
               </span>
             )}
-            {t.doiOrUrl && (
+            {transmutation.doiOrUrl && (
               <a
-                href={t.doiOrUrl}
+                href={transmutation.doiOrUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-primary-700 dark:text-primary-300 hover:bg-primary-50 dark:hover:bg-primary-900/30 hover:border-primary-300 dark:hover:border-primary-700 transition-colors"
               >
-                <span>View source</span>
+                <span>
+                  {t('transmutations.buttons.viewSource', {
+                    defaultValue: 'View source',
+                  })}
+                </span>
                 <ExternalLink className="w-3 h-3" />
               </a>
             )}
           </div>
         </div>
-        {t.replicatedBy && t.replicatedBy.length > 0 && (
+        {translatedReplicatedBy && (
           <div className="mt-2.5 flex flex-wrap items-center gap-1.5">
             <span className="text-[11px] uppercase tracking-wide text-gray-500 dark:text-gray-400">
-              Replicated by
+              {t('transmutations.labels.replicatedBy', {
+                defaultValue: 'Replicated by',
+              })}
             </span>
-            {t.replicatedBy.map((lab) => (
+            {translatedReplicatedBy.split(', ').map((lab) => (
               <span
                 key={lab}
                 className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200"
@@ -365,14 +457,16 @@ function TransmutationCard({ transmutation: t, search, dbReady, onFindPathways, 
       {/* ZONE C — Mechanism + setup definition list */}
       <dl className="grid grid-cols-1 sm:grid-cols-[max-content_1fr] gap-x-4 gap-y-2 text-sm mb-4">
         <dt className="text-[11px] uppercase tracking-wide font-medium text-gray-500 dark:text-gray-400 pt-0.5">
-          Setup
+          {t('transmutations.labels.setup', { defaultValue: 'Setup' })}
         </dt>
-        <dd className="text-gray-700 dark:text-gray-300">{t.setup}</dd>
+        <dd className="text-gray-700 dark:text-gray-300">{translatedSetup}</dd>
 
         {mechanism && (
           <>
             <dt className="text-[11px] uppercase tracking-wide font-medium text-gray-500 dark:text-gray-400 pt-0.5">
-              Mechanism
+              {t('transmutations.labels.mechanism', {
+                defaultValue: 'Mechanism',
+              })}
             </dt>
             <dd className="text-gray-700 dark:text-gray-300">
               {mechanism.prose && (
@@ -392,9 +486,9 @@ function TransmutationCard({ transmutation: t, search, dbReady, onFindPathways, 
         )}
       </dl>
 
-      {t.notes && (
+      {translatedNotes && (
         <p className="text-xs text-gray-500 dark:text-gray-400 italic mb-4">
-          {t.notes}
+          {translatedNotes}
         </p>
       )}
 
@@ -405,14 +499,22 @@ function TransmutationCard({ transmutation: t, search, dbReady, onFindPathways, 
           onClick={onFindPathways}
           disabled={!dbReady || isLoading}
           className="btn btn-primary inline-flex items-center justify-center gap-2 px-3 py-1.5 text-sm rounded-md bg-primary-600 hover:bg-primary-700 text-white disabled:bg-gray-300 dark:disabled:bg-gray-600 disabled:cursor-not-allowed transition-colors"
-          data-testid={`find-pathways-${t.id}`}
+          data-testid={`find-pathways-${transmutation.id}`}
         >
           {isLoading ? (
             <Loader2 className="w-4 h-4 animate-spin" />
           ) : (
             <Search className="w-4 h-4" />
           )}
-          <span>{isLoading ? 'Searching...' : 'Find Parkhomov pathways'}</span>
+          <span>
+            {isLoading
+              ? t('transmutations.buttons.searching', {
+                  defaultValue: 'Searching...',
+                })
+              : t('transmutations.buttons.findPathways', {
+                  defaultValue: 'Find Parkhomov pathways',
+                })}
+          </span>
         </button>
       </div>
 
@@ -425,7 +527,7 @@ function TransmutationCard({ transmutation: t, search, dbReady, onFindPathways, 
             className="text-red-700 dark:text-red-300 hover:underline text-xs flex-shrink-0"
             type="button"
           >
-            Dismiss
+            {t('transmutations.buttons.dismiss', { defaultValue: 'Dismiss' })}
           </button>
         </div>
       )}
@@ -438,6 +540,7 @@ function TransmutationCard({ transmutation: t, search, dbReady, onFindPathways, 
 }
 
 function PathwayResults({ pathways, onClear }: { pathways: Pathway[]; onClear: () => void }) {
+  const { t } = useTranslation()
   if (pathways.length === 0) {
     return (
       <div className="mt-4 p-4 rounded-md border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50">
@@ -446,20 +549,24 @@ function PathwayResults({ pathways, onClear }: { pathways: Pathway[]; onClear: (
             <BookOpen className="w-4 h-4 flex-shrink-0 mt-0.5 text-gray-400 dark:text-gray-500" />
             <div>
               <p className="font-medium">
-                No 1- or 2-step pathway found in the Parkhomov database for the listed isotopes.
+                {t('transmutations.pathwayResults.notFound', {
+                  defaultValue:
+                    'No 1- or 2-step pathway found in the Parkhomov database for the listed isotopes.',
+                })}
               </p>
               <p className="mt-1.5 text-xs text-gray-500 dark:text-gray-400">
-                A reported transmutation can still be valid via routes outside the
-                Parkhomov tabulation (multi-step beyond depth 2, neutron capture
-                chains, beta-decay branches). For multi-step pathways with
-                cycling intermediates, try the{' '}
-                <Link
-                  to="/cycles"
-                  className="text-primary-600 dark:text-primary-400 hover:underline font-medium"
-                >
-                  Cycle Discovery
-                </Link>{' '}
-                tool.
+                <Trans
+                  i18nKey="transmutations.pathwayResults.explanation"
+                  defaults="A reported transmutation can still be valid via routes outside the Parkhomov tabulation (multi-step beyond depth 2, neutron capture chains, beta-decay branches). For multi-step pathways with cycling intermediates, try the <1>Cycle Discovery</1> tool."
+                  components={[
+                    <span key="0" />,
+                    <Link
+                      key="1"
+                      to="/cycles"
+                      className="text-primary-600 dark:text-primary-400 hover:underline font-medium"
+                    />,
+                  ]}
+                />
               </p>
             </div>
           </div>
@@ -467,7 +574,9 @@ function PathwayResults({ pathways, onClear }: { pathways: Pathway[]; onClear: (
             onClick={onClear}
             className="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 text-xs flex-shrink-0"
             type="button"
-            aria-label="Dismiss"
+            aria-label={t('transmutations.buttons.dismiss', {
+              defaultValue: 'Dismiss',
+            })}
           >
             ✕
           </button>
@@ -480,13 +589,18 @@ function PathwayResults({ pathways, onClear }: { pathways: Pathway[]; onClear: (
     <div className="mt-4 rounded-md border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 p-3">
       <div className="flex items-center justify-between mb-2.5">
         <p className="text-xs font-medium text-gray-700 dark:text-gray-300">
-          Candidate pathways ({pathways.length})
+          {t('transmutations.pathwayResults.header', {
+            defaultValue: 'Candidate pathways ({{count}})',
+            count: pathways.length,
+          })}
         </p>
         <button
           onClick={onClear}
           className="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 text-xs"
           type="button"
-          aria-label="Dismiss pathway results"
+          aria-label={t('transmutations.buttons.dismissPathways', {
+            defaultValue: 'Dismiss pathway results',
+          })}
         >
           ✕
         </button>

@@ -83,15 +83,39 @@ export default function CitationBadge({
 
 /** Single citation row inside the popover. */
 function CitationEntry({ citation }: { citation: Citation }) {
-  const titleLine = [citation.authors, `(${citation.year})`].join(' ')
-  const venue =
-    citation.journal ?? citation.institution ?? citation.title ?? undefined
+  const { t } = useTranslation()
+  const translatedAuthors = t(
+    `citations.entries.${citation.id}.authors`,
+    { defaultValue: citation.authors }
+  )
+  const translatedTitle = citation.title
+    ? t(`citations.entries.${citation.id}.title`, {
+        defaultValue: citation.title,
+      })
+    : undefined
+  const translatedJournal = citation.journal
+    ? t(`citations.entries.${citation.id}.journal`, {
+        defaultValue: citation.journal,
+      })
+    : undefined
+  const translatedInstitution = citation.institution
+    ? t(`citations.entries.${citation.id}.institution`, {
+        defaultValue: citation.institution,
+      })
+    : undefined
+  const translatedExcerpt = t(
+    `citations.entries.${citation.id}.excerpt`,
+    { defaultValue: citation.excerpt }
+  )
+
+  const titleLine = [translatedAuthors, `(${citation.year})`].join(' ')
+  const venue = translatedJournal ?? translatedInstitution ?? translatedTitle ?? undefined
 
   return (
     <div>
       <div className="font-medium text-white">{titleLine}</div>
       {venue && <div className="italic text-gray-300">{venue}</div>}
-      <div className="text-gray-200 mt-0.5">{citation.excerpt}</div>
+      <div className="text-gray-200 mt-0.5">{translatedExcerpt}</div>
       {citation.url && (
         <a
           href={citation.url}

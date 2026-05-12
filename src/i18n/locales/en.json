@@ -1181,5 +1181,219 @@
       "aboutNAE4": "The known LENR-active metals (Pd, Ni, Pt, Ti) all have electron resonance lengths that bracket the 0.9–1.8 nm range at N=3 or N=4. Elements with no LENR reports (Al, most light elements) miss this range entirely. If this correlation holds, it would be the first quantitative lattice theory for cold fusion.",
       "naeDisclaimer": "This analysis combines Muller's resonance framework with Storms' NAE model. Both are theoretical models. Muller's equation lacks independent experimental verification of its resonance mechanism. Storms' NAE gap size is inferred from experimental conditions, not directly measured. Results are presented for exploration and hypothesis generation."
     }
+  },
+  "transmutations": {
+    "title": "Transmutation Pathway Explorer",
+    "subtitle": "Documented LENR transmutation claims from primary sources, paired with candidate two-step pathways from the Parkhomov reaction database.",
+    "disclaimerTitle": "Documented claims, not verified mechanisms.",
+    "disclaimerText": "The transmutations listed below were reported in primary literature. The Parkhomov database may show A+B → C+D pathways permitting these net transformations; this does <0>not</0> prove the originally hypothesized mechanism is correct. Pathways are candidate routes through allowed elementary reactions, not experimental evidence.",
+    "filterAllCategories": "All categories",
+    "filterAllSources": "All sources",
+    "filterByLab": "Filter by source lab",
+    "noResults": "No transmutations match the current filters.",
+    "curatedFrom": "Curated from the <1>HumanScholars LENR literature review</1>. {{count}} entries.",
+    "stepCount_one": "1 step",
+    "stepCount_other": "{{count}} steps",
+    "categories": {
+      "solid-state": "Solid-state",
+      "biological": "Biological",
+      "glow-discharge": "Glow discharge",
+      "thin-film": "Thin film",
+      "co-deposition": "Co-deposition"
+    },
+    "labels": {
+      "setup": "Setup",
+      "mechanism": "Mechanism",
+      "replicatedBy": "Replicated by"
+    },
+    "buttons": {
+      "searching": "Searching...",
+      "findPathways": "Find Parkhomov pathways",
+      "dismiss": "Dismiss",
+      "dismissPathways": "Dismiss pathway results",
+      "viewSource": "View source"
+    },
+    "pathwayResults": {
+      "notFound": "No 1- or 2-step pathway found in the Parkhomov database for the listed isotopes.",
+      "explanation": "A reported transmutation can still be valid via routes outside the Parkhomov tabulation (multi-step beyond depth 2, neutron capture chains, beta-decay branches). For multi-step pathways with cycling intermediates, try the <1>Cycle Discovery</1> tool.",
+      "header": "Candidate pathways ({{count}})"
+    },
+    "errors": {
+      "elementNotFound": "Element {{symbol}} not found in database.",
+      "isotopeUnresolved": "Could not resolve a specific isotope for this transmutation.",
+      "unknown": "Unknown error"
+    },
+    "entries": {
+      "iwamura-cs-pr": {
+        "source": "Iwamura et al., Mitsubishi Heavy Industries (2002)",
+        "setup": "Pd/CaO multilayer thin film with deuterium gas permeation",
+        "hypothesizedMechanism": "Sequential alpha-capture: 133Cs + 2 × 4He → 141Pr",
+        "sourceTag": "JJAP 2002",
+        "replicatedBy": "Toyota Central R&D (2013), Osaka University (2003)"
+      },
+      "iwamura-sr-mo": {
+        "source": "Iwamura et al., Mitsubishi Heavy Industries (2002)",
+        "setup": "Pd/CaO multilayer thin film with deuterium permeation",
+        "hypothesizedMechanism": "Sequential alpha-capture: 88Sr + 2 × 4He → 96Mo",
+        "sourceTag": "JJAP 2002",
+        "replicatedBy": "Toyota Central R&D (2013)"
+      },
+      "iwamura-ba-sm": {
+        "source": "Iwamura et al., Mitsubishi Heavy Industries (2006)",
+        "setup": "Pd/CaO multilayer thin film with deuterium permeation",
+        "hypothesizedMechanism": "Multi-step alpha-capture: 138Ba + 3 × 4He → 150Sm"
+      },
+      "iwamura-w-pt": {
+        "source": "Iwamura et al., Mitsubishi Heavy Industries (2007)",
+        "setup": "Pd/CaO multilayer thin film with deuterium permeation",
+        "hypothesizedMechanism": "Sequential alpha-capture: 184W + 2 × 4He → 192Pt"
+      },
+      "vysotskii-cs-ba": {
+        "source": "Vysotskii & Kornilova (Kiev State University, 2003)",
+        "setup": "Bacterial cultures (Deinococcus radiodurans, microbial syntrophic associations) exposed to Cs-137 contaminated growth media",
+        "hypothesizedMechanism": "Microbial-catalyzed beta-decay-like transmutation; biological coherent correlated states proposed",
+        "notes": "Reported reduction of Cs-137 activity correlated with Ba-138 appearance in growth medium."
+      },
+      "vysotskii-mn-fe": {
+        "source": "Vysotskii & Kornilova (Kiev State University, 1996-2008)",
+        "setup": "Iron-deficient microbial cultures supplemented with Mn-55 and D2O; Mössbauer spectroscopy of Fe-57 product",
+        "hypothesizedMechanism": "Net reaction proposed as 55Mn + d → 57Fe via biologically-mediated low-energy fusion"
+      },
+      "miley-multi-element": {
+        "source": "Miley & Patterson (UIUC / CETI, 1996)",
+        "setup": "Thin-film Ni cathodes electrolyzed in light-water solutions; ~50 product elements detected by SIMS/NAA",
+        "hypothesizedMechanism": "Broad transmutation product spectrum; no single mechanism proposed (fission of compound nucleus suggested)",
+        "notes": "Catch-all entry: Miley reported a wide product distribution. Ni→Cu used here as the most-cited single pair; ~50 elements were observed."
+      },
+      "savvatimova-pd-ag": {
+        "source": "Savvatimova et al. (Luch, Russia, 1990s-2000s)",
+        "setup": "Glow-discharge bombardment of Pd cathodes in deuterium plasma",
+        "hypothesizedMechanism": "Multiple pathways proposed including neutron-like processes and electron-screened weak interaction",
+        "notes": "Savvatimova reported Pd → Rh, Ru, Ag, Cd; Pd→Ag captured here."
+      },
+      "savvatimova-pd-rh": {
+        "source": "Savvatimova et al. (Luch, Russia, 1990s-2000s)",
+        "setup": "Glow-discharge bombardment of Pd cathodes in deuterium plasma",
+        "hypothesizedMechanism": "Net loss of (p + 2n) reported; mechanism unresolved"
+      },
+      "spawar-tritium": {
+        "source": "Mosier-Boss et al., SPAWAR Systems Center (2007-2009)",
+        "setup": "Pd/D co-deposition on Au or Ag substrate; CR-39 detectors record charged-particle tracks; tritium accumulation measured",
+        "hypothesizedMechanism": "D + D → T + p reported; not strictly elemental transmutation but an anomalous nuclear process",
+        "notes": "Included as a reference anomalous-nuclear-process claim. Net transmutation is D → T (neutron capture-like)."
+      }
+    }
+  },
+  "citations": {
+    "ariaLabel": "{{count}} documented citation(s) — open to view bibliography",
+    "tooltipTitle": "Documented in literature",
+    "tooltipDisclaimer": "Excerpts paraphrased from secondary sources — verify before publication.",
+    "documentedIn": "Documented in",
+    "entries": {
+      "fleischmann-pons-1989": {
+        "authors": "Fleischmann, M. & Pons, S.",
+        "title": "Electrochemically induced nuclear fusion of deuterium",
+        "journal": "J. Electroanal. Chem. 261, 301",
+        "excerpt": "Reported anomalous excess heat (up to ~26 MJ per mole Pd) in heavy-water electrolysis at Pd cathodes, kicking off the field."
+      },
+      "fleischmann-1992-heat-after-death": {
+        "authors": "Fleischmann, M.",
+        "institution": "IMRA Europe",
+        "excerpt": "\"Heat-after-death\" — anomalous heat persists after electrolysis current is cut off, observed in Pd/D₂O cells (1992–1994)."
+      },
+      "mckubre-1990-loading-ratio": {
+        "authors": "McKubre, M. C. H. et al.",
+        "institution": "SRI International",
+        "excerpt": "Established that a deuterium loading ratio x = D/Pd > ~0.9 is a prerequisite for reproducible excess heat in Pd cathodes (1990–2002)."
+      },
+      "miles-1990-he4": {
+        "authors": "Miles, M. et al.",
+        "institution": "Naval Air Warfare Center, China Lake",
+        "excerpt": "Detected ⁴He in Pd/D₂O cell effluent gas correlated with excess heat at Q/N(⁴He) ≈ 23.8 MeV — the d+d → ⁴He fusion Q-value."
+      },
+      "hubler-violante-2014": {
+        "authors": "Hubler, G. K. & Violante, V.",
+        "title": "Anomalous effects in deuterium/metal systems",
+        "journal": "Current Science 108, 494",
+        "excerpt": "Meta-analysis of ~20 independent groups reporting heat-correlated ⁴He production with consistent Q/N(⁴He) ≈ 24 MeV."
+      },
+      "mizuno-2000-plasma": {
+        "authors": "Mizuno, T.",
+        "institution": "Hokkaido University, Japan",
+        "excerpt": "Reported COP ~5–10 in Ni-mesh hydrogen-gas-discharge variants of plasma electrolysis cells."
+      },
+      "cleanplanet-tohoku-2024": {
+        "authors": "Iwamura, Y. et al. (Tohoku U. / Clean Planet)",
+        "institution": "Tohoku University & Clean Planet Inc.",
+        "excerpt": "Reproducible net-positive-energy runs in H₂-fueled nano-Pd multilayer thin films (2024 demonstration runs)."
+      },
+      "barc-1989-tritium": {
+        "authors": "Bhabha Atomic Research Centre teams",
+        "institution": "BARC, India",
+        "excerpt": "12 BARC research teams independently detected tritium production in deuterated cells between 1989 and 1994."
+      },
+      "spawar-2002-triple-tracks": {
+        "authors": "Mosier-Boss, P. A. et al. (SPAWAR)",
+        "institution": "SPAWAR Systems Center, San Diego",
+        "excerpt": "CR-39 plastic detector evidence of triton-recoil \"triple-tracks\" in Pd/D co-deposition experiments (2002–2011)."
+      },
+      "iwamura-2002-cs-pr": {
+        "authors": "Iwamura, Y. et al.",
+        "title": "Elemental analysis of Pd complexes: effects of D₂ gas permeation",
+        "journal": "Jpn. J. Appl. Phys. 41, 4642",
+        "institution": "Mitsubishi Heavy Industries",
+        "excerpt": "Cs-133 → Pr-141 transmutation (ΔZ = +4, ΔA = +8) observed during D₂ permeation through Pd/CaO multilayer thin films."
+      },
+      "iwamura-2002-sr-mo": {
+        "authors": "Iwamura, Y. et al.",
+        "journal": "Jpn. J. Appl. Phys. 41, 4642",
+        "institution": "Mitsubishi Heavy Industries",
+        "excerpt": "Sr → Mo transmutation (ΔZ = +4) reported in the same Pd/CaO multilayer system as the Cs→Pr result."
+      },
+      "iwamura-2002-w-pt": {
+        "authors": "Iwamura, Y. et al.",
+        "institution": "Mitsubishi Heavy Industries",
+        "excerpt": "W → Pt transmutation reported in Mitsubishi Pd-multilayer experiments."
+      },
+      "toyota-2013-replication": {
+        "authors": "Hioki, T. et al. (Toyota Central R&D)",
+        "institution": "Toyota Central R&D Labs",
+        "excerpt": "Independent replication of the Iwamura Cs → Pr transmutation result at Toyota Central R&D (also at Osaka U., 2003)."
+      },
+      "vysotskii-1996-cs-ba": {
+        "authors": "Vysotskii, V. I. & Kornilova, A. A.",
+        "title": "Nuclear Transmutation of Stable and Radioactive Isotopes in Biological Systems",
+        "excerpt": "Cs-137 → Ba-138 conversion in microbial cultures, reducing radioactivity (1996 onwards)."
+      },
+      "vysotskii-mn-fe": {
+        "authors": "Vysotskii, V. I. & Kornilova, A. A.",
+        "excerpt": "Mn → Fe transmutation observed during microorganism metabolism in growth-medium experiments."
+      },
+      "miley-1996-multi-element": {
+        "authors": "Miley, G. H. & Patterson, J. A.",
+        "institution": "University of Illinois Urbana-Champaign",
+        "excerpt": "Approximately 50 elements detected on Ni cathodes after light-water electrolysis, including products absent from initial materials."
+      },
+      "savvatimova-pd-products": {
+        "authors": "Savvatimova, I. B.",
+        "institution": "LUCH Scientific-Industrial Association",
+        "excerpt": "Pd → Rh, Ru, Ag, Cd transmutation products identified by SIMS in glow-discharge experiments (1994–2010)."
+      },
+      "takahashi-tsc-theory": {
+        "authors": "Takahashi, A.",
+        "institution": "Osaka University",
+        "excerpt": "Tetrahedral Symmetric Condensate (TSC) model predicts aneutronic 4D → ⁸Be* → 2 ⁴He + 47.6 MeV reaction pathway."
+      },
+      "urutskoev-2002-strange-radiation": {
+        "authors": "Urutskoev, L. I. et al.",
+        "institution": "RECOM (Russia)",
+        "excerpt": "Anomalous CR-39 track patterns observed after Ti-foil electrical-discharge experiments — interpreted as \"strange radiation\" (2000–2004)."
+      },
+      "arpa-e-2023-lenr": {
+        "authors": "ARPA-E",
+        "institution": "U.S. Department of Energy ARPA-E",
+        "excerpt": "ARPA-E announced ~$10M in exploratory LENR research funding in 2023, signalling renewed institutional interest."
+      }
+    }
   }
 }

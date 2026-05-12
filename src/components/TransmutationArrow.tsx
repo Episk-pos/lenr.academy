@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next'
 import { useTheme } from '../contexts/ThemeContext'
 
 interface TransmutationArrowProps {
@@ -22,6 +23,7 @@ export default function TransmutationArrow({
   toA,
   stepCount,
 }: TransmutationArrowProps) {
+  const { t } = useTranslation()
   const { theme } = useTheme()
 
   const badgeBase =
@@ -48,7 +50,12 @@ export default function TransmutationArrow({
       <span className={`flex flex-col items-center ${arrowColor}`} aria-hidden="true">
         {stepCount !== undefined && (
           <span className="text-[10px] uppercase tracking-wide">
-            {stepCount === 1 ? '1 step' : `${stepCount} steps`}
+            {t('transmutations.stepCount', {
+              count: stepCount,
+              defaultValue_one: '1 step',
+              defaultValue_other: '{{count}} steps',
+              defaultValue: stepCount === 1 ? '1 step' : `${stepCount} steps`,
+            })}
           </span>
         )}
         <svg
