@@ -96,6 +96,21 @@ export default function CycleDiscovery() {
     window.history.pushState({ cycleDetail: true, cycleIndex }, '')
   }
 
+  // Prev/next navigation while on the detail view. Uses replaceState rather
+  // than pushState so browser-back from any cycle returns to the list rather
+  // than retracing every prev/next click.
+  const handleNavigateCycle = (delta: number) => {
+    if (!results || !selectedCycle) return
+    const idx = results.cycles.indexOf(selectedCycle)
+    const next = results.cycles[idx + delta]
+    if (!next) return
+    setSelectedCycle(next)
+    window.history.replaceState(
+      { cycleDetail: true, cycleIndex: idx + delta },
+      ''
+    )
+  }
+
   // Listen for browser back/forward to toggle cycle detail view
   useEffect(() => {
     const onPopState = (e: PopStateEvent) => {
@@ -138,28 +153,32 @@ export default function CycleDiscovery() {
         </p>
       </div>
 
-      {/* Info banner */}
-      <div className="card p-6 mb-6 bg-blue-50 dark:bg-blue-900/20">
-        <div className="flex items-start gap-3">
-          <AlertCircle className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
-          <div className="text-sm text-gray-700 dark:text-gray-300">
-            <strong>{t('cycleDiscovery.howItWorksTitle')}:</strong>{' '}
-            {t('cycleDiscovery.howItWorksDescription')}
+      {!selectedCycle && (
+        <>
+          {/* Info banner */}
+          <div className="card p-6 mb-6 bg-blue-50 dark:bg-blue-900/20">
+            <div className="flex items-start gap-3">
+              <AlertCircle className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
+              <div className="text-sm text-gray-700 dark:text-gray-300">
+                <strong>{t('cycleDiscovery.howItWorksTitle')}:</strong>{' '}
+                {t('cycleDiscovery.howItWorksDescription')}
+              </div>
+            </div>
           </div>
-        </div>
-      </div>
 
-      {/* Search form */}
-      <div className="mb-6">
-        <CycleDiscoverySearch
-          params={params}
-          onParamsChange={setParams}
-          onSearch={handleSearch}
-          onCancel={cancelDiscovery}
-          isSearching={isRunning}
-          progress={progress}
-        />
-      </div>
+          {/* Search form */}
+          <div className="mb-6">
+            <CycleDiscoverySearch
+              params={params}
+              onParamsChange={setParams}
+              onSearch={handleSearch}
+              onCancel={cancelDiscovery}
+              isSearching={isRunning}
+              progress={progress}
+            />
+          </div>
+        </>
+      )}
 
       {/* Error display */}
       {displayError && (
@@ -184,6 +203,19 @@ export default function CycleDiscovery() {
           cycle={selectedCycle}
           onRunSimulation={handleRunSimulation}
           onBack={handleBack}
+          onPrev={
+            results && results.cycles.indexOf(selectedCycle) > 0
+              ? () => handleNavigateCycle(-1)
+              : undefined
+          }
+          onNext={
+            results &&
+            results.cycles.indexOf(selectedCycle) < results.cycles.length - 1
+              ? () => handleNavigateCycle(1)
+              : undefined
+          }
+          currentIndex={results?.cycles.indexOf(selectedCycle) ?? 0}
+          totalCount={results?.cycles.length ?? 0}
         />
       ) : results ? (
         <div className="space-y-6">

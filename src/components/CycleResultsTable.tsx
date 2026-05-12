@@ -35,6 +35,64 @@ function NuclideBadge({ nuclide }: { nuclide: { E: string; A: number } }) {
   )
 }
 
+/**
+ * Small SVG icon showing N dots arranged in a circle with a closing arrow,
+ * to indicate this row represents a closed cycle.
+ */
+function CyclePreviewIcon({ steps }: { steps: number }) {
+  // Cap visible dots at 8 to avoid clutter
+  const n = Math.max(2, Math.min(8, steps))
+  const cx = 12
+  const cy = 12
+  const r = 8
+  // Distribute dots evenly around the circle, starting from the top
+  const dots = Array.from({ length: n }, (_, i) => {
+    const a = (i / n) * 2 * Math.PI - Math.PI / 2
+    return {
+      x: cx + r * Math.cos(a),
+      y: cy + r * Math.sin(a),
+    }
+  })
+
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      className="w-6 h-6 flex-shrink-0 text-amber-600 dark:text-amber-400"
+      aria-label={`Cycle with ${steps} steps`}
+    >
+      {/* Background ring */}
+      <circle
+        cx={cx}
+        cy={cy}
+        r={r}
+        fill="none"
+        className="stroke-amber-200 dark:stroke-amber-800"
+        strokeWidth={1}
+        strokeDasharray="2 2"
+      />
+      {/* Step dots */}
+      {dots.map((d, i) => (
+        <circle
+          key={i}
+          cx={d.x}
+          cy={d.y}
+          r={1.6}
+          className="fill-amber-500 dark:fill-amber-400"
+        />
+      ))}
+      {/* Closing arrow head at top */}
+      <path
+        d="M 11.2 4.6 L 12 3 L 12.8 4.6"
+        fill="none"
+        className="stroke-amber-600 dark:stroke-amber-400"
+        strokeWidth={1.4}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  )
+}
+
 function ScoreBar({ value, color }: { value: number; color: string }) {
   return (
     <div className="flex items-center gap-2">
@@ -169,12 +227,37 @@ export default function CycleResultsTable({
           </thead>
           <tbody>
             {sorted.map((cycle) => (
-              <tr key={cycle.id}>
+              <tr
+                key={cycle.id}
+                onClick={() => onViewCycle(cycle)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    onViewCycle(cycle)
+                  } else if (e.key === ' ') {
+                    e.preventDefault()
+                    onViewCycle(cycle)
+                  }
+                }}
+                tabIndex={0}
+                role="button"
+                aria-label={t('cycleDiscovery.viewCycleAriaLabel', { id: cycle.id })}
+                className="cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
+              >
                 <td>
-                  <div className="flex flex-wrap">
-                    {cycle.fuelNuclides.map((n, i) => (
-                      <NuclideBadge key={i} nuclide={n} />
-                    ))}
+                  <div className="flex items-start gap-2">
+                    <CyclePreviewIcon steps={cycle.cycleDepth} />
+                    <div className="min-w-0">
+                      <div className="flex flex-wrap">
+                        {cycle.fuelNuclides.map((n, i) => (
+                          <NuclideBadge key={i} nuclide={n} />
+                        ))}
+                      </div>
+                      <div className="text-[10px] italic text-gray-500 dark:text-gray-400 font-mono mt-0.5">
+                        {cycle.fuelNuclides.map((n) => `${n.E}-${n.A}`).join(' + ')}
+                        {' ⟳ +'}
+                        {cycle.totalEnergy.toFixed(1)} MeV
+                      </div>
+                    </div>
                   </div>
                 </td>
                 <td>
@@ -211,14 +294,20 @@ export default function CycleResultsTable({
                 <td>
                   <div className="flex items-center gap-1">
                     <button
-                      onClick={() => onViewCycle(cycle)}
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        onViewCycle(cycle)
+                      }}
                       className="p-1.5 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-400 hover:text-primary-600 dark:hover:text-primary-400 transition-colors"
                       title={t('cycleDiscovery.viewCycle')}
                     >
                       <Eye className="w-4 h-4" />
                     </button>
                     <button
-                      onClick={() => onRunSimulation(cycle)}
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        onRunSimulation(cycle)
+                      }}
                       className="p-1.5 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-400 hover:text-green-600 dark:hover:text-green-400 transition-colors"
                       title={t('cycleDiscovery.simulateCycle')}
                     >
