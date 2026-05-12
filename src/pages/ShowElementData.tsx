@@ -1,13 +1,15 @@
 import { useState, useEffect, useMemo } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { Radiation, ChevronDown } from 'lucide-react'
+import { Radiation, ChevronDown, ExternalLink } from 'lucide-react'
 import { useDatabase } from '../contexts/DatabaseContext'
 import { useTheme } from '../contexts/ThemeContext'
 import { useLayout } from '../contexts/LayoutContext'
 import type { Element, Nuclide, AtomicRadiiData, RadioactiveNuclideData, DisplayNuclide, RadioNuclideListItem } from '../types'
 import PeriodicTable from '../components/PeriodicTable'
 import NuclideDetailsCard from '../components/NuclideDetailsCard'
+import CitationBadge from '../components/CitationBadge'
+import { getCitationsForElement } from '../services/citationsService'
 import ParticleDetailsCard from '../components/ParticleDetailsCard'
 import RadioactiveNuclideCard from '../components/RadioactiveNuclideCard'
 import TabNavigation, { Tab } from '../components/TabNavigation'
@@ -1893,6 +1895,47 @@ export default function ShowElementData() {
                   </div>
                 )}
               </div>
+
+              {/* Documented in — citations referencing this element */}
+              {element && (() => {
+                const elementCitations = getCitationsForElement(element.Z)
+                if (elementCitations.length === 0) return null
+                return (
+                  <div className="card p-6">
+                    <h3 className="font-semibold text-gray-900 dark:text-white mb-3 text-sm uppercase tracking-wide flex items-center gap-2">
+                      {t('citations.documentedIn', { defaultValue: 'Documented in' })}
+                      <CitationBadge
+                        citationIds={elementCitations.map((c) => c.id)}
+                        placement="corner"
+                      />
+                    </h3>
+                    <ul className="space-y-1.5 text-sm text-gray-700 dark:text-gray-300">
+                      {elementCitations.map((c) => {
+                        const href = c.doi ? `https://doi.org/${c.doi}` : c.url
+                        return (
+                          <li key={c.id} className="leading-snug">
+                            <span className="font-medium text-gray-900 dark:text-gray-100">
+                              {c.authors} ({c.year}):
+                            </span>{' '}
+                            {c.excerpt}
+                            {href && (
+                              <a
+                                href={href}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="ml-1.5 inline-flex items-center gap-0.5 text-primary-600 dark:text-primary-400 hover:underline text-xs whitespace-nowrap"
+                              >
+                                view source
+                                <ExternalLink className="w-3 h-3" />
+                              </a>
+                            )}
+                          </li>
+                        )
+                      })}
+                    </ul>
+                  </div>
+                )
+              })()}
 
               {/* Nuclides Section */}
               {isotopes.length > 0 ? (

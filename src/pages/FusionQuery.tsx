@@ -19,6 +19,8 @@ import { useQueryHistory } from '../hooks/useQueryHistory'
 import QueryHistoryPanel from '../components/QueryHistoryPanel'
 import EnergyHistogram from '../components/EnergyHistogram'
 import ReactionNetworkGraph from '../components/ReactionNetworkGraph'
+import CitationBadge from '../components/CitationBadge'
+import { getCitationsForReaction } from '../services/citationsService'
 
 // Default values
 const DEFAULT_ELEMENT1: string[] = []
@@ -1119,6 +1121,11 @@ export default function FusionQuery() {
                       const isE1Radioactive = radioactiveNuclides.has(`${reaction.Z1}-${reaction.A1}`)
                       const isE2Radioactive = radioactiveNuclides.has(`${reaction.Z2}-${reaction.A2}`)
                       const isOutputRadioactive = radioactiveNuclides.has(`${reaction.Z}-${reaction.A}`)
+                      const reactionCitationIds = getCitationsForReaction(
+                        { symbol: reaction.E1, A: reaction.A1 },
+                        { symbol: reaction.E2, A: reaction.A2 },
+                        { symbol: reaction.E, A: reaction.A }
+                      ).map((c) => c.id)
 
                       return (
                         <div
@@ -1171,6 +1178,7 @@ export default function FusionQuery() {
                                   <Radiation className="w-3 h-3 text-amber-600 dark:text-amber-400" />
                                 </span>
                               )}
+                              <CitationBadge citationIds={reactionCitationIds} />
                             </div>
                             <div className="text-[10px] sm:text-xs text-gray-600 dark:text-gray-400">(Z={reaction.Z})</div>
                           </div>
@@ -1278,6 +1286,11 @@ export default function FusionQuery() {
                         const isE1Radioactive = radioactiveNuclides.has(`${reaction.Z1}-${reaction.A1}`)
                         const isE2Radioactive = radioactiveNuclides.has(`${reaction.Z2}-${reaction.A2}`)
                         const isOutputRadioactive = radioactiveNuclides.has(`${reaction.Z}-${reaction.A}`)
+                        const reactionCitationIds = getCitationsForReaction(
+                          { symbol: reaction.E1, A: reaction.A1 },
+                          { symbol: reaction.E2, A: reaction.A2 },
+                          { symbol: reaction.E, A: reaction.A }
+                        ).map((c) => c.id)
 
                         return (
                           <div
@@ -1329,6 +1342,7 @@ export default function FusionQuery() {
                                     <Radiation className="w-3 h-3 text-amber-600 dark:text-amber-400" />
                                   </span>
                                 )}
+                                <CitationBadge citationIds={reactionCitationIds} />
                               </div>
                               <div className="text-[10px] sm:text-xs text-gray-600 dark:text-gray-400">(Z={reaction.Z})</div>
                             </div>
