@@ -225,7 +225,7 @@ export default function Layout({ children }: LayoutProps) {
               <X className="w-6 h-6" />
             </button>
           </div>
-          <nav className="flex-1 overflow-y-auto p-4">
+          <nav className="flex-1 min-h-0 overflow-y-auto p-4">
             {navigationItems.map((item) => {
               const Icon = item.icon
               return (
@@ -316,7 +316,7 @@ export default function Layout({ children }: LayoutProps) {
               <p className="text-xs text-gray-500 dark:text-gray-400">{t('brand.appSubtitle')}</p>
             </div>
           </div>
-          <nav className="flex-1 overflow-y-auto p-4">
+          <nav className="flex-1 min-h-0 overflow-y-auto p-4">
             {navigationItems.map((item) => {
               const Icon = item.icon
               return (

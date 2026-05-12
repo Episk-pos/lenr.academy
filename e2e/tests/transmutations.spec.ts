@@ -5,6 +5,11 @@ import {
 } from '../fixtures/test-helpers';
 
 test.describe('Transmutations Page', () => {
+  // The 60s global timeout is consumed by waitForDatabaseReady on cold-cache
+  // CI runs, leaving insufficient budget for the in-test toBeEnabled/toBeVisible
+  // waits. Override per-suite so the DB-load + pathway-search has 3 minutes.
+  test.describe.configure({ timeout: 180_000 });
+
   test.beforeEach(async ({ page }) => {
     await acceptPrivacyConsent(page);
     await page.goto('/transmutations');
