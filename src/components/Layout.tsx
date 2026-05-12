@@ -295,7 +295,7 @@ export default function Layout({ children }: LayoutProps) {
           transition: 'top 300ms ease-out, width 300ms'
         }}
       >
-        <div className="flex flex-col flex-grow border-r border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 relative">
+        <div className="flex flex-col flex-grow min-h-0 border-r border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 relative">
           {/* Collapse toggle button */}
           <button
             onClick={() => setDesktopSidebarCollapsed(!desktopSidebarCollapsed)}
