@@ -191,8 +191,8 @@ read -p "Push tag v$NEW_VERSION to remote and create GitHub Release? (y/N) " -n 
 echo
 if [[ ! $REPLY =~ ^[Yy]$ ]]; then
     echo -e "${YELLOW}Tag created locally but not pushed. You can push manually with:${NC}"
-    echo "  git push gh main"
-    echo "  git push gh v$NEW_VERSION"
+    echo "  git push origin main"
+    echo "  git push origin v$NEW_VERSION"
     echo ""
     echo -e "${YELLOW}Or delete the tag with:${NC}"
     echo "  git tag -d v$NEW_VERSION"
@@ -202,8 +202,8 @@ fi
 
 # Push to remote
 echo -e "${BLUE}Pushing to remote...${NC}"
-git push gh main
-git push gh "v$NEW_VERSION"
+git push origin main
+git push origin "v$NEW_VERSION"
 
 # Always create as pre-release for staging deployment
 # After QA approval, manually promote to full release for production deployment

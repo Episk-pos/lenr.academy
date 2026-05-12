@@ -345,6 +345,74 @@
         { "type": "scroll", "y": 300 }
       ],
       "output": "pr-38-elements-tab-mobile-sticky.png"
+    },
+    "russell-historical-collapsed": {
+      "name": "Russell Historical Context - Collapsed",
+      "description": "Shows the Russell tab with the new Historical Background panel (all sections collapsed)",
+      "page": "/element-data?tab=russell",
+      "viewport": "desktop-16:9-small",
+      "theme": "light",
+      "actions": [
+        { "type": "wait", "timeout": 2000 },
+        { "type": "scroll", "y": 1400 }
+      ],
+      "output": "russell-historical-collapsed.png"
+    },
+    "russell-historical-expanded": {
+      "name": "Russell Historical Context - Expanded",
+      "description": "Shows the Historical Background panel with sections expanded",
+      "page": "/element-data?tab=russell",
+      "viewport": "desktop-16:9-small",
+      "theme": "light",
+      "actions": [
+        { "type": "wait", "timeout": 2000 },
+        { "type": "scroll", "y": 600 },
+        { "type": "click", "selector": "[data-testid='russell-historical-context'] button:has-text('Expand all')" },
+        { "type": "wait", "timeout": 500 },
+        { "type": "scroll", "y": 200 }
+      ],
+      "output": "russell-historical-expanded.png"
+    },
+    "russell-historical-dark": {
+      "name": "Russell Historical Context - Dark Mode",
+      "description": "Shows the Historical Background panel in dark mode with sections expanded",
+      "page": "/element-data?tab=russell",
+      "viewport": "desktop-16:9-small",
+      "theme": "dark",
+      "actions": [
+        { "type": "wait", "timeout": 2000 },
+        { "type": "scroll", "y": 600 },
+        { "type": "click", "selector": "[data-testid='russell-historical-context'] button:has-text('Expand all')" },
+        { "type": "wait", "timeout": 500 },
+        { "type": "scroll", "y": 200 }
+      ],
+      "output": "russell-historical-dark.png"
+    },
+    "russell-wave-view": {
+      "name": "Russell Wave Amplitude View",
+      "description": "Shows the Russell Wave View — elements as points on octave wave envelope with Carbon at peak",
+      "page": "/element-data?tab=russell",
+      "viewport": "desktop-16:9-small",
+      "theme": "light",
+      "actions": [
+        { "type": "wait", "timeout": 2000 },
+        { "type": "click", "selector": "button:has-text('Wave View')" },
+        { "type": "wait", "timeout": 500 }
+      ],
+      "output": "russell-wave-view.png"
+    },
+    "russell-wave-view-dark": {
+      "name": "Russell Wave Amplitude View - Dark Mode",
+      "description": "Shows the Russell Wave View in dark mode",
+      "page": "/element-data?tab=russell",
+      "viewport": "desktop-16:9-small",
+      "theme": "dark",
+      "actions": [
+        { "type": "wait", "timeout": 2000 },
+        { "type": "click", "selector": "button:has-text('Wave View')" },
+        { "type": "wait", "timeout": 500 }
+      ],
+      "output": "russell-wave-view-dark.png"
     }
   }
 }

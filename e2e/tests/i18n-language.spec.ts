@@ -77,6 +77,7 @@ test.describe('Language Switcher', () => {
   test.beforeEach(async ({ page }) => {
     // Set English preference to skip language selection modal
     await setLanguagePreference(page, 'en');
+    await acceptPrivacyConsent(page);
     await page.goto('/');
     await acceptMeteredWarningIfPresent(page);
     await waitForDatabaseReady(page);
@@ -156,11 +157,12 @@ test.describe('Language Switcher', () => {
     const freshContext = await browser.newContext();
     const freshPage = await freshContext.newPage();
 
-    // Manually set language to English without init script
+    // Manually set language and dismiss privacy banner without init script
     await freshPage.goto('/');
     await freshPage.evaluate(() => {
       localStorage.setItem('lenr-language-preference', 'en');
       localStorage.setItem('lenr-language-selected', 'true');
+      localStorage.setItem('lenr-analytics-consent', 'accepted');
     });
     await freshPage.reload();
     await acceptMeteredWarningIfPresent(freshPage);
@@ -197,6 +199,7 @@ test.describe('Cascade Simulation Translations', () => {
   test.beforeEach(async ({ page }) => {
     // Set English preference
     await setLanguagePreference(page, 'en');
+    await acceptPrivacyConsent(page);
     await page.goto('/cascades');
     await acceptMeteredWarningIfPresent(page);
     await waitForDatabaseReady(page);
@@ -297,6 +300,7 @@ test.describe('Cascade Simulation in Japanese', () => {
   test.beforeEach(async ({ page }) => {
     // Set Japanese preference
     await setLanguagePreference(page, 'ja');
+    await acceptPrivacyConsent(page);
     await page.goto('/cascades');
     await acceptMeteredWarningIfPresent(page);
     await waitForDatabaseReady(page);
@@ -342,6 +346,7 @@ test.describe('Cascade Simulation in Japanese', () => {
 test.describe('Materials Catalog Translations', () => {
   test.beforeEach(async ({ page }) => {
     await setLanguagePreference(page, 'en');
+    await acceptPrivacyConsent(page);
     await page.goto('/cascades');
     await acceptMeteredWarningIfPresent(page);
     await waitForDatabaseReady(page);
@@ -390,6 +395,7 @@ test.describe('All Supported Languages', () => {
   for (const lang of languages) {
     test(`should display UI in ${lang.name} (${lang.code})`, async ({ page }) => {
       await setLanguagePreference(page, lang.code);
+      await acceptPrivacyConsent(page);
       await page.goto('/');
       await acceptMeteredWarningIfPresent(page);
       await waitForDatabaseReady(page);

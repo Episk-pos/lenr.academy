@@ -181,7 +181,7 @@ function buildGraphData(
 
   // Filter: only pathways that have appeared by currentLoop
   const sortedPathways = Array.from(pathwayMap.entries())
-    .filter(([_, pathway]) => pathway.firstLoop <= currentLoop)
+    .filter(([, pathway]) => pathway.firstLoop <= currentLoop)
     .sort((a, b) => b[1].count - a[1].count);
 
   const filteredPathways = maxPathways > 0 ? sortedPathways.slice(0, maxPathways) : sortedPathways;

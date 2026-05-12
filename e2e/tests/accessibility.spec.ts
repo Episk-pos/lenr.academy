@@ -282,7 +282,7 @@ test.describe('Accessibility', () => {
 
     // Live regions are optional but good for dynamic content
     // Just verify page works without errors by checking for main heading
-    await expect(page.getByRole('heading', { name: /The Nanosoft Package/i })).toBeVisible();
+    await expect(page.getByRole('heading', { name: /LENR Academy/i })).toBeVisible();
   });
 });
 

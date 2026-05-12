@@ -87,8 +87,10 @@ export async function acceptPrivacyConsent(page: Page) {
     localStorage.setItem('lenr-analytics-consent', 'accepted');
     // Disable changelog auto-launch (tests will open it explicitly if needed)
     localStorage.setItem('lenr-changelog-disable-auto', 'true');
-    // Set language preference to English to avoid language selection modal
-    localStorage.setItem('lenr-language-preference', 'en');
+    // Only set language to English if not already set by setLanguagePreference
+    if (!localStorage.getItem('lenr-language-preference')) {
+      localStorage.setItem('lenr-language-preference', 'en');
+    }
     localStorage.setItem('lenr-language-selected', 'true');
   });
 }

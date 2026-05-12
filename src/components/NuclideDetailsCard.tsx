@@ -7,6 +7,7 @@ import { getRadioactiveDecayData, getElementSymbolByZ, getNuclideBySymbol } from
 import { traceDecayChain } from '../services/decayChainService'
 import { useNavigate, Link } from 'react-router-dom'
 import { expandHalfLifeUnit } from '../utils/formatUtils'
+import { getIAEAAbundance } from '../constants/iaeaAbundances'
 import DecayChainDiagram from './DecayChainDiagram'
 
 interface NuclideDetailsCardProps {
@@ -173,6 +174,12 @@ export default function NuclideDetailsCard({ nuclide, onClose }: NuclideDetailsC
 
   if (!nuclide) return null
 
+  // Pre-compute IAEA abundance comparison for this nuclide
+  const iaeaAbundance = getIAEAAbundance(nuclide.E, nuclide.A)
+  const iaeaDelta = iaeaAbundance !== null && typeof nuclide.pcaNCrust === 'number'
+    ? iaeaAbundance - nuclide.pcaNCrust
+    : null
+
   return (
     <>
     <div className="card p-6 animate-fade-in max-w-full">
@@ -291,7 +298,7 @@ export default function NuclideDetailsCard({ nuclide, onClose }: NuclideDetailsC
           </dl>
         </div>
 
-        {(typeof nuclide.pcaNCrust === 'number' || typeof nuclide.ppmNCrust === 'number' || typeof nuclide.ppmNSolar === 'number') && (
+        {(typeof nuclide.pcaNCrust === 'number' || typeof nuclide.ppmNCrust === 'number' || typeof nuclide.ppmNSolar === 'number' || iaeaAbundance !== null) && (
           <div className="min-w-0">
             <h3 className="font-semibold text-gray-900 dark:text-white mb-3 text-sm uppercase tracking-wide">
               {t('elements.naturalAbundance')}
@@ -302,6 +309,23 @@ export default function NuclideDetailsCard({ nuclide, onClose }: NuclideDetailsC
                   <dt className="text-gray-600 dark:text-gray-400 flex-shrink-0">{t('elements.isotopicPercent')}:</dt>
                   <dd className="font-medium text-gray-900 dark:text-gray-100 text-right truncate">
                     {nuclide.pcaNCrust.toFixed(2)}%
+                  </dd>
+                </div>
+              )}
+              {typeof nuclide.pcaNCrust === 'number' && iaeaAbundance !== null && (
+                <div className="flex justify-between gap-2">
+                  <dt className="text-gray-600 dark:text-gray-400 flex-shrink-0">{t('elements.isotopicPercent')} (IAEA):</dt>
+                  <dd className="font-medium text-gray-900 dark:text-gray-100 text-right truncate" title={iaeaDelta !== null ? `Δ${iaeaDelta >= 0 ? '+' : ''}${iaeaDelta.toFixed(4)}` : undefined}>
+                    {iaeaAbundance.toFixed(4)}%
+                  </dd>
+                </div>
+              )}
+              {typeof nuclide.pcaNCrust !== 'number' && iaeaAbundance !== null && (
+                <div className="flex justify-between gap-2">
+                  <dt className="text-gray-600 dark:text-gray-400 flex-shrink-0">{t('elements.isotopicPercent')}:</dt>
+                  <dd className="font-medium text-gray-900 dark:text-gray-100 text-right truncate">
+                    {iaeaAbundance.toFixed(4)}%
+                    <span className="ml-1 text-xs text-gray-400 dark:text-gray-500">(IAEA)</span>
                   </dd>
                 </div>
               )}

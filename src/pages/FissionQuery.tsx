@@ -1,7 +1,8 @@
 import { useState, useEffect, useMemo, useCallback, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Download, Info, Loader, Eye, EyeOff, Radiation, ChevronDown } from 'lucide-react'
-import { useSearchParams, Link } from 'react-router-dom'
+import { Download, FileJson, FileText, Info, Loader, Eye, EyeOff, Radiation, ChevronDown } from 'lucide-react'
+import ShareQueryButton from '../components/ShareQueryButton'
+import { useSearchParams, Link, useNavigate } from 'react-router-dom'
 import type { FissionReaction, QueryFilter, Element, Nuclide, HeatmapMode, HeatmapMetrics, AtomicRadiiData } from '../types'
 import { useDatabase } from '../contexts/DatabaseContext'
 import { useQueryState } from '../contexts/QueryStateContext'
@@ -13,6 +14,11 @@ import NuclideDetailsCard from '../components/NuclideDetailsCard'
 import DatabaseLoadingCard from '../components/DatabaseLoadingCard'
 import { VirtualizedList } from '../components/VirtualizedList'
 import LimitSelector from '../components/LimitSelector'
+import { exportToJSON, exportToPDF } from '../utils/exportUtils'
+import { useQueryHistory } from '../hooks/useQueryHistory'
+import QueryHistoryPanel from '../components/QueryHistoryPanel'
+import EnergyHistogram from '../components/EnergyHistogram'
+import ReactionNetworkGraph from '../components/ReactionNetworkGraph'
 
 // Default values
 const DEFAULT_ELEMENT: string[] = []
@@ -27,7 +33,9 @@ export default function FissionQuery() {
   const { t } = useTranslation()
   const { db, isLoading: dbLoading, error: dbError, downloadProgress } = useDatabase()
   const [searchParams, setSearchParams] = useSearchParams()
+  const navigate = useNavigate()
   const { getFissionState, updateFissionState } = useQueryState()
+  const { history, addToHistory, toggleBookmark, removeFromHistory, clearHistory } = useQueryHistory()
   const [availableElements, setAvailableElements] = useState<Element[]>([])
   const [isInitialized, setIsInitialized] = useState(false)
   const [hasRestoredFromContext, setHasRestoredFromContext] = useState(false)
@@ -91,6 +99,13 @@ export default function FissionQuery() {
   const [selectedElement, setSelectedElement] = useState<string[]>(getInitialElement())
   const [selectedOutputElement1, setSelectedOutputElement1] = useState<string[]>(getInitialOutputElement1())
   const [selectedOutputElement2, setSelectedOutputElement2] = useState<string[]>(getInitialOutputElement2())
+
+  const queryFilter = useMemo<QueryFilter>(() => ({
+    ...filter,
+    elements: selectedElement.length > 0 ? selectedElement : undefined,
+    outputElement1List: selectedOutputElement1.length > 0 ? selectedOutputElement1 : undefined,
+    outputElement2List: selectedOutputElement2.length > 0 ? selectedOutputElement2 : undefined,
+  }), [filter, selectedElement, selectedOutputElement1, selectedOutputElement2])
   const [elements, setElements] = useState<Element[]>([])
   const [nuclides, setNuclides] = useState<Nuclide[]>([])
   const [radioactiveNuclides, setRadioactiveNuclides] = useState<Set<string>>(new Set())
@@ -491,14 +506,6 @@ export default function FissionQuery() {
 
     setIsQuerying(true)
     try {
-      // Build filter with selected elements
-      const queryFilter: QueryFilter = {
-        ...filter,
-        elements: selectedElement.length > 0 ? selectedElement : undefined,
-        outputElement1List: selectedOutputElement1.length > 0 ? selectedOutputElement1 : undefined,
-        outputElement2List: selectedOutputElement2.length > 0 ? selectedOutputElement2 : undefined
-      }
-
       const result = queryFission(db, queryFilter)
 
       setResults(result.reactions)
@@ -508,6 +515,9 @@ export default function FissionQuery() {
       setQueryTime(result.executionTime)
       setTotalCount(result.totalCount)
       setShowResults(true)
+
+      // Save to query history
+      addToHistory('fission', queryFilter, result.totalCount)
 
       // Also fetch unlimited results for heatmap if toggle is enabled
       if (useAllResultsForHeatmap && result.totalCount > result.reactions.length) {
@@ -542,6 +552,7 @@ export default function FissionQuery() {
     a.href = url
     a.download = `fission_reactions_${new Date().toISOString().split('T')[0]}.csv`
     a.click()
+    window.URL.revokeObjectURL(url)
   }
 
   // Table resize handlers (supporting both mouse and touch)
@@ -763,9 +774,29 @@ export default function FissionQuery() {
 
   return (
     <div className="max-w-7xl mx-auto">
-      <div className="mb-6">
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">{t('reactions.fissionTitle')}</h1>
-        <p className="text-gray-600 dark:text-gray-400">{t('reactions.fissionDescription')}</p>
+      <div className="mb-6 flex items-start justify-between">
+        <div>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">{t('reactions.fissionTitle')}</h1>
+          <p className="text-gray-600 dark:text-gray-400">{t('reactions.fissionDescription')}</p>
+        </div>
+        <QueryHistoryPanel
+          history={history}
+          currentQueryType="fission"
+          onLoadQuery={(loadedFilter, queryType) => {
+            if (queryType !== 'fission') {
+              const routeMap = { fusion: '/fusion', twotwo: '/twotwo', fission: '/fission' }
+              navigate(routeMap[queryType])
+              return
+            }
+            setSelectedElement(loadedFilter.elements || [])
+            setSelectedOutputElement1(loadedFilter.outputElement1List || [])
+            setSelectedOutputElement2(loadedFilter.outputElement2List || [])
+            setFilter(loadedFilter)
+          }}
+          onToggleBookmark={toggleBookmark}
+          onRemove={removeFromHistory}
+          onClearHistory={() => clearHistory(true)}
+        />
       </div>
 
       {/* Query Builder */}
@@ -1096,6 +1127,12 @@ export default function FissionQuery() {
             </div>
           </div>
 
+          {/* Energy Distribution Histogram */}
+          <EnergyHistogram reactions={filteredResults} />
+
+          {/* Reaction Network Graph */}
+          <ReactionNetworkGraph reactions={filteredResults} reactionType="fission" />
+
           <div className="card p-6 pb-0 sm:pb-6">
             <div className="flex justify-between items-center mb-4">
               <div>
@@ -1117,7 +1154,7 @@ export default function FissionQuery() {
                   )}
                 </p>
               </div>
-              <div className="flex gap-2">
+              <div className="flex flex-wrap gap-2">
                 <button
                   onClick={() => setShowBosonFermion(!showBosonFermion)}
                   className="btn btn-secondary px-4 py-2 text-sm"
@@ -1133,6 +1170,23 @@ export default function FissionQuery() {
                 >
                   <Download className="w-4 h-4 mr-2 inline" />
                   {t('reactions.exportCsv')}
+                </button>
+                <ShareQueryButton />
+                <button
+                  onClick={() => exportToJSON(results, { queryType: 'fission', filter: queryFilter, executionTime: queryTime, rowCount: results.length, totalCount })}
+                  className="btn btn-secondary px-4 py-2 text-sm"
+                  disabled={results.length === 0}
+                >
+                  <FileJson className="w-4 h-4 mr-2 inline" />
+                  {t('reactions.exportJson')}
+                </button>
+                <button
+                  onClick={() => exportToPDF(results, { queryType: 'fission', filter: queryFilter, executionTime: queryTime, rowCount: results.length, totalCount }).catch((err) => console.error('PDF export failed:', err))}
+                  className="btn btn-secondary px-4 py-2 text-sm"
+                  disabled={results.length === 0}
+                >
+                  <FileText className="w-4 h-4 mr-2 inline" />
+                  {t('reactions.exportPdf')}
                 </button>
               </div>
             </div>

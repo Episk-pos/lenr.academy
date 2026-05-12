@@ -1,12 +1,15 @@
 import { useState, useEffect, useMemo } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { Radiation } from 'lucide-react'
+import { Radiation, ChevronDown, ExternalLink } from 'lucide-react'
 import { useDatabase } from '../contexts/DatabaseContext'
+import { useTheme } from '../contexts/ThemeContext'
 import { useLayout } from '../contexts/LayoutContext'
 import type { Element, Nuclide, AtomicRadiiData, RadioactiveNuclideData, DisplayNuclide, RadioNuclideListItem } from '../types'
 import PeriodicTable from '../components/PeriodicTable'
 import NuclideDetailsCard from '../components/NuclideDetailsCard'
+import CitationBadge from '../components/CitationBadge'
+import { getCitationsForElement } from '../services/citationsService'
 import ParticleDetailsCard from '../components/ParticleDetailsCard'
 import RadioactiveNuclideCard from '../components/RadioactiveNuclideCard'
 import TabNavigation, { Tab } from '../components/TabNavigation'
@@ -15,6 +18,9 @@ import FilterPanel, { FilterConfig, FilterPreset } from '../components/FilterPan
 import DatabaseLoadingCard from '../components/DatabaseLoadingCard'
 import Tooltip from '../components/Tooltip'
 import DecayChainDiagram from '../components/DecayChainDiagram'
+import SegreChartDiagram, { type ChartNuclide } from '../components/SegreChartDiagram'
+import ColumnToggle from '../components/ColumnToggle'
+import { useColumnVisibility } from '../hooks/useColumnVisibility'
 import {
   getAllNuclidesByElement,
   getAtomicRadii,
@@ -29,6 +35,10 @@ import {
   type RadioactiveDecay
 } from '../services/queryService'
 import { traceDecayChain } from '../services/decayChainService'
+import RussellChartDiagram from '../components/RussellChartDiagram'
+import RussellWaveDiagram from '../components/RussellWaveDiagram'
+import RussellChart3D from '../components/RussellChart3D'
+import { RUSSELL_COLORS, getPredictedElements } from '../constants/russellElements'
 import { expandHalfLifeUnit, normalizeElementSymbol } from '../utils/formatUtils'
 import { filterDataBySearch, SearchMetadata } from '../utils/searchUtils'
 import { RADIATION_TYPE_INFO } from '../constants/radiationTypes'
@@ -134,6 +144,7 @@ function getDaughterNuclide(Z: number, A: number, E: string, decayMode: string):
 export default function ShowElementData() {
   const { t } = useTranslation()
   const { db, isLoading: dbLoading, error: dbError, downloadProgress } = useDatabase()
+  const { theme } = useTheme()
   const { openSidebar, setMobileHeaderHidden } = useLayout()
   const [searchParams, setSearchParams] = useSearchParams()
 
@@ -176,6 +187,7 @@ export default function ShowElementData() {
   const [elementsCollapsed, setElementsCollapsed] = useState(true)
   const [nuclidesCollapsed, setNuclidesCollapsed] = useState(true)
   const [decaysCollapsed, setDecaysCollapsed] = useState(true)
+  const [segreExpanded, setSegreExpanded] = useState(false)
 
   // Search state (per tab, transient - not in URL)
   const [elementsSearch, setElementsSearch] = useState('')
@@ -186,6 +198,9 @@ export default function ShowElementData() {
   const [customElementsPresets, setCustomElementsPresets] = useState<FilterPreset[]>([])
   const [customNuclidesPresets, setCustomNuclidesPresets] = useState<FilterPreset[]>([])
   const [customDecaysPresets, setCustomDecaysPresets] = useState<FilterPreset[]>([])
+
+  // Russell tab: grid vs wave vs 3D view toggle
+  const [russellView, setRussellView] = useState<'grid' | 'wave' | '3d'>('grid')
 
   // Expanded row state (per tab, session-only - NOT in URL)
   const [elementsExpandedRows, setElementsExpandedRows] = useState<Set<string | number>>(new Set())
@@ -227,6 +242,21 @@ export default function ShowElementData() {
     if (!db) return []
     return getAllNuclides(db)
   }, [db])
+
+  // Segre Chart nuclides (derived from allNuclides)
+  const chartNuclides: ChartNuclide[] = useMemo(() => {
+    return allNuclides.map(n => ({
+      Z: n.Z,
+      N: n.A - n.Z,
+      A: n.A,
+      E: n.E,
+      stability: (n.logHalfLife === undefined || n.logHalfLife === null) ? 'unknown' as const
+        : n.logHalfLife > 9 ? 'stable' as const
+        : n.logHalfLife > 2 ? 'long' as const
+        : 'short' as const,
+      logHalfLife: n.logHalfLife,
+    }))
+  }, [allNuclides])
 
   // Get all decays (memoized)
   const allDecays = useMemo(() => {
@@ -645,9 +675,9 @@ export default function ShowElementData() {
 
   // Export handlers
   const handleElementsExport = () => {
-    const headers = elementsColumns.map(col => col.label)
+    const headers = elementsColumnVis.visibleColumns.map(col => col.label)
     const rows = filteredElements.map(row =>
-      elementsColumns.map(col => {
+      elementsColumnVis.visibleColumns.map(col => {
         const value = row[col.key as keyof Element]
         const str = value == null ? '' : String(value)
         return str.includes(',') || str.includes('"') ? `"${str.replace(/"/g, '""')}"` : str
@@ -664,9 +694,9 @@ export default function ShowElementData() {
   }
 
   const handleNuclidesExport = () => {
-    const headers = nuclidesColumns.map(col => col.label)
+    const headers = nuclidesColumnVis.visibleColumns.map(col => col.label)
     const rows = filteredNuclides.map(row =>
-      nuclidesColumns.map(col => {
+      nuclidesColumnVis.visibleColumns.map(col => {
         const value = row[col.key as keyof Nuclide]
         const str = value == null ? '' : String(value)
         return str.includes(',') || str.includes('"') ? `"${str.replace(/"/g, '""')}"` : str
@@ -683,9 +713,9 @@ export default function ShowElementData() {
   }
 
   const handleDecaysExport = () => {
-    const headers = decaysColumns.map(col => col.label)
+    const headers = decaysColumnVis.visibleColumns.map(col => col.label)
     const rows = filteredDecays.map(row =>
-      decaysColumns.map(col => {
+      decaysColumnVis.visibleColumns.map(col => {
         const value = row[col.key as keyof RadioactiveDecay]
         const str = value == null ? '' : String(value)
         return str.includes(',') || str.includes('"') ? `"${str.replace(/"/g, '""')}"` : str
@@ -704,6 +734,7 @@ export default function ShowElementData() {
   // Define tabs with counts (showing filtered counts)
   const tabs: Tab[] = [
     { id: 'integrated', label: t('elements.integrated') },
+    { id: 'russell', label: t('elements.russellChart') },
     { id: 'elements', label: t('elements.element'), count: filteredElements.length },
     { id: 'nuclides', label: t('elements.nuclides'), count: filteredNuclides.length },
     { id: 'decays', label: t('elements.decays'), count: filteredDecays.length }
@@ -1035,6 +1066,16 @@ export default function ShowElementData() {
 
       setSearchParams(newParams) // Push new history entry for browser back/forward
     }
+  }
+
+  const handleSegreNuclideClick = (nuclide: ChartNuclide) => {
+    const newParams = new URLSearchParams(searchParams)
+    newParams.set('Z', nuclide.Z.toString())
+    newParams.set('A', nuclide.A.toString())
+    newParams.set('tab', 'integrated')
+    newParams.delete('iso')
+    newParams.delete('particle')
+    setSearchParams(newParams)
   }
 
   const handleParticleClick = (particleId: string) => {
@@ -1408,8 +1449,8 @@ export default function ShowElementData() {
     }
   ]
 
-  // Elements table columns
-  const elementsColumns: TableColumn<Element>[] = [
+  // Elements table columns (memoized to avoid unnecessary re-renders in useColumnVisibility)
+  const elementsColumns: TableColumn<Element>[] = useMemo(() => [
     { key: 'Z', label: 'Z', sortable: true },
     {
       key: 'E',
@@ -1448,10 +1489,10 @@ export default function ShowElementData() {
       sortable: true,
       render: (val) => val != null ? Number(val).toFixed(3) : '-'
     }
-  ]
+  ], [])
 
-  // Nuclides table columns
-  const nuclidesColumns: TableColumn<Nuclide>[] = [
+  // Nuclides table columns (memoized; depends on radioactiveNuclides for stability render)
+  const nuclidesColumns: TableColumn<Nuclide>[] = useMemo(() => [
     {
       key: 'E',
       label: 'Element',
@@ -1538,10 +1579,10 @@ export default function ShowElementData() {
         )
       }
     }
-  ]
+  ], [radioactiveNuclides])
 
-  // Decays table columns
-  const decaysColumns: TableColumn<RadioactiveDecay>[] = [
+  // Decays table columns (memoized to avoid unnecessary re-renders in useColumnVisibility)
+  const decaysColumns: TableColumn<RadioactiveDecay>[] = useMemo(() => [
     {
       key: 'E',
       label: 'Element',
@@ -1600,7 +1641,12 @@ export default function ShowElementData() {
       sortable: true,
       render: (val) => val != null ? Number(val).toFixed(2) : '-'
     }
-  ]
+  ], [])
+
+  // Column visibility hooks for each table
+  const elementsColumnVis = useColumnVisibility(elementsColumns, 'elements')
+  const nuclidesColumnVis = useColumnVisibility(nuclidesColumns, 'nuclides')
+  const decaysColumnVis = useColumnVisibility(decaysColumns, 'decays')
 
   if (dbLoading) {
     return <DatabaseLoadingCard downloadProgress={downloadProgress} />
@@ -1644,6 +1690,34 @@ export default function ShowElementData() {
             onElementClick={handleElementClick}
             onParticleClick={handleParticleClick}
           />
+
+          {/* Collapsible Segre Chart */}
+          {chartNuclides.length > 0 && (
+            <div className="card mt-6">
+              <button
+                onClick={() => setSegreExpanded(!segreExpanded)}
+                className="w-full flex items-center justify-between p-4 text-left hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors rounded-lg"
+              >
+                <div>
+                  <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+                    {t('segreChart.sectionTitle')}
+                  </h3>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+                    {t('segreChart.nuclideCount', { count: chartNuclides.length })}
+                  </p>
+                </div>
+                <ChevronDown className={`w-5 h-5 text-gray-400 transition-transform duration-200 ${segreExpanded ? 'rotate-180' : ''}`} />
+              </button>
+              <div className={`transition-all duration-300 ease-in-out overflow-hidden ${segreExpanded ? 'max-h-[900px] opacity-100' : 'max-h-0 opacity-0'}`}>
+                <div className="px-4 pb-4">
+                  <SegreChartDiagram nuclides={chartNuclides} onNuclideClick={handleSegreNuclideClick} />
+                  <p className="text-xs text-gray-400 dark:text-gray-500 mt-2 text-center">
+                    {t('segreChart.zoomControls')}
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
 
           {selectedParticleInfo && (
             <ParticleDetailsCard particle={selectedParticleInfo} nuclide={selectedParticleNuclide} />
@@ -1822,6 +1896,47 @@ export default function ShowElementData() {
                 )}
               </div>
 
+              {/* Documented in — citations referencing this element */}
+              {element && (() => {
+                const elementCitations = getCitationsForElement(element.Z)
+                if (elementCitations.length === 0) return null
+                return (
+                  <div className="card p-6">
+                    <h3 className="font-semibold text-gray-900 dark:text-white mb-3 text-sm uppercase tracking-wide flex items-center gap-2">
+                      {t('citations.documentedIn', { defaultValue: 'Documented in' })}
+                      <CitationBadge
+                        citationIds={elementCitations.map((c) => c.id)}
+                        placement="corner"
+                      />
+                    </h3>
+                    <ul className="space-y-1.5 text-sm text-gray-700 dark:text-gray-300">
+                      {elementCitations.map((c) => {
+                        const href = c.doi ? `https://doi.org/${c.doi}` : c.url
+                        return (
+                          <li key={c.id} className="leading-snug">
+                            <span className="font-medium text-gray-900 dark:text-gray-100">
+                              {c.authors} ({c.year}):
+                            </span>{' '}
+                            {c.excerpt}
+                            {href && (
+                              <a
+                                href={href}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="ml-1.5 inline-flex items-center gap-0.5 text-primary-600 dark:text-primary-400 hover:underline text-xs whitespace-nowrap"
+                              >
+                                view source
+                                <ExternalLink className="w-3 h-3" />
+                              </a>
+                            )}
+                          </li>
+                        )
+                      })}
+                    </ul>
+                  </div>
+                )
+              })()}
+
               {/* Nuclides Section */}
               {isotopes.length > 0 ? (
                 <div className="card p-6">
@@ -1995,6 +2110,220 @@ export default function ShowElementData() {
         </div>
       )}
 
+
+      {/* Russell Tab */}
+      {activeTab === 'russell' && (
+        <div className="space-y-4">
+          {/* View toggle */}
+          <div className="flex gap-1 p-1 bg-gray-100 dark:bg-gray-800 rounded-lg w-fit">
+            <button
+              onClick={() => setRussellView('grid')}
+              className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${
+                russellView === 'grid'
+                  ? 'bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 shadow-sm'
+                  : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
+              }`}
+            >
+              {t('russellChart.gridView')}
+            </button>
+            <button
+              onClick={() => setRussellView('wave')}
+              className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${
+                russellView === 'wave'
+                  ? 'bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 shadow-sm'
+                  : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
+              }`}
+            >
+              {t('russellChart.waveView')}
+            </button>
+            <button
+              onClick={() => setRussellView('3d')}
+              className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${
+                russellView === '3d'
+                  ? 'bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 shadow-sm'
+                  : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
+              }`}
+            >
+              {t('russellChart.view3D')}
+            </button>
+          </div>
+
+          {/* Diagram card */}
+          <div className="card p-6">
+            {russellView === 'grid' ? (
+              <RussellChartDiagram onElementClick={(Z) => {
+                const newParams = new URLSearchParams(searchParams)
+                newParams.set('Z', String(Z))
+                newParams.set('tab', 'integrated')
+                setSearchParams(newParams)
+              }} />
+            ) : russellView === '3d' ? (
+              <RussellChart3D onElementClick={(Z) => {
+                const newParams = new URLSearchParams(searchParams)
+                newParams.set('Z', String(Z))
+                newParams.set('tab', 'integrated')
+                setSearchParams(newParams)
+              }} />
+            ) : (
+              <RussellWaveDiagram onElementClick={(Z) => {
+                const newParams = new URLSearchParams(searchParams)
+                newParams.set('Z', String(Z))
+                newParams.set('tab', 'integrated')
+                setSearchParams(newParams)
+              }} />
+            )}
+          </div>
+
+          {/* Legend card */}
+          <div className="card p-6">
+            <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
+              {t('russellChart.legend')}
+            </h3>
+            <div className="flex flex-wrap gap-4 text-sm">
+              <div className="flex items-center gap-2">
+                <div
+                  className="w-4 h-4 rounded border"
+                  style={{
+                    backgroundColor: theme === 'dark' ? RUSSELL_COLORS.generation.bg.dark : RUSSELL_COLORS.generation.bg.light,
+                    borderColor: theme === 'dark' ? RUSSELL_COLORS.generation.dark : RUSSELL_COLORS.generation.light,
+                  }}
+                />
+                <span className="text-gray-600 dark:text-gray-400">
+                  {t('russellChart.legendGeneration')}
+                </span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div
+                  className="w-4 h-4 rounded border"
+                  style={{
+                    backgroundColor: theme === 'dark' ? RUSSELL_COLORS.radiation.bg.dark : RUSSELL_COLORS.radiation.bg.light,
+                    borderColor: theme === 'dark' ? RUSSELL_COLORS.radiation.dark : RUSSELL_COLORS.radiation.light,
+                  }}
+                />
+                <span className="text-gray-600 dark:text-gray-400">
+                  {t('russellChart.legendRadiation')}
+                </span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div
+                  className="w-4 h-4 rounded border"
+                  style={{
+                    backgroundColor: theme === 'dark' ? RUSSELL_COLORS.inertGas.bg.dark : RUSSELL_COLORS.inertGas.bg.light,
+                    borderColor: theme === 'dark' ? RUSSELL_COLORS.inertGas.dark : RUSSELL_COLORS.inertGas.light,
+                  }}
+                />
+                <span className="text-gray-600 dark:text-gray-400">
+                  {t('russellChart.legendInertGas')}
+                </span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div
+                  className="w-4 h-4 rounded border-2"
+                  style={{
+                    backgroundColor: theme === 'dark' ? RUSSELL_COLORS.carbon.bg.dark : RUSSELL_COLORS.carbon.bg.light,
+                    borderColor: theme === 'dark' ? RUSSELL_COLORS.carbon.dark : RUSSELL_COLORS.carbon.light,
+                  }}
+                />
+                <span className="text-gray-600 dark:text-gray-400">
+                  {t('russellChart.legendCarbon')}
+                </span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="relative">
+                  <div
+                    className="w-4 h-4 rounded border"
+                    style={{
+                      backgroundColor: theme === 'dark' ? RUSSELL_COLORS.predicted.bg.dark : RUSSELL_COLORS.predicted.bg.light,
+                      borderColor: theme === 'dark' ? RUSSELL_COLORS.predicted.dark : RUSSELL_COLORS.predicted.light,
+                    }}
+                  />
+                  <span className="absolute -top-0.5 -right-0.5 text-[8px]" style={{ color: theme === 'dark' ? RUSSELL_COLORS.predicted.dark : RUSSELL_COLORS.predicted.light }}>
+                    ★
+                  </span>
+                </div>
+                <span className="text-gray-600 dark:text-gray-400">
+                  {t('russellChart.legendPredicted')}
+                </span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div
+                  className="w-4 h-4 rounded"
+                  style={{
+                    backgroundColor: theme === 'dark' ? RUSSELL_COLORS.hypothetical.bg.dark : RUSSELL_COLORS.hypothetical.bg.light,
+                    border: `1.5px dashed ${theme === 'dark' ? RUSSELL_COLORS.hypothetical.dark : RUSSELL_COLORS.hypothetical.light}`,
+                  }}
+                />
+                <span className="text-gray-600 dark:text-gray-400">
+                  {t('russellChart.legendHypothetical')}
+                </span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-0.5" style={{ borderTop: `2px dashed ${theme === 'dark' ? 'rgba(107, 114, 128, 0.3)' : 'rgba(156, 163, 175, 0.4)'}` }} />
+                <span className="text-gray-600 dark:text-gray-400">
+                  {t('russellChart.legendSerpentine')}
+                </span>
+              </div>
+            </div>
+            <p className="text-xs text-gray-400 dark:text-gray-500 mt-3">
+              {t('russellChart.clickToView')}
+            </p>
+          </div>
+
+          {/* Predictions card */}
+          <div className="card p-6">
+            <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
+              {t('russellChart.predictionsTitle')}
+            </h3>
+            <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
+              {t('russellChart.predictionsDescription')}
+            </p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {getPredictedElements().map((el) => (
+                <div
+                  key={el.russellName}
+                  className="flex items-start gap-3 p-3 rounded-lg"
+                  style={{
+                    backgroundColor: theme === 'dark' ? 'rgba(52, 211, 153, 0.08)' : 'rgba(5, 150, 105, 0.05)',
+                    border: `1px solid ${theme === 'dark' ? 'rgba(52, 211, 153, 0.2)' : 'rgba(5, 150, 105, 0.15)'}`,
+                  }}
+                >
+                  <span className="text-lg" style={{ color: theme === 'dark' ? RUSSELL_COLORS.predicted.dark : RUSSELL_COLORS.predicted.light }}>
+                    ★
+                  </span>
+                  <div>
+                    <div className="text-sm font-medium text-gray-800 dark:text-gray-200">
+                      {t('russellChart.predictionFormat', { russellName: el.russellName, modernName: el.modernName, symbol: el.modernSymbol })}
+                    </div>
+                    {el.note && (
+                      <div className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+                        {t(el.note)}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* About card */}
+          <div className="card p-6">
+            <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
+              {t('russellChart.aboutTitle')}
+            </h3>
+            <div className="text-sm text-gray-600 dark:text-gray-400 space-y-3">
+              <p>{t('russellChart.aboutParagraph1')}</p>
+              <p>{t('russellChart.aboutParagraph2')}</p>
+              <p>{t('russellChart.aboutParagraph3')}</p>
+            </div>
+            <div className="mt-4 p-3 bg-amber-50 dark:bg-amber-900/20 rounded-lg border border-amber-200 dark:border-amber-800/50">
+              <p className="text-xs text-amber-700 dark:text-amber-400">
+                {t('russellChart.experimentalNote')}
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Elements Tab */}
       {activeTab === 'elements' && (
         <div className="space-y-4">
@@ -2021,10 +2350,15 @@ export default function ShowElementData() {
           <div className="card p-6">
             <SortableTable
               data={filteredElements}
-              columns={elementsColumns}
+              columns={elementsColumnVis.visibleColumns}
               expandedRows={elementsExpandedRows}
               onExpandedRowsChange={setElementsExpandedRows}
-              title="Elements Table"
+              title={
+                <div className="flex items-center gap-3">
+                  <span>Elements Table</span>
+                  <ColumnToggle {...elementsColumnVis} />
+                </div>
+              }
               description="Browse and search all chemical elements. Click any row to view detailed properties in the Integrated tab."
               autoFillHeight
               autoFillHeightOffset={80}
@@ -2166,10 +2500,15 @@ export default function ShowElementData() {
           <div className="card p-6">
             <SortableTable
               data={filteredNuclides}
-              columns={nuclidesColumns}
+              columns={nuclidesColumnVis.visibleColumns}
               expandedRows={nuclidesExpandedRows}
               onExpandedRowsChange={setNuclidesExpandedRows}
-              title="Nuclides Table"
+              title={
+                <div className="flex items-center gap-3">
+                  <span>Nuclides Table</span>
+                  <ColumnToggle {...nuclidesColumnVis} />
+                </div>
+              }
               description="Browse all nuclear isotopes with binding energies, boson/fermion classifications, and stability indicators. Click any row to view detailed properties in the Integrated tab."
               autoFillHeight
               autoFillHeightOffset={80}
@@ -2353,10 +2692,15 @@ export default function ShowElementData() {
           <div className="card p-6">
             <SortableTable
               data={filteredDecays}
-              columns={decaysColumns}
+              columns={decaysColumnVis.visibleColumns}
               expandedRows={decaysExpandedRows}
               onExpandedRowsChange={handleDecaysExpandedRowsChange}
-              title="Radioactive Decays Table"
+              title={
+                <div className="flex items-center gap-3">
+                  <span>Radioactive Decays Table</span>
+                  <ColumnToggle {...decaysColumnVis} />
+                </div>
+              }
               description="Browse radioactive decay modes, half-lives, energies, and intensities for all unstable isotopes. Click any row to view the parent nuclide in the Integrated tab."
               autoFillHeight
               autoFillHeightOffset={80}

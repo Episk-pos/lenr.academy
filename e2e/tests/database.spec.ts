@@ -22,7 +22,7 @@ test.describe('Database Loading and Caching', () => {
     await waitForDatabaseReady(page);
 
     // Verify home page is visible
-    await expect(page.getByRole('heading', { name: /The Nanosoft Package/i })).toBeVisible();
+    await expect(page.getByRole('heading', { name: /LENR Academy/i })).toBeVisible();
   });
 
   test('should show database loading progress', async ({ page }) => {
@@ -83,7 +83,7 @@ test.describe('Database Loading and Caching', () => {
     await waitForDatabaseReady(page, 10000);
 
     // Verify app is functional
-    await expect(page.getByRole('heading', { name: /The Nanosoft Package/i })).toBeVisible();
+    await expect(page.getByRole('heading', { name: /LENR Academy/i })).toBeVisible();
   });
 
   test('should detect metered connections', async ({ page, context }) => {

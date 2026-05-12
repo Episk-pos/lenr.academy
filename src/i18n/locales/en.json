@@ -35,6 +35,7 @@
   "navigation": {
     "home": "Home",
     "showElementData": "Show Element Data",
+    "segreChart": "Segre Chart",
     "fusionReactions": "Fusion Reactions",
     "fissionReactions": "Fission Reactions",
     "twoToTwoReactions": "Two-To-Two Reactions",
@@ -43,8 +44,11 @@
     "tablesInDetail": "Tables in Detail",
     "allTables": "All Tables",
     "privacySettings": "Privacy Settings",
+    "help": "Help & Glossary",
     "openMenu": "Open menu",
-    "closeMenu": "Close menu"
+    "closeMenu": "Close menu",
+    "mullerResonance": "Muller Resonance",
+    "transmutations": "Transmutations"
   },
   "theme": {
     "lightMode": "Light Mode",
@@ -56,8 +60,8 @@
     "collapse": "Collapse sidebar"
   },
   "footer": {
-    "basedOnWork": "Based on work by Dr. Alexander Parkhomov",
-    "project": "Martin Fleischmann Memorial Project"
+    "basedOnWork": "Based on work by <parkhomovLink>Dr. Alexander Parkhomov</parkhomovLink>",
+    "project": "<mfmpLink>Martin Fleischmann Memorial Project</mfmpLink>"
   },
   "language": {
     "selectLanguage": "Select Language",
@@ -123,63 +127,44 @@
     "goHome": "Go to Home"
   },
   "home": {
-    "title": "The Nanosoft Package",
-    "subtitle": "Interactive tools for exploring Low Energy Nuclear Reactions (LENR) and cold fusion transmutation pathways",
-    "basedOn": "Based on the groundbreaking work of Dr. Alexander Parkhomov",
-
+    "title": "LENR Academy",
+    "subtitle": "Explore low-energy nuclear transmutation reactions, model cascade processes, visualize decay chains, and investigate resonance phenomena — all in your browser",
+    "basedOn": "Built on the <parkhomovLink>Parkhomov Tables</parkhomovLink> and the original <nanosoftLink>Nanosoft Package</nanosoftLink> by R.W. Greenyer & P.W. Power",
     "queryReactions": {
       "title": "Query Nuclear Reactions",
-      "description": "Search through thousands of exothermic fusion, fission, and two-to-two nuclear transmutation reactions",
+      "description": "Search thousands of exothermic fusion, fission, and two-to-two transmutation reactions from the Parkhomov Tables",
       "fusionReactions": "Fusion Reactions",
       "fissionReactions": "Fission Reactions",
       "twoToTwoReactions": "Two-To-Two Reactions"
     },
-
     "cascadeSimulations": {
       "title": "Cascade Simulations",
-      "description": "Model chain reactions and predict reaction products from cascading LENR processes",
+      "description": "Model chain reactions with a materials catalog, weighted branching, and Sankey flow visualization",
       "runSimulations": "Run Cascade Simulations"
     },
-
     "elementData": {
-      "title": "Element & Nuclide Data",
-      "description": "Browse comprehensive tables of nuclear and chemical properties",
-      "showElementData": "Show Element Data",
-      "tablesInDetail": "Tables in Detail"
+      "title": "Elements, Nuclides & Decay",
+      "description": "Interactive periodic table with detailed element and isotope properties, plus multi-generation decay chain visualization",
+      "showElementData": "Element & Nuclide Explorer",
+      "tablesInDetail": "Tables in Detail",
+      "allTables": "Custom SQL Queries"
     },
-
-    "advancedQueries": {
-      "title": "Advanced Queries",
-      "description": "Execute custom SQL queries across all reaction and property tables",
-      "allTables": "All Tables Query Tool"
+    "mullerResonance": {
+      "title": "Muller Resonance Explorer",
+      "description": "Investigate electron-proton wavelength resonances and predict nuclear active environments (NAE)",
+      "explore": "Explore Resonances"
     },
-
-    "parkhomovTables": {
-      "title": "About the Parkhomov Tables",
-      "intro": "This package is based on the pioneering work of Russian physicist <strong>Dr. Alexander Parkhomov</strong>, who published comprehensive tables of possible cold nuclear transmutation reactions in 2018.",
-      "analysisIntro": "Using computer analysis of 280 stable nuclides, Dr. Parkhomov identified:",
-      "fusionCount": "<strong>1,389 fusion reactions</strong> - combining lighter elements",
-      "fissionCount": "<strong>817 fission reactions</strong> - splitting heavier elements",
-      "twoToTwoCount": "<strong>516,789 two-to-two reactions</strong> - transforming pairs of nuclides",
-      "exothermicNote": "All reactions in these tables are <strong>exothermic</strong> (energy-producing) and represent thermodynamically favorable pathways for nuclear transmutation at low energies.",
-      "developers": "Developed by R.W. Greenyer and P.W. Power for the Martin Fleischmann Memorial Project"
+    "aboutData": {
+      "title": "About the Data",
+      "description": "The reaction database comes from <strong>Dr. Alexander Parkhomov's</strong> 2018 analysis of 280 stable nuclides, identifying <strong>1,389 fusion</strong>, <strong>817 fission</strong>, and <strong>516,789 two-to-two</strong> exothermic reactions — thermodynamically favorable pathways for nuclear transmutation at low energies. Originally developed as the <nanosoftLink>Nanosoft Package</nanosoftLink> by R.W. Greenyer and P.W. Power for the Martin Fleischmann Memorial Project.",
+      "visitNanosoft": "Visit Original Nanosoft Package"
     },
-
-    "originalApp": {
-      "title": "Original Application",
-      "description": "This is a modern reimplementation of the original Nanosoft Package, which was developed as a PHP web application to explore Dr. Parkhomov's nuclear transmutation tables.",
-      "findAt": "The original application and comprehensive documentation can be found at:",
-      "visitSite": "Visit nanosoft.co.nz",
-      "gratitude": "We are grateful to R. W. Greenyer and P. W. Power for their pioneering work in making this important research accessible."
-    },
-
     "openSource": {
-      "title": "Open Source Project",
-      "description": "This project is open source and licensed under the GNU Affero General Public License v3.0 (AGPL-3.0). We welcome contributions, bug reports, and feature requests from the community.",
+      "title": "Open Source",
+      "description": "Licensed under AGPL-3.0. Contributions, bug reports, and feature requests welcome.",
       "viewGitHub": "View on GitHub",
       "joinDiscussions": "Join Discussions",
-      "reportIssue": "Report Issue",
-      "requestFeature": "Request Feature"
+      "reportIssue": "Report Issue"
     }
   },
   "query": {
@@ -204,6 +189,19 @@
     "filters": "Filters",
     "results": "Results",
     "details": "Details"
+  },
+  "queryHistory": {
+    "title": "History",
+    "recent": "Recent",
+    "bookmarked": "Bookmarked",
+    "clearHistory": "Clear",
+    "noHistory": "No query history yet",
+    "loadQuery": "Load query",
+    "querySaved": "Query saved to history",
+    "filterAll": "All",
+    "filterFusion": "Fusion",
+    "filterFission": "Fission",
+    "filterTwoToTwo": "2→2"
   },
   "elements": {
     "element": "Element",
@@ -238,6 +236,7 @@
     "selected": "{{count}} selected",
     "applySelection": "Apply Selection",
     "integrated": "Integrated",
+    "russellChart": "Russell",
     "decays": "Decays",
     "period": "Period",
     "group": "Group",
@@ -345,8 +344,7 @@
     "terminalNuclides": "Terminal Nuclides",
     "stableCount": "stable",
     "radioactiveCount": "radioactive",
-    "radiationTypeLegend": "Radiation Type Legend",
-    "shellDesignations": "Shell designations: K (innermost), L, M, N (outer shells)"
+    "radiationTypeLegend": "Radiation Type Legend"
   },
   "reactions": {
     "reaction": "Reaction",
@@ -370,6 +368,11 @@
     "hideBFTypes": "Hide B/F Types",
     "showBFTypes": "Show B/F Types",
     "exportCsv": "Export CSV",
+    "copyShareLink": "Copy Link",
+    "copyShareLinkTitle": "Copy a shareable URL for this query to clipboard",
+    "linkCopied": "Link Copied!",
+    "exportJson": "Export JSON",
+    "exportPdf": "Export PDF",
     "inputs": "Inputs",
     "output": "Output",
     "outputs": "Outputs",
@@ -443,9 +446,109 @@
     "radioactive": "Radioactive",
     "querying": "Querying..."
   },
+  "histogram": {
+    "title": "Energy Distribution",
+    "description": "Histogram of reaction energy (MeV) values with statistical summary",
+    "xAxisLabel": "Energy (MeV)",
+    "yAxisLabel": "Count",
+    "reactions": "Reactions",
+    "mean": "Mean",
+    "median": "Median",
+    "min": "Min",
+    "max": "Max",
+    "stddev": "Std Dev",
+    "count": "Total",
+    "collapse": "Collapse histogram",
+    "expand": "Expand histogram"
+  },
+  "russellChart": {
+    "title": "Russell Chart — Nine-Octave Periodic Table",
+    "description": "Walter Russell's wave-based arrangement of elements into 9 octaves with a serpentine pattern, showing generation (charging) and radiation (discharging) sides with inert gases at the balance points.",
+    "generationSide": "Generation (Charging)",
+    "radiationSide": "Radiation (Discharging)",
+    "inertGasLabel": "Inert Gas (Balance Point)",
+    "octave": "Octave",
+    "legend": "Legend",
+    "legendGeneration": "Generation (Charging Side)",
+    "legendRadiation": "Radiation (Discharging Side)",
+    "legendInertGas": "Inert Gas (Balance Point)",
+    "legendCarbon": "Carbon (Maximum Compression)",
+    "legendPredicted": "Predicted by Russell",
+    "legendHypothetical": "Hypothetical Elements",
+    "legendSerpentine": "Serpentine Flow Path",
+    "clickToView": "Click any known element to view its properties and isotopes in the database",
+    "clickToViewDetails": "Click to view element details",
+    "zoomControls": "Scroll to zoom, drag to pan, double-click to zoom in",
+    "gridView": "Grid View",
+    "waveView": "Wave View",
+    "waveDescription": "Elements plotted as points on Russell's octave wave — amplitude rises through Generation (compression) to Carbon at the apex, then falls through Radiation (expansion)",
+    "amplitude": "Amplitude",
+    "octaveAxis": "Octave",
+    "carbonPeak": "Carbon (Peak)",
+    "predictionsTitle": "Russell's Predictions",
+    "predictionsDescription": "Walter Russell predicted several elements before their official discovery, demonstrating the predictive power of his wave-based periodic system.",
+    "aboutTitle": "About Russell's Periodic Table",
+    "aboutParagraph1": "Walter Russell (1871–1963) published his Nine-Octave Periodic Table in \"The Universal One\" (1926), arranging all elements into a wave-based system of octaves. Each octave has a generation (charging) side and a radiation (discharging) side, with an inert gas at the balance point — the fulcrum of the wave.",
+    "aboutParagraph2": "In Russell's cosmology, matter is created by opposing spiraling vortices of compression (generation) and expansion (radiation). Carbon sits at the amplitude — the point of maximum compression — making it the most balanced and stable element. The serpentine S-curve pattern shows how each octave reverses direction, creating a continuous wave from the lightest hypothetical substances to the heaviest known elements.",
+    "aboutParagraph3": "Russell notably predicted the existence of Deuterium (which he called \"Ethlogen\"), Tritium (\"Bebegen\"), Neptunium, and Plutonium years before their official laboratory discovery — validating his wave-based model's predictive capacity.",
+    "view3D": "3D View",
+    "view3DControls": "Drag to rotate, scroll to zoom",
+    "experimentalNote": "This visualization is based on Russell's original 1926 chart. Russell's system differs significantly from the modern periodic table — it represents his philosophical and cosmological model of matter rather than the quantum mechanical model used in contemporary chemistry.",
+    "predictionFormat": "{{russellName}} → {{modernName}} ({{symbol}})",
+    "notes": {
+      "hypotheticalFirstInertGas": "Hypothetical first inert gas — the beginning of matter",
+      "hypotheticalSecondInertGas": "Hypothetical second inert gas",
+      "hypotheticalThirdInertGas": "Hypothetical third inert gas",
+      "hypotheticalElement": "Hypothetical element in Russell's system",
+      "hypotheticalTransUranicInSystem": "Hypothetical trans-uranic element in Russell's system",
+      "hypotheticalTransUranic": "Hypothetical trans-uranic element",
+      "hypotheticalFinalInertGas": "Hypothetical final inert gas — the end of matter",
+      "ethlogenPrediction": "Russell predicted \"Ethlogen\" — identified as Deuterium (1931)",
+      "bebegenPrediction": "Russell predicted \"Bebegen\" — identified as Tritium (1934)",
+      "heliumPlacement": "Russell placed Helium as the inert gas of octave 4",
+      "carbonAmplitude": "Carbon — the amplitude of the wave; maximum compression point",
+      "neptuniumPrediction": "Russell predicted element 93 in 1926 — discovered as Neptunium in 1940",
+      "plutoniumPrediction": "Russell predicted element 94 in 1926 — discovered as Plutonium in 1941"
+    }
+  },
+  "networkGraph": {
+    "reactionNetwork": "Reaction Network",
+    "reactionNetworkDesc": "Force-directed graph showing element relationships",
+    "showNetwork": "Show Network",
+    "hideNetwork": "Hide Network",
+    "tooManyReactions": "Showing top {{count}} reactions by energy",
+    "showAll": "Show all",
+    "nodeTooltip": "{{element}}: {{count}} reactions",
+    "nodeTooltipFull": "{{element}} (Z={{Z}}): {{count}} reactions",
+    "exothermic": "Exothermic (+MeV)",
+    "endothermic": "Endothermic (-MeV)",
+    "instructions": "Drag nodes to reposition. Scroll to zoom.",
+    "graphStats": "{{nodes}} elements, {{links}} connections"
+  },
+  "segreChart": {
+    "title": "Segre Chart (N-Z Diagram)",
+    "description": "Interactive chart of nuclides plotted by proton number (Z) vs neutron number (N), color-coded by stability",
+    "sectionTitle": "Nuclide Chart (Segre Chart)",
+    "stable": "Stable (>10⁹ years)",
+    "longHalfLife": "Long half-life (>100 years)",
+    "shortHalfLife": "Short half-life (<100 years)",
+    "unknown": "Unknown half-life",
+    "magicNumbers": "Magic Numbers",
+    "valleyOfStability": "Valley of Stability",
+    "legend": "Legend",
+    "nuclideCount": "{{count}} nuclides displayed",
+    "clickToView": "Click any nuclide to view details",
+    "zoomControls": "Scroll to zoom, drag to pan, double-click to zoom in",
+    "protonNumberAxis": "Proton Number (Z)",
+    "neutronNumberAxis": "Neutron Number (N)",
+    "years": "years",
+    "zoomIn": "Zoom in",
+    "zoomOut": "Zoom out",
+    "resetZoom": "Reset zoom"
+  },
   "cascades": {
     "title": "Cascades",
-    "description": "Explore reaction cascades and pathways",
+    "description": "Description",
     "simulationEngine": "Cascade Simulation Engine",
     "startSimulation": "Start Simulation",
     "stopSimulation": "Stop Simulation",
@@ -527,7 +630,6 @@
     "noMaterialsInCategory": "No materials in this category",
     "saveCustomMaterial": "Save Custom Material",
     "name": "Name",
-    "description": "Description",
     "saveCurrentFuelMixture": "This will save your current fuel mixture ({{count}} nuclides) as a custom material.",
     "saveMaterial": "Save Material",
     "deleteCustomMaterial": "Delete this custom material?",
@@ -821,6 +923,7 @@
     "executeQuery": "Execute Query",
     "clear": "Clear",
     "queryError": "Query Error",
+    "readOnlyError": "Only read-only queries (SELECT) are allowed. Statements like DROP, CREATE, ALTER, DELETE, INSERT, and UPDATE are blocked to protect the database.",
     "queryResults": "Query Results: {{count}} rows",
     "executedIn": "Executed in {{time}}ms",
     "exportCsv": "Export CSV",
@@ -856,6 +959,7 @@
     "updateNow": "Update Now",
     "updateLater": "Later",
     "refreshNow": "Refresh Now",
+    "updating": "Updating...",
     "refreshToUpdate": "Refresh to Update",
     "viewWhatsNew": "View What's New",
     "changelog": "View Changelog",
@@ -869,6 +973,13 @@
     "databaseUpdateReady": "Database update ready (v{{version}}) - Refresh to use the new data",
     "downloadingUpdate": "Downloading database update in background...",
     "downloadUpdate": "Download Update"
+  },
+  "columnToggle": {
+    "title": "Customize visible columns",
+    "columns": "Columns",
+    "showHide": "Show/Hide Columns",
+    "resetToDefault": "Reset to default columns",
+    "reset": "Reset"
   },
   "offline": {
     "youAreOffline": "You are offline",
@@ -965,5 +1076,110 @@
     "cycleClosesLabel": "Cycle closes — catalyst regenerated",
     "catalystCenterLabel": "Catalyst (recycled)",
     "byproductLabel": "byproduct"
+  },
+  "help": {
+    "title": "Help & Glossary",
+    "subtitle": "Learn about nuclear physics terms, database fields, and try example queries to explore LENR transmutation data.",
+    "exampleQueries": "Example Queries",
+    "exampleQueriesDescription": "Click any example to load it into the query page and run it.",
+    "tryQuery": "Try this query",
+    "glossary": "Glossary",
+    "searchGlossary": "Search terms...",
+    "allCategories": "All",
+    "noResults": "No matching terms found.",
+    "glossaryCount": "{{count}} terms",
+    "category": {
+      "nuclear": "Nuclear Physics",
+      "reaction": "Reaction Types",
+      "database": "Database Fields",
+      "measurement": "Measurements & Units"
+    }
+  },
+  "mullerResonance": {
+    "title": "Muller Resonance Explorer",
+    "description": "Explore electron-proton wavelength resonances between elements using Frithjof Muller's equation L = Z × Cₑ × 2ᴺ, cross-referenced against Parkhomov's nuclear reaction database.",
+    "equationExplanation": "L = resonance wavelength, Z = atomic number, Cₑ = electron or proton Compton wavelength, N = octave number (integer). When N is an exact integer for both electron and proton Compton wavelengths, two elements share a cross-particle resonance.",
+    "threshold": "Mismatch threshold",
+    "selectElement": "Select an element to find its resonant partners",
+    "resonantPartners": "Resonant partners",
+    "exactMatches": "Exact matches (<0.01%)",
+    "withReactions": "With Parkhomov reactions",
+    "totalReactions": "Total reactions",
+    "resonancePairs": "Resonance Pairs",
+    "topGlobalPairs": "Top Resonance Pairs Across All Elements",
+    "pair": "Pair",
+    "noResonantPairs": "No resonant pairs found at this threshold.",
+    "partner": "Partner",
+    "mismatchHeader": "Mismatch",
+    "quality": "Quality",
+    "wavelength": "Wavelength",
+    "octaves": "Octaves (e/p)",
+    "twoToTwo": "2→2 Rxns",
+    "fusion": "Fusion",
+    "avgMeV": "Avg MeV",
+    "electronOctave": "Electron octave number",
+    "protonOctave": "Proton octave number",
+    "qualityLabels": {
+      "exact": "Exact",
+      "strong": "Strong",
+      "moderate": "Moderate",
+      "weak": "Weak"
+    },
+    "aboutTitle": "About This Tool",
+    "about1": "Frithjof Muller's equation L = Z × C × 2ᴺ assigns a resonance wavelength to every element at every octave. When one element's electron Compton wavelength and another element's proton Compton wavelength produce the same wavelength at exact integer octave numbers, they share a cross-particle resonance.",
+    "about2": "Example: Copper (Z=29) at electron octave N=31 and Iron (Z=26) at proton octave N=42 both produce L = 151.1 mm — a match to 0.0008%. The octave gap (42−31 = 11) is constrained by the electron/proton mass ratio (log₂(1836.15) ≈ 10.84). Only 8 element pairs out of 4,186 possible match to < 0.01%.",
+    "about3": "The reaction counts shown are from Dr. Alexander Parkhomov's tables of exothermic nuclear reactions. These counts indicate how many energetically possible reactions exist between each pair, not reaction rates or probabilities. Statistical analysis shows no significant correlation between Muller resonance and Parkhomov reaction density — the database is governed by nuclear binding energies, not wavelength resonance. This tool is exploratory.",
+    "disclaimer": "Note: Muller's equation produces elegant mathematics but lacks independent experimental verification of the resonance mechanism. This tool is presented for exploration and hypothesis generation, not as a validated predictive model.",
+    "tabs": {
+      "resonancePairs": "Resonance Pairs",
+      "naePredictions": "NAE Predictions"
+    },
+    "nae": {
+      "title": "NAE Lattice Predictions",
+      "description": "Elements ranked by electron resonance wavelength proximity to the ~1 nm Nuclear Active Environment (NAE) gap identified by Edmund Storms (JCMNS 41, 2026). Highlighted elements have resonance in the 0.5–2.0 nm range at low octaves.",
+      "element": "Element",
+      "octave": "Octave (N)",
+      "electronResonance": "e⁻ Resonance",
+      "naeQuality": "NAE Match",
+      "naeScore": "NAE Score",
+      "deuteriumOverlap": "D Overlap",
+      "deuteriumOctave": "D Octave (N)",
+      "deuteriumMismatch": "D Mismatch",
+      "phononFrequency": "Phonon Freq",
+      "knownLENR": "Known LENR",
+      "parkhomovReactions": "Parkhomov Rxns",
+      "showNAEOnly": "Show only elements with resonance in NAE range",
+      "searchPlaceholder": "Filter by element (comma delimited)...",
+      "elementsInRange": "Elements in NAE range (0.5–2.0 nm)",
+      "withDOverlap": "With D overlap (<30%)",
+      "confirmedLENR": "Known LENR-active",
+      "qualityLabels": {
+        "optimal": "Optimal",
+        "good": "Good",
+        "marginal": "Marginal",
+        "distant": "Distant"
+      },
+      "lenrLabels": {
+        "strong": "Strong",
+        "moderate": "Moderate",
+        "weak": "Weak"
+      },
+      "octaveDetail": "Octave Detail",
+      "electronOctaves": "Electron Resonance Octaves (N=1–10)",
+      "inNAERange": "In NAE?",
+      "deuteriumProtonResonance": "Deuterium Proton Resonance Overlap",
+      "hostElectron": "Host electron resonance",
+      "dProton": "D proton resonance",
+      "overlapMismatch": "Overlap mismatch",
+      "phononCalc": "Phonon frequency (v_sound / L)",
+      "lenrRefs": "LENR references",
+      "noNAEResonance": "No resonance in NAE range at low octaves.",
+      "aboutNAETitle": "About NAE Predictions",
+      "aboutNAE1": "Edmund Storms identified that cold fusion (LENR) occurs in Nuclear Active Environments (NAE) — nano-scale gaps or cracks in the metal lattice, typically ~1 nm wide (JCMNS 41, 2026). The unsolved question: WHY does the lattice gap need to be ~1 nm?",
+      "aboutNAE2": "Muller's equation L = Z × Cₑ × 2ᴺ at low octave numbers (N=3, N=4) predicts electron resonance wavelengths for each element. Palladium (Z=46) at N=3 gives 0.89 nm and at N=4 gives 1.79 nm — the NAE gap falls directly between these octaves.",
+      "aboutNAE3": "The overlap with deuterium is striking: at proton octave N=20, deuterium has a resonance wavelength of 1.39 nm — right in the NAE range. When the host metal's electron resonance AND the fuel's proton resonance both fall near 1 nm, the system may achieve dual resonance.",
+      "aboutNAE4": "The known LENR-active metals (Pd, Ni, Pt, Ti) all have electron resonance lengths that bracket the 0.9–1.8 nm range at N=3 or N=4. Elements with no LENR reports (Al, most light elements) miss this range entirely. If this correlation holds, it would be the first quantitative lattice theory for cold fusion.",
+      "naeDisclaimer": "This analysis combines Muller's resonance framework with Storms' NAE model. Both are theoretical models. Muller's equation lacks independent experimental verification of its resonance mechanism. Storms' NAE gap size is inferred from experimental conditions, not directly measured. Results are presented for exploration and hypothesis generation."
+    }
   }
 }

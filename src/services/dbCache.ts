@@ -90,7 +90,9 @@ export async function getCachedDB(version?: string): Promise<CachedDatabase | nu
 
       // Sort by downloadedAt and return most recent
       results.sort((a, b) => b.downloadedAt - a.downloadedAt);
-      return results[0];
+      const cached = results[0];
+      
+      return cached;
     }
   } catch (error) {
     console.error('Failed to get cached database:', error);

@@ -41,7 +41,7 @@ class MockWorker {
 let mockWorkerInstance: MockWorker;
 
 // Mock the Worker constructor
-vi.stubGlobal('Worker', vi.fn(function(this: any, _url: URL | string, _options?: WorkerOptions) {
+vi.stubGlobal('Worker', vi.fn(function(this: any) {
   mockWorkerInstance = new MockWorker();
   return mockWorkerInstance;
 }));

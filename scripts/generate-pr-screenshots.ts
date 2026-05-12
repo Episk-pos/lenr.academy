@@ -175,6 +175,7 @@ async function executeScenario(browser: Browser, scenario: Scenario) {
   // Set localStorage before page loads
   await context.addInitScript((theme) => {
     localStorage.setItem('lenr-analytics-consent', 'true');
+    localStorage.setItem('lenr-language-selected', 'true');
     localStorage.setItem('theme', theme);
   }, scenario.theme);
 

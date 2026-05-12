@@ -530,6 +530,7 @@ export function executeCustomQuery(db: Database, sql: string): any {
  */
 export function getAllElements(db: Database): Element[] {
   const sql = 'SELECT * FROM ElementPropertiesPlus ORDER BY Z';
+  
   const results = db.exec(sql);
   const elements: Element[] = [];
 

@@ -1,11 +1,12 @@
 import { ReactNode, useEffect, useCallback, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
-import { Menu, X, Atom, Moon, Sun, ChevronLeft, ChevronRight, Home as HomeIcon, GitMerge, Scissors, ArrowLeftRight, FlaskConical, Table, TableProperties, Shield, Workflow, RefreshCw } from 'lucide-react'
-import { useTranslation } from 'react-i18next'
+import { Menu, X, Atom, Moon, Sun, ChevronLeft, ChevronRight, Home as HomeIcon, GitMerge, Scissors, ArrowLeftRight, FlaskConical, Table, TableProperties, Shield, Workflow, RefreshCw, HelpCircle, Waves, Beaker } from 'lucide-react'
+import { useTranslation, Trans } from 'react-i18next'
 import { useTheme } from '../contexts/ThemeContext'
 import { useLayout } from '../contexts/LayoutContext'
 import { useLanguage } from '../contexts/LanguageContext'
 import DatabaseUpdateBanner from './DatabaseUpdateBanner'
+import { parkhomovLink, mfmpLink } from './ExternalLinks'
 import PrivacyBanner from './PrivacyBanner'
 import AppUpdateBanner from './AppUpdateBanner'
 import ChangelogModal from './ChangelogModal'
@@ -34,6 +35,9 @@ const navigationItems: NavigationItem[] = [
   { nameKey: 'navigation.cycleDiscovery', path: '/cycles', icon: RefreshCw },
   { nameKey: 'navigation.tablesInDetail', path: '/tables', icon: Table },
   { nameKey: 'navigation.allTables', path: '/all-tables', icon: TableProperties },
+  { nameKey: 'navigation.mullerResonance', path: '/muller-resonance', icon: Waves },
+  { nameKey: 'navigation.transmutations', path: '/transmutations', icon: Beaker },
+  { nameKey: 'navigation.help', path: '/help', icon: HelpCircle },
 ]
 
 export default function Layout({ children }: LayoutProps) {
@@ -243,7 +247,7 @@ export default function Layout({ children }: LayoutProps) {
           </nav>
           <div className="p-4 border-t dark:border-gray-700">
             <Link
-              to="/privacy"
+              to={location.pathname === '/privacy' ? '/' : '/privacy'}
               onClick={() => setSidebarOpen(false)}
               className="flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors mb-3"
             >
@@ -251,8 +255,22 @@ export default function Layout({ children }: LayoutProps) {
               <span>{t('navigation.privacySettings')}</span>
             </Link>
             <div className="text-xs text-gray-500 dark:text-gray-400 px-3">
-              <p>{t('footer.basedOnWork')}</p>
-              <p className="mt-1">{t('footer.project')}</p>
+              <p>
+                <Trans
+                  i18nKey="footer.basedOnWork"
+                  components={{
+                    parkhomovLink
+                  }}
+                />
+              </p>
+              <p className="mt-1">
+                <Trans
+                  i18nKey="footer.project"
+                  components={{
+                    mfmpLink
+                  }}
+                />
+              </p>
               <a
                 href={getGitHubReleaseUrl(versionInfo)}
                 target="_blank"
@@ -340,7 +358,7 @@ export default function Layout({ children }: LayoutProps) {
             </button>
             <LanguageSwitcher className={`${desktopSidebarCollapsed ? '' : 'w-full'} mb-2`} compact={desktopSidebarCollapsed} position="above" />
             <Link
-              to="/privacy"
+              to={location.pathname === '/privacy' ? '/' : '/privacy'}
               className={`flex items-center justify-center px-3 py-2 rounded-md text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors mb-3 overflow-hidden ${desktopSidebarCollapsed ? '' : 'w-full'}`}
               title={desktopSidebarCollapsed ? t('navigation.privacySettings') : undefined}
             >
@@ -350,8 +368,22 @@ export default function Layout({ children }: LayoutProps) {
               </div>
             </Link>
             <div className={`text-xs text-gray-500 dark:text-gray-400 transition-all duration-150 overflow-hidden ${desktopSidebarCollapsed ? 'opacity-0 max-h-0 delay-0' : 'opacity-100 max-h-96 delay-150'}`}>
-              <p>{t('footer.basedOnWork')}</p>
-              <p className="mt-1">{t('footer.project')}</p>
+              <p>
+                <Trans
+                  i18nKey="footer.basedOnWork"
+                  components={{
+                    parkhomovLink
+                  }}
+                />
+              </p>
+              <p className="mt-1">
+                <Trans
+                  i18nKey="footer.project"
+                  components={{
+                    mfmpLink
+                  }}
+                />
+              </p>
               <a
                 href={getGitHubReleaseUrl(versionInfo)}
                 target="_blank"

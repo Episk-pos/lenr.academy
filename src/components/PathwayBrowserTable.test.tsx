@@ -12,8 +12,10 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen, within, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import PathwayBrowserTable from './PathwayBrowserTable';
 import type { PathwayAnalysis } from '../services/pathwayAnalyzer';
+import { mockReactI18next } from '../test-utils/i18nMock';
+
+vi.mock('react-i18next', () => mockReactI18next);
 
 // Mock VirtualizedList to simplify testing
 vi.mock('./VirtualizedList', () => ({
@@ -27,6 +29,8 @@ vi.mock('./VirtualizedList', () => ({
     </div>
   ),
 }));
+
+import PathwayBrowserTable from './PathwayBrowserTable';
 
 // Sample pathway data for testing
 const createMockPathway = (overrides: Partial<PathwayAnalysis> = {}): PathwayAnalysis => ({

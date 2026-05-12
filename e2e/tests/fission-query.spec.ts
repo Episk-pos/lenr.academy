@@ -112,7 +112,7 @@ test.describe('Fission Query Page', () => {
     await waitForReactionResults(page, 'fission');
 
     // Find export button and scroll to it
-    const exportButton = page.getByRole('button', { name: /export|download/i });
+    const exportButton = page.getByRole('button', { name: /Export CSV/i });
     await exportButton.scrollIntoViewIfNeeded();
 
     if (await exportButton.isVisible()) {

@@ -20,6 +20,7 @@
     "upload": "アップロード",
     "delete": "削除",
     "edit": "編集",
+    "selected": "選択済み",
     "view": "表示",
     "back": "戻る",
     "next": "次へ",
@@ -34,6 +35,7 @@
   "navigation": {
     "home": "ホーム",
     "showElementData": "元素データを表示",
+    "segreChart": "Segre Chart",
     "fusionReactions": "核融合反応",
     "fissionReactions": "核分裂反応",
     "twoToTwoReactions": "2対2反応",
@@ -43,7 +45,10 @@
     "allTables": "すべてのテーブル",
     "privacySettings": "プライバシー設定",
     "openMenu": "メニューを開く",
-    "closeMenu": "メニューを閉じる"
+    "closeMenu": "メニューを閉じる",
+    "help": "ヘルプ＆用語集",
+    "mullerResonance": "ミュラー共鳴",
+    "transmutations": "核種変換"
   },
   "theme": {
     "lightMode": "ライトモード",
@@ -55,8 +60,8 @@
     "collapse": "サイドバーを折りたたむ"
   },
   "footer": {
-    "basedOnWork": "アレクサンダー・パルホモフ博士の研究に基づく",
-    "project": "マーティン・フライシュマン記念プロジェクト"
+    "basedOnWork": "<parkhomovLink>アレクサンダー・パルホモフ博士</parkhomovLink>の研究に基づく",
+    "project": "<mfmpLink>マーティン・フライシュマン記念プロジェクト</mfmpLink>"
   },
   "language": {
     "selectLanguage": "言語を選択",
@@ -122,56 +127,44 @@
     "goHome": "ホームに戻る"
   },
   "home": {
-    "title": "Nanosoftパッケージ",
-    "subtitle": "低エネルギー核反応（LENR）と常温核融合変換経路を探索するためのインタラクティブツール",
-    "basedOn": "アレクサンダー・パルホモフ博士の画期的な研究に基づく",
+    "title": "LENR Academy",
+    "subtitle": "低エネルギー核変換反応の探索、カスケードプロセスのモデル化、崩壊連鎖の可視化、共鳴現象の調査 — すべてブラウザ上で",
+    "basedOn": "<parkhomovLink>パルホモフ・テーブル</parkhomovLink>とR.W. Greenyer & P.W. Powerによるオリジナルの<nanosoftLink>Nanosoftパッケージ</nanosoftLink>に基づいて構築",
     "queryReactions": {
       "title": "核反応を検索",
-      "description": "数千の発熱核融合反応、核分裂反応、2対2核変換反応を検索",
+      "description": "パルホモフ・テーブルから数千の発熱核融合、核分裂、2対2変換反応を検索",
       "fusionReactions": "核融合反応",
       "fissionReactions": "核分裂反応",
       "twoToTwoReactions": "2対2反応"
     },
     "cascadeSimulations": {
       "title": "カスケードシミュレーション",
-      "description": "連鎖反応をモデル化し、カスケードLENRプロセスからの反応生成物を予測",
+      "description": "材料カタログ、重み付き分岐、サンキーフロー可視化を使用して連鎖反応をモデル化",
       "runSimulations": "カスケードシミュレーションを実行"
     },
     "elementData": {
-      "title": "元素・核種データ",
-      "description": "核特性と化学特性の包括的なテーブルを閲覧",
-      "showElementData": "元素データを表示",
-      "tablesInDetail": "詳細テーブル"
+      "title": "元素・核種・崩壊",
+      "description": "詳細な元素・同位体特性を備えたインタラクティブ周期表と多世代崩壊連鎖の可視化",
+      "showElementData": "元素・核種エクスプローラー",
+      "tablesInDetail": "詳細テーブル",
+      "allTables": "カスタムSQLクエリ"
     },
-    "advancedQueries": {
-      "title": "高度なクエリ",
-      "description": "すべての反応および特性テーブルにカスタムSQLクエリを実行",
-      "allTables": "全テーブルクエリツール"
+    "mullerResonance": {
+      "title": "ミュラー共鳴エクスプローラー",
+      "description": "電子-陽子波長共鳴を調査し、核活性環境（NAE）を予測",
+      "explore": "共鳴を探索"
     },
-    "parkhomovTables": {
-      "title": "パルホモフ・テーブルについて",
-      "intro": "このパッケージは、2018年に常温核変換反応の可能性に関する包括的なテーブルを発表したロシアの物理学者<strong>アレクサンダー・パルホモフ博士</strong>の先駆的な研究に基づいています。",
-      "analysisIntro": "280の安定核種のコンピュータ解析を用いて、パルホモフ博士は以下を特定しました：",
-      "fusionCount": "<strong>1,389の核融合反応</strong> - より軽い元素の結合",
-      "fissionCount": "<strong>817の核分裂反応</strong> - より重い元素の分裂",
-      "twoToTwoCount": "<strong>516,789の2対2反応</strong> - 核種ペアの変換",
-      "exothermicNote": "これらのテーブルのすべての反応は<strong>発熱反応</strong>（エネルギー生成）であり、低エネルギーでの核変換の熱力学的に有利な経路を表しています。",
-      "developers": "マーティン・フライシュマン記念プロジェクトのためにR.W. GreenyerとP.W. Powerが開発"
-    },
-    "originalApp": {
-      "title": "オリジナルアプリケーション",
-      "description": "これは、パルホモフ博士の核変換テーブルを探索するためにPHPウェブアプリケーションとして開発されたオリジナルのNanosoftパッケージの現代的な再実装です。",
-      "findAt": "オリジナルのアプリケーションと包括的なドキュメントは以下で見つけることができます：",
-      "visitSite": "nanosoft.co.nzを訪問",
-      "gratitude": "この重要な研究をアクセス可能にする先駆的な取り組みに対して、R. W. GreenyerとP. W. Powerに感謝いたします。"
+    "aboutData": {
+      "title": "データについて",
+      "description": "反応データベースは、<strong>アレクサンダー・パルホモフ博士</strong>による2018年の280安定核種の解析に基づき、<strong>1,389の核融合</strong>、<strong>817の核分裂</strong>、<strong>516,789の2対2</strong>発熱反応を特定しています — 低エネルギーでの核変換の熱力学的に有利な経路です。もとはマーティン・フライシュマン記念プロジェクトのためにR.W. GreenyerとP.W. Powerが<nanosoftLink>Nanosoftパッケージ</nanosoftLink>として開発しました。",
+      "visitNanosoft": "オリジナルのNanosoftパッケージを訪問"
     },
     "openSource": {
-      "title": "オープンソースプロジェクト",
-      "description": "このプロジェクトはオープンソースであり、GNU Affero General Public License v3.0（AGPL-3.0）の下でライセンスされています。コミュニティからの貢献、バグ報告、機能リクエストを歓迎します。",
+      "title": "オープンソース",
+      "description": "AGPL-3.0ライセンス。貢献、バグ報告、機能リクエストを歓迎します。",
       "viewGitHub": "GitHubで表示",
       "joinDiscussions": "ディスカッションに参加",
-      "reportIssue": "問題を報告",
-      "requestFeature": "機能をリクエスト"
+      "reportIssue": "問題を報告"
     }
   },
   "query": {
@@ -196,6 +189,19 @@
     "filters": "フィルター",
     "results": "結果",
     "details": "詳細"
+  },
+  "queryHistory": {
+    "title": "履歴",
+    "recent": "最近",
+    "bookmarked": "ブックマーク",
+    "clearHistory": "クリア",
+    "noHistory": "クエリ履歴はまだありません",
+    "loadQuery": "クエリを読み込む",
+    "querySaved": "クエリが履歴に保存されました",
+    "filterAll": "すべて",
+    "filterFusion": "核融合",
+    "filterFission": "核分裂",
+    "filterTwoToTwo": "2→2"
   },
   "elements": {
     "element": "元素",
@@ -230,6 +236,7 @@
     "selected": "{{count}}個選択",
     "applySelection": "選択を適用",
     "integrated": "統合",
+    "russellChart": "Russell",
     "decays": "崩壊",
     "period": "周期",
     "group": "族",
@@ -361,6 +368,11 @@
     "hideBFTypes": "B/Fタイプを非表示",
     "showBFTypes": "B/Fタイプを表示",
     "exportCsv": "CSVエクスポート",
+    "copyShareLink": "共有リンクをコピー",
+    "copyShareLinkTitle": "このクエリの共有URLをクリップボードにコピー",
+    "linkCopied": "リンクをコピーしました!",
+    "exportJson": "JSONエクスポート",
+    "exportPdf": "PDFエクスポート",
     "inputs": "入力",
     "output": "出力",
     "outputs": "出力",
@@ -434,9 +446,109 @@
     "radioactive": "放射性",
     "querying": "クエリ実行中..."
   },
+  "histogram": {
+    "title": "エネルギー分布",
+    "description": "反応エネルギー（MeV）値のヒストグラムと統計サマリー",
+    "xAxisLabel": "エネルギー（MeV）",
+    "yAxisLabel": "件数",
+    "reactions": "反応数",
+    "mean": "平均",
+    "median": "中央値",
+    "min": "最小",
+    "max": "最大",
+    "stddev": "標準偏差",
+    "count": "合計",
+    "collapse": "ヒストグラムを折りたたむ",
+    "expand": "ヒストグラムを展開"
+  },
+  "russellChart": {
+    "title": "ラッセル図表 — 九オクターブ周期表",
+    "description": "ウォルター・ラッセルの波動に基づく元素の9オクターブ配列。蛇行パターンで、不活性ガスを平衡点として生成（充電）側と放射（放電）側を示します。",
+    "generationSide": "生成（充電）",
+    "radiationSide": "放射（放電）",
+    "inertGasLabel": "不活性ガス（平衡点）",
+    "octave": "オクターブ",
+    "legend": "凡例",
+    "legendGeneration": "生成（充電側）",
+    "legendRadiation": "放射（放電側）",
+    "legendInertGas": "不活性ガス（平衡点）",
+    "legendCarbon": "炭素（最大圧縮）",
+    "legendPredicted": "ラッセルが予測",
+    "legendHypothetical": "仮説的元素",
+    "legendSerpentine": "蛇行フローパス",
+    "clickToView": "既知の元素をクリックすると、データベース内のプロパティと同位体が表示されます",
+    "clickToViewDetails": "クリックで元素詳細を表示",
+    "zoomControls": "スクロールでズーム、ドラッグでパン、ダブルクリックで拡大",
+    "gridView": "グリッド表示",
+    "waveView": "波形表示",
+    "waveDescription": "ラッセルのオクターブ波上の元素点 — 振幅は生成（圧縮）を通じて頂点の炭素まで上昇し、放射（膨張）を通じて下降します",
+    "amplitude": "振幅",
+    "octaveAxis": "オクターブ",
+    "carbonPeak": "炭素（頂点）",
+    "predictionsTitle": "ラッセルの予測",
+    "predictionsDescription": "ウォルター・ラッセルは公式発見前にいくつかの元素を予測し、波動ベースの周期系の予測力を実証しました。",
+    "aboutTitle": "ラッセルの周期表について",
+    "aboutParagraph1": "ウォルター・ラッセル（1871–1963）は「The Universal One」（1926年）で九オクターブ周期表を発表し、すべての元素を波動に基づくオクターブシステムに配列しました。各オクターブには生成（充電）側と放射（放電）側があり、不活性ガスが平衡点、すなわち波の支点に位置します。",
+    "aboutParagraph2": "ラッセルの宇宙論では、物質は圧縮（生成）と膨張（放射）の対向する渦巻きの螺旋によって生成されます。炭素は振幅に位置し、最大圧縮点であるため、最もバランスが取れ安定した元素です。",
+    "aboutParagraph3": "ラッセルは特に重水素（「エスロゲン」と呼んだ）、トリチウム（「ベベゲン」）、ネプツニウム、プルトニウムの存在を公式の実験室発見の何年も前に予測しました。",
+    "view3D": "3Dビュー",
+    "view3DControls": "ドラッグで回転、スクロールでズーム",
+    "experimentalNote": "この視覚化はラッセルの1926年の原図に基づいています。ラッセルのシステムは現代の周期表とは大きく異なり、現代化学で使用される量子力学モデルではなく、彼の哲学的・宇宙論的な物質モデルを表しています。",
+    "predictionFormat": "{{russellName}} → {{modernName}} ({{symbol}})",
+    "notes": {
+      "hypotheticalFirstInertGas": "仮説上の最初の不活性ガス — 物質の始まり",
+      "hypotheticalSecondInertGas": "仮説上の2番目の不活性ガス",
+      "hypotheticalThirdInertGas": "仮説上の3番目の不活性ガス",
+      "hypotheticalElement": "ラッセルの体系における仮説上の元素",
+      "hypotheticalTransUranicInSystem": "ラッセルの体系における仮説上の超ウラン元素",
+      "hypotheticalTransUranic": "仮説上の超ウラン元素",
+      "hypotheticalFinalInertGas": "仮説上の最後の不活性ガス — 物質の終わり",
+      "ethlogenPrediction": "ラッセルは「エスローゲン」を予測 — 重水素として同定（1931年）",
+      "bebegenPrediction": "ラッセルは「ベベゲン」を予測 — 三重水素として同定（1934年）",
+      "heliumPlacement": "ラッセルはヘリウムをオクターブ4の不活性ガスとして配置",
+      "carbonAmplitude": "炭素 — 波の振幅；最大圧縮点",
+      "neptuniumPrediction": "ラッセルは1926年に元素93を予測 — 1940年にネプツニウムとして発見",
+      "plutoniumPrediction": "ラッセルは1926年に元素94を予測 — 1941年にプルトニウムとして発見"
+    }
+  },
+  "networkGraph": {
+    "reactionNetwork": "反応ネットワーク",
+    "reactionNetworkDesc": "元素関係を示す力指向グラフ",
+    "showNetwork": "ネットワーク表示",
+    "hideNetwork": "ネットワーク非表示",
+    "tooManyReactions": "エネルギー上位{{count}}反応を表示",
+    "showAll": "すべて表示",
+    "nodeTooltip": "{{element}}: {{count}}反応",
+    "nodeTooltipFull": "{{element}} (Z={{Z}}): {{count}}反応",
+    "exothermic": "発熱反応 (+MeV)",
+    "endothermic": "吸熱反応 (-MeV)",
+    "instructions": "ノードをドラッグして移動。スクロールでズーム。",
+    "graphStats": "{{nodes}}元素、{{links}}接続"
+  },
+  "segreChart": {
+    "title": "Segre Chart (N-Z Diagram)",
+    "description": "Interactive chart of nuclides plotted by proton number (Z) vs neutron number (N), color-coded by stability",
+    "sectionTitle": "核種図（セグレ図）",
+    "stable": "Stable (>10⁹ years)",
+    "longHalfLife": "Long half-life (>100 years)",
+    "shortHalfLife": "Short half-life (<100 years)",
+    "unknown": "Unknown half-life",
+    "magicNumbers": "Magic Numbers",
+    "valleyOfStability": "Valley of Stability",
+    "legend": "Legend",
+    "nuclideCount": "{{count}} nuclides displayed",
+    "clickToView": "Click any nuclide to view details",
+    "zoomControls": "Scroll to zoom, drag to pan, double-click to zoom in",
+    "protonNumberAxis": "Proton Number (Z)",
+    "neutronNumberAxis": "Neutron Number (N)",
+    "years": "年",
+    "zoomIn": "拡大",
+    "zoomOut": "縮小",
+    "resetZoom": "ズームリセット"
+  },
   "cascades": {
     "title": "カスケード",
-    "description": "反応カスケードと経路を探索",
+    "description": "説明",
     "simulationEngine": "カスケードシミュレーションエンジン",
     "startSimulation": "シミュレーション開始",
     "stopSimulation": "シミュレーション停止",
@@ -518,7 +630,6 @@
     "noMaterialsInCategory": "このカテゴリには材料がありません",
     "saveCustomMaterial": "カスタム材料を保存",
     "name": "名前",
-    "description": "説明",
     "saveCurrentFuelMixture": "現在の燃料混合物（{{count}}核種）をカスタム材料として保存します。",
     "saveMaterial": "材料を保存",
     "deleteCustomMaterial": "このカスタム材料を削除しますか？",
@@ -812,6 +923,7 @@
     "executeQuery": "クエリを実行",
     "clear": "クリア",
     "queryError": "クエリエラー",
+    "readOnlyError": "読み取り専用クエリ（SELECT）のみ許可されています。DROP、CREATE、ALTER、DELETE、INSERT、UPDATE等の命令はデータベース保護のためブロックされています。",
     "queryResults": "クエリ結果: {{count}}行",
     "executedIn": "実行時間: {{time}}ms",
     "exportCsv": "CSVエクスポート",
@@ -859,7 +971,15 @@
     "databaseUpdateAvailable": "データベースの更新が利用可能です：v{{current}} → v{{available}}",
     "databaseUpdateReady": "データベースの更新が準備完了 (v{{version}}) - 新しいデータを使用するには更新してください",
     "downloadingUpdate": "バックグラウンドで更新をダウンロード中...",
-    "downloadUpdate": "更新をダウンロード"
+    "downloadUpdate": "更新をダウンロード",
+    "updating": "更新中..."
+  },
+  "columnToggle": {
+    "title": "表示列をカスタマイズ",
+    "columns": "列",
+    "showHide": "列の表示/非表示",
+    "resetToDefault": "デフォルト列にリセット",
+    "reset": "リセット"
   },
   "offline": {
     "youAreOffline": "オフラインです",
@@ -940,5 +1060,110 @@
     "legendFlowDashed": "Regeneration (catalyst returns)",
     "catalystCenterLabel": "Catalyst (recycled)",
     "byproductLabel": "byproduct"
+  },
+  "help": {
+    "title": "ヘルプ＆用語集",
+    "subtitle": "核物理学の用語、データベースフィールドについて学び、LENR核変換データを探索するためのサンプルクエリを試してください。",
+    "exampleQueries": "クエリ例",
+    "exampleQueriesDescription": "任意の例をクリックしてクエリページに読み込み、実行します。",
+    "tryQuery": "このクエリを試す",
+    "glossary": "用語集",
+    "searchGlossary": "用語を検索...",
+    "allCategories": "すべて",
+    "noResults": "一致する用語が見つかりません。",
+    "glossaryCount": "{{count}}件の用語",
+    "category": {
+      "nuclear": "核物理学",
+      "reaction": "反応タイプ",
+      "database": "データベースフィールド",
+      "measurement": "測定と単位"
+    }
+  },
+  "mullerResonance": {
+    "title": "ミュラー共鳴エクスプローラー",
+    "description": "フリッチョフ・ミュラーの方程式 L = Z × Cₑ × 2ᴺ を使用して元素間の電子-陽子波長共鳴を探索し、パルホモフの核反応データベースと相互参照します。",
+    "equationExplanation": "L = 共鳴波長、Z = 原子番号、Cₑ = 電子または陽子のコンプトン波長、N = オクターブ番号（整数）。Nが両方のコンプトン波長で正確な整数の場合、2つの元素は粒子間共鳴を共有します。",
+    "threshold": "不一致しきい値",
+    "selectElement": "共鳴パートナーを見つけるために元素を選択してください",
+    "resonantPartners": "共鳴パートナー",
+    "exactMatches": "完全一致 (<0.01%)",
+    "withReactions": "パルホモフ反応あり",
+    "totalReactions": "総反応数",
+    "resonancePairs": "共鳴ペア",
+    "topGlobalPairs": "全元素のトップ共鳴ペア",
+    "pair": "ペア",
+    "noResonantPairs": "このしきい値では共鳴ペアが見つかりませんでした。",
+    "partner": "パートナー",
+    "mismatchHeader": "不一致",
+    "quality": "品質",
+    "wavelength": "波長",
+    "octaves": "オクターブ (e/p)",
+    "twoToTwo": "2→2反応",
+    "fusion": "融合",
+    "avgMeV": "平均MeV",
+    "electronOctave": "電子オクターブ番号",
+    "protonOctave": "陽子オクターブ番号",
+    "qualityLabels": {
+      "exact": "完全",
+      "strong": "強い",
+      "moderate": "中程度",
+      "weak": "弱い"
+    },
+    "aboutTitle": "このツールについて",
+    "about1": "フリッチョフ・ミュラーの方程式 L = Z × C × 2ᴺ は、各オクターブの各元素に共鳴波長を割り当てます。",
+    "about2": "例：銅（Z=29）の電子オクターブN=31と鉄（Z=26）の陽子オクターブN=42は共にL = 151.1 mmを生成します — 0.0008%の一致。",
+    "about3": "表示される反応数は、パルホモフ博士の発熱核反応表からのものです。統計分析では、ミュラー共鳴とパルホモフ反応密度の間に有意な相関は示されていません。このツールは探索的です。",
+    "disclaimer": "注意：ミュラーの方程式はエレガントな数学を生成しますが、共鳴メカニズムの独立した実験的検証がありません。このツールは探索と仮説生成のために提示されています。",
+    "tabs": {
+      "resonancePairs": "共鳴ペア",
+      "naePredictions": "NAE予測"
+    },
+    "nae": {
+      "title": "NAE格子予測",
+      "description": "Edmund Storms (JCMNS 41, 2026) が特定した ~1 nm の核活性環境 (NAE) ギャップに対する電子共鳴波長の近接度で元素をランク付け。ハイライトされた元素は低いオクターブで 0.5–2.0 nm 範囲に共鳴を持ちます。",
+      "element": "元素",
+      "octave": "オクターブ (N)",
+      "electronResonance": "e⁻共鳴",
+      "naeQuality": "NAE一致",
+      "naeScore": "NAEスコア",
+      "deuteriumOverlap": "D重複",
+      "deuteriumOctave": "Dオクターブ (N)",
+      "deuteriumMismatch": "D不一致",
+      "phononFrequency": "フォノン周波数",
+      "knownLENR": "既知のLENR",
+      "parkhomovReactions": "パルホモフ反応",
+      "showNAEOnly": "NAE範囲に共鳴を持つ元素のみ表示",
+      "searchPlaceholder": "元素で絞り込み（カンマ区切り）...",
+      "elementsInRange": "NAE範囲内の元素 (0.5–2.0 nm)",
+      "withDOverlap": "D重複あり (<30%)",
+      "confirmedLENR": "既知のLENR活性",
+      "qualityLabels": {
+        "optimal": "最適",
+        "good": "良好",
+        "marginal": "限界",
+        "distant": "遠隔"
+      },
+      "lenrLabels": {
+        "strong": "強い",
+        "moderate": "中程度",
+        "weak": "弱い"
+      },
+      "octaveDetail": "オクターブ詳細",
+      "electronOctaves": "電子共鳴オクターブ (N=1–10)",
+      "inNAERange": "NAE内？",
+      "deuteriumProtonResonance": "重水素プロトン共鳴重複",
+      "hostElectron": "ホスト電子共鳴",
+      "dProton": "Dプロトン共鳴",
+      "overlapMismatch": "重複不一致",
+      "phononCalc": "フォノン周波数 (v_音速 / L)",
+      "lenrRefs": "LENR参考文献",
+      "noNAEResonance": "低いオクターブでNAE範囲に共鳴なし。",
+      "aboutNAETitle": "NAE予測について",
+      "aboutNAE1": "Edmund Stormsは、常温核融合（LENR）が核活性環境（NAE）で発生することを特定しました — 金属格子のナノスケールのギャップまたは亀裂、通常 ~1 nm幅（JCMNS 41, 2026）。",
+      "aboutNAE2": "ミュラーの方程式 L = Z × Cₑ × 2ᴺ は低いオクターブ（N=3, N=4）で各元素の電子共鳴波長を予測します。パラジウム（Z=46）はN=3で0.89 nm、N=4で1.79 nmです。",
+      "aboutNAE3": "重水素との重複は顕著です：プロトンオクターブN=20で、重水素の共鳴波長は1.39 nm — NAE範囲内です。",
+      "aboutNAE4": "既知のLENR活性金属（Pd, Ni, Pt, Ti）はすべてN=3またはN=4で0.9–1.8 nm範囲の電子共鳴長を持ちます。",
+      "naeDisclaimer": "この分析はミュラーの共鳴フレームワークとStormsのNAEモデルを組み合わせています。両方とも理論モデルです。結果は探索と仮説生成のために提示されています。"
+    }
   }
 }

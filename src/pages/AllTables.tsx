@@ -23,8 +23,33 @@ export default function AllTables() {
     'SELECT E, COUNT(*) as ReactionCount FROM FusionAll GROUP BY E ORDER BY ReactionCount DESC',
   ]
 
+  const isReadOnlyQuery = (sql: string): boolean => {
+    // Normalize: strip comments and collapse whitespace
+    const normalized = sql
+      .replace(/--[^\n]*/g, '')
+      .replace(/\/\*[\s\S]*?\*\//g, '')
+      .trim()
+
+    // Allowlist: each statement must start with SELECT, WITH, or EXPLAIN
+    const allowedPattern = /^\s*(SELECT|WITH|EXPLAIN)\b/i
+    // Blocklist: catch destructive keywords anywhere in statement (handles WITH...DELETE bypass)
+    const destructivePattern = /\b(DROP|CREATE|ALTER|DELETE|INSERT|UPDATE|REPLACE|TRUNCATE|ATTACH|DETACH|REINDEX|VACUUM|PRAGMA)\b/i
+    // Split on semicolons and validate each statement
+    const statements = normalized.split(';').filter(s => s.trim().length > 0)
+    return statements.every(stmt => {
+      const trimmed = stmt.trim()
+      return allowedPattern.test(trimmed) && !destructivePattern.test(trimmed)
+    })
+  }
+
   const executeQuery = () => {
     if (!db || !sqlQuery.trim()) return
+
+    if (!isReadOnlyQuery(sqlQuery)) {
+      setError(t('allTables.readOnlyError'))
+      setResults(null)
+      return
+    }
 
     setIsExecuting(true)
     setError(null)

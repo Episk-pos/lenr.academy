@@ -3,6 +3,7 @@ import {
   getCachedDB,
   setCachedDB,
   clearOldVersions,
+  clearAllCache,
   fetchMetadata,
   requestPersistentStorage,
   type CachedDatabase,
@@ -27,8 +28,26 @@ async function downloadDatabaseWithProgress(
   onProgress?: ProgressCallback
 ): Promise<Uint8Array> {
   const response = await fetch('/parkhomov.db');
+  
+  // Check content-type first to detect HTML error pages
+  const contentType = response.headers.get('content-type');
+  if (contentType && contentType.includes('text/html')) {
+    
+    if (response.status === 404) {
+      throw new Error(
+        `Database file not found. The parkhomov.db file is missing from the public directory. ` +
+        `Please download it by running: npm run db:download ` +
+        `Or download from https://db.lenr.academy/latest/parkhomov.db and place it in the public/ directory.`
+      );
+    }
+    throw new Error(
+      `Server returned HTML instead of database file (status: ${response.status}). ` +
+      `This usually means the database file is not found or the server is returning an error page.`
+    );
+  }
+  
   if (!response.ok) {
-    throw new Error(`Failed to load database: ${response.statusText}`);
+    throw new Error(`Failed to load database: ${response.status} ${response.statusText}`);
   }
 
   const contentLength = response.headers.get('Content-Length');
@@ -112,30 +131,65 @@ export async function initDatabase(
     if (cachedDB) {
       console.log(`💾 Found cached database version: ${cachedDB.version}`);
 
-      // Load cached database immediately to make app functional
-      db = new SQL.Database(cachedDB.data);
-      currentVersion = cachedDB.version;
-      console.log('✅ Loaded database from cache');
+      // Validate cached database before using it
+      // SQLite databases should be > 100MB and start with SQLite format string
+      const MIN_DB_SIZE = 100 * 1024 * 1024; // 100MB
+      const SQLITE_MAGIC = 'SQLite format 3';
+      const isSizeValid = cachedDB.data.length > MIN_DB_SIZE;
+      const firstBytes = new TextDecoder().decode(cachedDB.data.slice(0, 16));
+      const hasValidMagic = firstBytes.startsWith(SQLITE_MAGIC);
 
-      // Background: Try to check for updates (don't block if offline)
-      try {
-        const metadata = await fetchMetadata();
-        console.log(`📡 Server database version: ${metadata.version}`);
-
-        // Check if update is available
-        if (metadata.version !== cachedDB.version) {
-          console.log(`🔄 Update available: ${cachedDB.version} → ${metadata.version}`);
-          if (onUpdateAvailable) {
-            onUpdateAvailable(metadata.version);
-          }
-          // Background update will be handled by DatabaseContext
+      if (!isSizeValid || !hasValidMagic) {
+        console.warn('⚠️ Cached database appears corrupted (invalid size or format), clearing cache and re-downloading...');
+        
+        // Clear corrupted cache
+        try {
+          await clearAllCache();
+        } catch (clearError) {
+          console.warn('Failed to clear cache:', clearError);
         }
-      } catch (metadataError) {
-        // Offline or network error - that's OK, we already have cached database
-        console.log('ℹ️ Could not check for updates (offline?), using cached version');
-      }
+        
+        // Fall through to download fresh database
+        cachedDB = null;
+      } else {
+        // Load cached database immediately to make app functional
+        try {
+          db = new SQL.Database(cachedDB.data);
+          currentVersion = cachedDB.version;
+          console.log('✅ Loaded database from cache');
+          
+          // Background: Try to check for updates (don't block if offline)
+          try {
+            const metadata = await fetchMetadata();
+            console.log(`📡 Server database version: ${metadata.version}`);
 
-      return db;
+            // Check if update is available
+            if (metadata.version !== cachedDB.version) {
+              console.log(`🔄 Update available: ${cachedDB.version} → ${metadata.version}`);
+              if (onUpdateAvailable) {
+                onUpdateAvailable(metadata.version);
+              }
+              // Background update will be handled by DatabaseContext
+            }
+          } catch (metadataError) {
+            // Offline or network error - that's OK, we already have cached database
+            console.log('ℹ️ Could not check for updates (offline?), using cached version');
+          }
+
+          return db;
+        } catch (createError) {
+          console.warn('⚠️ Failed to load cached database, clearing cache and re-downloading...');
+          // Clear corrupted cache
+          try {
+            await clearAllCache();
+          } catch (clearError) {
+            console.warn('Failed to clear cache:', clearError);
+          }
+          
+          // Fall through to download fresh database
+          cachedDB = null;
+        }
+      }
     }
   } catch (cacheError) {
     console.warn('Failed to check cache:', cacheError);
@@ -156,6 +210,21 @@ export async function initDatabase(
   try {
     console.log('⬇️ Downloading Parkhomov database...');
     const data = await downloadDatabaseWithProgress(onProgress);
+
+    // Validate downloaded data before using it
+    const MIN_DB_SIZE = 100 * 1024 * 1024; // 100MB
+    const SQLITE_MAGIC = 'SQLite format 3';
+    const firstBytes = new TextDecoder().decode(data.slice(0, 16));
+    const isSizeValid = data.length > MIN_DB_SIZE;
+    const hasValidMagic = firstBytes.startsWith(SQLITE_MAGIC);
+    
+    if (!isSizeValid || !hasValidMagic) {
+      throw new Error(
+        `Downloaded file is not a valid database. Expected SQLite database (>100MB), but received ${(data.length / 1024).toFixed(1)}KB. ` +
+        `This usually means the server returned an error page instead of the database file. ` +
+        `Please check that /parkhomov.db is accessible and try again.`
+      );
+    }
 
     // Load into SQL.js
     db = new SQL.Database(data);

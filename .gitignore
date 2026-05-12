@@ -37,6 +37,8 @@ dist-ssr
 .claude/
 
 docs/screenshots/pr/
+screenshots-local/
+screenshots-staging/
 .aider*
 
 # SpecStory test artifacts

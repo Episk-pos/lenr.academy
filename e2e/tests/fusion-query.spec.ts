@@ -212,7 +212,7 @@ test.describe('Fusion Query Page', () => {
     );
 
     // Find and click export button
-    const exportButton = page.getByRole('button', { name: /export|download/i });
+    const exportButton = page.getByRole('button', { name: /Export CSV/i });
 
     if (await exportButton.isVisible()) {
       // Set up download listener

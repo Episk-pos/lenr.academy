@@ -154,10 +154,14 @@ export async function copyErrorReportToClipboard(errorContext: ErrorContext): Pr
     document.body.appendChild(textarea);
     textarea.select();
 
+    let success = false;
     try {
-      document.execCommand('copy');
+      success = document.execCommand('copy');
     } finally {
       document.body.removeChild(textarea);
+    }
+    if (!success) {
+      throw new Error('execCommand copy failed');
     }
   }
 }

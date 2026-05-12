@@ -162,7 +162,7 @@ test.describe('Two-to-Two Query Page', () => {
     expect(count).toBeLessThanOrEqual(50);
 
     // Should show total count message
-    await expect(page.getByText(/Showing/i)).toBeVisible();
+    await expect(page.getByRole('heading', { name: /Showing/i })).toBeVisible();
   });
 
   test('should export two-to-two results', async ({ page }) => {
@@ -170,7 +170,7 @@ test.describe('Two-to-Two Query Page', () => {
     await waitForReactionResults(page, 'twotwo');
 
     // Find export button
-    const exportButton = page.getByRole('button', { name: /export|CSV/i });
+    const exportButton = page.getByRole('button', { name: /Export CSV/i });
 
     if (await exportButton.isVisible()) {
       const downloadPromise = page.waitForEvent('download');
@@ -190,7 +190,7 @@ test.describe('Two-to-Two Query Page', () => {
     await expect(resultsRegion).toBeVisible();
 
     // Should show "Showing X of Y" message
-    await expect(page.getByText(/Showing/i)).toBeVisible();
+    await expect(page.getByRole('heading', { name: /Showing/i })).toBeVisible();
   });
 
   test('should support URL parameters', async ({ page }) => {

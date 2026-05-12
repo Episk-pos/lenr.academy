@@ -1,7 +1,7 @@
 {
   "name": "lenr-academy",
   "private": true,
-  "version": "0.1.0-alpha.20",
+  "version": "0.1.0-alpha.24",
   "type": "module",
   "scripts": {
     "postinstall": "node scripts/postinstall.js",
@@ -24,6 +24,7 @@
     "screenshots:pr": "tsx scripts/generate-pr-screenshots.ts",
     "screenshots:helper": "tsx scripts/screenshot-helper.ts",
     "screenshots:helper:ai": "tsx scripts/screenshot-helper-ai.ts",
+    "fetch:iaea": "node scripts/fetch-iaea-abundances.cjs",
     "db:upload": "bash -c 'scripts/upload-db.sh \"${npm_config_version:-${VERSION}}\"'",
     "db:download": "bash scripts/download-db.sh",
     "db:index": "bash scripts/generate-db-index.sh && npm run db:invalidate",
@@ -45,6 +46,8 @@
     "release:upload-db": "gh release upload $(git describe --tags --abbrev=0) public/parkhomov.db --clobber"
   },
   "dependencies": {
+    "@react-three/drei": "^9.122.0",
+    "@react-three/fiber": "^8.18.0",
     "@sentry/react": "^10.19.0",
     "d3-drag": "^3.0.0",
     "d3-ease": "^3.0.1",
@@ -54,6 +57,9 @@
     "d3-zoom": "^3.0.0",
     "i18next": "^25.6.0",
     "i18next-browser-languagedetector": "^8.2.0",
+    "jspdf": "^4.2.0",
+    "jspdf-autotable": "^5.0.7",
+    "katex": "^0.16.45",
     "lucide-react": "^0.292.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
@@ -65,7 +71,8 @@
     "recharts": "^2.10.3",
     "remark-gfm": "^4.0.0",
     "remark-github": "^12.0.0",
-    "sql.js": "^1.13.0"
+    "sql.js": "^1.13.0",
+    "three": "^0.183.1"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.10.2",
@@ -80,10 +87,12 @@
     "@types/d3-selection": "^3.0.11",
     "@types/d3-transition": "^3.0.9",
     "@types/d3-zoom": "^3.0.8",
+    "@types/katex": "^0.16.8",
     "@types/react": "^18.2.43",
     "@types/react-dom": "^18.2.17",
     "@types/react-virtualized": "^9.22.3",
     "@types/sql.js": "^1.4.9",
+    "@types/three": "^0.183.1",
     "@typescript-eslint/eslint-plugin": "^6.14.0",
     "@typescript-eslint/parser": "^6.14.0",
     "@vitejs/plugin-react": "^4.2.1",
@@ -92,6 +101,7 @@
     "eslint": "^8.55.0",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.5",
+    "fake-indexeddb": "^6.2.5",
     "jsdom": "^27.0.1",
     "postcss": "^8.4.32",
     "tailwindcss": "^3.3.6",

@@ -79,7 +79,7 @@ export default function ChangelogModal({
   }
 
   const markdownComponents: Components = {
-    a: ({ node, ...props }) => (
+    a: ({ node: _, ...props }) => (
       <a
         {...props}
         target="_blank"
@@ -87,10 +87,10 @@ export default function ChangelogModal({
         className="font-medium text-yellow-700 dark:text-yellow-300 hover:underline"
       />
     ),
-    ul: ({ node, ...props }) => (
+    ul: ({ node: _, ...props }) => (
       <ul {...props} className="list-disc pl-5 space-y-1" />
     ),
-    ol: ({ node, ...props }) => (
+    ol: ({ node: _, ...props }) => (
       <ol {...props} className="list-decimal pl-5 space-y-1" />
     ),
   }

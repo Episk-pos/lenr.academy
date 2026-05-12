@@ -1,0 +1,180 @@
+name: Production E2E Tests (Label-Triggered)
+
+on:
+  pull_request:
+    types: [labeled, synchronize]
+
+jobs:
+  check-label:
+    runs-on: ubuntu-latest
+    outputs:
+      should-run: ${{ steps.check.outputs.labeled }}
+    steps:
+      - name: Check for prod-e2e-test label
+        id: check
+        run: |
+          if [[ "${{ contains(github.event.pull_request.labels.*.name, 'prod-e2e-test') }}" == "true" ]]; then
+            echo "labeled=true" >> $GITHUB_OUTPUT
+          else
+            echo "labeled=false" >> $GITHUB_OUTPUT
+          fi
+
+  prod-e2e-test:
+    needs: check-label
+    if: needs.check-label.outputs.should-run == 'true'
+    timeout-minutes: 120
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        browser: [chromium, firefox, webkit]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Fetch all tags
+        run: git fetch --force --tags
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Download database metadata
+        run: |
+          mkdir -p public
+          curl -fsSL --retry 3 --retry-all-errors https://db.lenr.academy/latest/parkhomov.db.meta.json -o public/parkhomov.db.meta.json
+
+      - name: Get database version for cache key
+        id: db-version
+        run: echo "version=$(jq -r '.version' public/parkhomov.db.meta.json)" >> $GITHUB_OUTPUT
+
+      - name: Cache database
+        uses: actions/cache@v4
+        id: db-cache
+        with:
+          path: public/parkhomov.db
+          key: parkhomov-db-${{ steps.db-version.outputs.version }}
+
+      - name: Download database (if not cached)
+        if: steps.db-cache.outputs.cache-hit != 'true'
+        run: curl -fL --retry 3 --retry-all-errors --progress-bar https://db.lenr.academy/latest/parkhomov.db -o public/parkhomov.db
+
+      - name: Build production bundle
+        run: npm run build
+        env:
+          VITE_SENTRY_DSN: ""
+
+      - name: Copy database to dist
+        run: |
+          cp public/parkhomov.db dist/parkhomov.db
+          cp public/parkhomov.db.meta.json dist/parkhomov.db.meta.json
+
+      - name: Disable man-db triggers (speeds up apt by ~100s)
+        run: |
+          sudo rm -f /var/lib/man-db/auto-update
+          sudo apt-get remove -y --purge man-db 2>/dev/null || true
+
+      - name: Get installed Playwright version
+        id: playwright-version
+        run: echo "version=$(node -e "console.log(require('./package-lock.json').packages['node_modules/@playwright/test'].version)")" >> $GITHUB_OUTPUT
+
+      - name: Cache Playwright browsers
+        uses: actions/cache@v4
+        id: playwright-cache
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ matrix.browser }}-${{ steps.playwright-version.outputs.version }}
+
+      - name: Cache APT packages
+        uses: awalsh128/cache-apt-pkgs-action@latest
+        with:
+          packages: fonts-liberation fonts-noto-color-emoji fonts-freefont-ttf fonts-ipafont-gothic fonts-tlwg-loma-otf fonts-unifont fonts-wqy-zenhei xfonts-cyrillic xfonts-scalable
+          version: 1.0
+
+      - name: Install Playwright browsers
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
+        run: npx playwright install --with-deps ${{ matrix.browser }}
+
+      - name: Install Playwright system dependencies (if cached)
+        if: steps.playwright-cache.outputs.cache-hit == 'true'
+        run: npx playwright install-deps ${{ matrix.browser }}
+
+      - name: Run Playwright tests against production build
+        run: npx playwright test --config=playwright.config.prod.ts --project=${{ matrix.browser }}
+        env:
+          CI: true
+          VITE_CI: true
+
+      - name: Upload test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: playwright-prod-report-${{ matrix.browser }}
+          path: playwright-report/
+          retention-days: 30
+
+      - name: Upload test screenshots
+        uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-prod-screenshots-${{ matrix.browser }}
+          path: test-results/
+          retention-days: 7
+
+  report-results:
+    needs: [check-label, prod-e2e-test]
+    if: always() && needs.check-label.outputs.should-run == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+    steps:
+      - name: Determine test result
+        id: result
+        run: |
+          if [[ "${{ needs.prod-e2e-test.result }}" == "success" ]]; then
+            echo "status=PASSED" >> $GITHUB_OUTPUT
+            echo "emoji=✅" >> $GITHUB_OUTPUT
+          else
+            echo "status=FAILED" >> $GITHUB_OUTPUT
+            echo "emoji=❌" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Comment PR with results
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const status = '${{ steps.result.outputs.status }}';
+            const emoji = '${{ steps.result.outputs.emoji }}';
+            const runUrl = `https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
+
+            const body = [
+              `## ${emoji} Production E2E Test Results`,
+              '',
+              `**Status:** ${emoji} ${status}`,
+              `**Build:** [View workflow run](${runUrl})`,
+              `**Browser Matrix:** chromium, firefox, webkit`,
+              '',
+              'This test run validates:',
+              '- Service worker registration and functionality',
+              '- PWA manifest and meta tags',
+              '- Offline capabilities',
+              '- App update detection flow',
+              '- Production build optimization',
+              '',
+              status === 'FAILED' ? '> Check the workflow logs for details on test failures.' : '',
+            ].filter(Boolean).join('\n');
+
+            await github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: body
+            });

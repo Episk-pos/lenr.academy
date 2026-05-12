@@ -20,6 +20,7 @@
     "upload": "Subir",
     "delete": "Eliminar",
     "edit": "Editar",
+    "selected": "seleccionado",
     "view": "Ver",
     "back": "Atrás",
     "next": "Siguiente",
@@ -34,6 +35,7 @@
   "navigation": {
     "home": "Inicio",
     "showElementData": "Mostrar datos de elementos",
+    "segreChart": "Segre Chart",
     "fusionReactions": "Reacciones de fusión",
     "fissionReactions": "Reacciones de fisión",
     "twoToTwoReactions": "Reacciones dos a dos",
@@ -43,7 +45,10 @@
     "allTables": "Todas las tablas",
     "privacySettings": "Configuración de privacidad",
     "openMenu": "Abrir menú",
-    "closeMenu": "Cerrar menú"
+    "closeMenu": "Cerrar menú",
+    "help": "Ayuda y glosario",
+    "mullerResonance": "Resonancia Muller",
+    "transmutations": "Transmutaciones"
   },
   "theme": {
     "lightMode": "Modo claro",
@@ -55,8 +60,8 @@
     "collapse": "Contraer barra lateral"
   },
   "footer": {
-    "basedOnWork": "Basado en el trabajo del Dr. Alexander Parkhomov",
-    "project": "Proyecto Memorial Martin Fleischmann"
+    "basedOnWork": "Basado en el trabajo del <parkhomovLink>Dr. Alexander Parkhomov</parkhomovLink>",
+    "project": "<mfmpLink>Proyecto Memorial Martin Fleischmann</mfmpLink>"
   },
   "language": {
     "selectLanguage": "Seleccionar idioma",
@@ -122,56 +127,44 @@
     "goHome": "Ir al inicio"
   },
   "home": {
-    "title": "El Paquete Nanosoft",
-    "subtitle": "Herramientas interactivas para explorar reacciones nucleares de baja energía (LENR) y vías de transmutación por fusión fría",
-    "basedOn": "Basado en el trabajo innovador del Dr. Alexander Parkhomov",
+    "title": "LENR Academy",
+    "subtitle": "Explore reacciones de transmutación nuclear de baja energía, modele procesos en cascada, visualice cadenas de desintegración e investigue fenómenos de resonancia — todo en su navegador",
+    "basedOn": "Construido sobre las <parkhomovLink>Tablas de Parkhomov</parkhomovLink> y el <nanosoftLink>Paquete Nanosoft</nanosoftLink> original de R.W. Greenyer y P.W. Power",
     "queryReactions": {
       "title": "Consultar reacciones nucleares",
-      "description": "Busque entre miles de reacciones de transmutación nuclear exotérmicas: fusión, fisión y dos a dos",
+      "description": "Busque entre miles de reacciones exotérmicas de fusión, fisión y transmutación dos a dos de las Tablas de Parkhomov",
       "fusionReactions": "Reacciones de fusión",
       "fissionReactions": "Reacciones de fisión",
       "twoToTwoReactions": "Reacciones dos a dos"
     },
     "cascadeSimulations": {
       "title": "Simulaciones en cascada",
-      "description": "Modele reacciones en cadena y prediga productos de reacción de procesos LENR en cascada",
+      "description": "Modele reacciones en cadena con un catálogo de materiales, ramificación ponderada y visualización de flujo Sankey",
       "runSimulations": "Ejecutar simulaciones en cascada"
     },
     "elementData": {
-      "title": "Datos de elementos y nucleidos",
-      "description": "Explore tablas completas de propiedades nucleares y químicas",
-      "showElementData": "Mostrar datos de elementos",
-      "tablesInDetail": "Tablas detalladas"
+      "title": "Elementos, nucleidos y desintegración",
+      "description": "Tabla periódica interactiva con propiedades detalladas de elementos e isótopos, más visualización de cadenas de desintegración multigeneracionales",
+      "showElementData": "Explorador de elementos y nucleidos",
+      "tablesInDetail": "Tablas detalladas",
+      "allTables": "Consultas SQL personalizadas"
     },
-    "advancedQueries": {
-      "title": "Consultas avanzadas",
-      "description": "Ejecute consultas SQL personalizadas en todas las tablas de reacciones y propiedades",
-      "allTables": "Herramienta de consulta de todas las tablas"
+    "mullerResonance": {
+      "title": "Explorador de resonancia Muller",
+      "description": "Investigue las resonancias de longitud de onda electrón-protón y prediga entornos nucleares activos (NAE)",
+      "explore": "Explorar resonancias"
     },
-    "parkhomovTables": {
-      "title": "Acerca de las tablas de Parkhomov",
-      "intro": "Este paquete está basado en el trabajo pionero del físico ruso <strong>Dr. Alexander Parkhomov</strong>, quien publicó tablas completas de posibles reacciones de transmutación nuclear fría en 2018.",
-      "analysisIntro": "Utilizando análisis por computadora de 280 nucleidos estables, el Dr. Parkhomov identificó:",
-      "fusionCount": "<strong>1.389 reacciones de fusión</strong> - combinación de elementos más ligeros",
-      "fissionCount": "<strong>817 reacciones de fisión</strong> - división de elementos más pesados",
-      "twoToTwoCount": "<strong>516.789 reacciones dos a dos</strong> - transformación de pares de nucleidos",
-      "exothermicNote": "Todas las reacciones en estas tablas son <strong>exotérmicas</strong> (productoras de energía) y representan vías termodinámicamente favorables para la transmutación nuclear a bajas energías.",
-      "developers": "Desarrollado por R.W. Greenyer y P.W. Power para el Proyecto Memorial Martin Fleischmann"
-    },
-    "originalApp": {
-      "title": "Aplicación original",
-      "description": "Esta es una reimplementación moderna del paquete Nanosoft original, que fue desarrollado como una aplicación web PHP para explorar las tablas de transmutación nuclear del Dr. Parkhomov.",
-      "findAt": "La aplicación original y la documentación completa se pueden encontrar en:",
-      "visitSite": "Visitar nanosoft.co.nz",
-      "gratitude": "Agradecemos a R. W. Greenyer y P. W. Power por su trabajo pionero en hacer accesible esta importante investigación."
+    "aboutData": {
+      "title": "Sobre los datos",
+      "description": "La base de datos de reacciones proviene del análisis de 2018 de <strong>Dr. Alexander Parkhomov</strong> sobre 280 nucleidos estables, identificando <strong>1,389 reacciones de fusión</strong>, <strong>817 de fisión</strong> y <strong>516,789 dos a dos</strong> exotérmicas — vías termodinámicamente favorables para la transmutación nuclear a bajas energías. Originalmente desarrollado como el <nanosoftLink>Paquete Nanosoft</nanosoftLink> por R.W. Greenyer y P.W. Power para el Proyecto Memorial Martin Fleischmann.",
+      "visitNanosoft": "Visitar el paquete Nanosoft original"
     },
     "openSource": {
-      "title": "Proyecto de código abierto",
-      "description": "Este proyecto es de código abierto y está licenciado bajo la GNU Affero General Public License v3.0 (AGPL-3.0). Damos la bienvenida a contribuciones, informes de errores y solicitudes de funciones de la comunidad.",
+      "title": "Código abierto",
+      "description": "Licenciado bajo AGPL-3.0. Se aceptan contribuciones, informes de errores y solicitudes de funciones.",
       "viewGitHub": "Ver en GitHub",
       "joinDiscussions": "Unirse a las discusiones",
-      "reportIssue": "Reportar problema",
-      "requestFeature": "Solicitar función"
+      "reportIssue": "Reportar problema"
     }
   },
   "query": {
@@ -196,6 +189,19 @@
     "filters": "Filtros",
     "results": "Resultados",
     "details": "Detalles"
+  },
+  "queryHistory": {
+    "title": "Historial",
+    "recent": "Recientes",
+    "bookmarked": "Marcados",
+    "clearHistory": "Limpiar",
+    "noHistory": "Aún no hay historial de consultas",
+    "loadQuery": "Cargar consulta",
+    "querySaved": "Consulta guardada en el historial",
+    "filterAll": "Todos",
+    "filterFusion": "Fusión",
+    "filterFission": "Fisión",
+    "filterTwoToTwo": "2→2"
   },
   "elements": {
     "element": "Elemento",
@@ -230,6 +236,7 @@
     "selected": "{{count}} seleccionado(s)",
     "applySelection": "Aplicar selección",
     "integrated": "Integrado",
+    "russellChart": "Russell",
     "decays": "Desintegraciones",
     "period": "Período",
     "group": "Grupo",
@@ -361,6 +368,11 @@
     "hideBFTypes": "Ocultar tipos B/F",
     "showBFTypes": "Mostrar tipos B/F",
     "exportCsv": "Exportar CSV",
+    "copyShareLink": "Copiar enlace",
+    "copyShareLinkTitle": "Copiar una URL compartible de esta consulta al portapapeles",
+    "linkCopied": "Enlace copiado!",
+    "exportJson": "Exportar JSON",
+    "exportPdf": "Exportar PDF",
     "inputs": "Entradas",
     "output": "Salida",
     "outputs": "Salidas",
@@ -380,6 +392,8 @@
     "none": "Ninguno",
     "left": "Izquierda",
     "right": "Derecha",
+    "boson": "Bosón",
+    "fermion": "Fermión",
     "fusionTitle": "Reacciones de fusión",
     "fusionDescription": "Consultar reacciones de fusión exotérmicas donde dos núcleos se combinan para formar un núcleo más pesado",
     "fissionTitle": "Reacciones de fisión",
@@ -432,9 +446,109 @@
     "radioactive": "Radiactivo",
     "querying": "Consultando..."
   },
+  "histogram": {
+    "title": "Distribucion de energia",
+    "description": "Histograma de valores de energia de reaccion (MeV) con resumen estadistico",
+    "xAxisLabel": "Energia (MeV)",
+    "yAxisLabel": "Cantidad",
+    "reactions": "Reacciones",
+    "mean": "Media",
+    "median": "Mediana",
+    "min": "Min",
+    "max": "Max",
+    "stddev": "Desv. Est.",
+    "count": "Total",
+    "collapse": "Contraer histograma",
+    "expand": "Expandir histograma"
+  },
+  "russellChart": {
+    "title": "Tabla de Russell — Tabla Periódica de Nueve Octavas",
+    "description": "La disposición basada en ondas de Walter Russell de los elementos en 9 octavas con un patrón serpentino, mostrando los lados de generación (carga) y radiación (descarga) con gases inertes en los puntos de equilibrio.",
+    "generationSide": "Generación (Carga)",
+    "radiationSide": "Radiación (Descarga)",
+    "inertGasLabel": "Gas Inerte (Punto de Equilibrio)",
+    "octave": "Octava",
+    "legend": "Leyenda",
+    "legendGeneration": "Generación (Lado de Carga)",
+    "legendRadiation": "Radiación (Lado de Descarga)",
+    "legendInertGas": "Gas Inerte (Punto de Equilibrio)",
+    "legendCarbon": "Carbono (Compresión Máxima)",
+    "legendPredicted": "Predicho por Russell",
+    "legendHypothetical": "Elementos Hipotéticos",
+    "legendSerpentine": "Flujo Serpentino",
+    "clickToView": "Haga clic en cualquier elemento conocido para ver sus propiedades e isótopos en la base de datos",
+    "clickToViewDetails": "Haga clic para ver detalles del elemento",
+    "gridView": "Vista de cuadrícula",
+    "waveView": "Vista de onda",
+    "waveDescription": "Elementos como puntos en la onda de octava de Russell — la amplitud sube a través de la generación (compresión) hasta el Carbono en el pico, luego desciende a través de la radiación (expansión)",
+    "amplitude": "Amplitud",
+    "octaveAxis": "Octava",
+    "carbonPeak": "Carbono (Pico)",
+    "zoomControls": "Desplazar para ampliar, arrastrar para mover, doble clic para acercar",
+    "predictionsTitle": "Predicciones de Russell",
+    "predictionsDescription": "Walter Russell predijo varios elementos antes de su descubrimiento oficial, demostrando el poder predictivo de su sistema periódico basado en ondas.",
+    "aboutTitle": "Sobre la Tabla Periódica de Russell",
+    "aboutParagraph1": "Walter Russell (1871–1963) publicó su Tabla Periódica de Nueve Octavas en \"The Universal One\" (1926), organizando todos los elementos en un sistema de octavas basado en ondas. Cada octava tiene un lado de generación (carga) y un lado de radiación (descarga), con un gas inerte en el punto de equilibrio — el fulcro de la onda.",
+    "aboutParagraph2": "En la cosmología de Russell, la materia se crea por vórtices espirales opuestos de compresión (generación) y expansión (radiación). El carbono se sitúa en la amplitud — el punto de compresión máxima — convirtiéndolo en el elemento más equilibrado y estable.",
+    "aboutParagraph3": "Russell predijo notablemente la existencia del Deuterio (que llamó \"Ethlogen\"), Tritio (\"Bebegen\"), Neptunio y Plutonio años antes de su descubrimiento oficial en laboratorio.",
+    "view3D": "Vista 3D",
+    "view3DControls": "Arrastrar para rotar, scroll para zoom",
+    "experimentalNote": "Esta visualización está basada en el gráfico original de Russell de 1926. El sistema de Russell difiere significativamente de la tabla periódica moderna — representa su modelo filosófico y cosmológico de la materia.",
+    "predictionFormat": "{{russellName}} → {{modernName}} ({{symbol}})",
+    "notes": {
+      "hypotheticalFirstInertGas": "Primer gas inerte hipotético — el comienzo de la materia",
+      "hypotheticalSecondInertGas": "Segundo gas inerte hipotético",
+      "hypotheticalThirdInertGas": "Tercer gas inerte hipotético",
+      "hypotheticalElement": "Elemento hipotético en el sistema de Russell",
+      "hypotheticalTransUranicInSystem": "Elemento transuránico hipotético en el sistema de Russell",
+      "hypotheticalTransUranic": "Elemento transuránico hipotético",
+      "hypotheticalFinalInertGas": "Último gas inerte hipotético — el fin de la materia",
+      "ethlogenPrediction": "Russell predijo \"Ethlogen\" — identificado como Deuterio (1931)",
+      "bebegenPrediction": "Russell predijo \"Bebegen\" — identificado como Tritio (1934)",
+      "heliumPlacement": "Russell situó el Helio como gas inerte de la octava 4",
+      "carbonAmplitude": "Carbono — la amplitud de la onda; punto de máxima compresión",
+      "neptuniumPrediction": "Russell predijo el elemento 93 en 1926 — descubierto como Neptunio en 1940",
+      "plutoniumPrediction": "Russell predijo el elemento 94 en 1926 — descubierto como Plutonio en 1941"
+    }
+  },
+  "networkGraph": {
+    "reactionNetwork": "Red de Reacciones",
+    "reactionNetworkDesc": "Grafo de fuerza dirigida mostrando relaciones entre elementos",
+    "showNetwork": "Mostrar red",
+    "hideNetwork": "Ocultar red",
+    "tooManyReactions": "Mostrando las {{count}} principales reacciones por energía",
+    "showAll": "Mostrar todo",
+    "nodeTooltip": "{{element}}: {{count}} reacciones",
+    "nodeTooltipFull": "{{element}} (Z={{Z}}): {{count}} reacciones",
+    "exothermic": "Exotermica (+MeV)",
+    "endothermic": "Endotermica (-MeV)",
+    "instructions": "Arrastra los nodos para reposicionar. Desplaza para hacer zoom.",
+    "graphStats": "{{nodes}} elementos, {{links}} conexiones"
+  },
+  "segreChart": {
+    "title": "Segre Chart (N-Z Diagram)",
+    "description": "Interactive chart of nuclides plotted by proton number (Z) vs neutron number (N), color-coded by stability",
+    "sectionTitle": "Carta de nucleidos (diagrama de Segrè)",
+    "stable": "Stable (>10⁹ years)",
+    "longHalfLife": "Long half-life (>100 years)",
+    "shortHalfLife": "Short half-life (<100 years)",
+    "unknown": "Unknown half-life",
+    "magicNumbers": "Magic Numbers",
+    "valleyOfStability": "Valley of Stability",
+    "legend": "Legend",
+    "nuclideCount": "{{count}} nuclides displayed",
+    "clickToView": "Click any nuclide to view details",
+    "zoomControls": "Scroll to zoom, drag to pan, double-click to zoom in",
+    "protonNumberAxis": "Proton Number (Z)",
+    "neutronNumberAxis": "Neutron Number (N)",
+    "years": "anos",
+    "zoomIn": "Acercar",
+    "zoomOut": "Alejar",
+    "resetZoom": "Restablecer zoom"
+  },
   "cascades": {
     "title": "Cascadas",
-    "description": "Explore cascadas de reacciones y rutas",
+    "description": "Descripción",
     "simulationEngine": "Motor de simulación en cascada",
     "startSimulation": "Iniciar simulación",
     "stopSimulation": "Detener simulación",
@@ -516,7 +630,6 @@
     "noMaterialsInCategory": "No hay materiales en esta categoría",
     "saveCustomMaterial": "Guardar material personalizado",
     "name": "Nombre",
-    "description": "Descripción",
     "saveCurrentFuelMixture": "Esto guardará su mezcla de combustible actual ({{count}} nucleidos) como material personalizado.",
     "saveMaterial": "Guardar material",
     "deleteCustomMaterial": "¿Eliminar este material personalizado?",
@@ -546,10 +659,8 @@
     "uniqueNuclides": "nucleidos únicos",
     "showingTopProducts": "Mostrando los {{shown}} primeros de {{total}} productos únicos.",
     "networkViewDescription": "Vista de red que muestra las conexiones de reacción entre nucleidos",
-    "productsHeader": "Productos finales",
-    "showingProducts": "Mostrando {{count}} productos únicos de la cascada",
     "runningSimulation": "Ejecutando simulación en cascada...",
-    "cancel": "Cancelar",
+    "cancelSimulation": "Cancelar simulación",
     "loopProgress": "Progreso de bucles",
     "status": "Estado",
     "newReactionsThisLoop": "Nuevas reacciones (este bucle)",
@@ -557,13 +668,10 @@
     "calculatingEnergy": "Calculando energía...",
     "preparingResults": "Preparando resultados...",
     "percentComplete": "{{percent}}% completado",
+    "finalizingDescription": "Iniciando proceso de finalización...",
+    "calculatingEnergyDescription": "Calculando la energía total de todas las reacciones...",
+    "preparingResultsDescription": "Serializando resultados para visualización...",
     "searchingReactions": "Buscando reacciones entre los nucleidos seleccionados...",
-    "processingLoop": "Procesando bucle {{current}} de {{total}}...",
-    "foundReactions": "{{count}} reacciones encontradas hasta ahora",
-    "analyzing": "Analizando resultados...",
-    "buildingNetwork": "Construyendo red de reacción...",
-    "simulationCancelled": "Simulación cancelada",
-    "simulationError": "Error de simulación",
     "sankey": {
       "title": "Diagrama de flujo de reacción",
       "howToRead": "Cómo leer este diagrama",
@@ -638,6 +746,7 @@
       "showOnlyFeedback": "Mostrar solo bucles de retroalimentación",
       "minFrequency": "Frecuencia mín: {{count}}×",
       "showing": "Mostrando {{shown}} de {{total}} rutas",
+      "weightedView": "Vista ponderada",
       "weighted": "Ponderado",
       "raw": "Sin procesar",
       "switchToRaw": "Cambiar a frecuencias sin procesar",
@@ -814,6 +923,7 @@
     "executeQuery": "Ejecutar consulta",
     "clear": "Limpiar",
     "queryError": "Error de consulta",
+    "readOnlyError": "Solo se permiten consultas de lectura (SELECT). Las sentencias como DROP, CREATE, ALTER, DELETE, INSERT y UPDATE están bloqueadas para proteger la base de datos.",
     "queryResults": "Resultados de la consulta: {{count}} filas",
     "executedIn": "Ejecutado en {{time}}ms",
     "exportCsv": "Exportar CSV",
@@ -861,7 +971,15 @@
     "databaseUpdateAvailable": "Actualización de base de datos disponible: v{{current}} → v{{available}}",
     "databaseUpdateReady": "Actualización de base de datos lista (v{{version}}) - Actualice para usar los nuevos datos",
     "downloadingUpdate": "Descargando actualización en segundo plano...",
-    "downloadUpdate": "Descargar actualización"
+    "downloadUpdate": "Descargar actualización",
+    "updating": "Actualizando..."
+  },
+  "columnToggle": {
+    "title": "Personalizar columnas visibles",
+    "columns": "Columnas",
+    "showHide": "Mostrar/Ocultar columnas",
+    "resetToDefault": "Restablecer columnas predeterminadas",
+    "reset": "Restablecer"
   },
   "offline": {
     "youAreOffline": "Está desconectado",
@@ -942,5 +1060,110 @@
     "legendFlowDashed": "Regeneration (catalyst returns)",
     "catalystCenterLabel": "Catalyst (recycled)",
     "byproductLabel": "byproduct"
+  },
+  "help": {
+    "title": "Ayuda y glosario",
+    "subtitle": "Aprenda sobre términos de física nuclear, campos de base de datos y pruebe consultas de ejemplo para explorar datos de transmutación LENR.",
+    "exampleQueries": "Consultas de ejemplo",
+    "exampleQueriesDescription": "Haga clic en cualquier ejemplo para cargarlo en la página de consulta y ejecutarlo.",
+    "tryQuery": "Probar esta consulta",
+    "glossary": "Glosario",
+    "searchGlossary": "Buscar términos...",
+    "allCategories": "Todos",
+    "noResults": "No se encontraron términos coincidentes.",
+    "glossaryCount": "{{count}} términos",
+    "category": {
+      "nuclear": "Física nuclear",
+      "reaction": "Tipos de reacción",
+      "database": "Campos de base de datos",
+      "measurement": "Medidas y unidades"
+    }
+  },
+  "mullerResonance": {
+    "title": "Explorador de Resonancia Muller",
+    "description": "Explore las resonancias de longitud de onda electrón-protón entre elementos usando la ecuación de Frithjof Muller L = Z × Cₑ × 2ᴺ, con referencias cruzadas a la base de datos de reacciones nucleares de Parkhomov.",
+    "equationExplanation": "L = longitud de onda de resonancia, Z = número atómico, Cₑ = longitud de onda Compton del electrón o protón, N = número de octava (entero). Cuando N es un entero exacto para ambas longitudes de onda Compton, dos elementos comparten una resonancia de partículas cruzadas.",
+    "threshold": "Umbral de desajuste",
+    "selectElement": "Seleccione un elemento para encontrar sus socios resonantes",
+    "resonantPartners": "Socios resonantes",
+    "exactMatches": "Coincidencias exactas (<0,01%)",
+    "withReactions": "Con reacciones Parkhomov",
+    "totalReactions": "Total de reacciones",
+    "resonancePairs": "Pares de resonancia",
+    "topGlobalPairs": "Principales pares de resonancia de todos los elementos",
+    "pair": "Par",
+    "noResonantPairs": "No se encontraron pares resonantes en este umbral.",
+    "partner": "Socio",
+    "mismatchHeader": "Desajuste",
+    "quality": "Calidad",
+    "wavelength": "Longitud de onda",
+    "octaves": "Octavas (e/p)",
+    "twoToTwo": "Rxn 2→2",
+    "fusion": "Fusión",
+    "avgMeV": "MeV prom",
+    "electronOctave": "Número de octava del electrón",
+    "protonOctave": "Número de octava del protón",
+    "qualityLabels": {
+      "exact": "Exacto",
+      "strong": "Fuerte",
+      "moderate": "Moderado",
+      "weak": "Débil"
+    },
+    "aboutTitle": "Acerca de esta herramienta",
+    "about1": "La ecuación de Frithjof Muller L = Z × C × 2ᴺ asigna una longitud de onda de resonancia a cada elemento en cada octava.",
+    "about2": "Ejemplo: Cobre (Z=29) en octava electrónica N=31 y Hierro (Z=26) en octava protónica N=42 producen L = 151,1 mm — una coincidencia del 0,0008%.",
+    "about3": "Los conteos de reacciones provienen de las tablas de reacciones nucleares exotérmicas del Dr. Alexander Parkhomov. El análisis estadístico no muestra correlación significativa entre la resonancia de Muller y la densidad de reacciones. Esta herramienta es exploratoria.",
+    "disclaimer": "Nota: La ecuación de Muller produce matemáticas elegantes pero carece de verificación experimental independiente. Esta herramienta se presenta para exploración y generación de hipótesis.",
+    "tabs": {
+      "resonancePairs": "Pares de resonancia",
+      "naePredictions": "Predicciones NAE"
+    },
+    "nae": {
+      "title": "Predicciones de red NAE",
+      "description": "Elementos clasificados por proximidad de la longitud de onda de resonancia electrónica al espacio NAE de ~1 nm identificado por Edmund Storms (JCMNS 41, 2026).",
+      "element": "Elemento",
+      "octave": "Octava (N)",
+      "electronResonance": "Resonancia e⁻",
+      "naeQuality": "Coincidencia NAE",
+      "naeScore": "Puntuación NAE",
+      "deuteriumOverlap": "Superposición D",
+      "deuteriumOctave": "Octava D (N)",
+      "deuteriumMismatch": "Desajuste D",
+      "phononFrequency": "Freq. fonón",
+      "knownLENR": "LENR conocida",
+      "parkhomovReactions": "Rxns Parkhomov",
+      "showNAEOnly": "Mostrar solo elementos con resonancia en rango NAE",
+      "searchPlaceholder": "Filtrar por elemento (separado por comas)...",
+      "elementsInRange": "Elementos en rango NAE (0,5–2,0 nm)",
+      "withDOverlap": "Con superposición D (<30%)",
+      "confirmedLENR": "LENR activa conocida",
+      "qualityLabels": {
+        "optimal": "Óptimo",
+        "good": "Bueno",
+        "marginal": "Marginal",
+        "distant": "Distante"
+      },
+      "lenrLabels": {
+        "strong": "Fuerte",
+        "moderate": "Moderada",
+        "weak": "Débil"
+      },
+      "octaveDetail": "Detalle de octava",
+      "electronOctaves": "Octavas de resonancia electrónica (N=1–10)",
+      "inNAERange": "¿En NAE?",
+      "deuteriumProtonResonance": "Superposición de resonancia de protones de deuterio",
+      "hostElectron": "Resonancia electrónica del huésped",
+      "dProton": "Resonancia de protones D",
+      "overlapMismatch": "Desajuste de superposición",
+      "phononCalc": "Frecuencia de fonón (v_sonido / L)",
+      "lenrRefs": "Referencias LENR",
+      "noNAEResonance": "Sin resonancia en rango NAE en octavas bajas.",
+      "aboutNAETitle": "Sobre predicciones NAE",
+      "aboutNAE1": "Edmund Storms identificó que la fusión fría (LENR) ocurre en Entornos Nucleares Activos (NAE) — espacios a nanoescala en la red metálica, típicamente ~1 nm de ancho (JCMNS 41, 2026).",
+      "aboutNAE2": "La ecuación de Muller L = Z × Cₑ × 2ᴺ en octavas bajas (N=3, N=4) predice longitudes de onda de resonancia electrónica. El Paladio (Z=46) en N=3 da 0,89 nm y en N=4 da 1,79 nm.",
+      "aboutNAE3": "La superposición con deuterio es notable: en la octava de protones N=20, el deuterio tiene una longitud de onda de resonancia de 1,39 nm — en el rango NAE.",
+      "aboutNAE4": "Los metales LENR-activos conocidos (Pd, Ni, Pt, Ti) tienen longitudes de resonancia electrónica en el rango 0,9–1,8 nm en N=3 o N=4.",
+      "naeDisclaimer": "Este análisis combina el marco de resonancia de Muller con el modelo NAE de Storms. Ambos son modelos teóricos. Los resultados se presentan para exploración y generación de hipótesis."
+    }
   }
 }

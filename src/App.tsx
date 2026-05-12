@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
 import * as Sentry from '@sentry/react'
 import { DatabaseProvider } from './contexts/DatabaseContext'
 import { ThemeProvider } from './contexts/ThemeContext'
@@ -16,6 +16,9 @@ import AllTables from './pages/AllTables'
 import CascadesAll from './pages/CascadesAll'
 import CycleDiscovery from './pages/CycleDiscovery'
 import PrivacyPreferences from './pages/PrivacyPreferences'
+import Help from './pages/Help'
+import MullerResonance from './pages/MullerResonance'
+import Transmutations from './pages/Transmutations'
 import SentryTest from './pages/SentryTest'
 import ErrorDisplay from './components/ErrorDisplay'
 import PWAUpdatePrompt from './components/PWAUpdatePrompt'
@@ -63,10 +66,14 @@ function App() {
                 <Route path="/fission" element={<FissionQuery />} />
                 <Route path="/twotwo" element={<TwoToTwoQuery />} />
                 <Route path="/element-data" element={<ShowElementData />} />
+                <Route path="/segre-chart" element={<Navigate to="/element-data" replace />} />
                 <Route path="/tables" element={<TablesInDetail />} />
                 <Route path="/all-tables" element={<AllTables />} />
                 <Route path="/cascades" element={<CascadesAll />} />
                 <Route path="/cycles" element={<CycleDiscovery />} />
+                <Route path="/muller-resonance" element={<MullerResonance />} />
+                <Route path="/transmutations" element={<Transmutations />} />
+                <Route path="/help" element={<Help />} />
                 <Route path="/privacy" element={<PrivacyPreferences />} />
                 {/* Sentry test page - only available in development or with ?debug=true */}
                 {(import.meta.env.MODE === 'development' || new URLSearchParams(window.location.search).get('debug') === 'true') && (

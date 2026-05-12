@@ -1,7 +1,8 @@
 import { useState, useEffect, useMemo, useCallback, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Download, Info, Loader2, Eye, EyeOff, Radiation, ChevronDown } from 'lucide-react'
-import { useSearchParams, Link } from 'react-router-dom'
+import { Download, FileJson, FileText, Info, Loader2, Eye, EyeOff, Radiation, ChevronDown } from 'lucide-react'
+import { useSearchParams, Link, useNavigate } from 'react-router-dom'
+import ShareQueryButton from '../components/ShareQueryButton'
 import type { FusionReaction, QueryFilter, Nuclide, Element, HeatmapMode, HeatmapMetrics, AtomicRadiiData } from '../types'
 import { useDatabase } from '../contexts/DatabaseContext'
 import { useQueryState } from '../contexts/QueryStateContext'
@@ -13,6 +14,13 @@ import NuclideDetailsCard from '../components/NuclideDetailsCard'
 import DatabaseLoadingCard from '../components/DatabaseLoadingCard'
 import { VirtualizedList } from '../components/VirtualizedList'
 import LimitSelector from '../components/LimitSelector'
+import { exportToJSON, exportToPDF } from '../utils/exportUtils'
+import { useQueryHistory } from '../hooks/useQueryHistory'
+import QueryHistoryPanel from '../components/QueryHistoryPanel'
+import EnergyHistogram from '../components/EnergyHistogram'
+import ReactionNetworkGraph from '../components/ReactionNetworkGraph'
+import CitationBadge from '../components/CitationBadge'
+import { getCitationsForReaction } from '../services/citationsService'
 
 // Default values
 const DEFAULT_ELEMENT1: string[] = []
@@ -27,7 +35,9 @@ export default function FusionQuery() {
   const { t } = useTranslation()
   const { db, isLoading: dbLoading, error: dbError, downloadProgress } = useDatabase()
   const [searchParams, setSearchParams] = useSearchParams()
+  const navigate = useNavigate()
   const { getFusionState, updateFusionState } = useQueryState()
+  const { history, addToHistory, toggleBookmark, removeFromHistory, clearHistory } = useQueryHistory()
   const [elements, setElements] = useState<Element[]>([])
   const [isInitialized, setIsInitialized] = useState(false)
   const [queryError, setQueryError] = useState<Error | null>(null)
@@ -515,6 +525,9 @@ export default function FusionQuery() {
       setTotalCount(result.totalCount)
       setShowResults(true)
 
+      // Save to query history
+      addToHistory('fusion', queryFilter, result.totalCount)
+
       // Also fetch unlimited results for heatmap if toggle is enabled
       if (useAllResultsForHeatmap && result.totalCount > result.reactions.length) {
         const unlimitedQuery = { ...queryFilter, limit: undefined }
@@ -603,6 +616,7 @@ export default function FusionQuery() {
     a.href = url
     a.download = `fusion_reactions_${Date.now()}.csv`
     a.click()
+    window.URL.revokeObjectURL(url)
   }
 
   if (dbLoading) {
@@ -620,9 +634,29 @@ export default function FusionQuery() {
 
   return (
     <div className="max-w-7xl mx-auto">
-      <div className="mb-6">
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">{t('reactions.fusionTitle')}</h1>
-        <p className="text-gray-600 dark:text-gray-400">{t('reactions.fusionDescription')}</p>
+      <div className="mb-6 flex items-start justify-between">
+        <div>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">{t('reactions.fusionTitle')}</h1>
+          <p className="text-gray-600 dark:text-gray-400">{t('reactions.fusionDescription')}</p>
+        </div>
+        <QueryHistoryPanel
+          history={history}
+          currentQueryType="fusion"
+          onLoadQuery={(loadedFilter, queryType) => {
+            if (queryType !== 'fusion') {
+              const routeMap = { fission: '/fission', twotwo: '/twotwo', fusion: '/fusion' }
+              navigate(routeMap[queryType])
+              return
+            }
+            setSelectedElement1(loadedFilter.element1List || [])
+            setSelectedElement2(loadedFilter.element2List || [])
+            setSelectedOutputElement(loadedFilter.outputElementList || [])
+            setFilter(loadedFilter)
+          }}
+          onToggleBookmark={toggleBookmark}
+          onRemove={removeFromHistory}
+          onClearHistory={() => clearHistory(true)}
+        />
       </div>
 
       {/* Query Builder */}
@@ -931,6 +965,12 @@ export default function FusionQuery() {
             </div>
           </div>
 
+          {/* Energy Distribution Histogram */}
+          <EnergyHistogram reactions={filteredResults} />
+
+          {/* Reaction Network Graph */}
+          <ReactionNetworkGraph reactions={filteredResults} reactionType="fusion" />
+
           {/* Results Table */}
           <div className="card p-6 pb-0 sm:pb-6">
             <div className="flex justify-between items-center mb-4">
@@ -969,6 +1009,23 @@ export default function FusionQuery() {
                 >
                   <Download className="w-4 h-4 mr-2 inline" />
                   {t('reactions.exportCsv')}
+                </button>
+                <ShareQueryButton />
+                <button
+                  onClick={() => exportToJSON(results, { queryType: 'fusion', filter: queryFilter, executionTime, rowCount: results.length, totalCount })}
+                  className="btn btn-secondary px-4 py-2 text-sm"
+                  disabled={results.length === 0}
+                >
+                  <FileJson className="w-4 h-4 mr-2 inline" />
+                  {t('reactions.exportJson')}
+                </button>
+                <button
+                  onClick={() => exportToPDF(results, { queryType: 'fusion', filter: queryFilter, executionTime, rowCount: results.length, totalCount }).catch((err) => console.error('PDF export failed:', err))}
+                  className="btn btn-secondary px-4 py-2 text-sm"
+                  disabled={results.length === 0}
+                >
+                  <FileText className="w-4 h-4 mr-2 inline" />
+                  {t('reactions.exportPdf')}
                 </button>
               </div>
             </div>
@@ -1064,6 +1121,11 @@ export default function FusionQuery() {
                       const isE1Radioactive = radioactiveNuclides.has(`${reaction.Z1}-${reaction.A1}`)
                       const isE2Radioactive = radioactiveNuclides.has(`${reaction.Z2}-${reaction.A2}`)
                       const isOutputRadioactive = radioactiveNuclides.has(`${reaction.Z}-${reaction.A}`)
+                      const reactionCitationIds = getCitationsForReaction(
+                        { symbol: reaction.E1, A: reaction.A1 },
+                        { symbol: reaction.E2, A: reaction.A2 },
+                        { symbol: reaction.E, A: reaction.A }
+                      ).map((c) => c.id)
 
                       return (
                         <div
@@ -1116,6 +1178,7 @@ export default function FusionQuery() {
                                   <Radiation className="w-3 h-3 text-amber-600 dark:text-amber-400" />
                                 </span>
                               )}
+                              <CitationBadge citationIds={reactionCitationIds} />
                             </div>
                             <div className="text-[10px] sm:text-xs text-gray-600 dark:text-gray-400">(Z={reaction.Z})</div>
                           </div>
@@ -1223,6 +1286,11 @@ export default function FusionQuery() {
                         const isE1Radioactive = radioactiveNuclides.has(`${reaction.Z1}-${reaction.A1}`)
                         const isE2Radioactive = radioactiveNuclides.has(`${reaction.Z2}-${reaction.A2}`)
                         const isOutputRadioactive = radioactiveNuclides.has(`${reaction.Z}-${reaction.A}`)
+                        const reactionCitationIds = getCitationsForReaction(
+                          { symbol: reaction.E1, A: reaction.A1 },
+                          { symbol: reaction.E2, A: reaction.A2 },
+                          { symbol: reaction.E, A: reaction.A }
+                        ).map((c) => c.id)
 
                         return (
                           <div
@@ -1274,6 +1342,7 @@ export default function FusionQuery() {
                                     <Radiation className="w-3 h-3 text-amber-600 dark:text-amber-400" />
                                   </span>
                                 )}
+                                <CitationBadge citationIds={reactionCitationIds} />
                               </div>
                               <div className="text-[10px] sm:text-xs text-gray-600 dark:text-gray-400">(Z={reaction.Z})</div>
                             </div>

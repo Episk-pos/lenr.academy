@@ -20,6 +20,7 @@
     "upload": "上传",
     "delete": "删除",
     "edit": "编辑",
+    "selected": "已选择",
     "view": "查看",
     "back": "返回",
     "next": "下一步",
@@ -34,6 +35,7 @@
   "navigation": {
     "home": "主页",
     "showElementData": "显示元素数据",
+    "segreChart": "Segre Chart",
     "fusionReactions": "聚变反应",
     "fissionReactions": "裂变反应",
     "twoToTwoReactions": "二对二反应",
@@ -43,7 +45,10 @@
     "allTables": "所有表格",
     "privacySettings": "隐私设置",
     "openMenu": "打开菜单",
-    "closeMenu": "关闭菜单"
+    "closeMenu": "关闭菜单",
+    "help": "帮助与术语表",
+    "mullerResonance": "穆勒共振",
+    "transmutations": "嬗变"
   },
   "theme": {
     "lightMode": "浅色模式",
@@ -55,8 +60,8 @@
     "collapse": "折叠侧边栏"
   },
   "footer": {
-    "basedOnWork": "基于亚历山大·帕尔霍莫夫博士的研究",
-    "project": "马丁·弗莱施曼纪念项目"
+    "basedOnWork": "基于<parkhomovLink>亚历山大·帕尔霍莫夫博士</parkhomovLink>的研究",
+    "project": "<mfmpLink>马丁·弗莱施曼纪念项目</mfmpLink>"
   },
   "language": {
     "selectLanguage": "选择语言",
@@ -122,56 +127,44 @@
     "goHome": "返回主页"
   },
   "home": {
-    "title": "Nanosoft软件包",
-    "subtitle": "探索低能核反应（LENR）和冷聚变嬗变途径的交互式工具",
-    "basedOn": "基于亚历山大·帕尔霍莫夫博士的开创性研究",
+    "title": "LENR Academy",
+    "subtitle": "探索低能核嬗变反应、模拟级联过程、可视化衰变链并研究共振现象 — 一切尽在浏览器中",
+    "basedOn": "基于<parkhomovLink>帕尔霍莫夫表</parkhomovLink>和R.W. Greenyer & P.W. Power的原始<nanosoftLink>Nanosoft软件包</nanosoftLink>构建",
     "queryReactions": {
       "title": "查询核反应",
-      "description": "搜索数千种放热聚变、裂变和二对二核嬗变反应",
+      "description": "从帕尔霍莫夫表中搜索数千种放热聚变、裂变和二对二嬗变反应",
       "fusionReactions": "聚变反应",
       "fissionReactions": "裂变反应",
       "twoToTwoReactions": "二对二反应"
     },
     "cascadeSimulations": {
       "title": "级联模拟",
-      "description": "模拟链式反应并预测级联LENR过程的反应产物",
+      "description": "使用材料目录、加权分支和桑基流程可视化模拟链式反应",
       "runSimulations": "运行级联模拟"
     },
     "elementData": {
-      "title": "元素和核素数据",
-      "description": "浏览核性质和化学性质的综合表格",
-      "showElementData": "显示元素数据",
-      "tablesInDetail": "详细表格"
+      "title": "元素、核素与衰变",
+      "description": "交互式元素周期表，包含详细的元素和同位素属性，以及多代衰变链可视化",
+      "showElementData": "元素与核素浏览器",
+      "tablesInDetail": "详细表格",
+      "allTables": "自定义SQL查询"
     },
-    "advancedQueries": {
-      "title": "高级查询",
-      "description": "在所有反应和属性表上执行自定义SQL查询",
-      "allTables": "全表查询工具"
+    "mullerResonance": {
+      "title": "穆勒共振探索器",
+      "description": "研究电子-质子波长共振并预测核活性环境（NAE）",
+      "explore": "探索共振"
     },
-    "parkhomovTables": {
-      "title": "关于帕尔霍莫夫表",
-      "intro": "本软件包基于俄罗斯物理学家<strong>亚历山大·帕尔霍莫夫博士</strong>的开创性工作，他于2018年发表了可能的冷核嬗变反应的综合表格。",
-      "analysisIntro": "通过对280种稳定核素的计算机分析，帕尔霍莫夫博士确定了：",
-      "fusionCount": "<strong>1,389种聚变反应</strong> - 轻元素的结合",
-      "fissionCount": "<strong>817种裂变反应</strong> - 重元素的分裂",
-      "twoToTwoCount": "<strong>516,789种二对二反应</strong> - 核素对的转化",
-      "exothermicNote": "这些表中的所有反应都是<strong>放热反应</strong>（产生能量），代表了低能量下核嬗变的热力学有利途径。",
-      "developers": "由R.W. Greenyer和P.W. Power为马丁·弗莱施曼纪念项目开发"
-    },
-    "originalApp": {
-      "title": "原始应用程序",
-      "description": "这是原始Nanosoft软件包的现代重新实现，原版是作为PHP Web应用程序开发的，用于探索帕尔霍莫夫博士的核嬗变表。",
-      "findAt": "原始应用程序和完整文档可在以下位置找到：",
-      "visitSite": "访问nanosoft.co.nz",
-      "gratitude": "我们感谢R. W. Greenyer和P. W. Power在使这项重要研究变得可访问方面所做的开创性工作。"
+    "aboutData": {
+      "title": "关于数据",
+      "description": "反应数据库来自<strong>亚历山大·帕尔霍莫夫博士</strong>2018年对280种稳定核素的分析，识别出<strong>1,389种聚变</strong>、<strong>817种裂变</strong>和<strong>516,789种二对二</strong>放热反应 — 低能核嬗变的热力学有利途径。最初由R.W. Greenyer和P.W. Power为马丁·弗莱施曼纪念项目开发为<nanosoftLink>Nanosoft软件包</nanosoftLink>。",
+      "visitNanosoft": "访问原始Nanosoft软件包"
     },
     "openSource": {
-      "title": "开源项目",
-      "description": "本项目是开源的，采用GNU Affero通用公共许可证v3.0（AGPL-3.0）授权。我们欢迎社区的贡献、错误报告和功能请求。",
+      "title": "开源",
+      "description": "采用AGPL-3.0许可证。欢迎贡献、错误报告和功能请求。",
       "viewGitHub": "在GitHub上查看",
       "joinDiscussions": "加入讨论",
-      "reportIssue": "报告问题",
-      "requestFeature": "请求功能"
+      "reportIssue": "报告问题"
     }
   },
   "query": {
@@ -196,6 +189,19 @@
     "filters": "筛选器",
     "results": "结果",
     "details": "详细信息"
+  },
+  "queryHistory": {
+    "title": "历史",
+    "recent": "最近",
+    "bookmarked": "已收藏",
+    "clearHistory": "清除",
+    "noHistory": "暂无查询历史",
+    "loadQuery": "加载查询",
+    "querySaved": "查询已保存到历史",
+    "filterAll": "全部",
+    "filterFusion": "聚变",
+    "filterFission": "裂变",
+    "filterTwoToTwo": "2→2"
   },
   "elements": {
     "element": "元素",
@@ -230,6 +236,7 @@
     "selected": "已选择{{count}}个",
     "applySelection": "应用选择",
     "integrated": "集成",
+    "russellChart": "Russell",
     "decays": "衰变",
     "period": "周期",
     "group": "族",
@@ -361,6 +368,11 @@
     "hideBFTypes": "隐藏B/F类型",
     "showBFTypes": "显示B/F类型",
     "exportCsv": "导出CSV",
+    "copyShareLink": "复制分享链接",
+    "copyShareLinkTitle": "将此查询的可分享URL复制到剪贴板",
+    "linkCopied": "链接已复制!",
+    "exportJson": "导出JSON",
+    "exportPdf": "导出PDF",
     "inputs": "输入",
     "output": "输出",
     "outputs": "输出",
@@ -434,9 +446,109 @@
     "radioactive": "放射性",
     "querying": "查询中..."
   },
+  "histogram": {
+    "title": "能量分布",
+    "description": "反应能量（MeV）值的直方图及统计摘要",
+    "xAxisLabel": "能量（MeV）",
+    "yAxisLabel": "数量",
+    "reactions": "反应数",
+    "mean": "平均值",
+    "median": "中位数",
+    "min": "最小值",
+    "max": "最大值",
+    "stddev": "标准差",
+    "count": "总计",
+    "collapse": "折叠直方图",
+    "expand": "展开直方图"
+  },
+  "russellChart": {
+    "title": "拉塞尔图表 — 九八度周期表",
+    "description": "沃尔特·拉塞尔基于波的元素排列方式，将元素分为9个八度，呈蛇形模式，显示生成（充电）和辐射（放电）侧，惰性气体位于平衡点。",
+    "generationSide": "生成（充电）",
+    "radiationSide": "辐射（放电）",
+    "inertGasLabel": "惰性气体（平衡点）",
+    "octave": "八度",
+    "legend": "图例",
+    "legendGeneration": "生成（充电侧）",
+    "legendRadiation": "辐射（放电侧）",
+    "legendInertGas": "惰性气体（平衡点）",
+    "legendCarbon": "碳（最大压缩）",
+    "legendPredicted": "拉塞尔预测",
+    "legendHypothetical": "假设元素",
+    "legendSerpentine": "蛇形流动路径",
+    "clickToView": "点击任何已知元素以查看其在数据库中的属性和同位素",
+    "clickToViewDetails": "点击查看元素详情",
+    "zoomControls": "滚动缩放，拖拽平移，双击放大",
+    "gridView": "网格视图",
+    "waveView": "波形视图",
+    "waveDescription": "元素作为拉塞尔八度波上的点 — 振幅通过生成（压缩）上升至碳的峰值，然后通过辐射（膨胀）下降",
+    "amplitude": "振幅",
+    "octaveAxis": "八度",
+    "carbonPeak": "碳（峰值）",
+    "predictionsTitle": "拉塞尔的预测",
+    "predictionsDescription": "沃尔特·拉塞尔在几种元素被正式发现之前就预测了它们的存在，展示了他基于波的周期系统的预测能力。",
+    "aboutTitle": "关于拉塞尔周期表",
+    "aboutParagraph1": "沃尔特·拉塞尔（1871-1963）在《The Universal One》（1926年）中发表了他的九八度周期表，将所有元素排列成基于波的八度系统。每个八度有一个生成（充电）侧和一个辐射（放电）侧，惰性气体位于平衡点——波的支点。",
+    "aboutParagraph2": "在拉塞尔的宇宙论中，物质由压缩（生成）和膨胀（辐射）的对向螺旋涡旋创造。碳位于振幅处——最大压缩点——使其成为最平衡和稳定的元素。",
+    "aboutParagraph3": "拉塞尔显著地预测了氘（他称为\"Ethlogen\"）、氚（\"Bebegen\"）、镎和钚的存在，比它们在实验室的正式发现早了数年。",
+    "view3D": "3D视图",
+    "view3DControls": "拖动旋转，滚动缩放",
+    "experimentalNote": "此可视化基于拉塞尔1926年的原始图表。拉塞尔的系统与现代周期表有显著不同——它代表了他对物质的哲学和宇宙学模型，而非当代化学使用的量子力学模型。",
+    "predictionFormat": "{{russellName}} → {{modernName}}（{{symbol}}）",
+    "notes": {
+      "hypotheticalFirstInertGas": "假设的第一种惰性气体 - 物质的起源",
+      "hypotheticalSecondInertGas": "假设的第二种惰性气体",
+      "hypotheticalThirdInertGas": "假设的第三种惰性气体",
+      "hypotheticalElement": "拉塞尔体系中的假设元素",
+      "hypotheticalTransUranicInSystem": "拉塞尔体系中的假设超铀元素",
+      "hypotheticalTransUranic": "假设的超铀元素",
+      "hypotheticalFinalInertGas": "假设的最后一种惰性气体 - 物质的终结",
+      "ethlogenPrediction": "拉塞尔预测了「Ethlogen」— 被确认为氘（1931年）",
+      "bebegenPrediction": "拉塞尔预测了「Bebegen」— 被确认为氚（1934年）",
+      "heliumPlacement": "拉塞尔将氦定位为第4八度音阶的惰性气体",
+      "carbonAmplitude": "碳 - 波的振幅；最大压缩点",
+      "neptuniumPrediction": "拉塞尔于1926年预测了第93号元素 - 1940年发现为镎",
+      "plutoniumPrediction": "拉塞尔于1926年预测了第94号元素 - 1941年发现为钚"
+    }
+  },
+  "networkGraph": {
+    "reactionNetwork": "反应网络",
+    "reactionNetworkDesc": "显示元素关系的力导向图",
+    "showNetwork": "显示网络",
+    "hideNetwork": "隐藏网络",
+    "tooManyReactions": "按能量显示前{{count}}个反应",
+    "showAll": "显示全部",
+    "nodeTooltip": "{{element}}：{{count}}个反应",
+    "nodeTooltipFull": "{{element}} (Z={{Z}})：{{count}}个反应",
+    "exothermic": "放热反应 (+MeV)",
+    "endothermic": "吸热反应 (-MeV)",
+    "instructions": "拖动节点重新定位。滚动缩放。",
+    "graphStats": "{{nodes}}个元素，{{links}}个连接"
+  },
+  "segreChart": {
+    "title": "Segre Chart (N-Z Diagram)",
+    "description": "Interactive chart of nuclides plotted by proton number (Z) vs neutron number (N), color-coded by stability",
+    "sectionTitle": "核素图（塞格雷图）",
+    "stable": "Stable (>10⁹ years)",
+    "longHalfLife": "Long half-life (>100 years)",
+    "shortHalfLife": "Short half-life (<100 years)",
+    "unknown": "Unknown half-life",
+    "magicNumbers": "Magic Numbers",
+    "valleyOfStability": "Valley of Stability",
+    "legend": "Legend",
+    "nuclideCount": "{{count}} nuclides displayed",
+    "clickToView": "Click any nuclide to view details",
+    "zoomControls": "Scroll to zoom, drag to pan, double-click to zoom in",
+    "protonNumberAxis": "Proton Number (Z)",
+    "neutronNumberAxis": "Neutron Number (N)",
+    "years": "年",
+    "zoomIn": "放大",
+    "zoomOut": "缩小",
+    "resetZoom": "重置缩放"
+  },
   "cascades": {
     "title": "级联",
-    "description": "探索反应级联和途径",
+    "description": "描述",
     "simulationEngine": "级联模拟引擎",
     "startSimulation": "开始模拟",
     "stopSimulation": "停止模拟",
@@ -518,7 +630,6 @@
     "noMaterialsInCategory": "此类别中没有材料",
     "saveCustomMaterial": "保存自定义材料",
     "name": "名称",
-    "description": "描述",
     "saveCurrentFuelMixture": "这将把您当前的燃料混合物（{{count}}种核素）保存为自定义材料。",
     "saveMaterial": "保存材料",
     "deleteCustomMaterial": "删除此自定义材料？",
@@ -812,6 +923,7 @@
     "executeQuery": "执行查询",
     "clear": "清除",
     "queryError": "查询错误",
+    "readOnlyError": "仅允许只读查询（SELECT）。DROP、CREATE、ALTER、DELETE、INSERT和UPDATE等语句已被禁止以保护数据库。",
     "queryResults": "查询结果: {{count}} 行",
     "executedIn": "执行时间: {{time}}毫秒",
     "exportCsv": "导出CSV",
@@ -859,7 +971,15 @@
     "databaseUpdateAvailable": "数据库更新可用：v{{current}} → v{{available}}",
     "databaseUpdateReady": "数据库更新就绪 (v{{version}}) - 刷新以使用新数据",
     "downloadingUpdate": "正在后台下载更新...",
-    "downloadUpdate": "下载更新"
+    "downloadUpdate": "下载更新",
+    "updating": "更新中..."
+  },
+  "columnToggle": {
+    "title": "自定义可见列",
+    "columns": "列",
+    "showHide": "显示/隐藏列",
+    "resetToDefault": "恢复默认列",
+    "reset": "重置"
   },
   "offline": {
     "youAreOffline": "您已离线",
@@ -940,5 +1060,110 @@
     "legendFlowDashed": "Regeneration (catalyst returns)",
     "catalystCenterLabel": "Catalyst (recycled)",
     "byproductLabel": "byproduct"
+  },
+  "help": {
+    "title": "帮助与术语表",
+    "subtitle": "了解核物理术语、数据库字段，并尝试示例查询来探索LENR嬗变数据。",
+    "exampleQueries": "示例查询",
+    "exampleQueriesDescription": "点击任何示例将其加载到查询页面并执行。",
+    "tryQuery": "试试这个查询",
+    "glossary": "术语表",
+    "searchGlossary": "搜索术语...",
+    "allCategories": "全部",
+    "noResults": "未找到匹配的术语。",
+    "glossaryCount": "{{count}}个术语",
+    "category": {
+      "nuclear": "核物理",
+      "reaction": "反应类型",
+      "database": "数据库字段",
+      "measurement": "测量与单位"
+    }
+  },
+  "mullerResonance": {
+    "title": "穆勒共振探索器",
+    "description": "使用弗里乔夫·穆勒方程 L = Z × Cₑ × 2ᴺ 探索元素之间的电子-质子波长共振，并与帕尔霍莫夫核反应数据库交叉参考。",
+    "equationExplanation": "L = 共振波长，Z = 原子序数，Cₑ = 电子或质子的康普顿波长，N = 八度数（整数）。当N对两种康普顿波长都是精确整数时，两个元素共享跨粒子共振。",
+    "threshold": "失配阈值",
+    "selectElement": "选择一个元素以查找其共振伙伴",
+    "resonantPartners": "共振伙伴",
+    "exactMatches": "精确匹配 (<0.01%)",
+    "withReactions": "具有帕尔霍莫夫反应",
+    "totalReactions": "总反应数",
+    "resonancePairs": "共振对",
+    "topGlobalPairs": "所有元素的顶级共振对",
+    "pair": "对",
+    "noResonantPairs": "在此阈值下未找到共振对。",
+    "partner": "伙伴",
+    "mismatchHeader": "失配",
+    "quality": "质量",
+    "wavelength": "波长",
+    "octaves": "八度 (e/p)",
+    "twoToTwo": "2→2反应",
+    "fusion": "聚变",
+    "avgMeV": "平均MeV",
+    "electronOctave": "电子八度数",
+    "protonOctave": "质子八度数",
+    "qualityLabels": {
+      "exact": "精确",
+      "strong": "强",
+      "moderate": "中等",
+      "weak": "弱"
+    },
+    "aboutTitle": "关于此工具",
+    "about1": "弗里乔夫·穆勒方程 L = Z × C × 2ᴺ 为每个八度的每个元素分配一个共振波长。",
+    "about2": "示例：铜（Z=29）在电子八度N=31和铁（Z=26）在质子八度N=42都产生L = 151.1 mm — 匹配度为0.0008%。",
+    "about3": "显示的反应计数来自帕尔霍莫夫博士的放热核反应表。统计分析显示穆勒共振与帕尔霍莫夫反应密度之间没有显著相关性。此工具是探索性的。",
+    "disclaimer": "注意：穆勒方程产生了优雅的数学，但缺乏共振机制的独立实验验证。此工具用于探索和假设生成。",
+    "tabs": {
+      "resonancePairs": "共振对",
+      "naePredictions": "NAE预测"
+    },
+    "nae": {
+      "title": "NAE晶格预测",
+      "description": "按电子共振波长与Edmund Storms（JCMNS 41, 2026）确定的~1 nm核活性环境（NAE）间隙的接近程度对元素进行排名。高亮元素在低八度具有0.5–2.0 nm范围的共振。",
+      "element": "元素",
+      "octave": "八度 (N)",
+      "electronResonance": "e⁻共振",
+      "naeQuality": "NAE匹配",
+      "naeScore": "NAE评分",
+      "deuteriumOverlap": "D重叠",
+      "deuteriumOctave": "D八度 (N)",
+      "deuteriumMismatch": "D偏差",
+      "phononFrequency": "声子频率",
+      "knownLENR": "已知LENR",
+      "parkhomovReactions": "帕尔霍莫夫反应",
+      "showNAEOnly": "仅显示NAE范围内有共振的元素",
+      "searchPlaceholder": "按元素筛选（逗号分隔）...",
+      "elementsInRange": "NAE范围内元素（0.5–2.0 nm）",
+      "withDOverlap": "有D重叠（<30%）",
+      "confirmedLENR": "已知LENR活性",
+      "qualityLabels": {
+        "optimal": "最佳",
+        "good": "良好",
+        "marginal": "边缘",
+        "distant": "远离"
+      },
+      "lenrLabels": {
+        "strong": "强",
+        "moderate": "中等",
+        "weak": "弱"
+      },
+      "octaveDetail": "八度详情",
+      "electronOctaves": "电子共振八度（N=1–10）",
+      "inNAERange": "在NAE内？",
+      "deuteriumProtonResonance": "氘质子共振重叠",
+      "hostElectron": "宿主电子共振",
+      "dProton": "D质子共振",
+      "overlapMismatch": "重叠偏差",
+      "phononCalc": "声子频率（v_声速 / L）",
+      "lenrRefs": "LENR参考",
+      "noNAEResonance": "低八度无NAE范围共振。",
+      "aboutNAETitle": "关于NAE预测",
+      "aboutNAE1": "Edmund Storms确定冷聚变（LENR）发生在核活性环境（NAE）中——金属晶格中纳米级间隙，通常~1 nm宽（JCMNS 41, 2026）。",
+      "aboutNAE2": "穆勒方程 L = Z × Cₑ × 2ᴺ 在低八度（N=3, N=4）预测各元素的电子共振波长。钯（Z=46）在N=3为0.89 nm，N=4为1.79 nm。",
+      "aboutNAE3": "与氘的重叠引人注目：在质子八度N=20，氘的共振波长为1.39 nm——正好在NAE范围内。",
+      "aboutNAE4": "已知的LENR活性金属（Pd, Ni, Pt, Ti）都在N=3或N=4处具有0.9–1.8 nm范围的电子共振长度。",
+      "naeDisclaimer": "此分析结合了穆勒的共振框架和Storms的NAE模型。两者均为理论模型。结果用于探索和假设生成。"
+    }
   }
 }

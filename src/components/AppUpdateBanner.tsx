@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { RefreshCw, X, Sparkles } from 'lucide-react'
+import { RefreshCw, X, Sparkles, Loader2 } from 'lucide-react'
+import { useRegisterSW } from 'virtual:pwa-register/react'
 import { startVersionPolling, VersionCheckResult } from '../services/versionCheck'
 
 interface AppUpdateBannerProps {
@@ -56,7 +57,13 @@ export default function AppUpdateBanner({ className = '', onVisibilityChange, on
   const [buildTime, setBuildTime] = useState<string | null>(null)
   const [isRendered, setIsRendered] = useState(false)
   const [isActive, setIsActive] = useState(false)
+  const [isUpdating, setIsUpdating] = useState(false)
   const exitTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const fallbackTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  const {
+    updateServiceWorker,
+  } = useRegisterSW()
 
   useEffect(() => {
     if (typeof window === 'undefined') return
@@ -107,6 +114,10 @@ export default function AppUpdateBanner({ className = '', onVisibilityChange, on
         clearTimeout(exitTimerRef.current)
         exitTimerRef.current = null
       }
+      if (fallbackTimerRef.current) {
+        clearTimeout(fallbackTimerRef.current)
+        fallbackTimerRef.current = null
+      }
     }
   }, [])
 
@@ -125,7 +136,31 @@ export default function AppUpdateBanner({ className = '', onVisibilityChange, on
   }
 
   const handleRefresh = () => {
-    window.location.reload()
+    setIsUpdating(true)
+
+    // Clear the fallback timer when the page is about to unload.
+    // This handles the case where updateServiceWorker() successfully
+    // triggers a reload — the timer is no longer needed.
+    const clearFallback = () => {
+      if (fallbackTimerRef.current) {
+        clearTimeout(fallbackTimerRef.current)
+        fallbackTimerRef.current = null
+      }
+    }
+    window.addEventListener('beforeunload', clearFallback, { once: true })
+
+    // Coordinate with the service worker: tell the waiting SW to
+    // skip waiting, activate, and reload the page once ready.
+    // This prevents the double-reload caused by calling reload()
+    // immediately while the SW is still activating.
+    updateServiceWorker(true)
+
+    // Fallback: if no service worker is waiting or update doesn't
+    // trigger a reload within 3 seconds, reload manually.
+    fallbackTimerRef.current = setTimeout(() => {
+      window.removeEventListener('beforeunload', clearFallback)
+      window.location.reload()
+    }, 3000)
   }
 
   const formattedBuildTime = buildTime && !Number.isNaN(Date.parse(buildTime))
@@ -165,10 +200,22 @@ export default function AppUpdateBanner({ className = '', onVisibilityChange, on
             )}
             <button
               onClick={handleRefresh}
-              className="px-4 py-2 bg-white text-amber-600 rounded-md text-sm font-medium hover:bg-amber-50 transition-colors"
+              disabled={isUpdating}
+              className={`px-4 py-2 bg-white text-amber-600 rounded-md text-sm font-medium transition-colors ${
+                isUpdating ? 'opacity-75 cursor-not-allowed' : 'hover:bg-amber-50'
+              }`}
             >
-              <RefreshCw className="w-4 h-4 inline mr-1" aria-hidden="true" />
-              {t('updates.refreshNow')}
+              {isUpdating ? (
+                <>
+                  <Loader2 className="w-4 h-4 inline mr-1 animate-spin" aria-hidden="true" />
+                  {t('updates.updating', 'Updating...')}
+                </>
+              ) : (
+                <>
+                  <RefreshCw className="w-4 h-4 inline mr-1" aria-hidden="true" />
+                  {t('updates.refreshNow')}
+                </>
+              )}
             </button>
             <button
               onClick={handleDismiss}

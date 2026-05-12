@@ -9,9 +9,10 @@
  */
 
 import type { Database } from 'sql.js';
-import type { WeightedNuclide, ProportionFormat } from '../types';
+import type { WeightedNuclide, ProportionFormat, AbundanceSource } from '../types';
 import { getNuclidesForElement, parseNuclideNotation } from './isotopeService';
 import { getNuclideBySymbol } from './queryService';
+import { getIAEAAbundancesForElement } from '../constants/iaeaAbundances';
 
 /**
  * Proportion input as entered by user (before normalization)
@@ -219,12 +220,21 @@ export function convertFormat(
 
 /**
  * Get natural isotopic abundances for an element
- * Returns WeightedNuclide array with proportions from pcaNCrust database field
+ * Returns WeightedNuclide array with proportions from the selected abundance source.
+ *
+ * @param db - sql.js database instance
+ * @param elementSymbol - Element symbol (e.g., 'H', 'Li', 'Ni')
+ * @param source - Abundance data source: 'parkhomov' (default) or 'iaea'
  */
 export function getNaturalAbundances(
   db: Database,
-  elementSymbol: string
+  elementSymbol: string,
+  source: AbundanceSource = 'parkhomov'
 ): WeightedNuclide[] {
+  if (source === 'iaea') {
+    return getIAEANaturalAbundances(db, elementSymbol);
+  }
+
   const nuclides = getNuclidesForElement(db, elementSymbol);
 
   // Filter to only nuclides with abundance data
@@ -245,6 +255,34 @@ export function getNaturalAbundances(
   return withAbundance.map((n) => ({
     nuclideId: n.notation,
     proportion: n.abundance!,
+    sourceType: 'natural' as const,
+  }));
+}
+
+/**
+ * Get natural isotopic abundances from IAEA data.
+ * Falls back to Parkhomov data if IAEA has no data for the element.
+ *
+ * Safety note: This function only falls back to 'parkhomov' (never to another source),
+ * so there is no risk of infinite recursion via getNaturalAbundances.
+ */
+function getIAEANaturalAbundances(
+  db: Database,
+  elementSymbol: string
+): WeightedNuclide[] {
+  const iaeaData = getIAEAAbundancesForElement(elementSymbol);
+
+  if (iaeaData.length === 0) {
+    // IAEA has no abundance data for this element; fall back to Parkhomov
+    console.warn(
+      `IAEA abundance data unavailable for '${elementSymbol}', falling back to Parkhomov source`
+    );
+    return getNaturalAbundances(db, elementSymbol, 'parkhomov');
+  }
+
+  return iaeaData.map((entry) => ({
+    nuclideId: `${entry.symbol}-${entry.a}`,
+    proportion: entry.abundance,
     sourceType: 'natural' as const,
   }));
 }

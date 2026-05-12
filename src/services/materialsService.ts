@@ -11,7 +11,7 @@
  */
 
 import type { Database } from 'sql.js';
-import type { Material, WeightedNuclide, MaterialCategory } from '../types';
+import type { Material, WeightedNuclide, MaterialCategory, AbundanceSource } from '../types';
 import {
   ALL_BUILTIN_MATERIALS,
   NATURAL_ABUNDANCES,
@@ -272,9 +272,13 @@ export function materialToWeightedNuclides(material: Material): WeightedNuclide[
 export function buildNaturalElementMaterial(
   db: Database,
   elementSymbol: string,
-  elementName?: string
+  elementName?: string,
+  abundanceSource: AbundanceSource = 'parkhomov'
 ): Material {
-  const abundances = getNaturalAbundances(db, elementSymbol);
+  const abundances = getNaturalAbundances(db, elementSymbol, abundanceSource);
+  const sourceLabel = abundanceSource === 'iaea'
+    ? 'IAEA NuBase 2020'
+    : 'Database (pcaNCrust)';
 
   return {
     id: `natural-${elementSymbol.toLowerCase()}-dynamic`,
@@ -285,7 +289,7 @@ export function buildNaturalElementMaterial(
       nuclideId: a.nuclideId,
       proportion: a.proportion,
     })),
-    source: 'Database (pcaNCrust)',
+    source: sourceLabel,
     tags: [elementSymbol.toLowerCase(), 'natural', 'dynamic'],
   };
 }

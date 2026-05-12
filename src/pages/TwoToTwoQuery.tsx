@@ -1,7 +1,8 @@
 import { useState, useEffect, useMemo, useCallback, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Download, Info, Loader2, Eye, EyeOff, Radiation, ChevronDown } from 'lucide-react'
-import { useSearchParams, Link } from 'react-router-dom'
+import { Download, FileJson, FileText, Info, Loader2, Eye, EyeOff, Radiation, ChevronDown } from 'lucide-react'
+import ShareQueryButton from '../components/ShareQueryButton'
+import { useSearchParams, Link, useNavigate } from 'react-router-dom'
 import type { TwoToTwoReaction, QueryFilter, Element, Nuclide, HeatmapMode, HeatmapMetrics, AtomicRadiiData, NeutrinoType } from '../types'
 import { useDatabase } from '../contexts/DatabaseContext'
 import { useQueryState } from '../contexts/QueryStateContext'
@@ -13,6 +14,11 @@ import NuclideDetailsCard from '../components/NuclideDetailsCard'
 import DatabaseLoadingCard from '../components/DatabaseLoadingCard'
 import { VirtualizedList } from '../components/VirtualizedList'
 import LimitSelector from '../components/LimitSelector'
+import { exportToJSON, exportToPDF } from '../utils/exportUtils'
+import { useQueryHistory } from '../hooks/useQueryHistory'
+import QueryHistoryPanel from '../components/QueryHistoryPanel'
+import EnergyHistogram from '../components/EnergyHistogram'
+import ReactionNetworkGraph from '../components/ReactionNetworkGraph'
 
 // Default values
 const DEFAULT_ELEMENT1 = ['D']
@@ -28,7 +34,9 @@ export default function TwoToTwoQuery() {
   const { t } = useTranslation()
   const { db, isLoading: dbLoading, error: dbError, downloadProgress } = useDatabase()
   const [searchParams, setSearchParams] = useSearchParams()
+  const navigate = useNavigate()
   const { getTwoToTwoState, updateTwoToTwoState } = useQueryState()
+  const { history, addToHistory, toggleBookmark, removeFromHistory, clearHistory } = useQueryHistory()
   const [elements, setElements] = useState<Element[]>([])
   const [isInitialized, setIsInitialized] = useState(false)
   const [hasRestoredFromContext, setHasRestoredFromContext] = useState(false)
@@ -101,6 +109,18 @@ export default function TwoToTwoQuery() {
   const [selectedElement2, setSelectedElement2] = useState<string[]>(getInitialElement2())
   const [selectedOutputElement3, setSelectedOutputElement3] = useState<string[]>(getInitialOutputElement3())
   const [selectedOutputElement4, setSelectedOutputElement4] = useState<string[]>(getInitialOutputElement4())
+
+  const queryFilter = useMemo<QueryFilter>(() => {
+    const allSelectedElements = [...selectedElement1, ...selectedElement2]
+    return {
+      ...filter,
+      elements: allSelectedElements.length > 0 ? allSelectedElements : undefined,
+      element1List: selectedElement1.length > 0 ? selectedElement1 : undefined,
+      element2List: selectedElement2.length > 0 ? selectedElement2 : undefined,
+      outputElement3List: selectedOutputElement3.length > 0 ? selectedOutputElement3 : undefined,
+      outputElement4List: selectedOutputElement4.length > 0 ? selectedOutputElement4 : undefined,
+    }
+  }, [filter, selectedElement1, selectedElement2, selectedOutputElement3, selectedOutputElement4])
   const [resultElements, setResultElements] = useState<Element[]>([])
   const [nuclides, setNuclides] = useState<Nuclide[]>([])
   const [radioactiveNuclides, setRadioactiveNuclides] = useState<Set<string>>(new Set())
@@ -523,17 +543,6 @@ export default function TwoToTwoQuery() {
 
     setIsQuerying(true)
     try {
-      // Build filter with selected elements
-      const allSelectedElements = [...selectedElement1, ...selectedElement2]
-      const queryFilter: QueryFilter = {
-        ...filter,
-        elements: allSelectedElements.length > 0 ? allSelectedElements : undefined,
-        element1List: selectedElement1.length > 0 ? selectedElement1 : undefined,
-        element2List: selectedElement2.length > 0 ? selectedElement2 : undefined,
-        outputElement3List: selectedOutputElement3.length > 0 ? selectedOutputElement3 : undefined,
-        outputElement4List: selectedOutputElement4.length > 0 ? selectedOutputElement4 : undefined
-      }
-
       const result = queryTwoToTwo(db, queryFilter)
 
       setResults(result.reactions)
@@ -543,6 +552,9 @@ export default function TwoToTwoQuery() {
       setExecutionTime(result.executionTime)
       setTotalCount(result.totalCount)
       setShowResults(true)
+
+      // Save to query history
+      addToHistory('twotwo', queryFilter, result.totalCount)
 
       // Also fetch unlimited results for heatmap if toggle is enabled
       if (useAllResultsForHeatmap && result.totalCount > result.reactions.length) {
@@ -577,6 +589,7 @@ export default function TwoToTwoQuery() {
     a.href = url
     a.download = `twotwo_reactions_${Date.now()}.csv`
     a.click()
+    window.URL.revokeObjectURL(url)
   }
 
   // Table resize handlers (supporting both mouse and touch)
@@ -649,9 +662,30 @@ export default function TwoToTwoQuery() {
 
   return (
     <div className="max-w-7xl mx-auto">
-      <div className="mb-6">
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">{t('reactions.twoToTwoTitle')}</h1>
-        <p className="text-gray-600 dark:text-gray-400">{t('reactions.twoToTwoDescription')}</p>
+      <div className="mb-6 flex items-start justify-between">
+        <div>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">{t('reactions.twoToTwoTitle')}</h1>
+          <p className="text-gray-600 dark:text-gray-400">{t('reactions.twoToTwoDescription')}</p>
+        </div>
+        <QueryHistoryPanel
+          history={history}
+          currentQueryType="twotwo"
+          onLoadQuery={(loadedFilter, queryType) => {
+            if (queryType !== 'twotwo') {
+              const routeMap = { fusion: '/fusion', fission: '/fission', twotwo: '/twotwo' }
+              navigate(routeMap[queryType])
+              return
+            }
+            setSelectedElement1(loadedFilter.element1List || [])
+            setSelectedElement2(loadedFilter.element2List || [])
+            setSelectedOutputElement3(loadedFilter.outputElement3List || [])
+            setSelectedOutputElement4(loadedFilter.outputElement4List || [])
+            setFilter(loadedFilter)
+          }}
+          onToggleBookmark={toggleBookmark}
+          onRemove={removeFromHistory}
+          onClearHistory={() => clearHistory(true)}
+        />
       </div>
 
       {/* Query Builder */}
@@ -998,6 +1032,12 @@ export default function TwoToTwoQuery() {
             </div>
           </div>
 
+          {/* Energy Distribution Histogram */}
+          <EnergyHistogram reactions={filteredResults} />
+
+          {/* Reaction Network Graph */}
+          <ReactionNetworkGraph reactions={filteredResults} reactionType="twotwo" />
+
           <div className="card p-6 pb-0 sm:pb-6">
             <div className="flex justify-between items-center mb-4">
               <div>
@@ -1019,7 +1059,7 @@ export default function TwoToTwoQuery() {
                   )}
                 </p>
               </div>
-              <div className="flex gap-2">
+              <div className="flex flex-wrap gap-2">
                 <button
                   onClick={() => setShowBosonFermion(!showBosonFermion)}
                   className="btn btn-secondary px-4 py-2 text-sm"
@@ -1035,6 +1075,23 @@ export default function TwoToTwoQuery() {
                 >
                   <Download className="w-4 h-4 mr-2 inline" />
                   {t('reactions.exportCsv')}
+                </button>
+                <ShareQueryButton />
+                <button
+                  onClick={() => exportToJSON(results, { queryType: 'twotwo', filter: queryFilter, executionTime, rowCount: results.length, totalCount })}
+                  className="btn btn-secondary px-4 py-2 text-sm"
+                  disabled={results.length === 0}
+                >
+                  <FileJson className="w-4 h-4 mr-2 inline" />
+                  {t('reactions.exportJson')}
+                </button>
+                <button
+                  onClick={() => exportToPDF(results, { queryType: 'twotwo', filter: queryFilter, executionTime, rowCount: results.length, totalCount }).catch((err) => console.error('PDF export failed:', err))}
+                  className="btn btn-secondary px-4 py-2 text-sm"
+                  disabled={results.length === 0}
+                >
+                  <FileText className="w-4 h-4 mr-2 inline" />
+                  {t('reactions.exportPdf')}
                 </button>
               </div>
             </div>

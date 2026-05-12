@@ -383,3 +383,62 @@ gh pr create --title "..." --body "..."  # Create PR
 gh pr checks                   # View PR status checks
 ```
 - When considering E2E tests, let's use the DB to find which elements/nuclides we need to select to put the UI into a state which expresses what we're trying to test
+
+## Contributor Knowledge
+
+This section captures hard-won lessons from contributing to this project. If you're using an LLM (Claude Code, Cursor, etc.) to help contribute, this knowledge is loaded automatically.
+
+### Automated Code Review (Greptile Bot)
+
+Every PR is automatically reviewed by the [greptile](https://greptile.com/) bot. It consistently flags these three issues — address them proactively before submitting:
+
+1. **Theme-aware inline styles**: Any inline `style={{}}` with colors must use `theme === 'dark'` ternaries. Legend swatches, color indicators, and background colors are all caught. Use the `useTheme()` hook.
+2. **Dark mode in SVG/Canvas**: Charts, diagrams, and visualizations need full dark mode support — backgrounds, text, borders, and tooltips must all adapt.
+3. **i18n completeness**: All user-visible strings must use `t()` from `useTranslation()` via react-i18next. There are 7 locales (en, de, es, fr, ja, ru, zh) — add translation keys to all of them. English is the fallback.
+
+**Efficient workflow**: Read ALL greptile comments before starting fixes (they follow patterns). Fix all instances in one commit, then reply to each comment with: "Fixed in `abc1234`. All N instances now use theme-aware colors."
+
+### CI / Playwright E2E Known Issues
+
+- **WebKit E2E tests are flaky**: `preferences`, `query-state-persistence`, `cascade-state-persistence`, `heatmap-metrics`, and `element-data` tests fail intermittently on WebKit. These are pre-existing upstream issues — they fail on maintainer PRs too.
+- **Chromium and Firefox are the reliable indicators** of real failures. If your PR passes on those two, a WebKit-only failure is almost certainly flaky.
+- CI runs take ~17-37 minutes per browser (161MB database download + Playwright E2E suite).
+- The database is downloaded from a static host during CI, not from S3 directly.
+
+### Codebase Conventions (Not Obvious from Code)
+
+- **Pre-existing lint errors are known and accepted** (mostly `no-explicit-any`) — do not fix them as part of unrelated PRs. Check the current count with `npx eslint . 2>&1 | tail -5` before assuming a new error is yours.
+- **`document.execCommand('copy')` return value must be checked** — the maintainer has explicitly requested this for clipboard operations.
+- **Import shared types from `src/types/index.ts`** — do not redeclare types that already exist there.
+- **Query pages follow parallel structure**: `FusionQuery`, `FissionQuery`, and `TwoToTwoQuery` share the same patterns. Changes to one usually need mirroring to the other two.
+- **Collapsible card pattern**: `useState(false)` + `max-h-0/max-h-[800px]` transition + ChevronDown icon rotation.
+- **D3 force graphs**: Follow `CascadeNetworkDiagram` patterns (forceLink, forceManyBody, forceCenter, forceCollide).
+- **Three.js / React Three Fiber**: Check `package.json` for the pinned `@react-three/fiber` and `@react-three/drei` versions before upgrading — they are constrained by the React major version in use. Use `<primitive object={...} />` for `THREE.Line` (not JSX `<line>`).
+- **Always verify current type definitions** in `src/types/index.ts` before writing tests — interfaces evolve and type mismatches are a common PR issue.
+
+### PR Strategy That Works
+
+- **Small, focused, issue-linked PRs** have the highest acceptance rate. Link to an issue with `Fixes #NNN` or `Addresses #NNN`.
+- **Test PRs land easily** — unit tests and E2E tests are merged without review comments.
+- **Visualization PRs get more scrutiny** — dark mode and i18n must be addressed upfront.
+- **Stacked PRs across forks**: GitHub doesn't support using a fork branch as a PR base. Instead, base on `main` and note `Depends on #NNN` in the PR body. When the parent merges, rebase to clean up the diff.
+
+### Fork Contribution Workflow
+
+External contributors work from a fork — see [CONTRIBUTING.md](CONTRIBUTING.md) for setup, branching, and the pull request process. A few rebase tips that catch people out:
+
+- Already-merged commits are auto-dropped by `git rebase` (or use `git rebase --skip`)
+- Stash untracked files with `git stash push -u` (the `-u` flag is essential for new files)
+- After force-push, GitHub may show `mergeable_state: dirty` temporarily — it recalculates in ~2 minutes
+
+### Test Coverage
+
+The project has substantial unit test coverage (Vitest) and E2E coverage (Playwright). To see current counts and coverage gaps:
+
+```bash
+find src -name '*.test.ts' -o -name '*.test.tsx' | wc -l   # unit test files
+find tests/e2e -name '*.spec.ts' | wc -l                   # E2E spec files
+npx vitest run --coverage                                  # coverage report
+```
+
+Compare the covered file list against `src/pages/` and `src/components/` to find gaps. When writing E2E tests, use the database to find which elements/nuclides to select to put the UI into the state you need to test — don't hardcode element names that might not have relevant data.

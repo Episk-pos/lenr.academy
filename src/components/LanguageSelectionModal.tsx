@@ -145,13 +145,13 @@ export default function LanguageSelectionModal({ isOpen, onClose }: LanguageSele
         <div className="flex items-center justify-end gap-3 p-6 border-t dark:border-gray-700">
           <button
             onClick={handleCancel}
-            className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md transition-colors"
+            className="min-w-[6rem] px-4 py-2 text-sm font-medium text-center text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md transition-colors"
           >
             {t('common.cancel')}
           </button>
           <button
             onClick={handleConfirm}
-            className="px-4 py-2 text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 rounded-md transition-colors flex items-center gap-2"
+            className="min-w-[14rem] px-4 py-2 text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 rounded-md transition-colors flex items-center justify-center gap-2"
           >
             <Check className="w-4 h-4" />
             {t('language.confirmSelection')}

@@ -37,9 +37,9 @@ function SentryTest() {
 
         // Simulate some work
         const start = Date.now()
-        let sum = 0
+        let _sum = 0
         for (let i = 0; i < 1000000; i++) {
-          sum += i
+          _sum += i
         }
         const duration = Date.now() - start
 
