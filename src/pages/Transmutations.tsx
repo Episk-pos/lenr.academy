@@ -23,6 +23,7 @@ import {
 } from '../services/transmutationPathwayService'
 import TransmutationArrow from '../components/TransmutationArrow'
 import NuclideEquation from '../components/NuclideEquation'
+import DatabaseLoadingCard from '../components/DatabaseLoadingCard'
 
 const CATEGORY_KEYS: TransmutationCategory[] = [
   'solid-state',
@@ -48,7 +49,7 @@ interface PathwaySearchState {
 
 export default function Transmutations() {
   const { t } = useTranslation()
-  const { db, isLoading: dbLoading } = useDatabase()
+  const { db, isLoading: dbLoading, downloadProgress } = useDatabase()
   const [categoryFilter, setCategoryFilter] = useState<'all' | TransmutationCategory>('all')
   const [labFilter, setLabFilter] = useState<string>('all')
   const [searches, setSearches] = useState<Record<string, PathwaySearchState>>({})
@@ -176,6 +177,10 @@ export default function Transmutations() {
         },
       }))
     }
+  }
+
+  if (dbLoading || !db) {
+    return <DatabaseLoadingCard downloadProgress={downloadProgress} />
   }
 
   return (

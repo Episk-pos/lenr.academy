@@ -5,11 +5,6 @@ import {
 } from '../fixtures/test-helpers';
 
 test.describe('Transmutations Page', () => {
-  // The 60s global timeout is consumed by waitForDatabaseReady on cold-cache
-  // CI runs, leaving insufficient budget for the in-test toBeEnabled/toBeVisible
-  // waits. Override per-suite so the DB-load + pathway-search has 3 minutes.
-  test.describe.configure({ timeout: 180_000 });
-
   test.beforeEach(async ({ page }) => {
     await acceptPrivacyConsent(page);
     await page.goto('/transmutations');
@@ -35,24 +30,18 @@ test.describe('Transmutations Page', () => {
   });
 
   test('finds Parkhomov pathways for first card without errors', async ({ page }) => {
-    // Click the first "Find pathways" button (Iwamura Cs → Pr).
-    // The button is disabled until the React context's dbReady flag flips,
-    // which can lag behind the database-loading DOM marker waitForDatabaseReady
-    // checks for — especially on Firefox with a fresh (uncached) DB download.
-    // Use a generous timeout so the test doesn't flake on cold-cache CI runs.
     const firstButton = page
       .getByTestId(/find-pathways-/)
       .first();
-    await expect(firstButton).toBeEnabled({ timeout: 30000 });
+    await expect(firstButton).toBeEnabled();
     await firstButton.click();
 
-    // Wait for either pathway results or "no pathways found" to appear.
-    // We don't assert which — both are valid outcomes for the first cut.
+    // Either pathway results or "no pathways found" is a valid outcome.
     await expect(
       page
         .getByText(/Candidate pathways|No 1- or 2-step pathway found/i)
         .first()
-    ).toBeVisible({ timeout: 30000 });
+    ).toBeVisible();
   });
 
   test('category filter narrows the visible cards', async ({ page }) => {
