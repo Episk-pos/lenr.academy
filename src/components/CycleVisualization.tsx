@@ -148,6 +148,44 @@ function getFlowColor(index: number) {
 }
 
 // ---------------------------------------------------------------------------
+// Layout constants for the circular cycle diagram (CycleNetworkDiagram).
+// Pixel measurements assume the SVG is drawn at the natural size below; CSS
+// scales it down on smaller viewports.
+// ---------------------------------------------------------------------------
+
+/** Geometric constants for the circular layout of reaction nodes. */
+const LAYOUT = {
+  /** Centre X of the circular layout. */
+  cx: 320,
+  /** Centre Y of the circular layout. */
+  cy: 280,
+  /** Width of each reaction node rectangle. */
+  nodeW: 200,
+  /** Height of each reaction node rectangle. */
+  nodeH: 56,
+  /** Padding added around (cx,cy) to compute SVG width/height. */
+  canvasPadding: 40,
+  /** Minimum radius for the node ring — n=1..4 stays at the floor. */
+  radiusFloor: 110,
+  /** Maximum radius cap so very-large cycles don't push nodes off-canvas. */
+  radiusCap: 200,
+  /** Radius added per additional reaction node beyond the floor count. */
+  radiusPerNode: 22,
+  /** Fraction of node width used to bias the perimeter radius outward. */
+  perimeterNodeWidthShare: 0.35,
+  /** Outward bias factor applied to whichever dim wins between H and W*share. */
+  perimeterRadiusBias: 0.6,
+  /** Inner edge of node-emission rays, measured from node centre. */
+  rayStartScale: 0.55,
+  /** Outward extension past the perimeter where emission rays end. */
+  rayEndExtension: 32,
+  /** Closing-arc bend factor: base + (proportional to chord/diameter ratio). */
+  closingArcBendBase: 0.2,
+  /** Additional bend factor scaled by chord-to-diameter ratio. */
+  closingArcBendRange: 0.4,
+} as const
+
+// ---------------------------------------------------------------------------
 // Sub-components
 // ---------------------------------------------------------------------------
 
@@ -296,11 +334,11 @@ function CycleLoopDiagram({
   const n = reactions.length
 
   // Layout
-  const cx = 320
-  const cy = 280
-  const radius = Math.min(200, 110 + n * 22)
-  const nodeW = 200
-  const nodeH = 56
+  const { cx, cy, nodeW, nodeH } = LAYOUT
+  const radius = Math.min(
+    LAYOUT.radiusCap,
+    LAYOUT.radiusFloor + n * LAYOUT.radiusPerNode
+  )
 
   // Angle for each reaction node (starting from top, going clockwise)
   const angles = reactions.map((_, i) => (i / n) * 2 * Math.PI - Math.PI / 2)
@@ -340,11 +378,14 @@ function CycleLoopDiagram({
     return { x: to.x, y: faceY }
   }
 
-  const svgW = cx * 2 + 40
-  const svgH = cy * 2 + 40
+  const svgW = cx * 2 + LAYOUT.canvasPadding
+  const svgH = cy * 2 + LAYOUT.canvasPadding
 
   // Outer perimeter radius (where bold cycle arrows hug the outside of nodes)
-  const perimeterRadius = radius + Math.max(nodeH, nodeW * 0.35) * 0.6
+  const perimeterRadius =
+    radius +
+    Math.max(nodeH, nodeW * LAYOUT.perimeterNodeWidthShare) *
+      LAYOUT.perimeterRadiusBias
 
   // Build flow arcs (intermediary, demoted to hairlines through the centre)
   const flowArcs = flows.map((f) => {
@@ -364,8 +405,8 @@ function CycleLoopDiagram({
       // Stagger multiple byproducts by spreading them along a small arc
       const spread = (i - (keys.length - 1) / 2) * 0.12
       const rayAngle = a + spread
-      const rayStartR = radius + nodeH * 0.55
-      const rayEndR = perimeterRadius + 32
+      const rayStartR = radius + nodeH * LAYOUT.rayStartScale
+      const rayEndR = perimeterRadius + LAYOUT.rayEndExtension
       byproductRays.push({
         stepIdx,
         nuclideKey: key,
@@ -533,7 +574,9 @@ function CycleLoopDiagram({
         const midX = (arc.from.x + arc.to.x) / 2
         const midY = (arc.from.y + arc.to.y) / 2
         const chordLen = Math.hypot(arc.to.x - arc.from.x, arc.to.y - arc.from.y)
-        const bendFactor = 0.2 + 0.4 * Math.min(1, chordLen / (2 * radius))
+        const bendFactor =
+          LAYOUT.closingArcBendBase +
+          LAYOUT.closingArcBendRange * Math.min(1, chordLen / (2 * radius))
         const ctrlX = midX + (cx - midX) * bendFactor
         const ctrlY = midY + (cy - midY) * bendFactor
 
