@@ -7,12 +7,13 @@ import type { SpecialParticleInfo } from '../constants/specialParticles';
 const mockParticle: SpecialParticleInfo = {
   id: 'e-',
   name: 'Electron',
+  nameKey: 'elements.particleElectron',
   displaySymbol: 'e⁻',
   description: 'A fundamental lepton with negative charge.',
   atomicNumber: -1,
   massNumber: 0,
   charge: -1,
-  position: { period: 2, group: 5 },
+  position: { period: 1, group: 5 },
 };
 
 const mockNuclide: Nuclide = {

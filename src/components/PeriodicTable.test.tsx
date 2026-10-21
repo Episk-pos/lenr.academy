@@ -108,11 +108,29 @@ describe('PeriodicTable', () => {
   it('calls onParticleClick when particle button is clicked', () => {
     const onParticleClick = vi.fn();
     render(<PeriodicTable {...defaultProps} onParticleClick={onParticleClick} />);
-    // Special particles section should be rendered
-    const neutronButton = screen.queryByText('n');
-    if (neutronButton) {
-      fireEvent.click(neutronButton);
-      expect(onParticleClick).toHaveBeenCalled();
-    }
+    // Particle tiles expose their full name as the accessible name
+    fireEvent.click(screen.getByRole('button', { name: 'Neutron' }));
+    expect(onParticleClick).toHaveBeenCalledWith('n*');
+  });
+
+  it('renders D/T tiles with mass numbers and Z=1 tooltip', () => {
+    render(<PeriodicTable {...defaultProps} />);
+    const deuterium = screen.getByRole('button', { name: 'D' });
+    expect(deuterium).toHaveTextContent('2D');
+    expect(deuterium.getAttribute('title')).toContain('Z=1');
+    expect(screen.getByRole('button', { name: 'T' })).toHaveTextContent('3T');
+  });
+
+  it('places D, T and particles as grid cells in period 1 between H and He', () => {
+    render(<PeriodicTable {...defaultProps} />);
+    const hydrogen = screen.getByTitle('H (Z=1)');
+    const row = Array.from(hydrogen.parentElement!.children).slice(0, 18);
+    expect(row[0]).toBe(hydrogen);
+    expect(row[1]).toHaveTextContent('2D');
+    expect(row[2]).toHaveTextContent('3T');
+    expect(row[4]).toHaveAttribute('aria-label', 'Electron');
+    expect(row[5]).toHaveAttribute('aria-label', 'Neutron');
+    expect(row[6]).toHaveAttribute('aria-label', 'Neutrino');
+    expect(row[17]).toHaveTextContent('2He');
   });
 });

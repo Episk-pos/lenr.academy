@@ -4,7 +4,7 @@ import { ChevronDown, X, Radiation } from 'lucide-react'
 import type { Element } from '../types'
 import { useDatabase } from '../contexts/DatabaseContext'
 import { hasOnlyRadioactiveIsotopes } from '../services/queryService'
-import { SPECIAL_PARTICLES } from '../constants/specialParticles'
+import { SPECIAL_PARTICLES, HYDROGEN_ISOTOPE_TILES } from '../constants/specialParticles'
 import NuclidePickerModal from './NuclidePickerModal'
 import { parseNuclideNotation } from '../services/isotopeService'
 
@@ -20,15 +20,14 @@ interface PeriodicTableSelectorProps {
   disableHydrogenIsotopes?: boolean // When true, D and T buttons are hidden (nuclide mode only)
 }
 
-const HYDROGEN_ISOTOPES = [
-  { symbol: 'D', label: 'Deuterium (2H)' },
-  { symbol: 'T', label: 'Tritium (3H)' }
-]
+// Special tiles (hydrogen isotopes + particles) keyed by "period-group" grid position
+const ISOTOPE_TILES_BY_POSITION = HYDROGEN_ISOTOPE_TILES.reduce<Record<string, typeof HYDROGEN_ISOTOPE_TILES[number]>>((acc, isotope) => {
+  acc[`${isotope.position.period}-${isotope.position.group}`] = isotope
+  return acc
+}, {})
 
-const ISOTOPE_BUTTON_COMMON = 'periodic-cell-isotope-base';
-
-const SPECIAL_PARTICLES_BY_GROUP = SPECIAL_PARTICLES.reduce<Record<number, typeof SPECIAL_PARTICLES[number]>>((acc, particle) => {
-  acc[particle.position.group] = particle
+const PARTICLES_BY_POSITION = SPECIAL_PARTICLES.reduce<Record<string, typeof SPECIAL_PARTICLES[number]>>((acc, particle) => {
+  acc[`${particle.position.period}-${particle.position.group}`] = particle
   return acc
 }, {})
 
@@ -234,7 +233,7 @@ export default function PeriodicTableSelector({
   // Create a set of available element symbols for quick lookup
   const availableSymbols = new Set(availableElements.map(el => el.E))
   if (availableSymbols.has('H')) {
-    HYDROGEN_ISOTOPES.forEach(isotope => availableSymbols.add(isotope.symbol))
+    HYDROGEN_ISOTOPE_TILES.forEach(isotope => availableSymbols.add(isotope.symbol))
   }
   SPECIAL_PARTICLES.forEach(particle => availableSymbols.add(particle.id))
 
@@ -254,26 +253,43 @@ const allElementNames: Record<number, string> = {
     111: 'Rg', 112: 'Cn', 113: 'Nh', 114: 'Fl', 115: 'Mc', 116: 'Lv', 117: 'Ts', 118: 'Og'
 }
 
-  const renderParticleButton = (particle: (typeof SPECIAL_PARTICLES)[number]) => {
+  const renderParticleTile = (particle: (typeof SPECIAL_PARTICLES)[number]) => {
     const isSelected = selectedElements.includes(particle.id)
+    const name = t(particle.nameKey)
     return (
-      <div className="periodic-particle-cell">
-        <button
-          type="button"
-          onClick={() => toggleElement(particle.id)}
-          className={`
-            periodic-particle-button
-            ${isSelected
-              ? 'periodic-particle-selected'
-              : ''}
-          `}
-        >
-          {particle.displaySymbol}
-        </button>
-        <span className="periodic-particle-label">
-          {particle.name}
-        </span>
-      </div>
+      <button
+        key={`particle-${particle.id}`}
+        type="button"
+        onClick={() => toggleElement(particle.id)}
+        className={`periodic-cell periodic-cell-particle ${isSelected ? 'periodic-cell-selected' : ''}`}
+        title={name}
+        aria-label={name}
+      >
+        <div className="periodic-cell-symbol">{particle.displaySymbol}</div>
+      </button>
+    )
+  }
+
+  const renderIsotopeTile = (isotope: (typeof HYDROGEN_ISOTOPE_TILES)[number]) => {
+    const key = `isotope-${isotope.symbol}`
+    if (disableHydrogenIsotopes) {
+      return <div key={key} className="periodic-cell-empty" />
+    }
+    const isotopeAvailable = availableSymbols.has(isotope.symbol)
+    const isotopeSelected = selectedElements.includes(isotope.symbol)
+    const title = t('elements.hydrogenIsotopeTitle', { name: t(isotope.nameKey), massNumber: isotope.massNumber })
+    return (
+      <button
+        key={key}
+        onClick={() => isotopeAvailable && toggleElement(isotope.symbol)}
+        disabled={!isotopeAvailable}
+        className={`periodic-cell periodic-cell-isotope ${isotopeSelected ? 'periodic-cell-selected' : ''} ${!isotopeAvailable ? 'periodic-cell-disabled' : ''}`}
+        title={isotopeAvailable ? title : `${title} - ${t('elements.notAvailableInDatabase', { defaultValue: 'Not available in database' })}`}
+      >
+        {/* Mass number sits in the atomic-number slot; hidden from the accessible name so the button stays "D"/"T" */}
+        <div className="periodic-cell-number" aria-hidden="true">{isotope.massNumber}</div>
+        <div className="periodic-cell-symbol">{isotope.symbol}</div>
+      </button>
     )
   }
 
@@ -299,6 +315,15 @@ const allElementNames: Record<number, string> = {
   const renderCell = (period: number, group: number) => {
     const key = `${period}-${group}`
     const cellData = elementsByPosition[key]
+
+    const isotopeTile = ISOTOPE_TILES_BY_POSITION[key]
+    if (isotopeTile) {
+      return renderIsotopeTile(isotopeTile)
+    }
+    const particleTile = PARTICLES_BY_POSITION[key]
+    if (particleTile) {
+      return renderParticleTile(particleTile)
+    }
 
     if (!cellData) {
       return <div key={key} className="periodic-cell-empty" />
@@ -334,51 +359,16 @@ const allElementNames: Record<number, string> = {
       </>
     )
 
-    if (symbol !== 'H') {
-      return (
-        <button
-          key={key}
-          onClick={() => isAvailable && toggleElement(symbol)}
-          disabled={!isAvailable}
-          className={`periodic-cell ${isSelected ? 'periodic-cell-selected' : ''} ${!isAvailable ? 'periodic-cell-disabled' : ''}`}
-          title={buttonTitle}
-        >
-          {buttonChildren}
-        </button>
-      )
-    }
-
     return (
-      <div key={key} className="periodic-cell-wrapper">
-        <button
-          onClick={() => isAvailable && toggleElement(symbol)}
-          disabled={!isAvailable}
-          className={`periodic-cell ${isSelected ? 'periodic-cell-selected' : ''} ${!isAvailable ? 'periodic-cell-disabled' : ''}`}
-          title={buttonTitle}
-        >
-          {buttonChildren}
-        </button>
-        {/* Only show D and T buttons if not disabled */}
-        {!disableHydrogenIsotopes && (
-          <div className="periodic-cell-isotope-group">
-            {HYDROGEN_ISOTOPES.map(isotope => {
-              const isotopeAvailable = availableSymbols.has(isotope.symbol)
-              const isotopeSelected = selectedElements.includes(isotope.symbol)
-              return (
-                <button
-                  key={isotope.symbol}
-                  onClick={() => isotopeAvailable && toggleElement(isotope.symbol)}
-                  disabled={!isotopeAvailable}
-                  className={`${ISOTOPE_BUTTON_COMMON} ${isotopeSelected ? 'periodic-cell-isotope-selected' : ''} ${!isotopeAvailable ? 'periodic-cell-isotope-disabled' : ''}`}
-                  title={`${isotope.label} - hydrogen isotope`}
-                >
-                  {isotope.symbol}
-                </button>
-              )
-            })}
-          </div>
-        )}
-      </div>
+      <button
+        key={key}
+        onClick={() => isAvailable && toggleElement(symbol)}
+        disabled={!isAvailable}
+        className={`periodic-cell ${isSelected ? 'periodic-cell-selected' : ''} ${!isAvailable ? 'periodic-cell-disabled' : ''}`}
+        title={buttonTitle}
+      >
+        {buttonChildren}
+      </button>
     )
   }
 
@@ -411,8 +401,10 @@ const allElementNames: Record<number, string> = {
             const parsed = parseNuclideNotation(symbol)
             const elementSymbol = parsed?.element || symbol
             const element = availableElements.find(e => e.E === elementSymbol)
-            const isotopeLabel = HYDROGEN_ISOTOPES.find(isotope => isotope.symbol === symbol)?.label
-            const particleLabel = SPECIAL_PARTICLES.find(p => p.id === symbol)?.name
+            const isotopeInfo = HYDROGEN_ISOTOPE_TILES.find(isotope => isotope.symbol === symbol)
+            const isotopeLabel = isotopeInfo ? t(isotopeInfo.nameKey) : undefined
+            const particleInfo = SPECIAL_PARTICLES.find(p => p.id === symbol)
+            const particleLabel = particleInfo ? t(particleInfo.nameKey) : undefined
 
             // In nuclide mode, show isotope notation; in element mode, show element name
             const displayLabel = mode === 'nuclide' && parsed
@@ -487,16 +479,8 @@ const allElementNames: Record<number, string> = {
             <div className="periodic-row">
               {[1, 2, 3, 4, 5, 6, 7].map(period =>
                 [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18].map(group => {
-                  // Skip groups 3-12 for periods 1-3 (they don't have elements there)
-                  if (period === 1 && group >= 3 && group <= 12) {
-                    return <div key={`${period}-${group}`} className="periodic-cell-empty" />
-                  }
-                  if (period === 2 && group >= 3 && group <= 12) {
-                    return <div key={`${period}-${group}`} className="periodic-cell-empty" />
-                  }
-                  if (period === 3 && group >= 3 && group <= 12) {
-                    return <div key={`${period}-${group}`} className="periodic-cell-empty" />
-                  }
+                  // Groups 3-12 of periods 1-3 have no elements; renderCell fills them with
+                  // empty spacers, except for the D/T and particle tiles placed in period 1.
                   // Skip lanthanide/actinide positions
                   if ((period === 6 || period === 7) && group === 3) {
                     return (
@@ -512,32 +496,6 @@ const allElementNames: Record<number, string> = {
                   return renderCell(period, group)
                 })
               )}
-            </div>
-
-            {/* Particle overlay - positioned to appear in period 2, columns 3-12 */}
-            <div
-              className="absolute pointer-events-none"
-              style={{
-                top: 'calc((28px + 2px) * 1 + 2px)', // After period 1 (min-height 28px from CSS) + gaps
-                left: 'calc((28px + 2px) * 2 + 2px)', // After columns 1-2 + gaps
-                width: 'calc((28px + 2px) * 10)', // Span 10 columns
-                display: 'flex',
-                justifyContent: 'center',
-                gap: '2px',
-              }}
-            >
-              {Array.from({ length: 10 }, (_, idx) => {
-                const groupNumber = idx + 3
-                const particle = SPECIAL_PARTICLES_BY_GROUP[groupNumber]
-                if (!particle) {
-                  return <div key={groupNumber} style={{ flex: 1 }} />
-                }
-                return (
-                  <div key={groupNumber} style={{ flex: 1, display: 'flex', justifyContent: 'center' }} className="pointer-events-auto">
-                    {renderParticleButton(particle)}
-                  </div>
-                )
-              })}
             </div>
           </div>
 
@@ -563,16 +521,20 @@ const allElementNames: Record<number, string> = {
 
           {/* Legend */}
           <div className="border-t border-gray-200 dark:border-gray-700 pt-3 mt-4">
-            <div className="flex items-center gap-2 text-xs text-gray-600 dark:text-gray-400">
+            <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-gray-600 dark:text-gray-400">
               <span className="flex items-center gap-1">
                 <span className="font-semibold">{t('elements.legend')}:</span>
                 <Radiation className="w-3 h-3 text-red-600 dark:text-red-400" />
                 <span>= {t('elements.noStableIsotopes')}</span>
               </span>
               <span className="flex items-center gap-1">
-                <span className={`${ISOTOPE_BUTTON_COMMON} legend-swatch`}>D</span>
-                <span className={`${ISOTOPE_BUTTON_COMMON} legend-swatch`}>T</span>
+                <span className="periodic-cell periodic-cell-isotope legend-swatch" aria-hidden="true">D</span>
+                <span className="periodic-cell periodic-cell-isotope legend-swatch" aria-hidden="true">T</span>
                 <span>= {t('elements.hydrogenIsotopes')}</span>
+              </span>
+              <span className="flex items-center gap-1">
+                <span className="periodic-cell periodic-cell-particle legend-swatch" aria-hidden="true">e⁻</span>
+                <span>= {t('elements.specialParticles')}</span>
               </span>
             </div>
           </div>
@@ -587,133 +549,10 @@ const allElementNames: Record<number, string> = {
           gap: 2px;
         }
 
-        .periodic-cell-wrapper {
-          position: relative;
-          display: inline-flex;
-        }
-
         .periodic-row {
           display: grid;
           grid-template-columns: repeat(18, 1fr);
           gap: 2px;
-        }
-
-        .periodic-particle-band {
-          display: flex;
-          align-items: flex-end;
-          justify-content: center;
-          pointer-events: none;
-        }
-
-        .periodic-particle-grid {
-          pointer-events: auto;
-          width: 100%;
-          display: grid;
-          grid-template-columns: repeat(10, 1fr);
-          gap: 2px;
-          align-items: end;
-        }
-
-        .periodic-particle-cell-wrapper {
-          display: flex;
-          justify-content: center;
-          align-items: flex-end;
-        }
-
-        .periodic-particle-cell {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          gap: 4px;
-        }
-
-        .periodic-particle-button {
-          width: 20px;
-          height: 20px;
-          border: 1px dashed rgba(59, 130, 246, 0.6);
-          border-radius: 6px;
-          display: inline-flex;
-          align-items: center;
-          justify-content: center;
-          font-size: 0.65rem;
-          font-weight: 600;
-          background: rgba(255, 255, 255, 0.8);
-          color: rgba(59, 130, 246, 0.9);
-          transition: all 0.15s ease;
-          cursor: pointer;
-        }
-
-        @media (min-width: 640px) {
-          .periodic-particle-button {
-            width: 24px;
-            height: 24px;
-            border-radius: 8px;
-            font-size: 0.75rem;
-          }
-        }
-
-        @media (min-width: 1024px) {
-          .periodic-particle-button {
-            width: 28px;
-            height: 28px;
-            border-radius: 10px;
-            font-size: 0.8rem;
-          }
-        }
-
-        .dark .periodic-particle-button {
-          background: rgba(55, 65, 81, 0.8);
-          color: rgba(191, 219, 254, 0.9);
-          border-color: rgba(96, 165, 250, 0.6);
-        }
-
-        .periodic-particle-button:hover {
-          background: rgba(191, 219, 254, 0.6);
-        }
-
-        .dark .periodic-particle-button:hover {
-          background: rgba(59, 130, 246, 0.25);
-        }
-
-        .periodic-particle-selected {
-          background: rgba(59, 130, 246, 0.2);
-          border-color: rgb(59, 130, 246);
-          color: rgb(30, 64, 175);
-          box-shadow: 0 0 8px rgba(59, 130, 246, 0.3);
-        }
-
-        .dark .periodic-particle-selected {
-          background: rgba(59, 130, 246, 0.3);
-          color: #bfdbfe;
-          border-color: #60a5fa;
-        }
-
-        .periodic-particle-label {
-          text-transform: uppercase;
-          font-size: 0.5rem;
-          color: #6b7280;
-          text-align: center;
-          line-height: 1;
-        }
-
-        @media (min-width: 640px) {
-          .periodic-particle-label {
-            font-size: 0.55rem;
-          }
-        }
-
-        @media (min-width: 1024px) {
-          .periodic-particle-label {
-            font-size: 0.6rem;
-          }
-        }
-
-        .dark .periodic-particle-label {
-          color: #9ca3af;
-        }
-
-        .periodic-particle-spacer {
-          pointer-events: none;
         }
 
         .periodic-cell {
@@ -790,6 +629,49 @@ const allElementNames: Record<number, string> = {
           color: #e5e7eb;
         }
 
+        /*
+         * Hydrogen isotope (D, T) and particle (e-, n0, nu) tile variants.
+         * Declared before the hover/selected/disabled rules so those states
+         * override the variant tint with identical behavior to element tiles.
+         */
+        .periodic-cell-isotope {
+          background: #f0f9ff;
+          border-color: #bae6fd;
+        }
+
+        .periodic-cell-isotope::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: 3px;
+          right: 3px;
+          height: 2px;
+          border-radius: 0 0 2px 2px;
+          background: #38bdf8;
+        }
+
+        .dark .periodic-cell-isotope {
+          background: #1e3a4c;
+          border-color: #0e7490;
+        }
+
+        .dark .periodic-cell-isotope::before {
+          background: #0ea5e9;
+        }
+
+        .periodic-cell-particle {
+          border-style: dashed;
+          border-color: #a78bfa;
+          background: #f5f3ff;
+          color: #5b21b6;
+        }
+
+        .dark .periodic-cell-particle {
+          border-color: #7c3aed;
+          background: #2e1f4f;
+          color: #ddd6fe;
+        }
+
         .periodic-cell:hover {
           border-color: #3b82f6;
           background: #eff6ff;
@@ -812,6 +694,7 @@ const allElementNames: Record<number, string> = {
         .dark .periodic-cell-selected {
           background: #2563eb;
           border-color: #1d4ed8;
+          color: white;
         }
 
         .periodic-cell-selected:hover {
@@ -847,101 +730,6 @@ const allElementNames: Record<number, string> = {
           font-size: 10px;
           font-weight: 600;
           line-height: 1;
-        }
-
-        .periodic-cell-isotope-group {
-          position: absolute;
-          left: 100%;
-          top: 50%;
-          transform: translateY(-50%);
-          display: flex;
-          flex-direction: row;
-          align-items: center;
-          gap: 6px;
-          margin-left: 6px;
-        }
-
-        .periodic-cell-isotope-base {
-          display: grid;
-          place-items: center;
-          min-width: 18px;
-          min-height: 18px;
-          padding: 2px 4px;
-          border: 1px dashed #d1d5db;
-          border-radius: 4px;
-          background: #ffffff;
-          font-size: 11px;
-          font-weight: 600;
-          cursor: pointer;
-          transition: all 0.15s ease;
-        }
-
-        @media (min-width: 640px) {
-          .periodic-cell-isotope-base {
-            min-width: 22px;
-            min-height: 22px;
-            padding: 2px 6px;
-            border-radius: 6px;
-            font-size: 13px;
-          }
-        }
-
-        @media (min-width: 1024px) {
-          .periodic-cell-isotope-base {
-            min-width: 26px;
-            min-height: 26px;
-            padding: 3px 7px;
-            font-size: 14px;
-          }
-        }
-
-        .periodic-cell-isotope-base:hover:not(.periodic-cell-isotope-disabled) {
-          border-color: #3b82f6;
-          background: #eff6ff;
-          transform: scale(1.05);
-          box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
-        }
-
-        .periodic-cell-isotope-selected {
-          background: #3b82f6;
-          border-color: #2563eb;
-          color: #ffffff;
-        }
-
-        .dark .periodic-cell-isotope-base {
-          background: #1f2937;
-          border-color: #4b5563;
-          color: #e5e7eb;
-        }
-
-        .dark .periodic-cell-isotope-base:hover:not(.periodic-cell-isotope-disabled) {
-          background: #1e3a8a;
-          border-color: #60a5fa;
-        }
-
-        .dark .periodic-cell-isotope-selected {
-          background: #2563eb;
-          border-color: #1d4ed8;
-        }
-
-        .periodic-cell-isotope-disabled {
-          opacity: 0.4;
-          cursor: not-allowed;
-          background: #f3f4f6;
-          color: #9ca3af;
-        }
-
-        .periodic-cell-isotope-disabled:hover {
-          transform: none;
-          box-shadow: none;
-          border-color: #d1d5db;
-          background: #f3f4f6;
-        }
-
-        .dark .periodic-cell-isotope-disabled {
-          background: #1f2937;
-          border-color: #4b5563;
-          color: #6b7280;
         }
 
         .legend-swatch {
@@ -1030,6 +818,16 @@ const allElementNames: Record<number, string> = {
         .dark .periodic-cell-disabled:hover {
           border-color: #4b5563;
           background: #1f2937;
+        }
+
+        .periodic-cell.legend-swatch {
+          display: inline-flex;
+          min-width: 20px;
+          min-height: 20px;
+          padding: 0 3px;
+          font-size: 10px;
+          font-weight: 600;
+          line-height: 1;
         }
       `}</style>
 

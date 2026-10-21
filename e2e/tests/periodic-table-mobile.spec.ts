@@ -52,42 +52,40 @@ test.describe('Periodic Table - Mobile Layout', () => {
     }
   });
 
-  test('should display special particles (electron, neutron) properly aligned', async ({ page }) => {
+  test('should display special particles (electron, neutron) as grid-aligned tiles in period 1', async ({ page }) => {
     // Wait for page to load
     await expect(page.getByRole('heading', { name: /Element Data/i })).toBeVisible();
 
-    // Look for particle labels - they should be visible in period 2
-    const electronLabel = page.getByText('ELECTRON', { exact: true });
-    const neutronLabel = page.getByText('NEUTRON', { exact: true });
+    // Particle tiles use their full name as the accessible name
+    const electron = page.getByRole('button', { name: 'Electron', exact: true }).first();
+    const neutron = page.getByRole('button', { name: 'Neutron', exact: true }).first();
+    const hydrogen = page.getByRole('button', { name: '1 H' });
 
-    // Particles may not always be visible on small screens, but if they are, verify they're properly positioned
-    const electronVisible = await electronLabel.isVisible().catch(() => false);
-    const neutronVisible = await neutronLabel.isVisible().catch(() => false);
+    await expect(electron).toBeVisible();
+    await expect(neutron).toBeVisible();
 
-    if (electronVisible || neutronVisible) {
-      // Get lithium element position (should be in row below particles)
-      const lithium = page.getByRole('button', { name: '3 Li' });
-      const liBox = await lithium.boundingBox();
+    const hBox = await hydrogen.boundingBox();
+    const eBox = await electron.boundingBox();
+    const nBox = await neutron.boundingBox();
 
-      if (electronVisible) {
-        const eBox = await electronLabel.boundingBox();
+    if (hBox && eBox && nBox) {
+      // Same row as hydrogen (period 1)
+      expect(Math.abs(eBox.y - hBox.y)).toBeLessThan(2);
+      expect(Math.abs(nBox.y - hBox.y)).toBeLessThan(2);
 
-        if (eBox && liBox) {
-          // Electron label should be above lithium
-          expect(eBox.y).toBeLessThan(liBox.y);
+      // Same tile size as element tiles
+      expect(Math.abs(eBox.width - hBox.width)).toBeLessThan(2);
+      expect(Math.abs(eBox.height - hBox.height)).toBeLessThan(2);
 
-          // Gap should be minimal (the fix removes extra padding)
-          const gap = liBox.y - (eBox.y + eBox.height);
-          expect(gap).toBeLessThan(50); // Should be tight spacing
-        }
-      }
-
-      // Take screenshot showing particle positioning
-      await page.screenshot({
-        path: 'test-results/periodic-table-particles-mobile.png',
-        fullPage: false
-      });
+      // Neutron sits in the column immediately right of the electron
+      expect(nBox.x).toBeGreaterThan(eBox.x);
     }
+
+    // Take screenshot showing particle positioning
+    await page.screenshot({
+      path: 'test-results/periodic-table-particles-mobile.png',
+      fullPage: false
+    });
   });
 
   test('should maintain proper row heights across all periods on mobile', async ({ page }) => {
