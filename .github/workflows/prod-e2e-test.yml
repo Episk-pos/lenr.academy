@@ -6,7 +6,7 @@ on:
 
 jobs:
   check-label:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     outputs:
       should-run: ${{ steps.check.outputs.labeled }}
     steps:
@@ -23,7 +23,7 @@ jobs:
     needs: check-label
     if: needs.check-label.outputs.should-run == 'true'
     timeout-minutes: 120
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     strategy:
       fail-fast: false
       matrix:
@@ -132,7 +132,7 @@ jobs:
   report-results:
     needs: [check-label, prod-e2e-test]
     if: always() && needs.check-label.outputs.should-run == 'true'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     permissions:
       pull-requests: write
     steps:
