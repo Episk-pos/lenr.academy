@@ -88,7 +88,7 @@ function rowToReaction(columns: string[], row: unknown[]): TwoToTwoReaction {
     }
   }
 
-  return obj as TwoToTwoReaction;
+  return obj as unknown as TwoToTwoReaction;
 }
 
 /**
