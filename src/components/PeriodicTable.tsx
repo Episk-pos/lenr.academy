@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 import type { Element, HeatmapMode, HeatmapMetrics } from '../types'
 import { useDatabase } from '../contexts/DatabaseContext'
 import { hasOnlyRadioactiveIsotopes } from '../services/queryService'
-import { SPECIAL_PARTICLES } from '../constants/specialParticles'
+import { SPECIAL_PARTICLES, HYDROGEN_ISOTOPE_TILES } from '../constants/specialParticles'
 import { useTheme } from '../contexts/ThemeContext'
 
 interface PeriodicTableProps {
@@ -22,12 +22,10 @@ interface PeriodicTableProps {
   hideCardContainer?: boolean
 }
 
-const HYDROGEN_ISOTOPES = [
-  { symbol: 'D', label: 'Deuterium (2H)' },
-  { symbol: 'T', label: 'Tritium (3H)' }
-]
-
-const ISOTOPE_BUTTON_COMMON = 'grid place-items-center rounded border border-dashed text-xs font-semibold leading-none px-1 py-0.5 sm:px-1.5 sm:py-1 transition-all duration-500 min-w-[1.5rem] min-h-[1.5rem] sm:min-w-[2rem] sm:min-h-[2rem]';
+// Tint classes for the hydrogen-isotope (D, T) and particle (e-, n0, nu) tile variants
+const ISOTOPE_TILE_TINT = 'bg-sky-50 dark:bg-sky-950/60 text-gray-900 dark:text-gray-100 border-sky-200 dark:border-sky-800'
+const ISOTOPE_ACCENT_BAR = 'absolute inset-x-1 top-0 h-0.5 rounded-b bg-sky-400 dark:bg-sky-500 pointer-events-none'
+const PARTICLE_TILE_TINT = 'border-dashed bg-violet-50 dark:bg-violet-950/60 text-violet-800 dark:text-violet-200 border-violet-300 dark:border-violet-700'
 
 // Standard periodic table layout (Period, Group) for each element by atomic number
 const ELEMENT_POSITIONS: Record<number, { period: number; group: number }> = {
@@ -166,8 +164,14 @@ const ALL_ELEMENT_NAMES: Record<number, string> = {
   111: 'Rg', 112: 'Cn', 113: 'Nh', 114: 'Fl', 115: 'Mc', 116: 'Lv', 117: 'Ts', 118: 'Og'
 }
 
-const SPECIAL_PARTICLES_BY_GROUP = SPECIAL_PARTICLES.reduce<Record<number, typeof SPECIAL_PARTICLES[number]>>((acc, particle) => {
-  acc[particle.position.group] = particle
+// Special tiles keyed by "period-group" grid position (period-1 gap between H and He)
+const ISOTOPE_TILES_BY_POSITION = HYDROGEN_ISOTOPE_TILES.reduce<Record<string, typeof HYDROGEN_ISOTOPE_TILES[number]>>((acc, isotope) => {
+  acc[`${isotope.position.period}-${isotope.position.group}`] = isotope
+  return acc
+}, {})
+
+const PARTICLES_BY_POSITION = SPECIAL_PARTICLES.reduce<Record<string, typeof SPECIAL_PARTICLES[number]>>((acc, particle) => {
+  acc[`${particle.position.period}-${particle.position.group}`] = particle
   return acc
 }, {})
 
@@ -303,34 +307,92 @@ export default function PeriodicTable({
     }
   })
 
-  const renderParticleButton = (particle: (typeof SPECIAL_PARTICLES)[number]) => {
+  const renderParticleTile = (particle: (typeof SPECIAL_PARTICLES)[number]) => {
     const isSelectedParticle = selectedParticle === particle.id
+    const name = t(particle.nameKey)
 
     return (
-      <div className="flex flex-col items-center gap-0.5">
-        <button
-          type="button"
-          onClick={() => onParticleClick?.(particle.id)}
-          className={`
-            w-6 h-6 sm:w-8 sm:h-8 rounded-[6px] sm:rounded-[10px] border border-dashed transition-all duration-150 flex items-center justify-center text-xs sm:text-sm font-semibold
-            ${isSelectedParticle
-              ? 'bg-blue-500/20 border-blue-500 text-blue-900 dark:text-blue-100 shadow-md'
-              : 'bg-white/80 dark:bg-gray-800/80 border-blue-200/70 dark:border-blue-900/60 hover:bg-blue-100/60 dark:hover:bg-blue-900/40 hover:border-blue-400'}
-            ${onParticleClick ? 'cursor-pointer' : 'cursor-default'}
-          `}
-        >
-          {particle.displaySymbol}
-        </button>
-        <span className="text-[0.5rem] sm:text-[0.55rem] uppercase tracking-wide text-gray-500 dark:text-gray-400 leading-none text-center">
-          {particle.name}
-        </span>
-      </div>
+      <button
+        key={`particle-${particle.id}`}
+        type="button"
+        onClick={() => onParticleClick?.(particle.id)}
+        title={name}
+        aria-label={name}
+        className={`
+          aspect-square relative
+          flex flex-col items-center justify-center font-medium rounded border
+          transition-all duration-500
+          ${PARTICLE_TILE_TINT}
+          ${isSelectedParticle
+            ? 'ring-2 ring-blue-500 dark:ring-blue-400 ring-offset-2 dark:ring-offset-gray-900 shadow-md'
+            : 'hover:bg-blue-50 dark:hover:bg-blue-900/30 hover:border-blue-400'}
+          ${onParticleClick ? 'cursor-pointer' : 'cursor-default'}
+        `}
+      >
+        <div className="font-bold text-xs leading-none">{particle.displaySymbol}</div>
+      </button>
+    )
+  }
+
+  const renderIsotopeTile = (isotope: (typeof HYDROGEN_ISOTOPE_TILES)[number]) => {
+    const isotopeAvailable = availableSymbols.has(isotope.symbol)
+    const isotopeSelected = selectedElement === isotope.symbol
+
+    // Get heatmap colors for hydrogen isotopes
+    const isotopeBgColor = getHeatmapColor(isotope.symbol, heatmapData, heatmapMetrics?.inputOutputRatio, showHeatmap, isDarkMode)
+    const isotopeHasHeatmap = isotopeBgColor !== 'transparent'
+
+    // Isotope is clickable if it's either:
+    // 1. Available in the limited results (displayed in table), OR
+    // 2. Has heatmap data (meaning it appears in unlimited results used for heatmap)
+    const isotopeClickable = isotopeAvailable || isotopeHasHeatmap
+
+    const isotopeTooltip = getHeatmapTooltip(
+      isotope.symbol,
+      heatmapData,
+      heatmapMode,
+      t('elements.hydrogenIsotopeTitle', { name: t(isotope.nameKey), massNumber: isotope.massNumber })
+    )
+
+    return (
+      <button
+        key={`isotope-${isotope.symbol}`}
+        onClick={() => isotopeClickable && onElementClick(isotope.symbol)}
+        disabled={!isotopeClickable}
+        className={`
+          aspect-square relative
+          flex flex-col items-center justify-center font-medium rounded border
+          transition-all duration-500
+          ${isotopeSelected
+            ? 'ring-2 ring-blue-500 dark:ring-blue-400 ring-offset-2 dark:ring-offset-gray-900 shadow-md border-blue-500 dark:border-blue-400'
+            : isotopeClickable
+              ? `${ISOTOPE_TILE_TINT} hover:bg-blue-50 dark:hover:bg-blue-900/30 hover:border-blue-400 cursor-pointer`
+              : 'bg-gray-100 dark:bg-gray-900 text-gray-400 dark:text-gray-600 border-gray-200 dark:border-gray-800 cursor-not-allowed'
+          }
+        `}
+        title={isotopeTooltip}
+        style={isotopeHasHeatmap ? { backgroundColor: isotopeBgColor, borderColor: !isotopeClickable ? 'rgb(156, 163, 175)' : undefined } : undefined}
+      >
+        <span className={`${ISOTOPE_ACCENT_BAR} ${isotopeClickable ? '' : 'opacity-40'}`} aria-hidden="true" />
+        {/* Mass number sits in the atomic-number slot; hidden from the accessible name so the button stays "D"/"T" */}
+        <div className="text-[9px] leading-none" aria-hidden="true">{isotope.massNumber}</div>
+        <div className="font-bold text-xs leading-none">{isotope.symbol}</div>
+      </button>
     )
   }
 
   const renderCell = (period: number, group: number) => {
     const key = `${period}-${group}`
     const cellData = elementsByPosition[key]
+
+    const isotopeTile = ISOTOPE_TILES_BY_POSITION[key]
+    if (isotopeTile) {
+      return renderIsotopeTile(isotopeTile)
+    }
+    const particleTile = PARTICLES_BY_POSITION[key]
+    if (particleTile) {
+      return renderParticleTile(particleTile)
+    }
 
     if (!cellData) {
       return <div key={key} className="aspect-square" />
@@ -339,7 +401,6 @@ export default function PeriodicTable({
     const isSelected = selectedElement === cellData.symbol
     const isAvailable = cellData.isAvailable
     const isPurelyRadioactive = db ? hasOnlyRadioactiveIsotopes(db, cellData.Z) : false
-    const isHydrogenCell = cellData.symbol === 'H'
 
     // Get heatmap background color - show heatmap for ALL elements with data, not just available ones
     const heatmapBgColor = getHeatmapColor(cellData.symbol, heatmapData, heatmapMetrics?.inputOutputRatio, showHeatmap, isDarkMode)
@@ -383,71 +444,17 @@ export default function PeriodicTable({
       </>
     )
 
-    if (!isHydrogenCell) {
-      return (
-        <button
-          key={key}
-          onClick={() => isClickable && onElementClick(cellData.symbol)}
-          disabled={!isClickable}
-          className={buttonClassName}
-          title={buttonTitle}
-          style={hasHeatmap ? { backgroundColor: heatmapBgColor, borderColor: hasHeatmap && !isClickable ? 'rgb(156, 163, 175)' : undefined } : undefined}
-        >
-          {buttonContent}
-        </button>
-      )
-    }
-
     return (
-      <div key={key} className="relative inline-flex">
-        <button
-          onClick={() => isClickable && onElementClick(cellData.symbol)}
-          disabled={!isClickable}
-          className={buttonClassName}
-          title={buttonTitle}
-          style={hasHeatmap ? { backgroundColor: heatmapBgColor, borderColor: hasHeatmap && !isClickable ? 'rgb(156, 163, 175)' : undefined } : undefined}
-        >
-          {buttonContent}
-        </button>
-        <div className="absolute left-full top-1/2 -translate-y-1/2 ml-1 flex items-center gap-1">
-          {HYDROGEN_ISOTOPES.map(isotope => {
-            const isotopeAvailable = availableSymbols.has(isotope.symbol)
-            const isotopeSelected = selectedElement === isotope.symbol
-
-            // Get heatmap colors for hydrogen isotopes
-            const isotopeBgColor = getHeatmapColor(isotope.symbol, heatmapData, heatmapMetrics?.inputOutputRatio, showHeatmap, isDarkMode)
-            const isotopeHasHeatmap = isotopeBgColor !== 'transparent'
-
-            // Isotope is clickable if it's either:
-            // 1. Available in the limited results (displayed in table), OR
-            // 2. Has heatmap data (meaning it appears in unlimited results used for heatmap)
-            const isotopeClickable = isotopeAvailable || isotopeHasHeatmap
-
-            const isotopeTooltip = getHeatmapTooltip(isotope.symbol, heatmapData, heatmapMode, `${isotope.label} - hydrogen isotope`)
-
-            return (
-              <button
-                key={isotope.symbol}
-                onClick={() => isotopeClickable && onElementClick(isotope.symbol)}
-                disabled={!isotopeClickable}
-                className={`
-                  ${ISOTOPE_BUTTON_COMMON}
-                  ${isotopeSelected
-                    ? 'ring-2 ring-blue-500 dark:ring-blue-400 ring-offset-1 shadow border-blue-500 dark:border-blue-400'
-                    : isotopeClickable
-                      ? 'bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600 hover:bg-blue-50 dark:hover:bg-blue-900/30 hover:border-blue-400 cursor-pointer'
-                      : 'bg-gray-100 dark:bg-gray-900 text-gray-400 dark:text-gray-600 border-gray-200 dark:border-gray-800 cursor-not-allowed'
-                  }
-                `}
-                title={isotopeTooltip}
-                style={isotopeHasHeatmap ? { backgroundColor: isotopeBgColor } : undefined}
-              >
-                {isotope.symbol}
-              </button>
-            )
-          })}
-        </div>
-      </div>
+      <button
+        key={key}
+        onClick={() => isClickable && onElementClick(cellData.symbol)}
+        disabled={!isClickable}
+        className={buttonClassName}
+        title={buttonTitle}
+        style={hasHeatmap ? { backgroundColor: heatmapBgColor, borderColor: hasHeatmap && !isClickable ? 'rgb(156, 163, 175)' : undefined } : undefined}
+      >
+        {buttonContent}
+      </button>
     )
   }
 
@@ -455,45 +462,14 @@ export default function PeriodicTable({
     <div className={`${hideCardContainer ? 'overflow-x-auto' : 'card p-3 sm:p-6 overflow-x-auto'}`}>
       <div className="flex justify-start sm:justify-center">
         <div className="inline-block pr-3 sm:pr-6">
-        {/* Container for grid + particle overlay */}
-        <div className="relative">
-          {/* Main periodic table grid (periods 1-7) */}
-          <div className="grid gap-0.5 sm:gap-1 mb-1 sm:mb-2" style={{ gridTemplateColumns: 'repeat(18, minmax(1.75rem, 3rem))' }}>
-            {[1, 2, 3, 4, 5, 6, 7].map(period => (
-              Array.from({ length: 18 }, (_, i) => {
-                const group = i + 1
-                return renderCell(period, group)
-              })
-            ))}
-          </div>
-
-          {/* Particle overlay - positioned to appear in period 2, columns 3-12 */}
-          <div
-            className="absolute pointer-events-none"
-            style={{
-              // Mobile: 1.75rem cells + 0.5 gap (2px)
-              // Desktop (sm+): 3rem cells + 1 gap (4px)
-              top: 'calc((1.75rem + 2px) * 1 + 2px)',
-              left: 'calc((1.75rem + 2px) * 2 + 2px)',
-              width: 'calc((1.75rem + 2px) * 10)',
-              display: 'flex',
-              justifyContent: 'center',
-              gap: '2px',
-            }}
-          >
-            {Array.from({ length: 10 }, (_, idx) => {
-              const groupNumber = idx + 3
-              const particle = SPECIAL_PARTICLES_BY_GROUP[groupNumber]
-              if (!particle) {
-                return <div key={groupNumber} style={{ flex: 1 }} />
-              }
-              return (
-                <div key={groupNumber} style={{ flex: 1, display: 'flex', justifyContent: 'center' }} className="pointer-events-auto">
-                  {renderParticleButton(particle)}
-                </div>
-              )
-            })}
-          </div>
+        {/* Main periodic table grid (periods 1-7); D/T and particles occupy the period-1 gap */}
+        <div className="grid gap-0.5 sm:gap-1 mb-1 sm:mb-2" style={{ gridTemplateColumns: 'repeat(18, minmax(1.75rem, 3rem))' }}>
+          {[1, 2, 3, 4, 5, 6, 7].map(period => (
+            Array.from({ length: 18 }, (_, i) => {
+              const group = i + 1
+              return renderCell(period, group)
+            })
+          ))}
         </div>
 
         {/* Lanthanides (period 8) */}
@@ -509,16 +485,28 @@ export default function PeriodicTable({
         {/* Legend */}
         {!hideLegend && (
           <div className="border-t border-gray-200 dark:border-gray-700 pt-3 mt-3">
-            <div className="flex items-center gap-2 text-xs text-gray-600 dark:text-gray-400">
+            <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-gray-600 dark:text-gray-400">
               <span className="flex items-center gap-1">
                 <span className="font-semibold">{t('elements.legend')}:</span>
                 <Radiation className="w-3 h-3 text-red-600 dark:text-red-400" />
                 <span>= {t('elements.noStableIsotopes')}</span>
               </span>
               <span className="flex items-center gap-1">
-                <span className="inline-flex items-center justify-center rounded border border-dashed border-gray-300 dark:border-gray-600 px-1.5 py-1 text-xs font-semibold leading-none">D</span>
-                <span className="inline-flex items-center justify-center rounded border border-dashed border-gray-300 dark:border-gray-600 px-1.5 py-1 text-xs font-semibold leading-none">T</span>
+                <span className={`relative inline-flex items-center justify-center rounded border min-w-[1.25rem] h-5 px-1 text-[10px] font-bold leading-none ${ISOTOPE_TILE_TINT}`} aria-hidden="true">
+                  <span className={ISOTOPE_ACCENT_BAR} />
+                  D
+                </span>
+                <span className={`relative inline-flex items-center justify-center rounded border min-w-[1.25rem] h-5 px-1 text-[10px] font-bold leading-none ${ISOTOPE_TILE_TINT}`} aria-hidden="true">
+                  <span className={ISOTOPE_ACCENT_BAR} />
+                  T
+                </span>
                 <span>= {t('elements.hydrogenIsotopes')}</span>
+              </span>
+              <span className="flex items-center gap-1">
+                <span className={`inline-flex items-center justify-center rounded border min-w-[1.25rem] h-5 px-1 text-[10px] font-bold leading-none ${PARTICLE_TILE_TINT}`} aria-hidden="true">
+                  e⁻
+                </span>
+                <span>= {t('elements.specialParticles')}</span>
               </span>
             </div>
           </div>
