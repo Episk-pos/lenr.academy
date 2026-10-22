@@ -399,7 +399,7 @@ export function queryResonantReactions(
 export function formatWavelength(meters: number): string {
   if (meters >= 1) return `${meters.toFixed(2)} m`
   if (meters >= 0.001) return `${(meters * 1000).toFixed(2)} mm`
-  if (meters >= 1e-6) return `${(meters * 1e6).toFixed(2)} μm`
+  if (meters >= 1e-6) return `${(meters * 1e6).toFixed(2)} µm`
   if (meters >= 1e-9) return `${(meters * 1e9).toFixed(2)} nm`
   return `${(meters * 1e12).toFixed(2)} pm`
 }

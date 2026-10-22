@@ -567,42 +567,48 @@ export default function MullerResonance() {
                           const eSym = pair.electronElement === 'Z1' ? pair.E1 : pair.E2
                           const pSym = pair.electronElement === 'Z1' ? pair.E2 : pair.E1
                           const toggle = () => setExpandedPair(isExpanded ? null : key)
+                          const ladderRowId = `muller-ladder-${pair.Z1}-${pair.Z2}`
+                          const pairCellContent = isGlobal ? (
+                            <span>
+                              {pair.E1} <span className="text-gray-400 dark:text-gray-500">–</span> {pair.E2}
+                            </span>
+                          ) : (
+                            <span>
+                              {pair.E2} <span className="text-gray-400 dark:text-gray-500">(Z={pair.Z2})</span>
+                            </span>
+                          )
 
                           return (
                             <Fragment key={key}>
                               <tr
                                 data-testid="muller-pair-row"
-                                role={bandActive ? 'button' : undefined}
-                                tabIndex={bandActive ? 0 : undefined}
-                                aria-expanded={bandActive ? isExpanded : undefined}
-                                title={bandActive ? t('mullerResonance.band.expandRow', { pair: pairLabel }) : undefined}
                                 onClick={bandActive ? toggle : undefined}
-                                onKeyDown={bandActive ? (e) => {
-                                  if (e.key === 'Enter' || e.key === ' ') {
-                                    e.preventDefault()
-                                    toggle()
-                                  }
-                                } : undefined}
                                 className={`border-b border-gray-100 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800/50 ${
-                                  bandActive ? 'cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-blue-500' : ''
+                                  bandActive ? 'cursor-pointer' : ''
                                 } ${isExpanded ? 'bg-gray-50 dark:bg-gray-800/50' : ''}`}
                               >
                                 <td className="py-2 px-3 font-medium text-gray-900 dark:text-white">
-                                  {bandActive && (
-                                    <ChevronDown
-                                      aria-hidden="true"
-                                      className={`inline w-4 h-4 mr-1 text-gray-400 dark:text-gray-500 transition-transform ${isExpanded ? 'rotate-180' : ''}`}
-                                    />
-                                  )}
-                                  {isGlobal ? (
-                                    <>
-                                      {pair.E1} <span className="text-gray-400 dark:text-gray-500">–</span> {pair.E2}
-                                    </>
-                                  ) : (
-                                    <>
-                                      {pair.E2} <span className="text-gray-400 dark:text-gray-500">(Z={pair.Z2})</span>
-                                    </>
-                                  )}
+                                  {bandActive ? (
+                                    <button
+                                      type="button"
+                                      data-testid="muller-pair-toggle"
+                                      aria-expanded={isExpanded}
+                                      aria-controls={ladderRowId}
+                                      title={t('mullerResonance.band.expandRow', { pair: pairLabel })}
+                                      onClick={(e) => {
+                                        // Row click also toggles; don't double-toggle
+                                        e.stopPropagation()
+                                        toggle()
+                                      }}
+                                      className="inline-flex items-center gap-1 rounded text-left font-medium text-gray-900 dark:text-white hover:text-primary-600 dark:hover:text-primary-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1 dark:focus-visible:ring-offset-gray-800"
+                                    >
+                                      <ChevronDown
+                                        aria-hidden="true"
+                                        className={`w-4 h-4 text-gray-400 dark:text-gray-500 transition-transform ${isExpanded ? 'rotate-180' : ''}`}
+                                      />
+                                      {pairCellContent}
+                                    </button>
+                                  ) : pairCellContent}
                                 </td>
                                 <td className="py-2 px-3 text-right font-mono text-gray-700 dark:text-gray-300">
                                   {pair.mismatch < 0.01 ? pair.mismatch.toFixed(4) : pair.mismatch.toFixed(2)}%
@@ -662,7 +668,7 @@ export default function MullerResonance() {
                                 </td>
                               </tr>
                               {isExpanded && (
-                                <tr className="border-b border-gray-100 dark:border-gray-800 bg-gray-50 dark:bg-gray-800/30" data-testid="muller-pair-ladder">
+                                <tr id={ladderRowId} className="border-b border-gray-100 dark:border-gray-800 bg-gray-50 dark:bg-gray-800/30" data-testid="muller-pair-ladder">
                                   <td colSpan={colCount} className="py-3 px-6">
                                     <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                                       {t('mullerResonance.band.ladderTitle', { pair: pairLabel, range: bandRangeLabel })}

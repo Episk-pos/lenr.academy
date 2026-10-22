@@ -95,7 +95,7 @@ describe('placeInBand', () => {
     expect(rungs[0].N).toBe(14)
     const n20 = rungs.find(r => r.N === 20)!
     expect(n20.protonN).toBe(31)
-    expect(formatWavelength(n20.wavelength)).toBe('73.78 μm')
+    expect(formatWavelength(n20.wavelength)).toBe('73.78 µm')
   })
 
   it('each rung doubles the previous wavelength and protonN = N + ΔN', () => {

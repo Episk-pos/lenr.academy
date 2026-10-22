@@ -24,6 +24,16 @@ describe('MullerBandSelector', () => {
     expect(screen.getByTestId('band-chip-none')).toHaveAttribute('aria-pressed', 'true')
     expect(screen.getByTestId('band-chip-mm')).toHaveAttribute('aria-pressed', 'false')
     expect(screen.queryByTestId('band-custom-min')).toBeNull()
+    expect(screen.queryByTestId('band-ladder-hint')).toBeNull()
+  })
+
+  it('shows the click-a-row ladder hint only when a band is active', () => {
+    render(<Harness initial={{ band: 'none', min: 0, max: 0 }} onChange={() => {}} />)
+    expect(screen.queryByTestId('band-ladder-hint')).toBeNull()
+    fireEvent.click(screen.getByTestId('band-chip-um'))
+    expect(screen.getByTestId('band-ladder-hint')).toHaveTextContent('mullerResonance.band.ladderHint')
+    fireEvent.click(screen.getByTestId('band-chip-none'))
+    expect(screen.queryByTestId('band-ladder-hint')).toBeNull()
   })
 
   it('selects presets with their metre ranges', () => {

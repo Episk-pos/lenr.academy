@@ -189,6 +189,9 @@ export default function MullerBandSelector({ value, onChange }: MullerBandSelect
 
       <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">
         {t('mullerResonance.band.hint')}
+        {value.band !== 'none' && (
+          <> <span data-testid="band-ladder-hint">{t('mullerResonance.band.ladderHint')}</span></>
+        )}
       </p>
     </div>
   )
