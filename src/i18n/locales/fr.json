@@ -352,7 +352,8 @@
     "terminalNuclides": "Nucléides terminaux",
     "stableCount": "stable",
     "radioactiveCount": "radioactif",
-    "radiationTypeLegend": "Légende des types de rayonnement"
+    "radiationTypeLegend": "Légende des types de rayonnement",
+    "notAvailableInDatabase": "Non disponible dans la base de données"
   },
   "reactions": {
     "reaction": "Réaction",
@@ -422,9 +423,9 @@
     "neutrinoInvolvement": "Implication des neutrinos",
     "anyNeutrinoType": "Tout type de neutrino",
     "noNeutrino": "Pas de neutrino",
-    "onlyLeftNeutrino": "Neutrino gauche uniquement",
-    "onlyRightNeutrino": "Neutrino droit uniquement",
-    "leftRightNeutrinos": "Neutrinos gauche et droit",
+    "onlyLeftNeutrino": "ν uniquement (neutrino)",
+    "onlyRightNeutrino": "ν̄ uniquement (antineutrino)",
+    "leftRightNeutrinos": "ν ou ν̄ (neutrino ou antineutrino)",
     "sqlPreview": "Aperçu SQL",
     "resetFilters": "Réinitialiser les filtres",
     "elementHeatmap": "Carte thermique des éléments",
@@ -460,7 +461,16 @@
     "clickForDetails": "Cliquez sur un élément ou un nucléide ci-dessus pour voir les propriétés détaillées",
     "details": "Détails",
     "radioactive": "Radioactif",
-    "querying": "Interrogation en cours..."
+    "querying": "Interrogation en cours...",
+    "export": "Exporter",
+    "neutrinoBadge": {
+      "left": "ν",
+      "leftTitle": "Neutrino (ν, gauche) : la charge nucléaire totale diminue de 1 (type β⁺ / capture électronique)",
+      "right": "ν̄",
+      "rightTitle": "Antineutrino (ν̄, droit) : la charge nucléaire totale augmente de 1 (type β⁻)",
+      "none": "—",
+      "noneTitle": "Aucun neutrino impliqué"
+    }
   },
   "histogram": {
     "title": "Distribution d'energie",

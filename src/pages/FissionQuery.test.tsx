@@ -98,6 +98,7 @@ vi.mock('lucide-react', () => ({
   Download: () => <svg data-testid="download-icon" />,
   FileJson: () => <svg data-testid="file-json-icon" />,
   FileText: () => <svg data-testid="file-text-icon" />,
+  FileSpreadsheet: () => <svg data-testid="file-spreadsheet-icon" />,
   Info: () => <svg data-testid="info-icon" />,
   Loader: () => <svg data-testid="loader-icon" />,
   Eye: () => <svg data-testid="eye-icon" />,

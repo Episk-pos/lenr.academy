@@ -417,6 +417,10 @@ test.describe('Query State Persistence', () => {
     // Wait for results
     await page.waitForTimeout(1000)
 
+    // The heatmap is collapsed by default - expand it (a non-default state that must persist)
+    await page.getByRole('button', { name: 'Expand periodic table' }).click()
+    await page.waitForTimeout(500)
+
     // Pin an element in the heatmap
     const carbonElement = page.locator('[data-element="C"]').first()
     if (await carbonElement.count() > 0) {
@@ -425,9 +429,6 @@ test.describe('Query State Persistence', () => {
       await carbonElement.click()
     }
 
-    // Also collapse the heatmap
-    await page.getByRole('button', { name: 'Collapse periodic table' }).click()
-
     // Wait for state to save
     await page.waitForTimeout(1000)
 
@@ -435,7 +436,7 @@ test.describe('Query State Persistence', () => {
     const fusionState = await getQueryStateFromStorage(page)
 
     expect(fusionState?.fusion?.visualization).toBeTruthy()
-    expect(fusionState.fusion.visualization.showHeatmap).toBe(false)
+    expect(fusionState.fusion.visualization.showHeatmap).toBe(true)
 
     // Navigate away and back
     await page.goto('/fission')
@@ -448,8 +449,8 @@ test.describe('Query State Persistence', () => {
     await waitForDatabaseReady(page)
     await waitForReactionResults(page, 'fusion')
 
-    // Check heatmap is still collapsed
-    const heatmapButton = page.getByRole('button', { name: 'Expand periodic table' })
+    // Check heatmap is still expanded (persisted preference overrides the collapsed default)
+    const heatmapButton = page.getByRole('button', { name: 'Collapse periodic table' })
     await expect(heatmapButton).toBeVisible()
   })
 

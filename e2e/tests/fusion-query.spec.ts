@@ -7,7 +7,8 @@ import {
   verifyBothDetailsCards,
   resultNuclidesSection,
   resultNuclideCards,
-  getResultNuclideCard
+  getResultNuclideCard,
+  expandHeatmapIfCollapsed
 } from '../fixtures/test-helpers';
 
 test.describe('Fusion Query Page', () => {
@@ -215,13 +216,16 @@ test.describe('Fusion Query Page', () => {
     );
 
     // Find and click export button
-    const exportButton = page.getByRole('button', { name: /Export CSV/i });
+    // Exports live in a single "Export" dropdown menu
+    const exportButton = page.getByTestId('export-menu-button');
 
     if (await exportButton.isVisible()) {
+      await exportButton.click();
+
       // Set up download listener
       const downloadPromise = page.waitForEvent('download');
 
-      await exportButton.click();
+      await page.getByRole('menuitem', { name: /Export CSV/i }).click();
 
       // Wait for download to start
       const download = await downloadPromise;
@@ -730,7 +734,7 @@ test.describe('Fusion Query Page', () => {
 
     // Get all result rows (skip header rows by excluding rows with uppercase text class)
     const resultsRegion = page.getByRole('region', { name: /Fusion reaction results/i });
-    const allRows = resultsRegion.locator('div[class*="grid"][class*="border-b"]:not([class*="uppercase"])');
+    const allRows = resultsRegion.locator('div[class*="grid"][class*="border-b"]:not([class*="uppercase"]):not([data-testid="reaction-table-header"])');
     const rowCount = await allRows.count();
     expect(rowCount).toBeGreaterThan(0);
 
@@ -864,6 +868,9 @@ test.describe('Fusion Query - Navigation Links', () => {
     // Scroll down to make sure the heatmap toggle is in view BEFORE trying to locate it
     await page.evaluate(() => window.scrollBy(0, 500));
     await page.waitForTimeout(100);
+
+    // Heatmap is collapsed by default - expand it to reach the toggle
+    await expandHeatmapIfCollapsed(page);
 
     // Now locate and interact with the heatmap toggle
     const heatmapToggle = page.getByRole('switch', { name: /use all.*matching results/i });

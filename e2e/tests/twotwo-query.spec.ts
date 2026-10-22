@@ -173,11 +173,13 @@ test.describe('Two-to-Two Query Page', () => {
     await waitForReactionResults(page, 'twotwo');
 
     // Find export button
-    const exportButton = page.getByRole('button', { name: /Export CSV/i });
+    // Exports live in a single "Export" dropdown menu
+    const exportButton = page.getByTestId('export-menu-button');
 
     if (await exportButton.isVisible()) {
-      const downloadPromise = page.waitForEvent('download');
       await exportButton.click();
+      const downloadPromise = page.waitForEvent('download');
+      await page.getByRole('menuitem', { name: /Export CSV/i }).click();
 
       const download = await downloadPromise;
       expect(download.suggestedFilename()).toMatch(/\.csv$/i);
@@ -380,7 +382,7 @@ test.describe('Two-to-Two Query Page', () => {
 
     // Get all result rows (skip header rows by excluding rows with uppercase text class)
     const resultsRegion = page.getByRole('region', { name: /Two-to-two reaction results/i });
-    const allRows = resultsRegion.locator('div[class*="grid"][class*="border-b"]:not([class*="uppercase"])');
+    const allRows = resultsRegion.locator('div[class*="grid"][class*="border-b"]:not([class*="uppercase"]):not([data-testid="reaction-table-header"])');
     const rowCount = await allRows.count();
     expect(rowCount).toBeGreaterThan(0);
 
