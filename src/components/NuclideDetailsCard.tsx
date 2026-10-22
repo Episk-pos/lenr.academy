@@ -193,7 +193,7 @@ export default function NuclideDetailsCard({ nuclide, onClose }: NuclideDetailsC
               {nuclide.E}-{nuclide.A}
             </Link>
             {decayData.length > 0 && (
-              <span title="Radioactive">
+              <span title={t('reactions.radioactive')}>
                 <Radiation className="w-5 h-5 text-amber-600 dark:text-amber-400" />
               </span>
             )}
@@ -371,13 +371,13 @@ export default function NuclideDetailsCard({ nuclide, onClose }: NuclideDetailsC
               <div className="flex justify-between gap-2">
                 <dt className="text-gray-600 dark:text-gray-400 flex-shrink-0">{t('elements.logHalfLifeYears')}:</dt>
                 <dd className="font-medium text-gray-900 dark:text-gray-100 text-right truncate">
-                  {nuclide.logHalfLife.toFixed(2)} years
+                  {t('elements.valueYears', { value: nuclide.logHalfLife.toFixed(2) })}
                 </dd>
               </div>
               <div className="flex justify-between gap-2">
                 <dt className="text-gray-600 dark:text-gray-400 flex-shrink-0">{t('elements.halfLife')}:</dt>
                 <dd className="font-medium text-gray-900 dark:text-gray-100 text-right truncate">
-                  {Math.pow(10, nuclide.logHalfLife).toExponential(2)} years
+                  {t('elements.valueYears', { value: Math.pow(10, nuclide.logHalfLife).toExponential(2) })}
                 </dd>
               </div>
               <div className="mt-3 p-2 bg-amber-50 dark:bg-amber-900/20 rounded text-xs text-amber-700 dark:text-amber-300 break-words">

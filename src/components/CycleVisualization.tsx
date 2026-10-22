@@ -1009,7 +1009,7 @@ function CycleLoopDiagram({
           className="fill-gray-500 dark:fill-gray-400 text-[10px] italic"
           style={{ fontFamily: 'system-ui, sans-serif' }}
         >
-          ← reactions cycle around catalyst →
+          {t('cycleDiscovery.cycleAroundCatalyst')}
         </text>
       </g>
     </svg>

@@ -172,7 +172,7 @@ export default function ChangelogModal({
                 skipHtml
                 components={markdownComponents}
               >
-                {releaseNotes.body || 'No changelog details provided for this release.'}
+                {releaseNotes.body || t('updates.noChangelogDetails')}
               </ReactMarkdown>
             </div>
           )}

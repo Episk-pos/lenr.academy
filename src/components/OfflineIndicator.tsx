@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { WifiOff, Wifi } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 
 /**
  * Offline Indicator Component
@@ -11,6 +12,7 @@ import { WifiOff, Wifi } from 'lucide-react'
  * - Smooth animations for all transitions
  */
 export default function OfflineIndicator() {
+  const { t } = useTranslation()
   const [isOnline, setIsOnline] = useState(navigator.onLine)
   const [wasOffline, setWasOffline] = useState(false)
   const [showReconnected, setShowReconnected] = useState(false)
@@ -100,7 +102,7 @@ export default function OfflineIndicator() {
         >
           <div className="w-full px-4 py-2 flex items-center justify-center gap-2">
             <Wifi className="w-4 h-4" />
-            <p className="text-sm font-medium">Connection restored</p>
+            <p className="text-sm font-medium">{t('offline.connectionRestored')}</p>
           </div>
         </div>
         <style>{`
@@ -159,14 +161,14 @@ export default function OfflineIndicator() {
               />
               {showFullText ? (
                 <div className="text-center">
-                  <p className="font-semibold text-sm">You're offline</p>
+                  <p className="font-semibold text-sm">{t('offline.offlineTitle')}</p>
                   <p className="text-xs text-orange-100">
-                    You can still query the database if it's cached locally
+                    {t('offline.cachedQueryHint')}
                   </p>
                 </div>
               ) : (
                 <span className="text-xs font-medium">
-                  Offline
+                  {t('offline.offlineShort')}
                 </span>
               )}
             </div>

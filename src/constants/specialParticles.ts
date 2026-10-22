@@ -7,8 +7,10 @@ export interface SpecialParticleInfo {
   name: string
   /** i18n key for the translated particle name */
   nameKey: string
-  /** Short description about the particle */
+  /** Short description about the particle (English; prefer `descriptionKey` for UI display) */
   description: string
+  /** i18n key for the translated description */
+  descriptionKey?: string
   /** Atomic number (proton count) used in the database */
   atomicNumber: number
   /** Mass number stored in the database (A) */
@@ -26,6 +28,7 @@ export const SPECIAL_PARTICLES: SpecialParticleInfo[] = [
     name: 'Electron',
     nameKey: 'elements.particleElectron',
     description: 'Fundamental lepton with negative electric charge that orbits atomic nuclei.',
+    descriptionKey: 'particleDetails.electronDescription',
     atomicNumber: -1,
     massNumber: 0,
     charge: -1,
@@ -37,6 +40,7 @@ export const SPECIAL_PARTICLES: SpecialParticleInfo[] = [
     name: 'Neutron',
     nameKey: 'elements.particleNeutron',
     description: 'Neutral baryon found in the nucleus of nearly all atoms.',
+    descriptionKey: 'particleDetails.neutronDescription',
     atomicNumber: 0,
     massNumber: 1,
     charge: 0,
@@ -48,6 +52,7 @@ export const SPECIAL_PARTICLES: SpecialParticleInfo[] = [
     name: 'Neutrino',
     nameKey: 'elements.particleNeutrino',
     description: 'Nearly massless, electrically neutral lepton that interacts only via the weak force.',
+    descriptionKey: 'particleDetails.neutrinoDescription',
     atomicNumber: 0,
     massNumber: 0,
     charge: 0,

@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react'
+import { useTranslation, Trans } from 'react-i18next'
 import { X, ChevronDown, ChevronUp, ArrowRight, Radiation } from 'lucide-react'
 import type { RadioactiveNuclideData } from '../types'
 import { useDatabase } from '../contexts/DatabaseContext'
@@ -93,6 +94,7 @@ const RADIATION_TYPE_INFO: Record<string, { name: string; description: string; u
 }
 
 export default function RadioactiveNuclideCard({ nuclideData, onClose }: RadioactiveNuclideCardProps) {
+  const { t } = useTranslation()
   const { db } = useDatabase()
   const navigate = useNavigate()
   const [showFullDecayTable, setShowFullDecayTable] = useState(false)
@@ -146,19 +148,20 @@ export default function RadioactiveNuclideCard({ nuclideData, onClose }: Radioac
             >
               {nuclideData.E}-{nuclideData.A}
             </Link>
-            <span title="Radioactive">
+            <span title={t('reactions.radioactive')}>
               <Radiation className="w-5 h-5 text-amber-600 dark:text-amber-400" />
             </span>
           </h2>
           <p className="text-sm text-gray-500 dark:text-gray-400">
-            Atomic Number: {nuclideData.Z} • Mass Number: {nuclideData.A}
+            {t('elements.atomicNumber')}: {nuclideData.Z} • {t('elements.massNumber')}: {nuclideData.A}
           </p>
         </div>
         {onClose && (
           <button
             onClick={onClose}
             className="p-2 rounded-md text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
-            title="Close nuclide details"
+            title={t('elements.closeNuclideDetails')}
+            aria-label={t('elements.closeNuclideDetails')}
           >
             <X className="w-5 h-5" />
           </button>
@@ -168,31 +171,30 @@ export default function RadioactiveNuclideCard({ nuclideData, onClose }: Radioac
       {/* Limited data banner */}
       <div className="mb-4 p-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg">
         <p className="text-sm text-amber-800 dark:text-amber-300">
-          <strong>Limited Data Available:</strong> This isotope exists only in the radioactive decay database.
-          Full nuclear property data (binding energy, atomic mass, quantum properties) is not available for this short-lived nuclide.
+          <Trans i18nKey="radioactiveCard.limitedData" components={{ strong: <strong /> }} />
         </p>
       </div>
 
       <div className="grid md:grid-cols-2 gap-2 xs:gap-4 sm:gap-6">
         <div>
           <h3 className="font-semibold text-gray-900 dark:text-white mb-3 text-sm uppercase tracking-wide">
-            Nuclear Properties
+            {t('elements.nuclearProperties')}
           </h3>
           <dl className="space-y-2 text-sm">
             <div className="flex justify-between gap-2">
-              <dt className="text-gray-600 dark:text-gray-400 flex-shrink-0">Element:</dt>
+              <dt className="text-gray-600 dark:text-gray-400 flex-shrink-0">{t('elements.element')}:</dt>
               <dd className="font-medium text-gray-900 dark:text-gray-100 text-right">{nuclideData.E}</dd>
             </div>
             <div className="flex justify-between gap-2">
-              <dt className="text-gray-600 dark:text-gray-400 flex-shrink-0">Protons (Z):</dt>
+              <dt className="text-gray-600 dark:text-gray-400 flex-shrink-0">{t('elements.protonsZ')}:</dt>
               <dd className="font-medium text-gray-900 dark:text-gray-100 text-right">{nuclideData.Z}</dd>
             </div>
             <div className="flex justify-between gap-2">
-              <dt className="text-gray-600 dark:text-gray-400 flex-shrink-0">Mass Number (A):</dt>
+              <dt className="text-gray-600 dark:text-gray-400 flex-shrink-0">{t('elements.massNumberA')}:</dt>
               <dd className="font-medium text-gray-900 dark:text-gray-100 text-right">{nuclideData.A}</dd>
             </div>
             <div className="flex justify-between gap-2">
-              <dt className="text-gray-600 dark:text-gray-400 flex-shrink-0">Neutrons (N):</dt>
+              <dt className="text-gray-600 dark:text-gray-400 flex-shrink-0">{t('elements.neutronsN')}:</dt>
               <dd className="font-medium text-gray-900 dark:text-gray-100 text-right">{nuclideData.A - nuclideData.Z}</dd>
             </div>
           </dl>
@@ -201,27 +203,27 @@ export default function RadioactiveNuclideCard({ nuclideData, onClose }: Radioac
         {nuclideData.logHalfLife !== null && (
           <div>
             <h3 className="font-semibold text-gray-900 dark:text-white mb-3 text-sm uppercase tracking-wide">
-              Stability
+              {t('elements.stability')}
             </h3>
             <dl className="space-y-2 text-sm overflow-hidden">
               <div className="flex justify-between gap-2">
-                <dt className="text-gray-600 dark:text-gray-400 flex-shrink-0">Log₁₀ Half-life:</dt>
+                <dt className="text-gray-600 dark:text-gray-400 flex-shrink-0">{t('elements.logHalfLife')}:</dt>
                 <dd className="font-medium text-gray-900 dark:text-gray-100 text-right truncate">
-                  {nuclideData.logHalfLife.toFixed(2)} years
+                  {t('elements.valueYears', { value: nuclideData.logHalfLife.toFixed(2) })}
                 </dd>
               </div>
               <div className="flex justify-between gap-2">
-                <dt className="text-gray-600 dark:text-gray-400 flex-shrink-0">Half-life:</dt>
+                <dt className="text-gray-600 dark:text-gray-400 flex-shrink-0">{t('elements.halfLife')}:</dt>
                 <dd className="font-medium text-gray-900 dark:text-gray-100 text-right truncate">
                   {nuclideData.halfLife !== null && nuclideData.Units !== null
                     ? nuclideData.halfLife >= 10000
                       ? `${nuclideData.halfLife.toExponential(2)} ${expandHalfLifeUnit(nuclideData.Units)}`
                       : `${nuclideData.halfLife} ${expandHalfLifeUnit(nuclideData.Units)}`
-                    : Math.pow(10, nuclideData.logHalfLife).toExponential(2) + ' years'}
+                    : t('elements.valueYears', { value: Math.pow(10, nuclideData.logHalfLife).toExponential(2) })}
                 </dd>
               </div>
               <div className="flex justify-between gap-2">
-                <dt className="text-gray-600 dark:text-gray-400 flex-shrink-0">Primary Decay Mode:</dt>
+                <dt className="text-gray-600 dark:text-gray-400 flex-shrink-0">{t('radioactiveCard.primaryDecayMode')}:</dt>
                 <dd className="font-medium text-gray-900 dark:text-gray-100 text-right">
                   <span className={`px-2 py-1 rounded-full text-xs ${getDecayModeStyle(nuclideData.RDM).bg} ${getDecayModeStyle(nuclideData.RDM).text}`}>
                     {nuclideData.RDM}
@@ -229,9 +231,9 @@ export default function RadioactiveNuclideCard({ nuclideData, onClose }: Radioac
                 </dd>
               </div>
               <div className="mt-3 p-2 bg-amber-50 dark:bg-amber-900/20 rounded text-xs text-amber-700 dark:text-amber-300 break-words">
-                {nuclideData.logHalfLife > 9 ? 'Stable or very long-lived' :
-                 nuclideData.logHalfLife > 0 ? 'Radioactive' :
-                 'Short-lived radioactive'}
+                {nuclideData.logHalfLife > 9 ? t('elements.stableOrLongLived') :
+                 nuclideData.logHalfLife > 0 ? t('reactions.radioactive') :
+                 t('elements.shortLivedRadioactive')}
               </div>
             </dl>
           </div>
@@ -242,17 +244,17 @@ export default function RadioactiveNuclideCard({ nuclideData, onClose }: Radioac
       {nuclideData.decayData.length > 0 && (
         <div className="mt-4 xs:mt-6">
           <h3 className="font-semibold text-gray-900 dark:text-white mb-3 text-sm uppercase tracking-wide">
-            Radioactive Decay
+            {t('elements.radioactiveDecay')}
           </h3>
           <div className="overflow-x-auto">
             <table className="w-full text-xs border border-gray-200 dark:border-gray-700">
                 <thead className="bg-gray-50 dark:bg-gray-800">
                   <tr>
-                    <th className="pl-3 pr-2 sm:pl-6 sm:pr-3 py-2 text-left font-medium text-gray-700 dark:text-gray-300">Decay Mode</th>
-                    <th className="px-2 sm:px-3 py-2 text-left font-medium text-gray-700 dark:text-gray-300">Radiation</th>
-                    <th className="px-2 sm:px-3 py-2 text-right font-medium text-gray-700 dark:text-gray-300">Energy (MeV)</th>
-                    <th className="px-2 sm:px-3 py-2 text-right font-medium text-gray-700 dark:text-gray-300">Intensity (%)</th>
-                    <th className="pl-2 pr-3 sm:pl-3 sm:pr-6 py-2 text-left font-medium text-gray-700 dark:text-gray-300">Half-life</th>
+                    <th className="pl-3 pr-2 sm:pl-6 sm:pr-3 py-2 text-left font-medium text-gray-700 dark:text-gray-300">{t('elements.decayMode')}</th>
+                    <th className="px-2 sm:px-3 py-2 text-left font-medium text-gray-700 dark:text-gray-300">{t('radioactiveCard.radiation')}</th>
+                    <th className="px-2 sm:px-3 py-2 text-right font-medium text-gray-700 dark:text-gray-300">{t('reactions.energyMeV')}</th>
+                    <th className="px-2 sm:px-3 py-2 text-right font-medium text-gray-700 dark:text-gray-300">{t('elements.intensityPercent')}</th>
+                    <th className="pl-2 pr-3 sm:pl-3 sm:pr-6 py-2 text-left font-medium text-gray-700 dark:text-gray-300">{t('elements.halfLife')}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
@@ -272,7 +274,7 @@ export default function RadioactiveNuclideCard({ nuclideData, onClose }: Radioac
                             className={`px-2 py-1 rounded-full text-xs font-medium ${style.bg} ${style.text} ${
                               hasDaughter ? 'cursor-pointer hover:opacity-80 transition-opacity' : 'cursor-default opacity-70'
                             } flex items-center gap-1`}
-                            title={hasDaughter ? `View daughter nuclide` : 'Decay mode'}
+                            title={hasDaughter ? t('elements.viewDaughterNuclide') : t('elements.decayMode')}
                           >
                             {decay.decayMode}
                             {hasDaughter && (
@@ -312,12 +314,16 @@ export default function RadioactiveNuclideCard({ nuclideData, onClose }: Radioac
                           {showFullDecayTable ? (
                             <>
                               <ChevronUp className="w-3 h-3" />
-                              Hide {nuclideData.decayData.length - 4} additional decay mode{nuclideData.decayData.length - 4 !== 1 ? 's' : ''}
+                              {nuclideData.decayData.length - 4 !== 1
+                                ? t('elements.hideDecayModesPlural', { count: nuclideData.decayData.length - 4 })
+                                : t('elements.hideDecayModes', { count: nuclideData.decayData.length - 4 })}
                             </>
                           ) : (
                             <>
                               <ChevronDown className="w-3 h-3" />
-                              Show {nuclideData.decayData.length - 4} more decay mode{nuclideData.decayData.length - 4 !== 1 ? 's' : ''}
+                              {nuclideData.decayData.length - 4 !== 1
+                                ? t('elements.showDecayModesPlural', { count: nuclideData.decayData.length - 4 })
+                                : t('elements.showDecayModes', { count: nuclideData.decayData.length - 4 })}
                             </>
                           )}
                         </button>
@@ -341,7 +347,7 @@ export default function RadioactiveNuclideCard({ nuclideData, onClose }: Radioac
                             className={`px-2 py-1 rounded-full text-xs font-medium ${style.bg} ${style.text} ${
                               hasDaughter ? 'cursor-pointer hover:opacity-80 transition-opacity' : 'cursor-default opacity-70'
                             } flex items-center gap-1`}
-                            title={hasDaughter ? `View daughter nuclide` : 'Decay mode'}
+                            title={hasDaughter ? t('elements.viewDaughterNuclide') : t('elements.decayMode')}
                           >
                             {decay.decayMode}
                             {hasDaughter && (
@@ -378,7 +384,7 @@ export default function RadioactiveNuclideCard({ nuclideData, onClose }: Radioac
       {nuclideData.decayData.length > 0 && (
         <div className="mt-4 p-4 bg-amber-50 dark:bg-amber-900/20 rounded-lg">
           <h3 className="font-semibold text-amber-900 dark:text-amber-200 mb-2 text-sm">
-            Radiation Type Legend
+            {t('elements.radiationTypeLegend')}
           </h3>
           <div className="grid md:grid-cols-2 gap-x-4 gap-y-1 text-xs text-amber-800 dark:text-amber-300">
             {uniqueRadiationTypes.map(type => {
@@ -400,7 +406,7 @@ export default function RadioactiveNuclideCard({ nuclideData, onClose }: Radioac
               )
             })}
             <div className="md:col-span-2 mt-1 text-xs opacity-80">
-              Shell designations: K (innermost), L, M, N (outer shells)
+              {t('elements.shellDesignations')}
             </div>
           </div>
         </div>

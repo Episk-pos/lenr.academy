@@ -8,6 +8,8 @@
 
 import { useState, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
+import type { TFunction } from 'i18next'
 import { TransformWrapper, TransformComponent, type ReactZoomPanPinchContentRef } from 'react-zoom-pan-pinch'
 import { ZoomIn, ZoomOut, Maximize2 } from 'lucide-react'
 import type { DecayChainNode } from '../types'
@@ -72,7 +74,7 @@ function getNodeBorder(isStable: boolean, isDark: boolean): string {
 /**
  * Format half-life for display
  */
-function formatHalfLife(node: DecayChainNode): string {
+function formatHalfLife(node: DecayChainNode, t: TFunction): string {
   if (node.halfLife !== undefined && node.halfLifeUnits) {
     const hl = node.halfLife
     const units = expandHalfLifeUnit(node.halfLifeUnits)
@@ -85,7 +87,7 @@ function formatHalfLife(node: DecayChainNode): string {
     const hl = Math.pow(10, node.logHalfLife)
     return `${hl.toExponential(1)} y`
   }
-  return node.isStable ? 'Stable' : '—'
+  return node.isStable ? t('elements.stable') : '—'
 }
 
 /**
@@ -166,6 +168,7 @@ function layoutTree(root: DecayChainNode): { nodes: LayoutNode[]; edges: LayoutE
 
 export default function DecayChainDiagram({ root, maxHeight = 600, showWrapper = true, minimal = false }: DecayChainDiagramProps) {
   const navigate = useNavigate()
+  const { t, i18n } = useTranslation()
   const [hoveredNode, setHoveredNode] = useState<string | null>(null)
   const [isDark] = useState(() => document.documentElement.classList.contains('dark'))
 
@@ -207,7 +210,7 @@ export default function DecayChainDiagram({ root, maxHeight = 600, showWrapper =
   if (nodes.length === 0) {
     return (
       <div className="flex items-center justify-center h-64 text-gray-500 dark:text-gray-400">
-        No decay chain data available
+        {t('decayChain.noData')}
       </div>
     )
   }
@@ -232,26 +235,29 @@ export default function DecayChainDiagram({ root, maxHeight = 600, showWrapper =
               <button
                 onClick={() => zoomIn()}
                 className="p-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
-                title="Zoom in"
+                title={t('decayChain.zoomIn')}
+                aria-label={t('decayChain.zoomIn')}
               >
                 <ZoomIn className="w-4 h-4 text-gray-700 dark:text-gray-300" />
               </button>
               <button
                 onClick={() => zoomOut()}
                 className="p-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
-                title="Zoom out"
+                title={t('decayChain.zoomOut')}
+                aria-label={t('decayChain.zoomOut')}
               >
                 <ZoomOut className="w-4 h-4 text-gray-700 dark:text-gray-300" />
               </button>
               <button
                 onClick={() => resetTransform()}
                 className="p-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
-                title="Reset view"
+                title={t('decayChain.resetView')}
+                aria-label={t('decayChain.resetView')}
               >
                 <Maximize2 className="w-4 h-4 text-gray-700 dark:text-gray-300" />
               </button>
               <span className="text-xs text-gray-600 dark:text-gray-400 ml-2">
-                Scroll to zoom • Drag to pan • Double-click to zoom in
+                {t('decayChain.controlsHint')}
               </span>
             </div>
 
@@ -372,7 +378,7 @@ export default function DecayChainDiagram({ root, maxHeight = 600, showWrapper =
                 fontSize="10"
                 fill={isDark ? '#d1d5db' : '#6b7280'}
               >
-                {formatHalfLife(node)}
+                {formatHalfLife(node, t)}
               </text>
 
               {/* Stability indicator */}
@@ -384,7 +390,7 @@ export default function DecayChainDiagram({ root, maxHeight = 600, showWrapper =
                 fontWeight="600"
                 fill={node.isStable ? (isDark ? '#86efac' : '#16a34a') : (isDark ? '#fdba74' : '#ea580c')}
               >
-                {node.isStable ? 'STABLE' : 'RADIOACTIVE'}
+                {(node.isStable ? t('elements.stable') : t('reactions.radioactive')).toLocaleUpperCase(i18n?.language)}
               </text>
 
               {/* Hover tooltip */}
@@ -407,7 +413,7 @@ export default function DecayChainDiagram({ root, maxHeight = 600, showWrapper =
                     fontSize="10"
                     fill={isDark ? '#f3f4f6' : '#111827'}
                   >
-                    Click to view details
+                    {t('decayChain.clickToViewDetails')}
                   </text>
                 </g>
               )}
@@ -422,19 +428,19 @@ export default function DecayChainDiagram({ root, maxHeight = 600, showWrapper =
               ? "p-3"
               : "p-3 bg-gray-50 dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700"
             }>
-              <h4 className="text-xs font-semibold text-gray-700 dark:text-gray-300 mb-2">Decay Modes</h4>
+              <h4 className="text-xs font-semibold text-gray-700 dark:text-gray-300 mb-2">{t('decayChain.decayModes')}</h4>
               <div className="flex flex-wrap gap-3 text-xs">
                 <div className="flex items-center gap-1">
                   <div className="w-8 h-0.5" style={{ backgroundColor: '#dc2626' }} />
-                  <span className="text-gray-600 dark:text-gray-400">Alpha (α)</span>
+                  <span className="text-gray-600 dark:text-gray-400">{t('decayChain.alpha')}</span>
                 </div>
                 <div className="flex items-center gap-1">
                   <div className="w-8 h-0.5" style={{ backgroundColor: '#2563eb' }} />
-                  <span className="text-gray-600 dark:text-gray-400">Beta- (β-)</span>
+                  <span className="text-gray-600 dark:text-gray-400">{t('decayChain.betaMinus')}</span>
                 </div>
                 <div className="flex items-center gap-1">
                   <div className="w-8 h-0.5" style={{ backgroundColor: '#16a34a' }} />
-                  <span className="text-gray-600 dark:text-gray-400">Beta+ (β+)</span>
+                  <span className="text-gray-600 dark:text-gray-400">{t('decayChain.betaPlus')}</span>
                 </div>
                 <div className="flex items-center gap-1">
                   <div className="w-8 h-0.5" style={{ backgroundColor: '#9333ea' }} />

@@ -25,7 +25,10 @@
     "back": "Back",
     "next": "Next",
     "previous": "Previous",
-    "continue": "Continue"
+    "continue": "Continue",
+    "selectAll": "Select All",
+    "expand": "Expand",
+    "collapse": "Collapse"
   },
   "brand": {
     "appName": "Nanosoft Suite",
@@ -201,7 +204,23 @@
     "filterAll": "All",
     "filterFusion": "Fusion",
     "filterFission": "Fission",
-    "filterTwoToTwo": "2→2"
+    "filterTwoToTwo": "2→2",
+    "allElements": "All elements",
+    "label": "{{type}} {{elements}}",
+    "resultCount_one": "{{count}} result",
+    "resultCount_other": "{{count}} results",
+    "bookmark": "Bookmark",
+    "removeBookmark": "Remove bookmark",
+    "remove": "Remove",
+    "summary": {
+      "e1": "E1: {{list}}",
+      "e2": "E2: {{list}}",
+      "e": "E: {{list}}",
+      "out": "Out: {{list}}",
+      "outN": "Out{{n}}: {{list}}",
+      "limit": "limit: {{limit}}",
+      "noFilters": "No filters"
+    }
   },
   "elements": {
     "element": "Element",
@@ -353,7 +372,9 @@
     "stableCount": "stable",
     "radioactiveCount": "radioactive",
     "radiationTypeLegend": "Radiation Type Legend",
-    "notAvailableInDatabase": "Not available in database"
+    "notAvailableInDatabase": "Not available in database",
+    "electricalConductivity": "Electrical Conductivity",
+    "valueYears": "{{value}} years"
   },
   "reactions": {
     "reaction": "Reaction",
@@ -475,7 +496,14 @@
       "rightTitle": "Antineutrino (ν̄, right-handed): total nuclear charge increases by 1 (β⁻ type)",
       "none": "—",
       "noneTitle": "No neutrino involved"
-    }
+    },
+    "selectHeatmapMetric": "Select heatmap metric",
+    "removeLimitTitle": "Remove limit and show all matching reactions in table",
+    "resizeHandleDisabled": "Resize handle (disabled for small result sets)",
+    "resizeHandle": "Drag to resize table height (double-click to reset)",
+    "fusionResultsLabel": "Fusion reaction results",
+    "fissionResultsLabel": "Fission reaction results",
+    "twoToTwoResultsLabel": "Two-to-two reaction results"
   },
   "histogram": {
     "title": "Energy Distribution",
@@ -810,7 +838,10 @@
       "zoomReset": "Reset zoom",
       "advancedSettings": "Advanced Settings",
       "maxPathways": "Max Pathways: {{count}}"
-    }
+    },
+    "customMaterialNamePlaceholder": "My Custom Fuel Mix",
+    "optionalDescription": "Optional description...",
+    "pathwayResultsTable": "Pathway results table"
   },
   "materials": {
     "natural-lithium": {
@@ -1007,7 +1038,9 @@
     "databaseUpdateAvailable": "Database update available: v{{current}} → v{{available}}",
     "databaseUpdateReady": "Database update ready (v{{version}}) - Refresh to use the new data",
     "downloadingUpdate": "Downloading database update in background...",
-    "downloadUpdate": "Download Update"
+    "downloadUpdate": "Download Update",
+    "noChangelogDetails": "No changelog details provided for this release.",
+    "latestRelease": "Latest Release"
   },
   "columnToggle": {
     "title": "Customize visible columns",
@@ -1020,7 +1053,11 @@
     "youAreOffline": "You are offline",
     "offlineMessage": "Some features may be unavailable",
     "reconnecting": "Reconnecting...",
-    "backOnline": "You are back online"
+    "backOnline": "You are back online",
+    "connectionRestored": "Connection restored",
+    "offlineTitle": "You're offline",
+    "cachedQueryHint": "You can still query the database if it's cached locally",
+    "offlineShort": "Offline"
   },
   "cycleDiscovery": {
     "databaseNotLoaded": "Database not loaded. Please wait for the database to finish loading.",
@@ -1110,7 +1147,8 @@
     "netLabelNoByproducts": "(none)",
     "cycleClosesLabel": "Cycle closes — catalyst regenerated",
     "catalystCenterLabel": "Catalyst (recycled)",
-    "byproductLabel": "byproduct"
+    "byproductLabel": "byproduct",
+    "cycleAroundCatalyst": "← reactions cycle around catalyst →"
   },
   "help": {
     "title": "Help & Glossary",
@@ -1128,6 +1166,56 @@
       "reaction": "Reaction Types",
       "database": "Database Fields",
       "measurement": "Measurements & Units"
+    },
+    "examples": {
+      "hLiFusion": {
+        "name": "Hydrogen-Lithium Fusion",
+        "description": "Classic LENR reaction pathway. H + Li fusion produces beryllium and helium isotopes with significant energy release."
+      },
+      "niHFusion": {
+        "name": "Nickel-Hydrogen Fusion",
+        "description": "Investigated in Rossi E-Cat and Parkhomov replication experiments. Ni + H reactions produce copper isotopes."
+      },
+      "uraniumFission": {
+        "name": "Uranium Fission Pathways",
+        "description": "All fission pathways from uranium isotopes. Shows the diverse product spectrum of uranium splitting."
+      },
+      "palladiumFission": {
+        "name": "Palladium Fission",
+        "description": "Pd fission pathways relevant to Fleischmann-Pons cold fusion experiments using palladium electrodes."
+      },
+      "protonBoron": {
+        "name": "Proton-Boron Reactions",
+        "description": "H + B-11 produces three alpha particles in the aneutronic fusion reaction (p + B-11 → 3α), considered ideal for clean energy."
+      },
+      "deuteriumNickel": {
+        "name": "Deuterium-Nickel Reactions",
+        "description": "D + Ni two-to-two reactions showing deuterium-based transmutations with nickel, lithium, aluminum, boron, and nitrogen."
+      },
+      "u238DecayChain": {
+        "name": "Uranium-238 Decay Chain",
+        "description": "The most famous natural decay series (4n+2). Trace 14 steps from U-238 through radium and radon down to stable Pb-206."
+      },
+      "iron56": {
+        "name": "Iron-56 — Peak Binding Energy",
+        "description": "Fe-56 has the highest binding energy per nucleon of any nuclide, making it the endpoint of stellar nucleosynthesis."
+      },
+      "palladiumNae": {
+        "name": "Palladium NAE Analysis",
+        "description": "Explore palladium's nuclear active environment predictions — central to Fleischmann-Pons deuterium loading experiments."
+      },
+      "parkhomovCascade": {
+        "name": "Parkhomov Ni-LiAlH₄ Cascade",
+        "description": "Simulate the 2014 Parkhomov replication of the Rossi reactor using natural nickel with lithium aluminum hydride fuel."
+      }
+    },
+    "exampleTypes": {
+      "fusion": "fusion",
+      "fission": "fission",
+      "twotwo": "2→2",
+      "elementData": "element",
+      "cascades": "cascade",
+      "mullerResonance": "resonance"
     }
   },
   "mullerResonance": {
@@ -1455,5 +1543,298 @@
         "excerpt": "ARPA-E announced ~$10M in exploratory LENR research funding in 2023, signalling renewed institutional interest."
       }
     }
+  },
+  "periodicSelector": {
+    "any": "Any",
+    "selectedSummary_one": "{{count}} selected: {{list}}",
+    "selectedSummary_other": "{{count}} selected: {{list}}",
+    "clearAll": "Clear all",
+    "removeItem": "Remove {{item}}",
+    "lanthanides": "Lanthanides (57-71)",
+    "actinides": "Actinides (89-103)"
+  },
+  "limitSelector": {
+    "resultLimit": "Result Limit",
+    "all": "All",
+    "unlimited": "Unlimited ⚠️",
+    "custom": "Custom",
+    "enterCustomLimit": "Enter custom limit",
+    "recommended": "Recommended ≤ {{max}}"
+  },
+  "badgeSelector": {
+    "allTypesShown": "All types shown",
+    "typesSelected_one": "{{count}} type selected",
+    "typesSelected_other": "{{count}} types selected"
+  },
+  "elementData": {
+    "subtitle": "View detailed chemical, physical, and nuclear properties across multiple data views",
+    "presets": {
+      "alphaDecay": "Alpha Decay",
+      "betaMinusDecay": "Beta Minus Decay",
+      "betaPlusDecay": "Beta Plus Decay",
+      "gammaRadiation": "Gamma Radiation"
+    },
+    "columns": {
+      "meltingK": "Melting (K)",
+      "boilingK": "Boiling (K)",
+      "densityGcm3": "Density (g/cm³)",
+      "massAmu": "Mass (amu)"
+    },
+    "radiiMeasured": "Measured",
+    "radiiTheoretical": "Theoretical",
+    "radiiNonBonded": "Non-bonded",
+    "radiiBonded": "Bonded atoms",
+    "viewSource": "view source",
+    "required": "(required)",
+    "nuclideNotAvailable": "Nuclide Not Available",
+    "nuclideNotAvailableMessage": "The nuclide <strong>{{nuclide}}</strong> is not available in either the stable nuclides or radioactive decay databases. This isotope may be extremely short-lived or outside the range of documented nuclides.",
+    "availableNuclidesShown": "Available nuclides for {{element}} are shown above. Select one to view its detailed properties.",
+    "noNuclidesAvailable": "No Nuclides Available",
+    "noNuclidesForElement": "No nuclides for <strong>{{element}}</strong> are available in the database.",
+    "elementNotInDataset": "This element may not be included in the current dataset, which focuses on elements relevant to Low Energy Nuclear Reaction (LENR) research.",
+    "elementsTable": "Elements Table",
+    "elementsTableDescription": "Browse and search all chemical elements. Click any row to view detailed properties in the Integrated tab.",
+    "nuclidesTable": "Nuclides Table",
+    "nuclidesTableDescription": "Browse all nuclear isotopes with binding energies, boson/fermion classifications, and stability indicators. Click any row to view detailed properties in the Integrated tab.",
+    "decaysTable": "Radioactive Decays Table",
+    "decaysTableDescription": "Browse radioactive decay modes, half-lives, energies, and intensities for all unstable isotopes. Click any row to view the parent nuclide in the Integrated tab.",
+    "searchElements": "Search elements by symbol or name...",
+    "searchNuclides": "Search nuclides by element name, symbol, Z, or A...",
+    "searchDecays": "Search decays by element, decay mode, or radiation type...",
+    "status": {
+      "unknown": "Unknown",
+      "stablePrimordial": "Stable Primordial",
+      "synthetic": "Synthetic",
+      "unstablePrimordial": "Unstable Primordial"
+    },
+    "classification": "Classification",
+    "nuclearSpin": "Nuclear Spin",
+    "magneticMoment": "Magnetic Moment",
+    "nmrFrequency": "NMR Frequency",
+    "primaryDecay": "Primary Decay",
+    "decayEnergy": "Decay Energy",
+    "chemicalProperties": "Chemical Properties",
+    "otherProperties": "Other Properties",
+    "naturalOccurrence": "Natural Occurrence",
+    "additionalProperties": "Additional Properties"
+  },
+  "decayChain": {
+    "noData": "No decay chain data available",
+    "zoomIn": "Zoom in",
+    "zoomOut": "Zoom out",
+    "resetView": "Reset view",
+    "controlsHint": "Scroll to zoom • Drag to pan • Double-click to zoom in",
+    "clickToViewDetails": "Click to view details",
+    "decayModes": "Decay Modes",
+    "alpha": "Alpha (α)",
+    "betaMinus": "Beta- (β-)",
+    "betaPlus": "Beta+ (β+)"
+  },
+  "databaseLoading": {
+    "downloadingTitle": "Downloading Database",
+    "loadingTitle": "Loading Database",
+    "downloadingMessage": "Downloading Parkhomov nuclear reactions database...",
+    "initializingMessage": "Initializing database engine...",
+    "cachedNotice": "This database will be cached for instant loading on future visits",
+    "pleaseWait": "Please wait a moment..."
+  },
+  "errorDisplay": {
+    "databaseErrorTitle": "Database Error",
+    "somethingWentWrong": "Something went wrong",
+    "autoReported": "This error has been automatically reported to our team.",
+    "technicalDetails": "Technical Details",
+    "fingerprint": "Error Fingerprint",
+    "timestamp": "Timestamp",
+    "browser": "Browser",
+    "os": "OS",
+    "device": "Device",
+    "url": "URL",
+    "appVersion": "App Version",
+    "clickToCopy": "Click to copy",
+    "stackTrace": "Stack Trace",
+    "moduleLoad": {
+      "title": "Module Loading Failed",
+      "description": "This error commonly occurs on Safari (especially iOS) when content blockers or ad blockers prevent JavaScript modules from loading.",
+      "trySolutions": "Try these solutions:",
+      "solution1": "Disable Safari content blockers for this site (Settings → Safari → Content Blockers)",
+      "solution2": "Disable browser extensions like AdBlock or similar ad blockers",
+      "solution3": "Try using Private Browsing mode or a different browser",
+      "solution4": "Check if Private Relay is interfering (iCloud Settings → Private Relay)",
+      "solution5": "Clear Safari cache and cookies, then reload",
+      "note": "<strong>Note:</strong> This affects approximately 0.6% of users and is usually resolved by disabling content blockers."
+    },
+    "corruption": {
+      "title": "Database Corruption Detected",
+      "description": "This error typically occurs when the cached database file is corrupted. You can fix this by clearing the cache and re-downloading the database.",
+      "clearing": "Clearing Cache...",
+      "clearAndReload": "Clear Cache & Reload",
+      "redownloadNote": "Note: This will re-download the {{size}}MB database file"
+    },
+    "searchSimilar": "Search Similar Issues",
+    "searchFirstTitle": "Please search for similar issues first to avoid duplicate reports",
+    "copyingAndOpening": "Copying to clipboard and opening GitHub...",
+    "copyAndReportTitle": "Copy error details and open GitHub to report",
+    "openingIn": "Opening in {{seconds}}s...",
+    "copied": "Copied!",
+    "reportThisError": "Report This Error",
+    "reportCopied": "Error report copied to clipboard!",
+    "openingGitHubIn": "Opening GitHub in {{seconds}}s... Please fill in the reproduction steps after pasting.",
+    "tryAgain": "Try Again",
+    "returnHome": "Return to Home",
+    "searchFirstHint": "Please search for similar issues <strong>first</strong> to avoid duplicate reports",
+    "afterPastingHint": "<strong>Important:</strong> After pasting the error report, please fill in the Steps to Reproduce, Expected Behavior, and Actual Behavior sections to help us fix this issue quickly"
+  },
+  "filterPanel": {
+    "noFiltersActive": "No filters active",
+    "errors": {
+      "nameRequired": "Please enter a preset name",
+      "nameTooShort": "Preset name must be at least {{min}} characters",
+      "nameTooLong": "Preset name must be less than {{max}} characters",
+      "nameExists": "A preset with this name already exists"
+    },
+    "multiSelectHint": "Hold Ctrl/Cmd to select multiple",
+    "min": "Min",
+    "max": "Max",
+    "clearSearch": "Clear search",
+    "showingRecords": "Showing {{shown}} of {{total}} records",
+    "loadPreset": "Load Preset...",
+    "builtInPresets": "Built-in Presets",
+    "myPresets": "My Presets",
+    "deletePresetTitle": "Delete this preset",
+    "deletePreset": "Delete preset",
+    "savePresetTitle": "Save current filters as a preset",
+    "savePreset": "Save Preset...",
+    "clearAll": "Clear All",
+    "saveFilterPreset": "Save Filter Preset",
+    "presetName": "Preset Name",
+    "presetNamePlaceholder": "e.g., My Custom Filter",
+    "searchPlaceholder": "Search..."
+  },
+  "pwa": {
+    "installPromptLabel": "Install app prompt",
+    "installTitle": "Install {{appName}}",
+    "installDescription": "Install the app for quick access and offline functionality",
+    "iosTitle": "To install on iOS:",
+    "iosStep1": "Tap the Share button in Safari",
+    "iosStep2": "Scroll down and tap \"Add to Home Screen\"",
+    "iosStep3": "Tap \"Add\" in the top right",
+    "installNow": "Install Now",
+    "dismissInstall": "Dismiss install prompt",
+    "newVersionAvailable": "New version available!",
+    "updateDescription": "Click update to get the latest features and improvements",
+    "dismissUpdate": "Dismiss update notification"
+  },
+  "particleDetails": {
+    "electronDescription": "Fundamental lepton with negative electric charge that orbits atomic nuclei.",
+    "neutronDescription": "Neutral baryon found in the nucleus of nearly all atoms.",
+    "neutrinoDescription": "Nearly massless, electrically neutral lepton that interacts only via the weak force.",
+    "notAvailable": "N/A",
+    "quickFacts": "Quick Facts",
+    "charge": "Charge",
+    "spin": "Spin",
+    "databaseMapping": "Database Mapping",
+    "nuclideId": "Nuclide ID",
+    "nuclearBaryonic": "Nuclear/Baryonic",
+    "atomicFermionic": "Atomic/Fermionic",
+    "notes": "Notes",
+    "storageNote": "This particle is stored alongside nuclides due to its presence in reactions but does not correspond to a chemical element."
+  },
+  "proportions": {
+    "fuelProportions": "Fuel Proportions",
+    "formatLabel": {
+      "percentage": "Percentage (%)",
+      "atomicRatio": "Atomic Ratio",
+      "massRatio": "Mass Ratio (g)"
+    },
+    "formatHelp": {
+      "percentage": "Enter percentages (0-100). Values will be normalized to 100%.",
+      "atomicRatio": "Enter atomic ratios (e.g., 3:1 becomes 75%:25%).",
+      "massRatio": "Enter masses in grams. Converted to moles using atomic mass."
+    },
+    "selectFuelFirst": "Select fuel nuclides to configure proportions",
+    "equal": "Equal",
+    "natural": "Natural",
+    "normalize": "Normalize",
+    "total": "Total",
+    "willBeNormalized": "(will be normalized)"
+  },
+  "sortableTable": {
+    "noData": "No data available",
+    "collapseAll": "Collapse All",
+    "tabs": "Tabs"
+  },
+  "radioactiveCard": {
+    "limitedData": "<strong>Limited Data Available:</strong> This isotope exists only in the radioactive decay database. Full nuclear property data (binding energy, atomic mass, quantum properties) is not available for this short-lived nuclide.",
+    "primaryDecayMode": "Primary Decay Mode",
+    "radiation": "Radiation"
+  },
+  "privacyPage": {
+    "title": "Privacy Settings",
+    "subtitle": "Manage your analytics and error reporting preferences and learn about how we protect your privacy",
+    "reloadToApply": "To apply your error reporting changes, please reload the page.",
+    "reloadNow": "Reload Page Now",
+    "errorReporting": {
+      "title": "Error Reporting",
+      "disabledStatus": "Error Reporting Disabled",
+      "disabledStatusDescription": "Errors won't be reported to our development team",
+      "enabledStatusDescription": "Helping us catch and fix bugs automatically",
+      "saved": "✓ Your error reporting preference has been saved",
+      "whyTitle": "Why Error Reporting is Critical",
+      "whyIntro": "Error reporting helps us identify and fix bugs that affect your experience. When errors occur, we receive anonymized technical details that help us:",
+      "why1": "Fix bugs faster and improve stability",
+      "why2": "Understand which features need improvement",
+      "why3": "Prioritize development based on real issues",
+      "why4": "Ensure the app works correctly for all users",
+      "manage": "Manage Error Reporting",
+      "enable": "Enable Error Reporting",
+      "enableDescription": "Automatically report errors to help us fix bugs",
+      "disable": "Disable Error Reporting",
+      "disableDescription": "Don't send error reports (app may be less stable)",
+      "whatReported": "What Gets Reported:",
+      "reported1": "Error messages and stack traces",
+      "reported2": "Browser type and version",
+      "reported3": "Page URL (query parameters scrubbed)",
+      "reported4": "App version and release info",
+      "whatNotReported": "What's NOT Reported:",
+      "notReported1": "Personal information or IP addresses",
+      "notReported3": "Session recordings or screenshots",
+      "notReported4": "Any identifiable user data",
+      "enabledStatus": "Error Reporting Enabled",
+      "helpMessage": "<strong>Your help makes this project better for everyone!</strong> Enabling error reporting is one of the most impactful ways you can contribute to LENR Academy's success.",
+      "sentryNotice": "We use <strong>Sentry</strong> with EU hosting for GDPR compliance. All data is anonymized and used solely for debugging purposes."
+    },
+    "searchQueriesOrInputs": "Search queries or form inputs",
+    "analytics": {
+      "title": "Analytics",
+      "enabledStatus": "Analytics Enabled",
+      "enabledStatusDescription": "Helping us improve the site with privacy-friendly analytics",
+      "disabledStatus": "Analytics Disabled",
+      "disabledStatusDescription": "We're not collecting any usage data from your visits",
+      "noPreference": "No Preference Set",
+      "noPreferenceDescription": "You haven't made a choice yet",
+      "saved": "✓ Your analytics preference has been saved",
+      "manage": "Manage Analytics",
+      "enable": "Enable Analytics",
+      "enableDescription": "Help us understand how visitors use the site",
+      "disable": "Disable Analytics",
+      "disableDescription": "Don't collect usage data from your visits",
+      "whatTracked": "What We Track:",
+      "tracked1": "Page views and navigation patterns",
+      "tracked2": "Referring websites (where visitors come from)",
+      "tracked3": "Browser and device type (anonymized)",
+      "tracked4": "Country/region (based on IP, not stored)",
+      "whatNotTracked": "What We DON'T Track:",
+      "notTracked1": "Personal information or identifiable data",
+      "notTracked2": "Individual users across sessions",
+      "notTracked3": "Cookies (we don't use any tracking cookies)",
+      "notTracked4": "IP addresses (not stored)",
+      "transparencyTitle": "Full Transparency",
+      "transparencyDescription": "We believe in complete transparency. You can view our public analytics dashboard to see exactly what data we collect and how it's displayed. No secrets, no hidden tracking.",
+      "viewDashboard": "View Public Analytics Dashboard",
+      "umamiCompliance": "Umami is fully GDPR, CCPA, and PECR compliant. It's designed to give website owners insights without invading visitor privacy.",
+      "learnMoreUmami": "Learn more about Umami",
+      "umamiIntro": "We use <strong>Umami Analytics</strong>, a privacy-friendly, open-source analytics platform that respects your privacy."
+    },
+    "default": "(default)"
   }
 }

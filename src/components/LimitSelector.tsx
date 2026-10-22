@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react'
 import { ChevronDown } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 
 export interface LimitSelectorProps {
   value: number | null | undefined
@@ -8,16 +9,19 @@ export interface LimitSelectorProps {
   id?: string
 }
 
-const limitOptions = [
-  { value: 100, label: '100' },
-  { value: 500, label: '500' },
-  { value: 1000, label: '1000' },
-  { value: 5000, label: '5000' },
-  { value: null, label: 'Unlimited ⚠️' },
-  { value: -1, label: 'Custom' }
+// `testId` stays in English so E2E selectors are language-independent;
+// `labelKey` options are translated at render time.
+const limitOptions: { value: number | null; testId: string; label?: string; labelKey?: string }[] = [
+  { value: 100, testId: '100', label: '100' },
+  { value: 500, testId: '500', label: '500' },
+  { value: 1000, testId: '1000', label: '1000' },
+  { value: 5000, testId: '5000', label: '5000' },
+  { value: null, testId: 'unlimited ⚠️', labelKey: 'limitSelector.unlimited' },
+  { value: -1, testId: 'custom', labelKey: 'limitSelector.custom' }
 ]
 
 export default function LimitSelector({ value, onChange, id }: LimitSelectorProps) {
+  const { t } = useTranslation()
   const [isOpen, setIsOpen] = useState(false)
   const [customValue, setCustomValue] = useState('')
   const [showCustomInput, setShowCustomInput] = useState(false)
@@ -61,16 +65,19 @@ export default function LimitSelector({ value, onChange, id }: LimitSelectorProp
     setCustomValue('')
   }
 
+  const optionLabel = (option: typeof limitOptions[number]) =>
+    option.labelKey ? t(option.labelKey) : option.label ?? String(option.value)
+
   const getDisplayValue = () => {
-    if (value === null || value === undefined) return 'All'
+    if (value === null || value === undefined) return t('limitSelector.all')
     const option = limitOptions.find(opt => opt.value === value)
-    return option ? option.label : value.toString()
+    return option ? optionLabel(option) : value.toString()
   }
 
   return (
     <div className="relative" ref={dropdownRef}>
       <label htmlFor={id} className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-        Result Limit
+        {t('limitSelector.resultLimit')}
       </label>
       
       {showCustomInput ? (
@@ -81,7 +88,7 @@ export default function LimitSelector({ value, onChange, id }: LimitSelectorProp
             className="input flex-1"
             value={customValue}
             onChange={(e) => setCustomValue(e.target.value)}
-            placeholder="Enter custom limit"
+            placeholder={t('limitSelector.enterCustomLimit')}
             min={0}
             max={10000}
             autoFocus
@@ -90,13 +97,13 @@ export default function LimitSelector({ value, onChange, id }: LimitSelectorProp
             onClick={handleCustomSubmit}
             className="px-3 py-2 bg-primary-600 text-white rounded hover:bg-primary-700 transition-colors text-sm"
           >
-            OK
+            {t('common.ok')}
           </button>
           <button
             onClick={handleCustomCancel}
             className="px-3 py-2 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors text-sm"
           >
-            Cancel
+            {t('common.cancel')}
           </button>
         </div>
       ) : (
@@ -122,9 +129,9 @@ export default function LimitSelector({ value, onChange, id }: LimitSelectorProp
                     value === option.value ? 'bg-primary-50 dark:bg-primary-900/20 text-primary-700 dark:text-primary-300' : ''
                   }`}
                   onClick={() => handleOptionSelect(option.value)}
-                  data-testid={`limit-option-${option.label.toLowerCase()}`}
+                  data-testid={`limit-option-${option.testId}`}
                 >
-                  {option.label}
+                  {optionLabel(option)}
                 </button>
               ))}
             </div>
@@ -132,7 +139,7 @@ export default function LimitSelector({ value, onChange, id }: LimitSelectorProp
         </>
       )}
       
-      <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Recommended ≤ 5000</p>
+      <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{t('limitSelector.recommended', { max: 5000 })}</p>
     </div>
   )
 }

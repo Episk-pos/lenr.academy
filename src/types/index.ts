@@ -499,7 +499,12 @@ export interface CascadePageStateV2 extends CascadePageState {
 
 export interface SavedQuery {
   id: string;
-  name: string;
+  /**
+   * Legacy English display label. Entries saved before labels were localized
+   * carry it; new entries omit it and derive the label from queryType + filter
+   * at render time (see getQueryLabel in hooks/useQueryHistory).
+   */
+  name?: string;
   queryType: 'fusion' | 'fission' | 'twotwo';
   filter: QueryFilter;
   timestamp: number;

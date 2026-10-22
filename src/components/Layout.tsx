@@ -439,7 +439,7 @@ export default function Layout({ children }: LayoutProps) {
             className="rounded-lg overflow-hidden"
             onVisibilityChange={setAppUpdateVisible}
             onViewChangelog={(version) => {
-              const label = version ?? 'Latest Release'
+              const label = version ?? t('updates.latestRelease')
               const targetTag = version ?? releaseTag
               if (!targetTag) {
                 openChangelog(null, label)

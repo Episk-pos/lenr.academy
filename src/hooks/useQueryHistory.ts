@@ -1,14 +1,28 @@
 import { useState, useCallback } from 'react';
+import type { TFunction } from 'i18next';
 import { SavedQuery, QueryFilter } from '../types';
 
 const STORAGE_KEY = 'lenr-query-history';
 const MAX_HISTORY_SIZE = 50;
 
+type QueryType = SavedQuery['queryType'];
+const QUERY_TYPES: readonly QueryType[] = ['fusion', 'fission', 'twotwo'];
+
+function isQueryType(value: unknown): value is QueryType {
+  return typeof value === 'string' && (QUERY_TYPES as readonly string[]).includes(value);
+}
+
 function loadHistory(): SavedQuery[] {
   try {
     const stored = localStorage.getItem(STORAGE_KEY);
     if (stored) {
-      return JSON.parse(stored);
+      const parsed: unknown = JSON.parse(stored);
+      if (Array.isArray(parsed)) {
+        // Tolerate legacy/malformed entries: keep anything that is an object with an id
+        return parsed.filter(
+          (q): q is SavedQuery => !!q && typeof q === 'object' && typeof (q as SavedQuery).id === 'string'
+        );
+      }
     }
   } catch (error) {
     console.error('Failed to load query history:', error);
@@ -28,11 +42,22 @@ function filtersMatch(a: QueryFilter, b: QueryFilter): boolean {
   return JSON.stringify(a) === JSON.stringify(b);
 }
 
-function generateName(queryType: string, filter: QueryFilter): string {
-  const parts: string[] = [];
+/**
+ * Build the display label for a history entry in the current UI language.
+ *
+ * Labels are derived at render time from the structured params (queryType + filter)
+ * so they follow language changes. Legacy entries (saved before labels were
+ * localized) carry an English `name`; it is only used as a fallback when the
+ * structured params are missing or unrecognized.
+ */
+export function getQueryLabel(query: Partial<SavedQuery>, t: TFunction): string {
+  if (!isQueryType(query.queryType) || !query.filter || typeof query.filter !== 'object') {
+    return query.name ?? '';
+  }
 
-  const typeLabel = queryType === 'twotwo' ? '2→2' : queryType.charAt(0).toUpperCase() + queryType.slice(1);
-  parts.push(typeLabel);
+  const filter = query.filter;
+  const typeLabel = t(QUERY_TYPE_LABEL_KEYS[query.queryType]);
+  const parts: string[] = [];
 
   if (filter.element1List?.length) {
     parts.push(filter.element1List.join(','));
@@ -44,12 +69,16 @@ function generateName(queryType: string, filter: QueryFilter): string {
     parts.push(filter.elements.join(','));
   }
 
-  if (parts.length === 1) {
-    parts.push('All elements');
-  }
-
-  return parts.join(' ');
+  const elements = parts.length ? parts.join(' ') : t('queryHistory.allElements');
+  return t('queryHistory.label', { type: typeLabel, elements });
 }
+
+/** i18n keys for the short query-type labels (badges, filter pills, history labels) */
+export const QUERY_TYPE_LABEL_KEYS: Record<QueryType, string> = {
+  fusion: 'queryHistory.filterFusion',
+  fission: 'queryHistory.filterFission',
+  twotwo: 'queryHistory.filterTwoToTwo',
+};
 
 export function useQueryHistory() {
   const [history, setHistory] = useState<SavedQuery[]>(loadHistory);
@@ -75,9 +104,9 @@ export function useQueryHistory() {
           ...prev.filter((_, i) => i !== existingIndex),
         ];
       } else {
+        // No display name is stored: labels are built at render time via getQueryLabel()
         const newQuery: SavedQuery = {
           id: crypto.randomUUID(),
-          name: generateName(queryType, filter),
           queryType,
           filter,
           timestamp: Date.now(),

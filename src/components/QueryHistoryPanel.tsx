@@ -1,7 +1,10 @@
 import { useState } from 'react';
 import { History, Star, Trash2, ChevronDown, ChevronUp, X } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import type { TFunction } from 'i18next';
 import { SavedQuery, QueryFilter } from '../types';
+import { getQueryLabel, QUERY_TYPE_LABEL_KEYS } from '../hooks/useQueryHistory';
+import { formatTimeAgo } from '../utils/relativeTime';
 
 interface QueryHistoryPanelProps {
   history: SavedQuery[];
@@ -12,33 +15,22 @@ interface QueryHistoryPanelProps {
   onClearHistory: () => void;
 }
 
-function formatTimeAgo(timestamp: number): string {
-  const seconds = Math.floor((Date.now() - timestamp) / 1000);
-  if (seconds < 60) return 'just now';
-  const minutes = Math.floor(seconds / 60);
-  if (minutes < 60) return `${minutes}m ago`;
-  const hours = Math.floor(minutes / 60);
-  if (hours < 24) return `${hours}h ago`;
-  const days = Math.floor(hours / 24);
-  if (days < 7) return `${days}d ago`;
-  return new Date(timestamp).toLocaleDateString();
-}
-
-function formatFilter(filter: QueryFilter): string {
+function formatFilter(filter: QueryFilter, t: TFunction): string {
   const parts: string[] = [];
-  if (filter.element1List?.length) parts.push(`E1: ${filter.element1List.join(', ')}`);
-  if (filter.element2List?.length) parts.push(`E2: ${filter.element2List.join(', ')}`);
-  if (filter.elements?.length) parts.push(`E: ${filter.elements.join(', ')}`);
-  if (filter.outputElementList?.length) parts.push(`Out: ${filter.outputElementList.join(', ')}`);
-  if (filter.outputElement1List?.length) parts.push(`Out1: ${filter.outputElement1List.join(', ')}`);
-  if (filter.outputElement2List?.length) parts.push(`Out2: ${filter.outputElement2List.join(', ')}`);
-  if (filter.outputElement3List?.length) parts.push(`Out3: ${filter.outputElement3List.join(', ')}`);
-  if (filter.outputElement4List?.length) parts.push(`Out4: ${filter.outputElement4List.join(', ')}`);
+  const list = (values: string[]) => values.join(', ');
+  if (filter.element1List?.length) parts.push(t('queryHistory.summary.e1', { list: list(filter.element1List) }));
+  if (filter.element2List?.length) parts.push(t('queryHistory.summary.e2', { list: list(filter.element2List) }));
+  if (filter.elements?.length) parts.push(t('queryHistory.summary.e', { list: list(filter.elements) }));
+  if (filter.outputElementList?.length) parts.push(t('queryHistory.summary.out', { list: list(filter.outputElementList) }));
+  if (filter.outputElement1List?.length) parts.push(t('queryHistory.summary.outN', { n: 1, list: list(filter.outputElement1List) }));
+  if (filter.outputElement2List?.length) parts.push(t('queryHistory.summary.outN', { n: 2, list: list(filter.outputElement2List) }));
+  if (filter.outputElement3List?.length) parts.push(t('queryHistory.summary.outN', { n: 3, list: list(filter.outputElement3List) }));
+  if (filter.outputElement4List?.length) parts.push(t('queryHistory.summary.outN', { n: 4, list: list(filter.outputElement4List) }));
   if (filter.minMeV !== undefined) parts.push(`≥${filter.minMeV} MeV`);
   if (filter.maxMeV !== undefined) parts.push(`≤${filter.maxMeV} MeV`);
   if (filter.neutrinoType && filter.neutrinoType !== 'any') parts.push(`ν: ${filter.neutrinoType}`);
-  if (filter.limit) parts.push(`limit: ${filter.limit}`);
-  return parts.join(' · ') || 'No filters';
+  if (filter.limit) parts.push(t('queryHistory.summary.limit', { limit: filter.limit }));
+  return parts.join(' · ') || t('queryHistory.summary.noFilters');
 }
 
 type FilterType = 'all' | 'fusion' | 'fission' | 'twotwo';
@@ -47,12 +39,6 @@ const TYPE_BADGE_STYLES: Record<'fusion' | 'fission' | 'twotwo', string> = {
   fusion: 'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300',
   fission: 'bg-orange-100 text-orange-700 dark:bg-orange-900 dark:text-orange-300',
   twotwo: 'bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-300',
-};
-
-const TYPE_BADGE_LABELS: Record<'fusion' | 'fission' | 'twotwo', string> = {
-  fusion: 'Fusion',
-  fission: 'Fission',
-  twotwo: '2\u21922',
 };
 
 export default function QueryHistoryPanel({
@@ -78,9 +64,9 @@ export default function QueryHistoryPanel({
 
   const filterOptions: { value: FilterType; labelKey: string }[] = [
     { value: 'all', labelKey: 'queryHistory.filterAll' },
-    { value: 'fusion', labelKey: 'queryHistory.filterFusion' },
-    { value: 'fission', labelKey: 'queryHistory.filterFission' },
-    { value: 'twotwo', labelKey: 'queryHistory.filterTwoToTwo' },
+    { value: 'fusion', labelKey: QUERY_TYPE_LABEL_KEYS.fusion },
+    { value: 'fission', labelKey: QUERY_TYPE_LABEL_KEYS.fission },
+    { value: 'twotwo', labelKey: QUERY_TYPE_LABEL_KEYS.twotwo },
   ];
 
   return (
@@ -89,6 +75,7 @@ export default function QueryHistoryPanel({
         onClick={() => setIsOpen(!isOpen)}
         className="flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
         title={t('queryHistory.title')}
+        aria-expanded={isOpen}
       >
         <History className="w-4 h-4" />
         <span className="hidden sm:inline">{t('queryHistory.title')}</span>
@@ -116,6 +103,8 @@ export default function QueryHistoryPanel({
               <button
                 onClick={() => setIsOpen(false)}
                 className="p-0.5 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                title={t('common.close')}
+                aria-label={t('common.close')}
               >
                 <X className="w-4 h-4" />
               </button>
@@ -200,6 +189,8 @@ function QueryHistoryItem({
   onToggleBookmark: (id: string) => void;
   onRemove: (id: string) => void;
 }) {
+  const { t, i18n } = useTranslation();
+  const bookmarkLabel = query.isBookmarked ? t('queryHistory.removeBookmark') : t('queryHistory.bookmark');
   return (
     <div className="group px-3 py-2 hover:bg-gray-50 dark:hover:bg-gray-700/50 border-b border-gray-100 dark:border-gray-700/50 last:border-0">
       <div className="flex items-start justify-between gap-2">
@@ -209,20 +200,20 @@ function QueryHistoryItem({
         >
           <div className="text-sm font-medium text-gray-900 dark:text-white truncate flex items-center gap-1.5">
             <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-medium inline-block flex-shrink-0 ${TYPE_BADGE_STYLES[query.queryType]}`}>
-              {TYPE_BADGE_LABELS[query.queryType]}
+              {QUERY_TYPE_LABEL_KEYS[query.queryType] ? t(QUERY_TYPE_LABEL_KEYS[query.queryType]) : query.queryType}
             </span>
-            <span className="truncate">{query.name}</span>
+            <span className="truncate">{getQueryLabel(query, t)}</span>
           </div>
           <div className="text-xs text-gray-500 dark:text-gray-400 truncate mt-0.5">
-            {formatFilter(query.filter)}
+            {formatFilter(query.filter ?? {}, t)}
           </div>
           <div className="flex items-center gap-2 mt-0.5">
             <span className="text-xs text-gray-400 dark:text-gray-500">
-              {formatTimeAgo(query.timestamp)}
+              {formatTimeAgo(query.timestamp, i18n?.language ?? 'en')}
             </span>
             {query.resultCount !== undefined && (
               <span className="text-xs text-gray-400 dark:text-gray-500">
-                · {query.resultCount} results
+                · {t('queryHistory.resultCount', { count: query.resultCount })}
               </span>
             )}
           </div>
@@ -231,14 +222,17 @@ function QueryHistoryItem({
           <button
             onClick={(e) => { e.stopPropagation(); onToggleBookmark(query.id); }}
             className={`p-1 rounded ${query.isBookmarked ? 'text-yellow-500' : 'text-gray-400 hover:text-yellow-500'}`}
-            title={query.isBookmarked ? 'Remove bookmark' : 'Bookmark'}
+            title={bookmarkLabel}
+            aria-label={bookmarkLabel}
+            aria-pressed={query.isBookmarked}
           >
             <Star className={`w-3.5 h-3.5 ${query.isBookmarked ? 'fill-current' : ''}`} />
           </button>
           <button
             onClick={(e) => { e.stopPropagation(); onRemove(query.id); }}
             className="p-1 rounded text-gray-400 hover:text-red-500"
-            title="Remove"
+            title={t('queryHistory.remove')}
+            aria-label={t('queryHistory.remove')}
           >
             <Trash2 className="w-3.5 h-3.5" />
           </button>

@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Scale, RefreshCw, Percent, AlertCircle, Info } from 'lucide-react';
 import type { Database } from 'sql.js';
 import type { WeightedNuclide, ProportionFormat } from '../types';
@@ -8,12 +9,16 @@ import {
   getNaturalAbundances,
   createEqualProportions,
   formatProportion,
-  getFormatLabel,
-  getFormatHelpText,
   type ProportionInput as ProportionInputType,
   type ValidationResult,
 } from '../services/proportionService';
 import { parseNuclideNotation } from '../services/isotopeService';
+
+const FORMAT_KEYS: Record<ProportionFormat, string> = {
+  percentage: 'percentage',
+  'atomic-ratio': 'atomicRatio',
+  'mass-ratio': 'massRatio',
+};
 
 interface ProportionInputProps {
   /** Selected nuclide IDs (e.g., ["Li-7", "Ni-58"]) */
@@ -54,10 +59,13 @@ export default function ProportionInput({
   db,
   autoNormalize = true,
   showFormatSelector = true,
-  label = 'Fuel Proportions',
+  label,
   testId = 'proportion-input',
 }: ProportionInputProps) {
   // Local input values (may not be normalized yet)
+  const { t } = useTranslation();
+  const getFormatLabel = (fmt: ProportionFormat) => t(`proportions.formatLabel.${FORMAT_KEYS[fmt]}`);
+  const getFormatHelpText = (fmt: ProportionFormat) => t(`proportions.formatHelp.${FORMAT_KEYS[fmt]}`);
   const [inputValues, setInputValues] = useState<Map<string, string>>(new Map());
   const [showTooltip, setShowTooltip] = useState(false);
 
@@ -191,7 +199,7 @@ export default function ProportionInput({
         className="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700"
       >
         <p className="text-sm text-gray-500 dark:text-gray-400">
-          Select fuel nuclides to configure proportions
+          {t('proportions.selectFuelFirst')}
         </p>
       </div>
     );
@@ -207,7 +215,7 @@ export default function ProportionInput({
         <div className="flex items-center gap-2">
           <Scale className="w-4 h-4 text-gray-500 dark:text-gray-400" />
           <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-            {label}
+            {label ?? t('proportions.fuelProportions')}
           </span>
           <button
             type="button"
@@ -247,7 +255,7 @@ export default function ProportionInput({
           data-testid={`${testId}-distribute-equally`}
         >
           <Scale className="w-3.5 h-3.5" />
-          Equal
+          {t('proportions.equal')}
         </button>
         <button
           type="button"
@@ -257,7 +265,7 @@ export default function ProportionInput({
           data-testid={`${testId}-natural-abundance`}
         >
           <RefreshCw className="w-3.5 h-3.5" />
-          Natural
+          {t('proportions.natural')}
         </button>
         <button
           type="button"
@@ -267,7 +275,7 @@ export default function ProportionInput({
           data-testid={`${testId}-normalize`}
         >
           <Percent className="w-3.5 h-3.5" />
-          Normalize
+          {t('proportions.normalize')}
         </button>
       </div>
 
@@ -348,7 +356,7 @@ export default function ProportionInput({
       {/* Total display */}
       <div className="flex items-center justify-between pt-2 border-t border-gray-200 dark:border-gray-700">
         <span className="text-sm text-gray-600 dark:text-gray-400">
-          Total:
+          {t('proportions.total')}:
         </span>
         <span
           className={`text-sm font-medium ${
@@ -360,7 +368,7 @@ export default function ProportionInput({
           {format === 'percentage' ? `${total.toFixed(2)}%` : total.toFixed(2)}
           {format === 'percentage' && Math.abs(total - 100) >= 0.01 && (
             <span className="text-xs text-gray-500 dark:text-gray-400 ml-1">
-              (will be normalized)
+              {t('proportions.willBeNormalized')}
             </span>
           )}
         </span>

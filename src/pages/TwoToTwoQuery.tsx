@@ -769,7 +769,7 @@ export default function TwoToTwoQuery() {
               onClick={() => setShowFilters(!showFilters)}
               className="btn btn-secondary p-2"
               title={showFilters ? t('reactions.collapseFilters') : t('reactions.expandFilters')}
-              aria-label={showFilters ? 'Collapse filters' : 'Expand filters'}
+              aria-label={showFilters ? t('reactions.collapseFilters') : t('reactions.expandFilters')}
             >
               <ChevronDown className={`w-5 h-5 transition-transform duration-200 ${showFilters ? 'rotate-180' : ''}`} />
             </button>
@@ -785,14 +785,14 @@ export default function TwoToTwoQuery() {
                 <div className="flex gap-2">
                   <input
                     type="number"
-                    placeholder="Min"
+                    placeholder={t('filterPanel.min')}
                     className="input flex-1"
                     value={filter.minMeV || ''}
                     onChange={(e) => setFilter({...filter, minMeV: e.target.value ? parseFloat(e.target.value) : undefined})}
                   />
                   <input
                     type="number"
-                    placeholder="Max"
+                    placeholder={t('filterPanel.max')}
                     className="input flex-1"
                     value={filter.maxMeV || ''}
                     onChange={(e) => setFilter({...filter, maxMeV: e.target.value ? parseFloat(e.target.value) : undefined})}
@@ -911,7 +911,7 @@ export default function TwoToTwoQuery() {
                 onClick={() => setShowHeatmap(!showHeatmap)}
                 className="btn btn-secondary p-2 ml-4"
                 title={showHeatmap ? t('reactions.collapsePeriodicTable') : t('reactions.expandPeriodicTable')}
-                aria-label={showHeatmap ? 'Collapse periodic table' : 'Expand periodic table'}
+                aria-label={showHeatmap ? t('reactions.collapsePeriodicTable') : t('reactions.expandPeriodicTable')}
               >
                 <ChevronDown className={`w-5 h-5 transition-transform duration-200 ${showHeatmap ? 'rotate-180' : ''}`} />
               </button>
@@ -930,7 +930,7 @@ export default function TwoToTwoQuery() {
                       value={heatmapMode}
                       onChange={(e) => setHeatmapMode(e.target.value as HeatmapMode)}
                       className="input px-3 py-2 text-sm"
-                      aria-label="Select heatmap metric"
+                      aria-label={t('reactions.selectHeatmapMetric')}
                     >
                       <option value="frequency">{t('reactions.frequency')}</option>
                       <option value="energy">{t('reactions.energy')}</option>
@@ -1023,7 +1023,7 @@ export default function TwoToTwoQuery() {
                       }}
                       disabled={filter.limit === 0}
                       className="btn btn-secondary px-4 py-2 text-sm whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed"
-                      title={filter.limit === 0 ? t('reactions.alreadyShowingAll') : "Remove limit and show all matching reactions in table"}
+                      title={filter.limit === 0 ? t('reactions.alreadyShowingAll') : t('reactions.removeLimitTitle')}
                     >
                       {t('reactions.showAllInTable')}
                     </button>
@@ -1098,7 +1098,7 @@ export default function TwoToTwoQuery() {
               ref={tableContainerRef}
               className="overflow-auto -mx-6 sm:mx-0"
               role="region"
-              aria-label="Two-to-two reaction results"
+              aria-label={t('reactions.twoToTwoResultsLabel')}
             >
               <div className="w-fit min-w-full border border-gray-200 dark:border-gray-700 rounded-b-none rounded-t-none sm:rounded-t-lg" >
                 <div
@@ -1138,7 +1138,7 @@ export default function TwoToTwoQuery() {
                               setUseAllResultsForHeatmap(true)
                             }}
                             className="btn btn-secondary px-4 py-2 text-sm whitespace-nowrap"
-                            title="Remove limit and show all matching reactions in table"
+                            title={t('reactions.removeLimitTitle')}
                           >
                             {t('reactions.showAllInTable')}
                           </button>
@@ -1342,7 +1342,7 @@ export default function TwoToTwoQuery() {
                       height={filteredListHeight}
                       overscanRowCount={6}
                       className="relative"
-                      ariaLabel="Two-to-two reaction results"
+                      ariaLabel={t('reactions.twoToTwoResultsLabel')}
                     >
                       {(reaction) => {
                         const activeNuclide = pinnedNuclide ? highlightedNuclide : highlightedNuclide
@@ -1548,8 +1548,8 @@ export default function TwoToTwoQuery() {
                     onDoubleClick={filteredResults.length > SMALL_RESULT_THRESHOLD ? handleResizeReset : undefined}
                     title={
                       filteredResults.length <= SMALL_RESULT_THRESHOLD
-                        ? 'Resize handle (disabled for small result sets)'
-                        : 'Drag to resize table height (double-click to reset)'
+                        ? t('reactions.resizeHandleDisabled')
+                        : t('reactions.resizeHandle')
                     }
                   >
                     <div className="flex flex-col gap-0.5">

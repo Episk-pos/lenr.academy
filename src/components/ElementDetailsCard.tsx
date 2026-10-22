@@ -189,7 +189,7 @@ export default function ElementDetailsCard({ element, atomicRadii, onClose }: El
             )}
             {typeof element.ElectConduct === 'number' && !isNaN(element.ElectConduct) && (
               <div className="flex justify-between">
-                <dt className="text-gray-600 dark:text-gray-400">{t('elements.electricalConductivity', { defaultValue: 'Electrical Conductivity' })}:</dt>
+                <dt className="text-gray-600 dark:text-gray-400">{t('elements.electricalConductivity')}:</dt>
                 <dd className="font-medium text-gray-900 dark:text-gray-100">
                   {element.ElectConduct.toFixed(2)} MS/m
                 </dd>
@@ -268,7 +268,7 @@ export default function ElementDetailsCard({ element, atomicRadii, onClose }: El
                       rel="noopener noreferrer"
                       className="ml-1.5 inline-flex items-center gap-0.5 text-primary-600 dark:text-primary-400 hover:underline text-xs whitespace-nowrap"
                     >
-                      view source
+                      {t('elementData.viewSource')}
                       <ExternalLink className="w-3 h-3" />
                     </a>
                   )}

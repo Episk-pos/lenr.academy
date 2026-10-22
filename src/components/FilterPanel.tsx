@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
+import { useTranslation } from 'react-i18next'
 import { X, Filter, ChevronDown, ChevronUp, Search, Download, Save, Trash2 } from 'lucide-react'
 import PeriodicTableSelector from './PeriodicTableSelector'
 import BadgeSelector from './BadgeSelector'
@@ -61,7 +62,7 @@ export default function FilterPanel({
   onToggleCollapsed,
   searchTerm,
   onSearchChange,
-  searchPlaceholder = 'Search...',
+  searchPlaceholder,
   onExport,
   exportDisabled,
   dataCount,
@@ -76,6 +77,7 @@ export default function FilterPanel({
   onDeletePreset,
   className = ''
 }: FilterPanelProps) {
+  const { t, i18n } = useTranslation()
   const [showSaveModal, setShowSaveModal] = useState(false)
   const [presetName, setPresetName] = useState('')
   const [saveError, setSaveError] = useState('')
@@ -137,7 +139,7 @@ export default function FilterPanel({
 
   // Generate active filter summary for collapsed state
   const getActiveFilterSummary = (): string => {
-    if (activeFilterCount === 0) return 'No filters active'
+    if (activeFilterCount === 0) return t('filterPanel.noFiltersActive')
 
     const summaryParts: string[] = []
     filterConfigs.forEach(config => {
@@ -149,7 +151,7 @@ export default function FilterPanel({
           const max = value.max != null ? value.max : '?'
           summaryParts.push(`${config.label}: ${min}-${max}`)
         } else if (Array.isArray(value)) {
-          summaryParts.push(`${config.label}: ${value.length} selected`)
+          summaryParts.push(`${config.label}: ${t('elements.selected', { count: value.length })}`)
         } else if (typeof value === 'boolean') {
           summaryParts.push(config.label)
         } else {
@@ -185,24 +187,24 @@ export default function FilterPanel({
 
     // Validation
     if (!trimmedName) {
-      setSaveError('Please enter a preset name')
+      setSaveError(t('filterPanel.errors.nameRequired'))
       return
     }
 
     if (trimmedName.length < 3) {
-      setSaveError('Preset name must be at least 3 characters')
+      setSaveError(t('filterPanel.errors.nameTooShort', { min: 3 }))
       return
     }
 
     if (trimmedName.length > 50) {
-      setSaveError('Preset name must be less than 50 characters')
+      setSaveError(t('filterPanel.errors.nameTooLong', { max: 50 }))
       return
     }
 
     // Check for duplicate names
     const duplicate = presets.find(p => p.label.toLowerCase() === trimmedName.toLowerCase())
     if (duplicate) {
-      setSaveError('A preset with this name already exists')
+      setSaveError(t('filterPanel.errors.nameExists'))
       return
     }
 
@@ -243,7 +245,7 @@ export default function FilterPanel({
               onChange={(e) => onFilterChange(config.key, e.target.value || null)}
               className="input text-sm"
             >
-              <option value="">{config.placeholder || 'All'}</option>
+              <option value="">{config.placeholder || t('elements.all')}</option>
               {config.options?.map((opt) => (
                 <option key={opt.value} value={opt.value}>
                   {opt.label}
@@ -276,7 +278,7 @@ export default function FilterPanel({
               ))}
             </select>
             <span className="text-xs text-gray-500 dark:text-gray-400">
-              Hold Ctrl/Cmd to select multiple
+              {t('filterPanel.multiSelectHint')}
             </span>
           </div>
         )
@@ -291,7 +293,7 @@ export default function FilterPanel({
               <input
                 id={`${config.key}-min`}
                 type="number"
-                placeholder="Min"
+                placeholder={t('filterPanel.min')}
                 value={value?.min ?? ''}
                 onChange={(e) =>
                   onFilterChange(config.key, {
@@ -307,7 +309,7 @@ export default function FilterPanel({
               <input
                 id={`${config.key}-max`}
                 type="number"
-                placeholder="Max"
+                placeholder={t('filterPanel.max')}
                 value={value?.max ?? ''}
                 onChange={(e) =>
                   onFilterChange(config.key, {
@@ -381,7 +383,7 @@ export default function FilterPanel({
         <div className="flex items-center gap-2 min-w-0 flex-1">
           <Filter className="w-5 h-5 shrink-0 text-gray-600 dark:text-gray-400" />
           <h3 className="font-semibold text-gray-900 dark:text-gray-100 truncate">
-            Filters
+            {t('query.filters')}
             {activeFilterCount > 0 && (
               <span className="ml-2 px-2 py-0.5 text-xs rounded-full bg-primary-100 text-primary-700 dark:bg-primary-900/30 dark:text-primary-300">
                 {activeFilterCount}
@@ -398,8 +400,8 @@ export default function FilterPanel({
         <button
           onClick={onToggleCollapsed}
           className="btn btn-secondary px-2 py-2 shrink-0"
-          aria-label={collapsed ? 'Expand filters' : 'Collapse filters'}
-          title={collapsed ? 'Expand filters' : 'Collapse filters'}
+          aria-label={collapsed ? t('reactions.expandFilters') : t('reactions.collapseFilters')}
+          title={collapsed ? t('reactions.expandFilters') : t('reactions.collapseFilters')}
         >
           {collapsed ? (
             <ChevronDown className="w-4 h-4" />
@@ -415,7 +417,7 @@ export default function FilterPanel({
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
           <input
             type="text"
-            placeholder={searchPlaceholder}
+            placeholder={searchPlaceholder ?? t('filterPanel.searchPlaceholder')}
             value={searchTerm}
             onChange={(e) => onSearchChange(e.target.value)}
             className="input pl-10 pr-10 w-full"
@@ -424,8 +426,8 @@ export default function FilterPanel({
             <button
               onClick={() => onSearchChange('')}
               className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
-              aria-label="Clear search"
-              title="Clear search"
+              aria-label={t('filterPanel.clearSearch')}
+              title={t('filterPanel.clearSearch')}
             >
               <X className="w-4 h-4" />
             </button>
@@ -437,14 +439,14 @@ export default function FilterPanel({
           disabled={exportDisabled}
         >
           <Download className="w-4 h-4" />
-          Export CSV
+          {t('reactions.exportCsv')}
         </button>
       </div>
 
       {/* Data count */}
       {dataCount != null && totalCount != null && (
         <div className="text-sm text-gray-600 dark:text-gray-400 mb-3">
-          Showing {dataCount.toLocaleString()} of {totalCount.toLocaleString()} records
+          {t('filterPanel.showingRecords', { shown: dataCount.toLocaleString(i18n?.language), total: totalCount.toLocaleString(i18n?.language) })}
         </div>
       )}
 
@@ -467,8 +469,8 @@ export default function FilterPanel({
                   {activePresetId
                     ? presets.find(p => p.id === activePresetId)?.label
                     : activeFilterCount > 0
-                    ? '✓ Custom'
-                    : 'Load Preset...'}
+                    ? `✓ ${t('limitSelector.custom')}`
+                    : t('filterPanel.loadPreset')}
                 </span>
                 <ChevronDown className={`w-4 h-4 shrink-0 text-gray-500 dark:text-gray-400 transition-transform ${isPresetDropdownOpen ? 'rotate-180' : ''}`} />
               </button>
@@ -478,7 +480,7 @@ export default function FilterPanel({
                 <div className="absolute top-full left-0 mt-1 min-w-full w-max max-w-md bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-lg z-50 max-h-80 overflow-y-auto">
                   {/* Built-in presets */}
                   <div className="px-3 py-2 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 sticky top-0">
-                    Built-in Presets
+                    {t('filterPanel.builtInPresets')}
                   </div>
                   {presets.filter(p => !p.isCustom).map((preset) => (
                     <button
@@ -501,7 +503,7 @@ export default function FilterPanel({
                   {presets.some(p => p.isCustom) && (
                     <>
                       <div className="px-3 py-2 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide border-t border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 sticky top-0">
-                        My Presets
+                        {t('filterPanel.myPresets')}
                       </div>
                       {presets.filter(p => p.isCustom).map((preset) => (
                         <div
@@ -533,8 +535,8 @@ export default function FilterPanel({
                                 setIsPresetDropdownOpen(false)
                               }}
                               className="p-1.5 mr-2 rounded hover:bg-red-100 dark:hover:bg-red-900/30 text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 transition-colors shrink-0"
-                              title="Delete this preset"
-                              aria-label="Delete preset"
+                              title={t('filterPanel.deletePresetTitle')}
+                              aria-label={t('filterPanel.deletePreset')}
                             >
                               <Trash2 className="w-4 h-4" />
                             </button>
@@ -552,10 +554,10 @@ export default function FilterPanel({
             <button
               onClick={() => setShowSaveModal(true)}
               className="btn btn-secondary px-3 py-1.5 text-sm flex items-center gap-1.5 whitespace-nowrap shrink-0"
-              title="Save current filters as a preset"
+              title={t('filterPanel.savePresetTitle')}
             >
               <Save className="w-4 h-4" />
-              Save Preset...
+              {t('filterPanel.savePreset')}
             </button>
           )}
 
@@ -565,7 +567,7 @@ export default function FilterPanel({
               className="btn btn-secondary px-3 py-1.5 text-sm flex items-center gap-1.5 whitespace-nowrap shrink-0"
             >
               <X className="w-4 h-4" />
-              Clear All
+              {t('filterPanel.clearAll')}
             </button>
           )}
         </div>
@@ -592,12 +594,12 @@ export default function FilterPanel({
           {/* Modal content */}
           <div className="relative bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6 w-full max-w-md mx-4">
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-              Save Filter Preset
+              {t('filterPanel.saveFilterPreset')}
             </h3>
 
             <div className="mb-4">
               <label htmlFor="preset-name" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Preset Name
+                {t('filterPanel.presetName')}
               </label>
               <input
                 id="preset-name"
@@ -617,7 +619,7 @@ export default function FilterPanel({
                   }
                 }}
                 className="input w-full"
-                placeholder="e.g., My Custom Filter"
+                placeholder={t('filterPanel.presetNamePlaceholder')}
                 autoFocus
               />
               {saveError && (
@@ -636,13 +638,13 @@ export default function FilterPanel({
                 }}
                 className="btn btn-secondary px-4 py-2"
               >
-                Cancel
+                {t('common.cancel')}
               </button>
               <button
                 onClick={handleSavePreset}
                 className="btn btn-primary px-4 py-2"
               >
-                Save
+                {t('common.save')}
               </button>
             </div>
           </div>

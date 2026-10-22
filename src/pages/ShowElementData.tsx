@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from 'react'
 import { useSearchParams } from 'react-router-dom'
-import { useTranslation } from 'react-i18next'
+import { useTranslation, Trans } from 'react-i18next'
+import type { TFunction } from 'i18next'
 import { Radiation, ChevronDown, ExternalLink } from 'lucide-react'
 import { useDatabase } from '../contexts/DatabaseContext'
 import { useTheme } from '../contexts/ThemeContext'
@@ -60,7 +61,7 @@ const DECAY_MODE_INFO: Record<string, { name: string; description: string; url: 
 }
 
 // Helper function to get decay mode tooltip content
-function getDecayModeTooltip(mode: string): JSX.Element {
+function getDecayModeTooltip(mode: string, t: TFunction): JSX.Element {
   const info = DECAY_MODE_INFO[mode]
   if (info) {
     return (
@@ -74,16 +75,16 @@ function getDecayModeTooltip(mode: string): JSX.Element {
           className="text-blue-300 hover:text-blue-200 underline text-xs"
           onClick={(e) => e.stopPropagation()}
         >
-          Learn more →
+          {t('elements.learnMore')}
         </a>
       </div>
     )
   }
-  return <div>{mode} decay mode</div>
+  return <div>{t('elements.decayModeDescription', { mode })}</div>
 }
 
 // Helper function to get radiation type tooltip content
-function getRadiationTypeTooltip(type: string): JSX.Element {
+function getRadiationTypeTooltip(type: string, t: TFunction): JSX.Element {
   const info = RADIATION_TYPE_INFO[type]
   if (info) {
     return (
@@ -97,17 +98,17 @@ function getRadiationTypeTooltip(type: string): JSX.Element {
           className="text-blue-300 hover:text-blue-200 underline text-xs"
           onClick={(e) => e.stopPropagation()}
         >
-          Learn more →
+          {t('elements.learnMore')}
         </a>
         {(type.includes('K') || type.includes('L') || type.includes('M') || type.includes('N')) && (
           <div className="mt-2 pt-2 border-t border-gray-700 text-xs opacity-80">
-            Shell designations: K (innermost), L, M, N (outer shells)
+            {t('elements.shellDesignations')}
           </div>
         )}
       </div>
     )
   }
-  return <div>{type} radiation</div>
+  return <div>{t('elements.radiation', { type })}</div>
 }
 
 // Helper function to calculate daughter nuclide from decay mode
@@ -1420,22 +1421,22 @@ export default function ShowElementData() {
   const decaysPresets: FilterPreset[] = [
     {
       id: 'alpha-decay',
-      label: 'Alpha Decay',
+      label: t('elementData.presets.alphaDecay'),
       filters: { decayMode: ['A'] }
     },
     {
       id: 'beta-minus',
-      label: 'Beta Minus Decay',
+      label: t('elementData.presets.betaMinusDecay'),
       filters: { decayMode: ['B-'] }
     },
     {
       id: 'beta-plus',
-      label: 'Beta Plus Decay',
+      label: t('elementData.presets.betaPlusDecay'),
       filters: { decayMode: ['B+'] }
     },
     {
       id: 'gamma-radiation',
-      label: 'Gamma Radiation',
+      label: t('elementData.presets.gammaRadiation'),
       filters: { radiationType: ['G'] }
     },
     {
@@ -1455,7 +1456,7 @@ export default function ShowElementData() {
     { key: 'Z', label: 'Z', sortable: true },
     {
       key: 'E',
-      label: 'Symbol',
+      label: t('elements.symbol'),
       sortable: true,
       render: (val) => (
         <span className="px-2 py-1 rounded-full text-xs font-medium bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-gray-100">
@@ -1463,40 +1464,40 @@ export default function ShowElementData() {
         </span>
       )
     },
-    { key: 'EName', label: 'Name', sortable: true },
-    { key: 'Period', label: 'Period', sortable: true },
-    { key: 'Group', label: 'Group', sortable: true },
+    { key: 'EName', label: t('elements.name'), sortable: true },
+    { key: 'Period', label: t('elements.period'), sortable: true },
+    { key: 'Group', label: t('elements.group'), sortable: true },
     {
       key: 'AWeight',
-      label: 'Atomic Weight',
+      label: t('elements.atomicWeight'),
       sortable: true,
       render: (val) => val != null ? Number(val).toFixed(3) : '-'
     },
     {
       key: 'Melting',
-      label: 'Melting (K)',
+      label: t('elementData.columns.meltingK'),
       sortable: true,
       render: (val) => val != null ? Number(val).toFixed(2) : '-'
     },
     {
       key: 'Boiling',
-      label: 'Boiling (K)',
+      label: t('elementData.columns.boilingK'),
       sortable: true,
       render: (val) => val != null ? Number(val).toFixed(2) : '-'
     },
     {
       key: 'STPDensity',
-      label: 'Density (g/cm³)',
+      label: t('elementData.columns.densityGcm3'),
       sortable: true,
       render: (val) => val != null ? Number(densityToGPerCm3(Number(val)).toPrecision(4)).toString() : '-'
     }
-  ], [])
+  ], [t])
 
   // Nuclides table columns (memoized; depends on radioactiveNuclides for stability render)
   const nuclidesColumns: TableColumn<Nuclide>[] = useMemo(() => [
     {
       key: 'E',
-      label: 'Element',
+      label: t('elements.element'),
       sortable: true,
       render: (val) => (
         <span className="px-2 py-1 rounded-full text-xs font-medium bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-gray-100">
@@ -1508,19 +1509,19 @@ export default function ShowElementData() {
     { key: 'A', label: 'A', sortable: true },
     {
       key: 'BE',
-      label: 'Binding Energy (MeV)',
+      label: t('elements.bindingEnergyMeV'),
       sortable: true,
       render: (val) => val != null ? Number(val).toFixed(3) : '-'
     },
     {
       key: 'AMU',
-      label: 'Mass (amu)',
+      label: t('elementData.columns.massAmu'),
       sortable: true,
       render: (val) => val != null ? Number(val).toFixed(6) : '-'
     },
     {
       key: 'nBorF',
-      label: 'Nuclear',
+      label: t('reactions.nuclear'),
       sortable: true,
       render: (val) => (
         <span className={`px-2 py-1 rounded-full text-xs font-medium ${
@@ -1528,13 +1529,13 @@ export default function ShowElementData() {
             ? 'bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300'
             : 'bg-orange-100 dark:bg-orange-900/50 text-orange-700 dark:text-orange-300'
         }`}>
-          {val === 'b' ? 'Boson' : 'Fermion'}
+          {val === 'b' ? t('elements.boson') : t('elements.fermion')}
         </span>
       )
     },
     {
       key: 'aBorF',
-      label: 'Atomic',
+      label: t('reactions.atomic'),
       sortable: true,
       render: (val) => (
         <span className={`px-2 py-1 rounded-full text-xs font-medium ${
@@ -1542,19 +1543,19 @@ export default function ShowElementData() {
             ? 'bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300'
             : 'bg-orange-100 dark:bg-orange-900/50 text-orange-700 dark:text-orange-300'
         }`}>
-          {val === 'b' ? 'Boson' : 'Fermion'}
+          {val === 'b' ? t('elements.boson') : t('elements.fermion')}
         </span>
       )
     },
     {
       key: 'logHalfLife',
-      label: 'log₁₀(Half-life)',
+      label: t('elements.logHalfLife'),
       sortable: true,
       render: (val) => val != null ? Number(val).toFixed(2) : '-'
     },
     {
       key: 'stability',
-      label: 'Stability',
+      label: t('elements.stability'),
       sortable: false,
       render: (_, row) => {
         const isStable = typeof row.logHalfLife === 'number' && row.logHalfLife > 9
@@ -1564,15 +1565,15 @@ export default function ShowElementData() {
           <div className="flex items-center gap-2">
             {isStable ? (
               <span className="px-2 py-1 rounded-full text-xs bg-green-100 dark:bg-green-900/50 text-green-700 dark:text-green-300">
-                Stable
+                {t('elements.stable')}
               </span>
             ) : (
               <span className="px-2 py-1 rounded-full text-xs bg-amber-100 dark:bg-amber-900/50 text-amber-700 dark:text-amber-300">
-                Unstable
+                {t('elements.unstable')}
               </span>
             )}
             {isRadioactive && (
-              <span title="Radioactive">
+              <span title={t('reactions.radioactive')}>
                 <Radiation className="w-4 h-4 text-amber-600 dark:text-amber-400" />
               </span>
             )}
@@ -1580,13 +1581,13 @@ export default function ShowElementData() {
         )
       }
     }
-  ], [radioactiveNuclides])
+  ], [radioactiveNuclides, t])
 
   // Decays table columns (memoized to avoid unnecessary re-renders in useColumnVisibility)
   const decaysColumns: TableColumn<RadioactiveDecay>[] = useMemo(() => [
     {
       key: 'E',
-      label: 'Element',
+      label: t('elements.element'),
       sortable: true,
       render: (val) => (
         <span className="px-2 py-1 rounded-full text-xs font-medium bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-gray-100">
@@ -1598,10 +1599,10 @@ export default function ShowElementData() {
     { key: 'A', label: 'A', sortable: true },
     {
       key: 'RDM',
-      label: 'Decay Mode',
+      label: t('elements.decayMode'),
       sortable: true,
       render: (val) => val ? (
-        <Tooltip content={getDecayModeTooltip(val)}>
+        <Tooltip content={getDecayModeTooltip(val, t)}>
           <span className="px-2 py-1 rounded-full text-xs font-medium bg-purple-100 dark:bg-purple-900/50 text-purple-700 dark:text-purple-300">
             {val}
           </span>
@@ -1610,10 +1611,10 @@ export default function ShowElementData() {
     },
     {
       key: 'RT',
-      label: 'Radiation Type',
+      label: t('elements.radiationType'),
       sortable: true,
       render: (val) => val ? (
-        <Tooltip content={getRadiationTypeTooltip(val)}>
+        <Tooltip content={getRadiationTypeTooltip(val, t)}>
           <span className="px-2 py-1 rounded-full text-xs font-medium bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300">
             {val}
           </span>
@@ -1622,7 +1623,7 @@ export default function ShowElementData() {
     },
     {
       key: 'halfLife',
-      label: 'Half-life',
+      label: t('elements.halfLife'),
       sortable: true,
       render: (val, row) => {
         if (val == null) return '-'
@@ -1632,17 +1633,17 @@ export default function ShowElementData() {
     },
     {
       key: 'DEKeV',
-      label: 'Energy (keV)',
+      label: t('elements.energyKeV'),
       sortable: true,
       render: (val) => val != null ? Number(val).toFixed(2) : '-'
     },
     {
       key: 'RI',
-      label: 'Intensity (%)',
+      label: t('elements.intensityPercent'),
       sortable: true,
       render: (val) => val != null ? Number(val).toFixed(2) : '-'
     }
-  ], [])
+  ], [t])
 
   // Column visibility hooks for each table
   const elementsColumnVis = useColumnVisibility(elementsColumns, 'elements')
@@ -1666,9 +1667,9 @@ export default function ShowElementData() {
           isTabsStuck ? 'max-h-0 opacity-0 -translate-y-4 mb-0' : 'max-h-32 opacity-100 translate-y-0'
         }`}
       >
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">Show Element Data</h1>
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">{t('navigation.showElementData')}</h1>
         <p className="text-gray-600 dark:text-gray-400">
-          View detailed chemical, physical, and nuclear properties across multiple data views
+          {t('elementData.subtitle')}
         </p>
       </div>
 
@@ -1847,7 +1848,7 @@ export default function ShowElementData() {
                     )}
                     {typeof element.ElectConduct === 'number' && !isNaN(element.ElectConduct) && (
                       <div className="flex justify-between">
-                        <dt className="text-gray-600 dark:text-gray-400">Electrical Conductivity:</dt>
+                        <dt className="text-gray-600 dark:text-gray-400">{t('elements.electricalConductivity')}:</dt>
                         <dd className="font-medium text-gray-900 dark:text-gray-100">{element.ElectConduct.toFixed(2)} MS/m</dd>
                       </div>
                     )}
@@ -1890,8 +1891,8 @@ export default function ShowElementData() {
                       )}
                     </dl>
                     <div className="mt-3 p-2 bg-gray-50 dark:bg-gray-800 rounded text-xs text-gray-600 dark:text-gray-400">
-                      <strong>{t('elements.empirical')}:</strong> Measured • <strong>{t('elements.calculated')}:</strong> Theoretical<br />
-                      <strong>{t('elements.vanDerWaals')}:</strong> Non-bonded • <strong>{t('elements.covalent')}:</strong> Bonded atoms
+                      <strong>{t('elements.empirical')}:</strong> {t('elementData.radiiMeasured')} • <strong>{t('elements.calculated')}:</strong> {t('elementData.radiiTheoretical')}<br />
+                      <strong>{t('elements.vanDerWaals')}:</strong> {t('elementData.radiiNonBonded')} • <strong>{t('elements.covalent')}:</strong> {t('elementData.radiiBonded')}
                     </div>
                   </div>
                 )}
@@ -1926,7 +1927,7 @@ export default function ShowElementData() {
                                 rel="noopener noreferrer"
                                 className="ml-1.5 inline-flex items-center gap-0.5 text-primary-600 dark:text-primary-400 hover:underline text-xs whitespace-nowrap"
                               >
-                                view source
+                                {t('elementData.viewSource')}
                                 <ExternalLink className="w-3 h-3" />
                               </a>
                             )}
@@ -1951,7 +1952,7 @@ export default function ShowElementData() {
                       <span className="text-sm text-gray-700 dark:text-gray-300">
                         {t('elements.includeLimitedData')}
                         {allIsotopesAreLimitedData && (
-                          <span className="ml-1 text-xs text-gray-500 dark:text-gray-400">(required)</span>
+                          <span className="ml-1 text-xs text-gray-500 dark:text-gray-400">{t('elementData.required')}</span>
                         )}
                       </span>
                       <button
@@ -2037,14 +2038,17 @@ export default function ShowElementData() {
                   {!selectedNuclide && !radioactiveNuclideData && requestedMissingNuclide && (
                     <div className="mt-4 p-6 bg-amber-50 dark:bg-amber-900/20 border-2 border-amber-200 dark:border-amber-800 rounded-lg">
                       <h3 className="text-lg font-semibold text-amber-900 dark:text-amber-200 mb-2">
-                        Nuclide Not Available
+                        {t('elementData.nuclideNotAvailable')}
                       </h3>
                       <p className="text-sm text-amber-800 dark:text-amber-300 mb-4">
-                        The nuclide <strong>{requestedMissingNuclide.E}-{requestedMissingNuclide.A}</strong> is not available in either the stable nuclides or radioactive decay databases.
-                        This isotope may be extremely short-lived or outside the range of documented nuclides.
+                        <Trans
+                          i18nKey="elementData.nuclideNotAvailableMessage"
+                          values={{ nuclide: `${requestedMissingNuclide.E}-${requestedMissingNuclide.A}` }}
+                          components={{ strong: <strong /> }}
+                        />
                       </p>
                       <p className="text-sm text-amber-800 dark:text-amber-300">
-                        Available nuclides for {element?.EName} are shown above. Select one to view its detailed properties.
+                        {t('elementData.availableNuclidesShown', { element: element?.EName ?? '' })}
                       </p>
                     </div>
                   )}
@@ -2052,13 +2056,17 @@ export default function ShowElementData() {
               ) : element ? (
                 <div className="card p-6 bg-amber-50 dark:bg-amber-900/20 border-2 border-amber-200 dark:border-amber-800">
                   <h3 className="text-lg font-semibold text-amber-900 dark:text-amber-200 mb-2">
-                    No Nuclides Available
+                    {t('elementData.noNuclidesAvailable')}
                   </h3>
                   <p className="text-sm text-amber-800 dark:text-amber-300 mb-2">
-                    No nuclides for <strong>{element.EName} ({element.E})</strong> are available in the database.
+                    <Trans
+                      i18nKey="elementData.noNuclidesForElement"
+                      values={{ element: `${element.EName} (${element.E})` }}
+                      components={{ strong: <strong /> }}
+                    />
                   </p>
                   <p className="text-sm text-amber-800 dark:text-amber-300">
-                    This element may not be included in the current dataset, which focuses on elements relevant to Low Energy Nuclear Reaction (LENR) research.
+                    {t('elementData.elementNotInDataset')}
                   </p>
                 </div>
               ) : null}
@@ -2289,7 +2297,7 @@ export default function ShowElementData() {
             onToggleCollapsed={handleElementsToggleCollapsed}
             searchTerm={elementsSearch}
             onSearchChange={setElementsSearch}
-            searchPlaceholder="Search elements by symbol or name..."
+            searchPlaceholder={t('elementData.searchElements')}
             onExport={handleElementsExport}
             exportDisabled={filteredElements.length === 0}
             dataCount={filteredElements.length}
@@ -2312,11 +2320,11 @@ export default function ShowElementData() {
               onExpandedRowsChange={setElementsExpandedRows}
               title={
                 <div className="flex items-center gap-3">
-                  <span>Elements Table</span>
+                  <span>{t('elementData.elementsTable')}</span>
                   <ColumnToggle {...elementsColumnVis} />
                 </div>
               }
-              description="Browse and search all chemical elements. Click any row to view detailed properties in the Integrated tab."
+              description={t('elementData.elementsTableDescription')}
               autoFillHeight
               autoFillHeightOffset={80}
               minVisibleRows={10}
@@ -2325,35 +2333,35 @@ export default function ShowElementData() {
                 <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                   <div>
                     <h4 className="font-semibold text-gray-900 dark:text-white mb-3 text-sm uppercase tracking-wide">
-                      Chemical Properties
+                      {t('elementData.chemicalProperties')}
                     </h4>
                     <dl className="space-y-2 text-sm">
                       {element.Valence !== null && element.Valence !== undefined && (
                         <div className="flex justify-between">
-                          <dt className="text-gray-600 dark:text-gray-400">Valence:</dt>
+                          <dt className="text-gray-600 dark:text-gray-400">{t('elements.valence')}:</dt>
                           <dd className="font-medium text-gray-900 dark:text-gray-100">{element.Valence}</dd>
                         </div>
                       )}
                       {element.Negativity !== null && element.Negativity !== undefined && (
                         <div className="flex justify-between">
-                          <dt className="text-gray-600 dark:text-gray-400">Electronegativity:</dt>
+                          <dt className="text-gray-600 dark:text-gray-400">{t('elements.electronegativity')}:</dt>
                           <dd className="font-medium text-gray-900 dark:text-gray-100">{element.Negativity}</dd>
                         </div>
                       )}
                       {element.Affinity !== null && element.Affinity !== undefined && (
                         <div className="flex justify-between">
-                          <dt className="text-gray-600 dark:text-gray-400">Electron Affinity:</dt>
+                          <dt className="text-gray-600 dark:text-gray-400">{t('elements.electronAffinity')}:</dt>
                           <dd className="font-medium text-gray-900 dark:text-gray-100">{element.Affinity} kJ/mol</dd>
                         </div>
                       )}
                       {element.MaxIonNum !== null && element.MaxIonNum !== undefined && (
                         <div className="flex justify-between">
-                          <dt className="text-gray-600 dark:text-gray-400">Max Ion Number:</dt>
+                          <dt className="text-gray-600 dark:text-gray-400">{t('elements.maxIonNumber')}:</dt>
                           <dd className="font-medium text-gray-900 dark:text-gray-100">{element.MaxIonNum}</dd>
                         </div>
                       )}
                       <div className="flex justify-between mt-3 pt-3 border-t border-gray-200 dark:border-gray-700">
-                        <dt className="text-gray-600 dark:text-gray-400">View Details:</dt>
+                        <dt className="text-gray-600 dark:text-gray-400">{t('reactions.viewDetails')}:</dt>
                         <dd>
                           <button
                             onClick={(e) => {
@@ -2371,24 +2379,24 @@ export default function ShowElementData() {
 
                   <div>
                     <h4 className="font-semibold text-gray-900 dark:text-white mb-3 text-sm uppercase tracking-wide">
-                      Thermal Properties
+                      {t('elements.thermalProperties')}
                     </h4>
                     <dl className="space-y-2 text-sm">
                       {typeof element.SpecHeat === 'number' && !isNaN(element.SpecHeat) && (
                         <div className="flex justify-between">
-                          <dt className="text-gray-600 dark:text-gray-400">Specific Heat:</dt>
+                          <dt className="text-gray-600 dark:text-gray-400">{t('elements.specificHeat')}:</dt>
                           <dd className="font-medium text-gray-900 dark:text-gray-100">{formatSpecificHeat(element.SpecHeat)}</dd>
                         </div>
                       )}
                       {typeof element.ThermConduct === 'number' && !isNaN(element.ThermConduct) && (
                         <div className="flex justify-between">
-                          <dt className="text-gray-600 dark:text-gray-400">Thermal Conductivity:</dt>
+                          <dt className="text-gray-600 dark:text-gray-400">{t('elements.thermalConductivity')}:</dt>
                           <dd className="font-medium text-gray-900 dark:text-gray-100">{element.ThermConduct.toFixed(2)} W/(m·K)</dd>
                         </div>
                       )}
                       {typeof element.MolarVolume === 'number' && !isNaN(element.MolarVolume) && (
                         <div className="flex justify-between">
-                          <dt className="text-gray-600 dark:text-gray-400">Molar Volume:</dt>
+                          <dt className="text-gray-600 dark:text-gray-400">{t('elements.molarVolume')}:</dt>
                           <dd className="font-medium text-gray-900 dark:text-gray-100">{element.MolarVolume.toFixed(2)} cm³/mol</dd>
                         </div>
                       )}
@@ -2397,24 +2405,24 @@ export default function ShowElementData() {
 
                   <div>
                     <h4 className="font-semibold text-gray-900 dark:text-white mb-3 text-sm uppercase tracking-wide">
-                      Other Properties
+                      {t('elementData.otherProperties')}
                     </h4>
                     <dl className="space-y-2 text-sm">
                       {typeof element.ElectConduct === 'number' && !isNaN(element.ElectConduct) && (
                         <div className="flex justify-between">
-                          <dt className="text-gray-600 dark:text-gray-400">Electrical Conductivity:</dt>
+                          <dt className="text-gray-600 dark:text-gray-400">{t('elements.electricalConductivity')}:</dt>
                           <dd className="font-medium text-gray-900 dark:text-gray-100">{element.ElectConduct.toFixed(2)} MS/m</dd>
                         </div>
                       )}
                       {element.MagType && (
                         <div className="flex justify-between">
-                          <dt className="text-gray-600 dark:text-gray-400">Magnetic Type:</dt>
+                          <dt className="text-gray-600 dark:text-gray-400">{t('elements.magneticType')}:</dt>
                           <dd className="font-medium text-gray-900 dark:text-gray-100">{element.MagType}</dd>
                         </div>
                       )}
                       {typeof element.MaxIonization === 'number' && !isNaN(element.MaxIonization) && (
                         <div className="flex justify-between">
-                          <dt className="text-gray-600 dark:text-gray-400">Max Ionization:</dt>
+                          <dt className="text-gray-600 dark:text-gray-400">{t('elements.maxIonization')}:</dt>
                           <dd className="font-medium text-gray-900 dark:text-gray-100">{element.MaxIonization.toFixed(1)} kJ/mol</dd>
                         </div>
                       )}
@@ -2439,7 +2447,7 @@ export default function ShowElementData() {
             onToggleCollapsed={handleNuclidesToggleCollapsed}
             searchTerm={nuclidesSearch}
             onSearchChange={setNuclidesSearch}
-            searchPlaceholder="Search nuclides by element name, symbol, Z, or A..."
+            searchPlaceholder={t('elementData.searchNuclides')}
             onExport={handleNuclidesExport}
             exportDisabled={filteredNuclides.length === 0}
             dataCount={filteredNuclides.length}
@@ -2462,11 +2470,11 @@ export default function ShowElementData() {
               onExpandedRowsChange={setNuclidesExpandedRows}
               title={
                 <div className="flex items-center gap-3">
-                  <span>Nuclides Table</span>
+                  <span>{t('elementData.nuclidesTable')}</span>
                   <ColumnToggle {...nuclidesColumnVis} />
                 </div>
               }
-              description="Browse all nuclear isotopes with binding energies, boson/fermion classifications, and stability indicators. Click any row to view detailed properties in the Integrated tab."
+              description={t('elementData.nuclidesTableDescription')}
               autoFillHeight
               autoFillHeightOffset={80}
               minVisibleRows={10}
@@ -2477,10 +2485,10 @@ export default function ShowElementData() {
 
                 // Format status type
                 const formatStatus = (sus?: string) => {
-                  if (!sus) return 'Unknown'
-                  if (sus === 'SPN') return 'Stable Primordial'
-                  if (sus === 'SYN') return 'Synthetic'
-                  if (sus === 'UPN') return 'Unstable Primordial'
+                  if (!sus) return t('elementData.status.unknown')
+                  if (sus === 'SPN') return t('elementData.status.stablePrimordial')
+                  if (sus === 'SYN') return t('elementData.status.synthetic')
+                  if (sus === 'UPN') return t('elementData.status.unstablePrimordial')
                   return sus
                 }
 
@@ -2490,12 +2498,12 @@ export default function ShowElementData() {
                     {hasAbundance && (
                       <div>
                         <h4 className="font-semibold text-gray-900 dark:text-white mb-3 text-sm uppercase tracking-wide">
-                          Natural Occurrence
+                          {t('elementData.naturalOccurrence')}
                         </h4>
                         <dl className="space-y-2 text-sm">
                           {nuclide.pcaNCrust !== null && nuclide.pcaNCrust !== undefined && nuclide.pcaNCrust > 0 && (
                             <div className="flex justify-between">
-                              <dt className="text-gray-600 dark:text-gray-400">Earth's Crust:</dt>
+                              <dt className="text-gray-600 dark:text-gray-400">{t('elements.earthsCrust')}:</dt>
                               <dd className="font-medium text-gray-900 dark:text-gray-100">
                                 {nuclide.pcaNCrust.toFixed(2)}%
                                 {nuclide.ppmNCrust && ` (${nuclide.ppmNCrust.toFixed(1)} ppm)`}
@@ -2504,7 +2512,7 @@ export default function ShowElementData() {
                           )}
                           {nuclide.ppmNSolar !== null && nuclide.ppmNSolar !== undefined && nuclide.ppmNSolar > 0 && (
                             <div className="flex justify-between">
-                              <dt className="text-gray-600 dark:text-gray-400">Solar System:</dt>
+                              <dt className="text-gray-600 dark:text-gray-400">{t('elements.solarSystem')}:</dt>
                               <dd className="font-medium text-gray-900 dark:text-gray-100">
                                 {nuclide.ppmNSolar.toFixed(1)} ppm
                               </dd>
@@ -2512,7 +2520,7 @@ export default function ShowElementData() {
                           )}
                           {nuclide.SUS && (
                             <div className="flex justify-between">
-                              <dt className="text-gray-600 dark:text-gray-400">Classification:</dt>
+                              <dt className="text-gray-600 dark:text-gray-400">{t('elementData.classification')}:</dt>
                               <dd className="font-medium text-gray-900 dark:text-gray-100">
                                 {formatStatus(nuclide.SUS)}
                               </dd>
@@ -2526,24 +2534,24 @@ export default function ShowElementData() {
                     {hasMagneticData && (
                       <div>
                         <h4 className="font-semibold text-gray-900 dark:text-white mb-3 text-sm uppercase tracking-wide">
-                          Nuclear Properties
+                          {t('elements.nuclearProperties')}
                         </h4>
                         <dl className="space-y-2 text-sm">
                           {nuclide.SP && (
                             <div className="flex justify-between">
-                              <dt className="text-gray-600 dark:text-gray-400">Nuclear Spin:</dt>
+                              <dt className="text-gray-600 dark:text-gray-400">{t('elementData.nuclearSpin')}:</dt>
                               <dd className="font-medium text-gray-900 dark:text-gray-100">{nuclide.SP}</dd>
                             </div>
                           )}
                           {nuclide.MD && (
                             <div className="flex justify-between">
-                              <dt className="text-gray-600 dark:text-gray-400">Magnetic Moment:</dt>
+                              <dt className="text-gray-600 dark:text-gray-400">{t('elementData.magneticMoment')}:</dt>
                               <dd className="font-medium text-gray-900 dark:text-gray-100">{nuclide.MD} μₙ</dd>
                             </div>
                           )}
                           {nuclide.Inova_MHz !== null && nuclide.Inova_MHz !== undefined && nuclide.Inova_MHz > 0 && (
                             <div className="flex justify-between">
-                              <dt className="text-gray-600 dark:text-gray-400">NMR Frequency:</dt>
+                              <dt className="text-gray-600 dark:text-gray-400">{t('elementData.nmrFrequency')}:</dt>
                               <dd className="font-medium text-gray-900 dark:text-gray-100">{nuclide.Inova_MHz.toFixed(3)} MHz</dd>
                             </div>
                           )}
@@ -2554,29 +2562,29 @@ export default function ShowElementData() {
                     {/* Additional Properties */}
                     <div>
                       <h4 className="font-semibold text-gray-900 dark:text-white mb-3 text-sm uppercase tracking-wide">
-                        Additional Properties
+                        {t('elementData.additionalProperties')}
                       </h4>
                       <dl className="space-y-2 text-sm">
                         {nuclide.BE !== null && nuclide.BE !== undefined && nuclide.A > 0 && (
                           <div className="flex justify-between">
-                            <dt className="text-gray-600 dark:text-gray-400">BE per Nucleon:</dt>
+                            <dt className="text-gray-600 dark:text-gray-400">{t('elements.bePerNucleon')}:</dt>
                             <dd className="font-medium text-gray-900 dark:text-gray-100">{(Number(nuclide.BE) / nuclide.A).toFixed(3)} MeV</dd>
                           </div>
                         )}
                         {nuclide.RDM && (
                           <div className="flex justify-between">
-                            <dt className="text-gray-600 dark:text-gray-400">Primary Decay:</dt>
+                            <dt className="text-gray-600 dark:text-gray-400">{t('elementData.primaryDecay')}:</dt>
                             <dd className="font-medium text-gray-900 dark:text-gray-100">{nuclide.RDM}</dd>
                           </div>
                         )}
                         {nuclide.DEMeV !== null && nuclide.DEMeV !== undefined && nuclide.DEMeV > 0 && (
                           <div className="flex justify-between">
-                            <dt className="text-gray-600 dark:text-gray-400">Decay Energy:</dt>
+                            <dt className="text-gray-600 dark:text-gray-400">{t('elementData.decayEnergy')}:</dt>
                             <dd className="font-medium text-gray-900 dark:text-gray-100">{nuclide.DEMeV.toFixed(3)} MeV</dd>
                           </div>
                         )}
                         <div className="flex justify-between">
-                          <dt className="text-gray-600 dark:text-gray-400">View Details:</dt>
+                          <dt className="text-gray-600 dark:text-gray-400">{t('reactions.viewDetails')}:</dt>
                           <dd>
                             <button
                               onClick={(e) => {
@@ -2631,7 +2639,7 @@ export default function ShowElementData() {
             onToggleCollapsed={handleDecaysToggleCollapsed}
             searchTerm={decaysSearch}
             onSearchChange={setDecaysSearch}
-            searchPlaceholder="Search decays by element, decay mode, or radiation type..."
+            searchPlaceholder={t('elementData.searchDecays')}
             onExport={handleDecaysExport}
             exportDisabled={filteredDecays.length === 0}
             dataCount={filteredDecays.length}
@@ -2654,11 +2662,11 @@ export default function ShowElementData() {
               onExpandedRowsChange={handleDecaysExpandedRowsChange}
               title={
                 <div className="flex items-center gap-3">
-                  <span>Radioactive Decays Table</span>
+                  <span>{t('elementData.decaysTable')}</span>
                   <ColumnToggle {...decaysColumnVis} />
                 </div>
               }
-              description="Browse radioactive decay modes, half-lives, energies, and intensities for all unstable isotopes. Click any row to view the parent nuclide in the Integrated tab."
+              description={t('elementData.decaysTableDescription')}
               autoFillHeight
               autoFillHeightOffset={80}
               minVisibleRows={10}

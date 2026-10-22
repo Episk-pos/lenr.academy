@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useTranslation, Trans } from 'react-i18next';
 import { AlertCircle, ChevronDown, ChevronRight, Copy, ExternalLink, RefreshCw, Search } from 'lucide-react';
 import * as Sentry from '@sentry/react';
 import { collectErrorContext, type ErrorContext } from '../utils/errorContext';
@@ -22,6 +23,7 @@ export default function ErrorDisplay({
   errorBoundary = 'App',
   isDatabaseError = false,
 }: ErrorDisplayProps) {
+  const { t } = useTranslation();
   const [errorContext, setErrorContext] = useState<ErrorContext | null>(null);
   const [isDetailsExpanded, setIsDetailsExpanded] = useState(false);
   const [hasSearched, setHasSearched] = useState(false);
@@ -190,7 +192,7 @@ export default function ErrorDisplay({
         <div className="flex-1 min-w-0">
           {/* Error Title */}
           <h3 className="text-lg font-semibold text-red-900 dark:text-red-200 mb-2">
-            {isDatabaseError ? 'Database Error' : 'Something went wrong'}
+            {isDatabaseError ? t('errorDisplay.databaseErrorTitle') : t('errorDisplay.somethingWentWrong')}
           </h3>
 
           {/* Error Message */}
@@ -200,7 +202,7 @@ export default function ErrorDisplay({
 
           {/* Sentry Notice */}
           <p className="text-sm text-red-600 dark:text-red-400 mb-4">
-            This error has been automatically reported to our team.
+            {t('errorDisplay.autoReported')}
           </p>
 
           {/* Technical Details Section */}
@@ -214,7 +216,7 @@ export default function ErrorDisplay({
               ) : (
                 <ChevronRight className="w-4 h-4 transition-transform" />
               )}
-              Technical Details
+              {t('errorDisplay.technicalDetails')}
             </button>
 
             <div
@@ -226,11 +228,11 @@ export default function ErrorDisplay({
                 <div className="space-y-3">
                 {/* Error Fingerprint */}
                 <div className="flex items-center gap-2">
-                  <span className="text-sm text-gray-600 dark:text-gray-400">Error Fingerprint:</span>
+                  <span className="text-sm text-gray-600 dark:text-gray-400">{t('errorDisplay.fingerprint')}:</span>
                   <button
                     onClick={copyFingerprint}
                     className="error-fingerprint inline-flex items-center gap-1 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors cursor-pointer"
-                    title="Click to copy"
+                    title={t('errorDisplay.clickToCopy')}
                   >
                     {errorContext.fingerprint}
                     <Copy className="w-3 h-3" />
@@ -240,37 +242,37 @@ export default function ErrorDisplay({
                 {/* Metadata Grid */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm">
                   <div>
-                    <span className="text-gray-600 dark:text-gray-400">Timestamp:</span>
+                    <span className="text-gray-600 dark:text-gray-400">{t('errorDisplay.timestamp')}:</span>
                     <span className="ml-2 text-gray-900 dark:text-gray-100">
                       {new Date(errorContext.timestamp).toLocaleString()}
                     </span>
                   </div>
                   <div>
-                    <span className="text-gray-600 dark:text-gray-400">Browser:</span>
+                    <span className="text-gray-600 dark:text-gray-400">{t('errorDisplay.browser')}:</span>
                     <span className="ml-2 text-gray-900 dark:text-gray-100">
                       {errorContext.browser} {errorContext.browserVersion}
                     </span>
                   </div>
                   <div>
-                    <span className="text-gray-600 dark:text-gray-400">OS:</span>
+                    <span className="text-gray-600 dark:text-gray-400">{t('errorDisplay.os')}:</span>
                     <span className="ml-2 text-gray-900 dark:text-gray-100">
                       {errorContext.os}
                     </span>
                   </div>
                   <div>
-                    <span className="text-gray-600 dark:text-gray-400">Device:</span>
+                    <span className="text-gray-600 dark:text-gray-400">{t('errorDisplay.device')}:</span>
                     <span className="ml-2 text-gray-900 dark:text-gray-100">
                       {errorContext.device}
                     </span>
                   </div>
                   <div className="sm:col-span-2">
-                    <span className="text-gray-600 dark:text-gray-400">URL:</span>
+                    <span className="text-gray-600 dark:text-gray-400">{t('errorDisplay.url')}:</span>
                     <span className="ml-2 text-gray-900 dark:text-gray-100 break-all">
                       {errorContext.url}
                     </span>
                   </div>
                   <div>
-                    <span className="text-gray-600 dark:text-gray-400">App Version:</span>
+                    <span className="text-gray-600 dark:text-gray-400">{t('errorDisplay.appVersion')}:</span>
                     <span className="ml-2 text-gray-900 dark:text-gray-100">
                       {errorContext.appVersion}
                     </span>
@@ -280,7 +282,7 @@ export default function ErrorDisplay({
                 {/* Stack Trace */}
                 <div>
                   <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    Stack Trace:
+                    {t('errorDisplay.stackTrace')}:
                   </h4>
                   <div className="error-stack">
                     {formatStackTrace(errorContext.stackTrace)}
@@ -295,23 +297,22 @@ export default function ErrorDisplay({
           {isModuleLoadError && (
             <div className="mt-4 p-4 bg-yellow-100 dark:bg-yellow-900/40 rounded-md border border-yellow-200 dark:border-yellow-800">
               <p className="text-sm text-yellow-900 dark:text-yellow-200 mb-3">
-                <strong>Module Loading Failed</strong>
+                <strong>{t('errorDisplay.moduleLoad.title')}</strong>
                 <br />
-                This error commonly occurs on Safari (especially iOS) when content blockers or ad blockers
-                prevent JavaScript modules from loading.
+                {t('errorDisplay.moduleLoad.description')}
               </p>
               <div className="space-y-2 text-sm text-yellow-800 dark:text-yellow-300">
-                <p><strong>Try these solutions:</strong></p>
+                <p><strong>{t('errorDisplay.moduleLoad.trySolutions')}</strong></p>
                 <ol className="list-decimal list-inside space-y-1 ml-2">
-                  <li>Disable Safari content blockers for this site (Settings → Safari → Content Blockers)</li>
-                  <li>Disable browser extensions like AdBlock or similar ad blockers</li>
-                  <li>Try using Private Browsing mode or a different browser</li>
-                  <li>Check if Private Relay is interfering (iCloud Settings → Private Relay)</li>
-                  <li>Clear Safari cache and cookies, then reload</li>
+                  <li>{t('errorDisplay.moduleLoad.solution1')}</li>
+                  <li>{t('errorDisplay.moduleLoad.solution2')}</li>
+                  <li>{t('errorDisplay.moduleLoad.solution3')}</li>
+                  <li>{t('errorDisplay.moduleLoad.solution4')}</li>
+                  <li>{t('errorDisplay.moduleLoad.solution5')}</li>
                 </ol>
               </div>
               <p className="text-xs text-yellow-700 dark:text-yellow-400 mt-3">
-                <strong>Note:</strong> This affects approximately 0.6% of users and is usually resolved by disabling content blockers.
+                <Trans i18nKey="errorDisplay.moduleLoad.note" components={{ strong: <strong /> }} />
               </p>
             </div>
           )}
@@ -320,10 +321,9 @@ export default function ErrorDisplay({
           {isCorruptionError && (
             <div className="mt-4 p-4 bg-red-100 dark:bg-red-900/40 rounded-md border border-red-200 dark:border-red-800">
               <p className="text-sm text-red-800 dark:text-red-200 mb-3">
-                <strong>Database Corruption Detected</strong>
+                <strong>{t('errorDisplay.corruption.title')}</strong>
                 <br />
-                This error typically occurs when the cached database file is corrupted.
-                You can fix this by clearing the cache and re-downloading the database.
+                {t('errorDisplay.corruption.description')}
               </p>
               <button
                 onClick={handleClearCache}
@@ -331,10 +331,10 @@ export default function ErrorDisplay({
                 className="btn btn-primary px-4 py-2 text-sm flex items-center gap-2"
               >
                 <RefreshCw className={`w-4 h-4 ${isClearing ? 'animate-spin' : ''}`} />
-                {isClearing ? 'Clearing Cache...' : 'Clear Cache & Reload'}
+                {isClearing ? t('errorDisplay.corruption.clearing') : t('errorDisplay.corruption.clearAndReload')}
               </button>
               <p className="text-xs text-red-700 dark:text-red-300 mt-2">
-                Note: This will re-download the 161MB database file
+                {t('errorDisplay.corruption.redownloadNote', { size: 161 })}
               </p>
             </div>
           )}
@@ -347,7 +347,7 @@ export default function ErrorDisplay({
               className="btn btn-secondary px-4 py-2 text-sm flex items-center gap-2"
             >
               <Search className="w-4 h-4" />
-              Search Similar Issues
+              {t('errorDisplay.searchSimilar')}
               <ExternalLink className="w-3 h-3" />
             </button>
 
@@ -357,18 +357,18 @@ export default function ErrorDisplay({
               className="btn btn-primary px-4 py-2 text-sm flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed relative"
               title={
                 !hasSearched
-                  ? 'Please search for similar issues first to avoid duplicate reports'
+                  ? t('errorDisplay.searchFirstTitle')
                   : countdown !== null
-                  ? 'Copying to clipboard and opening GitHub...'
-                  : 'Copy error details and open GitHub to report'
+                  ? t('errorDisplay.copyingAndOpening')
+                  : t('errorDisplay.copyAndReportTitle')
               }
             >
               <ExternalLink className="w-4 h-4" />
               {countdown !== null
-                ? `Opening in ${countdown}s...`
+                ? t('errorDisplay.openingIn', { seconds: countdown })
                 : copySuccess
-                ? 'Copied!'
-                : 'Report This Error'}
+                ? t('errorDisplay.copied')
+                : t('errorDisplay.reportThisError')}
             </button>
 
             {/* Toast notification */}
@@ -379,8 +379,8 @@ export default function ErrorDisplay({
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                   </svg>
                   <div className="flex-1">
-                    <p className="font-medium">Error report copied to clipboard!</p>
-                    <p className="text-sm text-green-100 mt-1">Opening GitHub in {countdown}s... Please fill in the reproduction steps after pasting.</p>
+                    <p className="font-medium">{t('errorDisplay.reportCopied')}</p>
+                    <p className="text-sm text-green-100 mt-1">{t('errorDisplay.openingGitHubIn', { seconds: countdown })}</p>
                   </div>
                 </div>
               </div>
@@ -392,7 +392,7 @@ export default function ErrorDisplay({
                 onClick={resetError}
                 className="btn btn-secondary px-4 py-2 text-sm"
               >
-                Try Again
+                {t('errorDisplay.tryAgain')}
               </button>
             )}
 
@@ -400,18 +400,18 @@ export default function ErrorDisplay({
               onClick={() => window.location.href = '/'}
               className="btn btn-secondary px-4 py-2 text-sm"
             >
-              Return to Home
+              {t('errorDisplay.returnHome')}
             </button>
           </div>
 
           {/* Helper text for Report button */}
           {!hasSearched ? (
             <p className="text-xs text-gray-600 dark:text-gray-400 mt-2">
-              💡 Please search for similar issues <strong>first</strong> to avoid duplicate reports
+              💡 <Trans i18nKey="errorDisplay.searchFirstHint" components={{ strong: <strong /> }} />
             </p>
           ) : (
             <p className="text-xs text-gray-600 dark:text-gray-400 mt-2">
-              📝 <strong>Important:</strong> After pasting the error report, please fill in the Steps to Reproduce, Expected Behavior, and Actual Behavior sections to help us fix this issue quickly
+              📝 <Trans i18nKey="errorDisplay.afterPastingHint" components={{ strong: <strong /> }} />
             </p>
           )}
         </div>

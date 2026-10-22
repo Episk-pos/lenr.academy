@@ -1,5 +1,6 @@
 import { useState, useMemo, ReactNode, useRef, useEffect, useCallback, useLayoutEffect } from 'react'
 import { ChevronUp, ChevronDown, ChevronsUpDown, ChevronRight } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import { filterDataBySearch, SearchMetadata } from '../utils/searchUtils'
 import { VirtualizedList, VirtualizedSizeReset } from './VirtualizedList'
 
@@ -40,7 +41,7 @@ export default function SortableTable<T extends Record<string, any>>({
   searchTerm,
   searchMetadata,
   className = '',
-  emptyMessage = 'No data available',
+  emptyMessage,
   renderExpandedContent,
   getRowKey,
   expandedRows: controlledExpandedRows,
@@ -53,6 +54,7 @@ export default function SortableTable<T extends Record<string, any>>({
   virtualizationThreshold = 0,
   expandedContentNoPadding = false
 }: SortableTableProps<T>) {
+  const { t } = useTranslation()
   const [sortKey, setSortKey] = useState<string | null>(null)
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc')
   const [internalExpandedRows, setInternalExpandedRows] = useState<Set<string | number>>(new Set())
@@ -318,7 +320,7 @@ export default function SortableTable<T extends Record<string, any>>({
                   onClick={collapseAll}
                   className="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 transition-colors whitespace-nowrap flex-shrink-0"
                 >
-                  Collapse All
+                  {t('sortableTable.collapseAll')}
                 </button>
               )}
             </div>
@@ -370,7 +372,7 @@ export default function SortableTable<T extends Record<string, any>>({
               className="p-6 text-center text-sm text-gray-500 dark:text-gray-400 flex items-center justify-center"
               style={{ minHeight: listHeight }}
             >
-              {emptyMessage}
+              {emptyMessage ?? t('sortableTable.noData')}
             </div>
           ) : (
             <div ref={viewportRef} style={{ minHeight: listHeight }}>

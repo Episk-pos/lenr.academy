@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react'
 import { Shield, CheckCircle, XCircle, RefreshCw, Bug } from 'lucide-react'
+import { useTranslation, Trans } from 'react-i18next'
 import { loadUmamiScript } from '../utils/analytics'
 
 const ANALYTICS_CONSENT_KEY = 'lenr-analytics-consent'
 const ERROR_REPORTING_CONSENT_KEY = 'lenr-error-reporting-consent'
 
 export default function PrivacyPreferences() {
+  const { t } = useTranslation()
   const [consent, setConsent] = useState<string | null>(null)
   const [errorReportingConsent, setErrorReportingConsent] = useState<string | null>(null)
   const [hasChanged, setHasChanged] = useState(false)
@@ -62,11 +64,11 @@ export default function PrivacyPreferences() {
         <div className="flex items-center gap-3 mb-2">
           <Shield className="w-8 h-8 text-primary-600" />
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-            Privacy Settings
+            {t('privacyPage.title')}
           </h1>
         </div>
         <p className="text-gray-600 dark:text-gray-400">
-          Manage your analytics and error reporting preferences and learn about how we protect your privacy
+          {t('privacyPage.subtitle')}
         </p>
       </div>
 
@@ -74,14 +76,14 @@ export default function PrivacyPreferences() {
       {showReloadMessage && (
         <div className="mb-6 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
           <p className="text-sm text-blue-800 dark:text-blue-300 mb-3">
-            To apply your error reporting changes, please reload the page.
+            {t('privacyPage.reloadToApply')}
           </p>
           <button
             onClick={handleReload}
             className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium"
           >
             <RefreshCw className="w-4 h-4" />
-            Reload Page Now
+            {t('privacyPage.reloadNow')}
           </button>
         </div>
       )}
@@ -91,7 +93,7 @@ export default function PrivacyPreferences() {
         <div className="flex items-center gap-3 mb-4">
           <Bug className="w-6 h-6 text-primary-600" />
           <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
-            Error Reporting
+            {t('privacyPage.errorReporting.title')}
           </h2>
         </div>
 
@@ -102,9 +104,9 @@ export default function PrivacyPreferences() {
               <>
                 <XCircle className="w-6 h-6 text-gray-600" />
                 <div>
-                  <p className="font-medium text-gray-900 dark:text-white">Error Reporting Disabled</p>
+                  <p className="font-medium text-gray-900 dark:text-white">{t('privacyPage.errorReporting.disabledStatus')}</p>
                   <p className="text-sm text-gray-600 dark:text-gray-400">
-                    Errors won't be reported to our development team
+                    {t('privacyPage.errorReporting.disabledStatusDescription')}
                   </p>
                 </div>
               </>
@@ -113,10 +115,10 @@ export default function PrivacyPreferences() {
                 <CheckCircle className="w-6 h-6 text-green-600" />
                 <div>
                   <p className="font-medium text-gray-900 dark:text-white">
-                    Error Reporting Enabled {!errorReportingEnabled && <span className="text-sm font-normal text-gray-500 dark:text-gray-400">(default)</span>}
+                    {t('privacyPage.errorReporting.enabledStatus')} {!errorReportingEnabled && <span className="text-sm font-normal text-gray-500 dark:text-gray-400">{t('privacyPage.default')}</span>}
                   </p>
                   <p className="text-sm text-gray-600 dark:text-gray-400">
-                    Helping us catch and fix bugs automatically
+                    {t('privacyPage.errorReporting.enabledStatusDescription')}
                   </p>
                 </div>
               </>
@@ -126,7 +128,7 @@ export default function PrivacyPreferences() {
           {errorReportingChanged && (
             <div className="p-3 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
               <p className="text-sm text-green-800 dark:text-green-300">
-                ✓ Your error reporting preference has been saved
+                {t('privacyPage.errorReporting.saved')}
               </p>
             </div>
           )}
@@ -135,26 +137,26 @@ export default function PrivacyPreferences() {
         {/* Why Error Reporting Matters */}
         <div className="mb-6 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
           <h3 className="font-semibold text-blue-900 dark:text-blue-300 mb-2">
-            Why Error Reporting is Critical
+            {t('privacyPage.errorReporting.whyTitle')}
           </h3>
           <p className="text-sm text-blue-800 dark:text-blue-300 mb-3">
-            Error reporting helps us identify and fix bugs that affect your experience. When errors occur, we receive anonymized technical details that help us:
+            {t('privacyPage.errorReporting.whyIntro')}
           </p>
           <ul className="list-disc list-inside space-y-1 text-sm text-blue-800 dark:text-blue-300">
-            <li>Fix bugs faster and improve stability</li>
-            <li>Understand which features need improvement</li>
-            <li>Prioritize development based on real issues</li>
-            <li>Ensure the app works correctly for all users</li>
+            <li>{t('privacyPage.errorReporting.why1')}</li>
+            <li>{t('privacyPage.errorReporting.why2')}</li>
+            <li>{t('privacyPage.errorReporting.why3')}</li>
+            <li>{t('privacyPage.errorReporting.why4')}</li>
           </ul>
           <p className="text-sm text-blue-800 dark:text-blue-300 mt-3">
-            <strong>Your help makes this project better for everyone!</strong> Enabling error reporting is one of the most impactful ways you can contribute to LENR Academy's success.
+            <Trans i18nKey="privacyPage.errorReporting.helpMessage" components={{ strong: <strong /> }} />
           </p>
         </div>
 
         {/* Error Reporting Preferences */}
         <div className="mb-6">
           <h3 className="font-semibold text-gray-900 dark:text-white mb-3">
-            Manage Error Reporting
+            {t('privacyPage.errorReporting.manage')}
           </h3>
           <div className="grid sm:grid-cols-2 gap-4">
             <button
@@ -170,10 +172,10 @@ export default function PrivacyPreferences() {
                 <CheckCircle className={`w-5 h-5 mt-0.5 ${errorReportingEnabled ? 'text-primary-600' : 'text-gray-400'}`} />
                 <div className="text-left">
                   <p className={`font-medium mb-1 ${errorReportingEnabled ? 'text-primary-700 dark:text-primary-400' : 'text-gray-900 dark:text-white'}`}>
-                    Enable Error Reporting
+                    {t('privacyPage.errorReporting.enable')}
                   </p>
                   <p className="text-sm text-gray-600 dark:text-gray-400">
-                    Automatically report errors to help us fix bugs
+                    {t('privacyPage.errorReporting.enableDescription')}
                   </p>
                 </div>
               </div>
@@ -192,10 +194,10 @@ export default function PrivacyPreferences() {
                 <XCircle className={`w-5 h-5 mt-0.5 ${errorReportingDisabled ? 'text-gray-600' : 'text-gray-400'}`} />
                 <div className="text-left">
                   <p className={`font-medium mb-1 ${errorReportingDisabled ? 'text-gray-700 dark:text-gray-300' : 'text-gray-900 dark:text-white'}`}>
-                    Disable Error Reporting
+                    {t('privacyPage.errorReporting.disable')}
                   </p>
                   <p className="text-sm text-gray-600 dark:text-gray-400">
-                    Don't send error reports (app may be less stable)
+                    {t('privacyPage.errorReporting.disableDescription')}
                   </p>
                 </div>
               </div>
@@ -205,22 +207,22 @@ export default function PrivacyPreferences() {
 
         {/* What Gets Reported */}
         <div>
-          <h3 className="font-semibold text-gray-900 dark:text-white mb-2">What Gets Reported:</h3>
+          <h3 className="font-semibold text-gray-900 dark:text-white mb-2">{t('privacyPage.errorReporting.whatReported')}</h3>
           <ul className="list-disc list-inside space-y-1 text-sm text-gray-700 dark:text-gray-300">
-            <li>Error messages and stack traces</li>
-            <li>Browser type and version</li>
-            <li>Page URL (query parameters scrubbed)</li>
-            <li>App version and release info</li>
+            <li>{t('privacyPage.errorReporting.reported1')}</li>
+            <li>{t('privacyPage.errorReporting.reported2')}</li>
+            <li>{t('privacyPage.errorReporting.reported3')}</li>
+            <li>{t('privacyPage.errorReporting.reported4')}</li>
           </ul>
-          <h3 className="font-semibold text-gray-900 dark:text-white mt-4 mb-2">What's NOT Reported:</h3>
+          <h3 className="font-semibold text-gray-900 dark:text-white mt-4 mb-2">{t('privacyPage.errorReporting.whatNotReported')}</h3>
           <ul className="list-disc list-inside space-y-1 text-sm text-gray-700 dark:text-gray-300">
-            <li>Personal information or IP addresses</li>
-            <li>Search queries or form inputs</li>
-            <li>Session recordings or screenshots</li>
-            <li>Any identifiable user data</li>
+            <li>{t('privacyPage.errorReporting.notReported1')}</li>
+            <li>{t('privacyPage.searchQueriesOrInputs')}</li>
+            <li>{t('privacyPage.errorReporting.notReported3')}</li>
+            <li>{t('privacyPage.errorReporting.notReported4')}</li>
           </ul>
           <p className="text-sm text-gray-600 dark:text-gray-400 mt-4">
-            We use <strong>Sentry</strong> with EU hosting for GDPR compliance. All data is anonymized and used solely for debugging purposes.
+            <Trans i18nKey="privacyPage.errorReporting.sentryNotice" components={{ strong: <strong /> }} />
           </p>
         </div>
       </div>
@@ -228,7 +230,7 @@ export default function PrivacyPreferences() {
       {/* Analytics Section */}
       <div className="card p-6">
         <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
-          Analytics
+          {t('privacyPage.analytics.title')}
         </h2>
 
         {/* Current Status */}
@@ -238,9 +240,9 @@ export default function PrivacyPreferences() {
               <>
                 <CheckCircle className="w-6 h-6 text-green-600" />
                 <div>
-                  <p className="font-medium text-gray-900 dark:text-white">Analytics Enabled</p>
+                  <p className="font-medium text-gray-900 dark:text-white">{t('privacyPage.analytics.enabledStatus')}</p>
                   <p className="text-sm text-gray-600 dark:text-gray-400">
-                    Helping us improve the site with privacy-friendly analytics
+                    {t('privacyPage.analytics.enabledStatusDescription')}
                   </p>
                 </div>
               </>
@@ -248,9 +250,9 @@ export default function PrivacyPreferences() {
               <>
                 <XCircle className="w-6 h-6 text-gray-600" />
                 <div>
-                  <p className="font-medium text-gray-900 dark:text-white">Analytics Disabled</p>
+                  <p className="font-medium text-gray-900 dark:text-white">{t('privacyPage.analytics.disabledStatus')}</p>
                   <p className="text-sm text-gray-600 dark:text-gray-400">
-                    We're not collecting any usage data from your visits
+                    {t('privacyPage.analytics.disabledStatusDescription')}
                   </p>
                 </div>
               </>
@@ -258,9 +260,9 @@ export default function PrivacyPreferences() {
               <>
                 <Shield className="w-6 h-6 text-gray-600" />
                 <div>
-                  <p className="font-medium text-gray-900 dark:text-white">No Preference Set</p>
+                  <p className="font-medium text-gray-900 dark:text-white">{t('privacyPage.analytics.noPreference')}</p>
                   <p className="text-sm text-gray-600 dark:text-gray-400">
-                    You haven't made a choice yet
+                    {t('privacyPage.analytics.noPreferenceDescription')}
                   </p>
                 </div>
               </>
@@ -270,7 +272,7 @@ export default function PrivacyPreferences() {
           {hasChanged && (
             <div className="p-3 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
               <p className="text-sm text-green-800 dark:text-green-300">
-                ✓ Your analytics preference has been saved
+                {t('privacyPage.analytics.saved')}
               </p>
             </div>
           )}
@@ -279,7 +281,7 @@ export default function PrivacyPreferences() {
         {/* Analytics Preferences */}
         <div className="mb-6">
           <h3 className="font-semibold text-gray-900 dark:text-white mb-3">
-            Manage Analytics
+            {t('privacyPage.analytics.manage')}
           </h3>
           <div className="grid sm:grid-cols-2 gap-4">
             <button
@@ -295,10 +297,10 @@ export default function PrivacyPreferences() {
                 <CheckCircle className={`w-5 h-5 mt-0.5 ${isEnabled ? 'text-primary-600' : 'text-gray-400'}`} />
                 <div className="text-left">
                   <p className={`font-medium mb-1 ${isEnabled ? 'text-primary-700 dark:text-primary-400' : 'text-gray-900 dark:text-white'}`}>
-                    Enable Analytics
+                    {t('privacyPage.analytics.enable')}
                   </p>
                   <p className="text-sm text-gray-600 dark:text-gray-400">
-                    Help us understand how visitors use the site
+                    {t('privacyPage.analytics.enableDescription')}
                   </p>
                 </div>
               </div>
@@ -317,10 +319,10 @@ export default function PrivacyPreferences() {
                 <XCircle className={`w-5 h-5 mt-0.5 ${isDisabled ? 'text-gray-600' : 'text-gray-400'}`} />
                 <div className="text-left">
                   <p className={`font-medium mb-1 ${isDisabled ? 'text-gray-700 dark:text-gray-300' : 'text-gray-900 dark:text-white'}`}>
-                    Disable Analytics
+                    {t('privacyPage.analytics.disable')}
                   </p>
                   <p className="text-sm text-gray-600 dark:text-gray-400">
-                    Don't collect usage data from your visits
+                    {t('privacyPage.analytics.disableDescription')}
                   </p>
                 </div>
               </div>
@@ -331,36 +333,36 @@ export default function PrivacyPreferences() {
         {/* About Analytics */}
         <div className="space-y-4 text-gray-700 dark:text-gray-300">
           <p>
-            We use <strong>Umami Analytics</strong>, a privacy-friendly, open-source analytics platform that respects your privacy.
+            <Trans i18nKey="privacyPage.analytics.umamiIntro" components={{ strong: <strong /> }} />
           </p>
 
           <div>
-            <h3 className="font-semibold text-gray-900 dark:text-white mb-2">What We Track:</h3>
+            <h3 className="font-semibold text-gray-900 dark:text-white mb-2">{t('privacyPage.analytics.whatTracked')}</h3>
             <ul className="list-disc list-inside space-y-1 text-sm">
-              <li>Page views and navigation patterns</li>
-              <li>Referring websites (where visitors come from)</li>
-              <li>Browser and device type (anonymized)</li>
-              <li>Country/region (based on IP, not stored)</li>
+              <li>{t('privacyPage.analytics.tracked1')}</li>
+              <li>{t('privacyPage.analytics.tracked2')}</li>
+              <li>{t('privacyPage.analytics.tracked3')}</li>
+              <li>{t('privacyPage.analytics.tracked4')}</li>
             </ul>
           </div>
 
           <div>
-            <h3 className="font-semibold text-gray-900 dark:text-white mb-2">What We DON'T Track:</h3>
+            <h3 className="font-semibold text-gray-900 dark:text-white mb-2">{t('privacyPage.analytics.whatNotTracked')}</h3>
             <ul className="list-disc list-inside space-y-1 text-sm">
-              <li>Personal information or identifiable data</li>
-              <li>Individual users across sessions</li>
-              <li>Cookies (we don't use any tracking cookies)</li>
-              <li>IP addresses (not stored)</li>
-              <li>Search queries or form inputs</li>
+              <li>{t('privacyPage.analytics.notTracked1')}</li>
+              <li>{t('privacyPage.analytics.notTracked2')}</li>
+              <li>{t('privacyPage.analytics.notTracked3')}</li>
+              <li>{t('privacyPage.analytics.notTracked4')}</li>
+              <li>{t('privacyPage.searchQueriesOrInputs')}</li>
             </ul>
           </div>
 
           <div className="p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
             <h3 className="font-semibold text-blue-900 dark:text-blue-300 mb-2">
-              Full Transparency
+              {t('privacyPage.analytics.transparencyTitle')}
             </h3>
             <p className="text-sm text-blue-800 dark:text-blue-300 mb-3">
-              We believe in complete transparency. You can view our public analytics dashboard to see exactly what data we collect and how it's displayed. No secrets, no hidden tracking.
+              {t('privacyPage.analytics.transparencyDescription')}
             </p>
             <a
               href="https://cloud.umami.is/share/JGkYeKU60K9D1t4U"
@@ -368,7 +370,7 @@ export default function PrivacyPreferences() {
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 text-sm font-semibold"
             >
-              View Public Analytics Dashboard
+              {t('privacyPage.analytics.viewDashboard')}
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
               </svg>
@@ -377,7 +379,7 @@ export default function PrivacyPreferences() {
 
           <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
             <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
-              Umami is fully GDPR, CCPA, and PECR compliant. It's designed to give website owners insights without invading visitor privacy.
+              {t('privacyPage.analytics.umamiCompliance')}
             </p>
             <a
               href="https://umami.is/docs/about"
@@ -385,7 +387,7 @@ export default function PrivacyPreferences() {
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 text-primary-600 hover:text-primary-700 text-sm font-medium"
             >
-              Learn more about Umami
+              {t('privacyPage.analytics.learnMoreUmami')}
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
               </svg>
