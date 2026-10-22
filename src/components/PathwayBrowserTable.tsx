@@ -174,13 +174,13 @@ export default function PathwayBrowserTable({ pathways, useWeightedMode = false 
       <div className="space-y-3">
         {/* Search */}
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+          <Search className="absolute start-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
           <input
             type="text"
             placeholder={t('cascades.pathwayBrowser.searchPlaceholder')}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full ps-10 pe-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
 
@@ -263,8 +263,8 @@ export default function PathwayBrowserTable({ pathways, useWeightedMode = false 
         <p className="text-sm text-gray-600 dark:text-gray-400">
           {t('cascades.pathwayBrowser.showing', { shown: filteredAndSorted.length, total: pathways.length })}
           {useWeighted && (
-            <span className="ml-2 text-purple-600 dark:text-purple-400 font-medium">
-              <Scale className="w-3 h-3 inline mr-0.5" />
+            <span className="ms-2 text-purple-600 dark:text-purple-400 font-medium">
+              <Scale className="w-3 h-3 inline me-0.5" />
               {t('cascades.pathwayBrowser.weightedView')}
             </span>
           )}
@@ -293,30 +293,30 @@ export default function PathwayBrowserTable({ pathways, useWeightedMode = false 
           <table className="w-full text-sm" style={{ tableLayout: 'fixed' }}>
             <thead className="bg-gray-50 dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-b border-gray-300 dark:border-gray-700">
               <tr>
-                <th className="hidden md:table-cell px-4 py-3 text-left font-medium" style={{ width: useWeighted ? '25%' : '30%' }}>{t('cascades.pathwayBrowser.pathway')}</th>
-                <th className="px-4 py-3 text-left font-medium" style={{ width: '10%' }}>{t('cascades.pathwayBrowser.type')}</th>
-                <th className="px-4 py-3 text-right font-medium" style={{ width: '10%' }}>
+                <th className="hidden md:table-cell px-4 py-3 text-start font-medium" style={{ width: useWeighted ? '25%' : '30%' }}>{t('cascades.pathwayBrowser.pathway')}</th>
+                <th className="px-4 py-3 text-start font-medium" style={{ width: '10%' }}>{t('cascades.pathwayBrowser.type')}</th>
+                <th className="px-4 py-3 text-end font-medium" style={{ width: '10%' }}>
                   <SortButton field="frequency">{t('cascades.pathwayBrowser.count')}</SortButton>
                 </th>
                 {/* Weighted frequency column (Issue #96) */}
                 {useWeighted && (
-                  <th className="px-4 py-3 text-right font-medium" style={{ width: '10%' }}>
+                  <th className="px-4 py-3 text-end font-medium" style={{ width: '10%' }}>
                     <SortButton field="weightedFrequency">
                       <span className="text-purple-600 dark:text-purple-400">{t('cascades.pathwayBrowser.wtd')}</span>
                     </SortButton>
                   </th>
                 )}
-                <th className="px-4 py-3 text-right font-medium" style={{ width: '12%' }}>
+                <th className="px-4 py-3 text-end font-medium" style={{ width: '12%' }}>
                   <SortButton field="avgEnergy">{t('cascades.pathwayBrowser.avgMeV')}</SortButton>
                 </th>
-                <th className="px-4 py-3 text-right font-medium" style={{ width: '12%' }}>
+                <th className="px-4 py-3 text-end font-medium" style={{ width: '12%' }}>
                   <SortButton field="totalEnergy">{t('cascades.pathwayBrowser.totalMeV')}</SortButton>
                 </th>
                 <th className="hidden sm:table-cell px-4 py-3 text-center font-medium" style={{ width: '10%' }}>
                   <SortButton field="loops">{t('cascades.pathwayBrowser.loops')}</SortButton>
                 </th>
                 <th className="hidden lg:table-cell px-4 py-3 text-center font-medium" style={{ width: '8%' }}>{t('cascades.pathwayBrowser.feedback')}</th>
-                <th className="hidden lg:table-cell px-4 py-3 text-right font-medium" style={{ width: '8%' }}>
+                <th className="hidden lg:table-cell px-4 py-3 text-end font-medium" style={{ width: '8%' }}>
                   <SortButton field="rarity">{t('cascades.pathwayBrowser.rarity')}</SortButton>
                 </th>
               </tr>
@@ -359,15 +359,15 @@ export default function PathwayBrowserTable({ pathways, useWeightedMode = false 
                         {pathway.type === 'fusion' ? t('cascades.pathwayBrowser.fusion') : t('cascades.pathwayBrowser.twoToTwoShort')}
                       </span>
                     </td>
-                    <td className="px-4 py-2 align-middle text-right font-medium" style={{ width: '10%' }}>×{pathway.frequency}</td>
+                    <td className="px-4 py-2 align-middle text-end font-medium" style={{ width: '10%' }}>×{pathway.frequency}</td>
                     {/* Weighted frequency column (Issue #96) */}
                     {useWeighted && (
-                      <td className="px-4 py-2 align-middle text-right font-medium text-purple-600 dark:text-purple-400" style={{ width: '10%' }}>
+                      <td className="px-4 py-2 align-middle text-end font-medium text-purple-600 dark:text-purple-400" style={{ width: '10%' }}>
                         ×{getFrequencyValue(pathway, true).toFixed(2)}
                       </td>
                     )}
-                    <td className="px-4 py-2 align-middle text-right" style={{ width: '12%' }}>{pathway.avgEnergy.toFixed(2)}</td>
-                    <td className="px-4 py-2 align-middle text-right" style={{ width: '12%' }}>{pathway.totalEnergy.toFixed(2)}</td>
+                    <td className="px-4 py-2 align-middle text-end" style={{ width: '12%' }}>{pathway.avgEnergy.toFixed(2)}</td>
+                    <td className="px-4 py-2 align-middle text-end" style={{ width: '12%' }}>{pathway.totalEnergy.toFixed(2)}</td>
                     <td className="hidden sm:table-cell px-4 py-2 align-middle text-center text-xs text-gray-600 dark:text-gray-400" style={{ width: '10%' }}>
                       {formatLoops(pathway.loops)}
                     </td>
@@ -376,7 +376,7 @@ export default function PathwayBrowserTable({ pathways, useWeightedMode = false 
                         <span className="text-green-600 dark:text-green-400 font-bold">✓</span>
                       )}
                     </td>
-                    <td className="hidden lg:table-cell px-4 py-2 align-middle text-right text-xs text-gray-600 dark:text-gray-400" style={{ width: '8%' }}>
+                    <td className="hidden lg:table-cell px-4 py-2 align-middle text-end text-xs text-gray-600 dark:text-gray-400" style={{ width: '8%' }}>
                       {pathway.rarityScore.toFixed(0)}%
                     </td>
                   </tr>

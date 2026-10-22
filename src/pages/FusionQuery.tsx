@@ -846,7 +846,7 @@ export default function FusionQuery() {
               </button>
             </div>
           </div>
-          <code className="text-xs text-gray-600 dark:text-gray-400 block font-mono break-all">
+          <code dir="ltr" className="text-xs text-gray-600 dark:text-gray-400 block font-mono break-all">
             {sqlPreview.replace(/\s+/g, ' ').trim()};
           </code>
         </div>
@@ -868,7 +868,7 @@ export default function FusionQuery() {
               </div>
               <button
                 onClick={() => setShowHeatmap(!showHeatmap)}
-                className="btn btn-secondary p-2 ml-4"
+                className="btn btn-secondary p-2 ms-4"
                 title={showHeatmap ? t('reactions.collapsePeriodicTable') : t('reactions.expandPeriodicTable')}
                 aria-label={showHeatmap ? t('reactions.collapsePeriodicTable') : t('reactions.expandPeriodicTable')}
               >
@@ -913,7 +913,8 @@ export default function FusionQuery() {
                   <div className="flex flex-col md:flex-row md:items-center gap-2 md:gap-3">
                     <div className="flex items-center gap-3 flex-1 min-w-0">
                       <span className="text-xs font-medium text-gray-700 dark:text-gray-300 whitespace-nowrap">{t('reactions.elementRole')}:</span>
-                      <div className="flex items-center gap-2 flex-1 min-w-0">
+                      {/* Input -> output colour scale is a fixed left-to-right gradient */}
+                      <div className="flex items-center gap-2 flex-1 min-w-0" dir="ltr">
                         <span className="text-xs text-gray-600 dark:text-gray-400 whitespace-nowrap">{t('reactions.input')}</span>
                         <div className="flex-1 min-w-[60px] h-4 rounded" style={{
                           background: 'linear-gradient(to right, rgb(37, 99, 235), rgb(29, 131, 155), rgb(22, 163, 74))'
@@ -921,7 +922,7 @@ export default function FusionQuery() {
                         <span className="text-xs text-gray-600 dark:text-gray-400 whitespace-nowrap">{t('reactions.output')}</span>
                       </div>
                     </div>
-                    <span className="text-xs text-gray-500 dark:text-gray-400 text-center md:text-left md:whitespace-nowrap">• {t('reactions.intensityShowsMetric')}</span>
+                    <span className="text-xs text-gray-500 dark:text-gray-400 text-center md:text-start md:whitespace-nowrap">• {t('reactions.intensityShowsMetric')}</span>
                   </div>
                 </div>
 
@@ -962,7 +963,7 @@ export default function FusionQuery() {
                       >
                         <span
                           className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                            useAllResultsForHeatmap ? 'translate-x-6' : 'translate-x-1'
+                            useAllResultsForHeatmap ? 'translate-x-6 rtl:-translate-x-6' : 'translate-x-1 rtl:-translate-x-1'
                           }`}
                         />
                       </button>
@@ -1032,7 +1033,7 @@ export default function FusionQuery() {
                   className="btn btn-secondary px-4 py-2 text-sm"
                   title={showBosonFermion ? t('reactions.hideBFTypes') : t('reactions.showBFTypes')}
                 >
-                  {showBosonFermion ? <EyeOff className="w-4 h-4 mr-2 inline" /> : <Eye className="w-4 h-4 mr-2 inline" />}
+                  {showBosonFermion ? <EyeOff className="w-4 h-4 me-2 inline" /> : <Eye className="w-4 h-4 me-2 inline" />}
                   {showBosonFermion ? t('reactions.hideBFTypes') : t('reactions.showBFTypes')}
                 </button>
                 <ShareQueryButton />
@@ -1056,7 +1057,7 @@ export default function FusionQuery() {
               <div className="w-fit min-w-full border border-gray-200 dark:border-gray-700 rounded-b-none rounded-t-none sm:rounded-t-lg" >
                 <div
                   className="sticky top-0 z-[5]"
-                  style={{ paddingRight: fusionHeaderPadding }}
+                  style={{ paddingInlineEnd: fusionHeaderPadding }}
                 >
                   <ReactionTableHeader
                     gridTemplateColumns={fusionColumnTemplate}
@@ -1101,7 +1102,7 @@ export default function FusionQuery() {
                     )}
                   </div>
                 ) : filteredResults.length <= SMALL_RESULT_THRESHOLD ? (
-                  <div style={{ paddingRight: fusionHeaderPadding }}>
+                  <div style={{ paddingInlineEnd: fusionHeaderPadding }}>
                     {filteredResults.map((reaction, index) => {
                       const isE1Radioactive = radioactiveNuclides.has(`${reaction.Z1}-${reaction.A1}`)
                       const isE2Radioactive = radioactiveNuclides.has(`${reaction.Z2}-${reaction.A2}`)
@@ -1248,7 +1249,7 @@ export default function FusionQuery() {
                     })}
                   </div>
                 ) : (
-                  <div style={{ paddingRight: fusionHeaderPadding }}>
+                  <div style={{ paddingInlineEnd: fusionHeaderPadding }}>
                     <VirtualizedList
                       items={filteredResults}
                       estimatedRowHeight={fusionEstimatedRowHeight}

@@ -124,7 +124,7 @@ export default function LanguageSelectionModal({ isOpen, onClose }: LanguageSele
               >
                 <div className="flex items-center gap-3">
                   <span className="text-2xl">{info.flag}</span>
-                  <div className="text-left">
+                  <div className="text-start">
                     <div className="font-medium text-gray-900 dark:text-white">
                       {info.nativeName}
                     </div>

@@ -33,6 +33,12 @@ export default {
           '0%': { transform: 'translateX(100%)' },
           '100%': { transform: 'translateX(0)' },
         },
+        // RTL mirror of slide-in-right: drawers anchored to the inline-end edge
+        // sit on the left in RTL and must slide in from the left.
+        'slide-in-left': {
+          '0%': { transform: 'translateX(-100%)' },
+          '100%': { transform: 'translateX(0)' },
+        },
         'backdrop-in': {
           '0%': { opacity: '0' },
           '100%': { opacity: '1' },
@@ -41,6 +47,7 @@ export default {
       animation: {
         'fade-in': 'fade-in 0.3s ease-out',
         'slide-in-right': 'slide-in-right 0.25s ease-out',
+        'slide-in-left': 'slide-in-left 0.25s ease-out',
         'backdrop-in': 'backdrop-in 0.2s ease-out',
       },
     },

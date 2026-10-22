@@ -36,7 +36,7 @@ export default function MullerHeatmapLegend({ variant }: MullerHeatmapLegendProp
         <span className="font-medium text-gray-700 dark:text-gray-300 whitespace-nowrap">
           {t('mullerResonance.legend.title')}:
         </span>
-        <div className="flex items-center gap-2 flex-1 min-w-0">
+        <div className="flex items-center gap-2 flex-1 min-w-0" dir="ltr">
           <span className="text-gray-600 dark:text-gray-400 whitespace-nowrap">{lowLabel}</span>
           <div
             data-testid="muller-legend-gradient"

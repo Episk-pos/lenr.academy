@@ -4,14 +4,14 @@ import type { SupportedLanguage } from './config';
 
 describe('i18n config', () => {
   describe('SUPPORTED_LANGUAGES', () => {
-    it('contains exactly 13 languages', () => {
-      expect(Object.keys(SUPPORTED_LANGUAGES)).toHaveLength(13);
+    it('contains exactly 14 languages', () => {
+      expect(Object.keys(SUPPORTED_LANGUAGES)).toHaveLength(14);
     });
 
     it('includes all expected language codes', () => {
       const expected: SupportedLanguage[] = [
         'en', 'ru', 'ja', 'zh', 'de', 'fr', 'es',
-        'it', 'pt', 'uk', 'pl', 'ko', 'hi',
+        'it', 'pt', 'uk', 'pl', 'ko', 'hi', 'ar',
       ];
       expected.forEach((lang) => {
         expect(SUPPORTED_LANGUAGES).toHaveProperty(lang);
@@ -50,6 +50,7 @@ describe('i18n config', () => {
       expect(getMappedLanguage('pl')).toBe('pl');
       expect(getMappedLanguage('ko')).toBe('ko');
       expect(getMappedLanguage('hi')).toBe('hi');
+      expect(getMappedLanguage('ar')).toBe('ar');
     });
 
     it('maps regional variants to base languages', () => {
@@ -74,6 +75,9 @@ describe('i18n config', () => {
       expect(getMappedLanguage('pl-PL')).toBe('pl');
       expect(getMappedLanguage('ko-KR')).toBe('ko');
       expect(getMappedLanguage('hi-IN')).toBe('hi');
+      expect(getMappedLanguage('ar-SA')).toBe('ar');
+      expect(getMappedLanguage('ar-EG')).toBe('ar');
+      expect(getMappedLanguage('ar-AE')).toBe('ar');
     });
 
     it('falls back to default language for unknown codes', () => {

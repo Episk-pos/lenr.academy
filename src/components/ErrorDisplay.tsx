@@ -214,7 +214,7 @@ export default function ErrorDisplay({
               {isDetailsExpanded ? (
                 <ChevronDown className="w-4 h-4 transition-transform" />
               ) : (
-                <ChevronRight className="w-4 h-4 transition-transform" />
+                <ChevronRight className="w-4 h-4 transition-transform rtl:-scale-x-100" />
               )}
               {t('errorDisplay.technicalDetails')}
             </button>
@@ -243,37 +243,37 @@ export default function ErrorDisplay({
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm">
                   <div>
                     <span className="text-gray-600 dark:text-gray-400">{t('errorDisplay.timestamp')}:</span>
-                    <span className="ml-2 text-gray-900 dark:text-gray-100">
+                    <span className="ms-2 text-gray-900 dark:text-gray-100">
                       {new Date(errorContext.timestamp).toLocaleString()}
                     </span>
                   </div>
                   <div>
                     <span className="text-gray-600 dark:text-gray-400">{t('errorDisplay.browser')}:</span>
-                    <span className="ml-2 text-gray-900 dark:text-gray-100">
+                    <span className="ms-2 text-gray-900 dark:text-gray-100">
                       {errorContext.browser} {errorContext.browserVersion}
                     </span>
                   </div>
                   <div>
                     <span className="text-gray-600 dark:text-gray-400">{t('errorDisplay.os')}:</span>
-                    <span className="ml-2 text-gray-900 dark:text-gray-100">
+                    <span className="ms-2 text-gray-900 dark:text-gray-100">
                       {errorContext.os}
                     </span>
                   </div>
                   <div>
                     <span className="text-gray-600 dark:text-gray-400">{t('errorDisplay.device')}:</span>
-                    <span className="ml-2 text-gray-900 dark:text-gray-100">
+                    <span className="ms-2 text-gray-900 dark:text-gray-100">
                       {errorContext.device}
                     </span>
                   </div>
                   <div className="sm:col-span-2">
                     <span className="text-gray-600 dark:text-gray-400">{t('errorDisplay.url')}:</span>
-                    <span className="ml-2 text-gray-900 dark:text-gray-100 break-all">
+                    <span className="ms-2 text-gray-900 dark:text-gray-100 break-all">
                       {errorContext.url}
                     </span>
                   </div>
                   <div>
                     <span className="text-gray-600 dark:text-gray-400">{t('errorDisplay.appVersion')}:</span>
-                    <span className="ml-2 text-gray-900 dark:text-gray-100">
+                    <span className="ms-2 text-gray-900 dark:text-gray-100">
                       {errorContext.appVersion}
                     </span>
                   </div>
@@ -303,7 +303,7 @@ export default function ErrorDisplay({
               </p>
               <div className="space-y-2 text-sm text-yellow-800 dark:text-yellow-300">
                 <p><strong>{t('errorDisplay.moduleLoad.trySolutions')}</strong></p>
-                <ol className="list-decimal list-inside space-y-1 ml-2">
+                <ol className="list-decimal list-inside space-y-1 ms-2">
                   <li>{t('errorDisplay.moduleLoad.solution1')}</li>
                   <li>{t('errorDisplay.moduleLoad.solution2')}</li>
                   <li>{t('errorDisplay.moduleLoad.solution3')}</li>
@@ -373,7 +373,7 @@ export default function ErrorDisplay({
 
             {/* Toast notification */}
             {copySuccess && countdown !== null && (
-              <div className="fixed top-4 right-4 z-50 bg-green-600 text-white px-6 py-3 rounded-lg shadow-lg max-w-md animate-slide-in">
+              <div className="fixed top-4 end-4 z-50 bg-green-600 text-white px-6 py-3 rounded-lg shadow-lg max-w-md animate-slide-in">
                 <div className="flex items-start gap-3">
                   <svg className="w-5 h-5 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />

@@ -129,6 +129,7 @@ export default function AllTables() {
           </label>
           <textarea
             id="sql-query-editor"
+            dir="ltr"
             className="input h-auto min-h-[9rem] resize-y font-mono text-sm leading-relaxed"
             rows={6}
             spellCheck={false}
@@ -155,12 +156,12 @@ export default function AllTables() {
           >
             {isExecuting ? (
               <>
-                <Loader className="w-4 h-4 mr-2 inline animate-spin" />
+                <Loader className="w-4 h-4 me-2 inline animate-spin" />
                 {t('allTables.executing')}
               </>
             ) : (
               <>
-                <Play className="w-4 h-4 mr-2 inline" />
+                <Play className="w-4 h-4 me-2 inline" />
                 {t('allTables.executeQuery')}
               </>
             )}
@@ -205,7 +206,7 @@ export default function AllTables() {
               onClick={exportToCSV}
               className="btn btn-secondary px-4 py-2 text-sm"
             >
-              <Download className="w-4 h-4 mr-2 inline" />
+              <Download className="w-4 h-4 me-2 inline" />
               {t('allTables.exportCsv')}
             </button>
           </div>
@@ -257,7 +258,7 @@ export default function AllTables() {
             <button
               key={idx}
               onClick={() => setSqlQuery(query)}
-              className="block w-full text-left p-3 bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 rounded text-sm font-mono text-gray-700 dark:text-gray-300 transition-colors"
+              className="block w-full text-start p-3 bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 rounded text-sm font-mono text-gray-700 dark:text-gray-300 transition-colors"
             >
               {query}
             </button>
@@ -271,23 +272,23 @@ export default function AllTables() {
           <ul className="text-sm text-gray-700 dark:text-gray-300 space-y-2">
             <li>
               <code className="bg-white dark:bg-gray-700 px-2 py-1 rounded font-semibold">FusionAll</code>
-              <span className="text-gray-600 dark:text-gray-400 ml-2">- {t('allTables.fusionAllShort')}</span>
+              <span className="text-gray-600 dark:text-gray-400 ms-2">- {t('allTables.fusionAllShort')}</span>
             </li>
             <li>
               <code className="bg-white dark:bg-gray-700 px-2 py-1 rounded font-semibold">FissionAll</code>
-              <span className="text-gray-600 dark:text-gray-400 ml-2">- {t('allTables.fissionAllShort')}</span>
+              <span className="text-gray-600 dark:text-gray-400 ms-2">- {t('allTables.fissionAllShort')}</span>
             </li>
             <li>
               <code className="bg-white dark:bg-gray-700 px-2 py-1 rounded font-semibold">TwoToTwoAll</code>
-              <span className="text-gray-600 dark:text-gray-400 ml-2">- {t('allTables.twoToTwoAllShort')}</span>
+              <span className="text-gray-600 dark:text-gray-400 ms-2">- {t('allTables.twoToTwoAllShort')}</span>
             </li>
             <li>
               <code className="bg-white dark:bg-gray-700 px-2 py-1 rounded font-semibold">NuclidesPlus</code>
-              <span className="text-gray-600 dark:text-gray-400 ml-2">- {t('allTables.nuclidesPlusShort')}</span>
+              <span className="text-gray-600 dark:text-gray-400 ms-2">- {t('allTables.nuclidesPlusShort')}</span>
             </li>
             <li>
               <code className="bg-white dark:bg-gray-700 px-2 py-1 rounded font-semibold">ElementsPlus</code>
-              <span className="text-gray-600 dark:text-gray-400 ml-2">- {t('allTables.elementsPlusShort')}</span>
+              <span className="text-gray-600 dark:text-gray-400 ms-2">- {t('allTables.elementsPlusShort')}</span>
             </li>
           </ul>
         </div>

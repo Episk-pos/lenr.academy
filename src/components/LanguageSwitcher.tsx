@@ -100,7 +100,7 @@ export default function LanguageSwitcher({ className = '', compact = false, posi
             >
               <div className="flex items-center gap-3">
                 <span className="text-xl">{info.flag}</span>
-                <div className="text-left">
+                <div className="text-start">
                   <div className="text-sm font-medium">
                     {info.nativeName}
                   </div>

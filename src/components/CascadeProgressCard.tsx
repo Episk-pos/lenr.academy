@@ -58,11 +58,11 @@ export default function CascadeProgressCard({ progress, onCancel }: CascadeProgr
           {/* Progress Bar */}
           <div className="relative w-full h-3 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
             <div
-              className="absolute top-0 left-0 h-full bg-blue-600 dark:bg-blue-500 transition-all duration-300 ease-out"
+              className="absolute top-0 start-0 h-full bg-blue-600 dark:bg-blue-500 transition-all duration-300 ease-out"
               style={{ width: `${Math.min(100, Math.max(0, progress.percentage))}%` }}
             />
           </div>
-          <div className="mt-1 text-right text-xs text-gray-600 dark:text-gray-400">
+          <div className="mt-1 text-end text-xs text-gray-600 dark:text-gray-400">
             {t('cascades.percentComplete', { percent: progress.percentage.toFixed(0) })}
           </div>
 

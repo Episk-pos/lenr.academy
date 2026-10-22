@@ -154,10 +154,10 @@ export default function ExportMenu({ items, disabled = false, label }: ExportMen
         onKeyDown={handleTriggerKeyDown}
         data-testid="export-menu-button"
       >
-        <Download className="w-4 h-4 mr-2" aria-hidden="true" />
+        <Download className="w-4 h-4 me-2" aria-hidden="true" />
         {label ?? t('reactions.export')}
         <ChevronDown
-          className={`w-4 h-4 ml-1 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}
+          className={`w-4 h-4 ms-1 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}
           aria-hidden="true"
         />
       </button>
@@ -167,7 +167,7 @@ export default function ExportMenu({ items, disabled = false, label }: ExportMen
           id={menuId}
           role="menu"
           aria-label={label ?? t('reactions.export')}
-          className="absolute right-0 z-20 mt-1 min-w-[11rem] py-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md shadow-lg"
+          className="absolute end-0 z-20 mt-1 min-w-[11rem] py-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md shadow-lg"
           onKeyDown={handleMenuKeyDown}
           // Keep focus where it is on pointer interaction so browsers that do
           // not focus buttons on click (Safari) don't trigger a focus-out close
@@ -181,11 +181,11 @@ export default function ExportMenu({ items, disabled = false, label }: ExportMen
               type="button"
               role="menuitem"
               tabIndex={-1}
-              className="w-full flex items-center px-4 py-2 text-sm text-left text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 focus:bg-gray-100 dark:focus:bg-gray-700 focus:outline-none"
+              className="w-full flex items-center px-4 py-2 text-sm text-start text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 focus:bg-gray-100 dark:focus:bg-gray-700 focus:outline-none"
               onClick={() => handleSelect(item)}
               data-testid={`export-option-${item.key}`}
             >
-              {item.icon && <span className="mr-2 inline-flex" aria-hidden="true">{item.icon}</span>}
+              {item.icon && <span className="me-2 inline-flex" aria-hidden="true">{item.icon}</span>}
               {item.label}
             </button>
           ))}

@@ -16,6 +16,7 @@ import uk from './locales/uk.json'
 import pl from './locales/pl.json'
 import ko from './locales/ko.json'
 import hi from './locales/hi.json'
+import ar from './locales/ar.json'
 
 export const SUPPORTED_LANGUAGES = {
   en: { name: 'English', nativeName: 'English', flag: '🇬🇧' },
@@ -31,6 +32,7 @@ export const SUPPORTED_LANGUAGES = {
   pl: { name: 'Polish', nativeName: 'Polski', flag: '🇵🇱' },
   ko: { name: 'Korean', nativeName: '한국어', flag: '🇰🇷' },
   hi: { name: 'Hindi', nativeName: 'हिन्दी', flag: '🇮🇳' },
+  ar: { name: 'Arabic', nativeName: 'العربية', flag: '🇸🇦' },
 } as const
 
 export type SupportedLanguage = keyof typeof SUPPORTED_LANGUAGES
@@ -76,14 +78,28 @@ const languageMap: Record<string, SupportedLanguage> = {
   'ko-KR': 'ko',
   'hi': 'hi',
   'hi-IN': 'hi',
+  'ar': 'ar',
+  'ar-SA': 'ar',
+  'ar-EG': 'ar',
+  'ar-AE': 'ar',
+  'ar-MA': 'ar',
+  'ar-DZ': 'ar',
+  'ar-IQ': 'ar',
+  'ar-JO': 'ar',
+  'ar-KW': 'ar',
+  'ar-LB': 'ar',
+  'ar-QA': 'ar',
+  'ar-TN': 'ar',
 }
 
-// Keep <html lang> in sync with the active language (screen readers, hyphenation,
-// and script-appropriate font fallback). Registered before init so the initial
-// languageChanged event emitted during init is captured too.
+// Keep <html lang> and <html dir> in sync with the active language (screen
+// readers, hyphenation, script-appropriate font fallback, and right-to-left
+// layout for Arabic). Registered before init so the initial languageChanged
+// event emitted during init is captured too.
 i18n.on('languageChanged', (lng) => {
   if (typeof document !== 'undefined' && lng) {
     document.documentElement.lang = lng
+    document.documentElement.dir = i18n.dir(lng) === 'rtl' ? 'rtl' : 'ltr'
   }
 })
 
@@ -108,6 +124,7 @@ i18n
       pl: { translation: pl },
       ko: { translation: ko },
       hi: { translation: hi },
+      ar: { translation: ar },
     },
     fallbackLng: DEFAULT_LANGUAGE,
     supportedLngs: Object.keys(SUPPORTED_LANGUAGES) as SupportedLanguage[],

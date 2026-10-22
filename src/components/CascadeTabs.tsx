@@ -177,7 +177,7 @@ export default function CascadeTabs({ results, fuelNuclides = [] }: CascadeTabsP
                   const percentage = (count / maxCount) * 100;
                   return (
                     <div key={nuclide} className="flex items-center gap-3">
-                      <div className="w-8 text-xs text-gray-500 dark:text-gray-400 text-right">
+                      <div className="w-8 text-xs text-gray-500 dark:text-gray-400 text-end">
                         #{index + 1}
                       </div>
                       <div className="w-20 font-mono text-sm font-medium text-gray-900 dark:text-white">
@@ -190,7 +190,7 @@ export default function CascadeTabs({ results, fuelNuclides = [] }: CascadeTabsP
                             style={{ width: `${percentage}%` }}
                           />
                         </div>
-                        <div className="w-16 text-sm text-gray-600 dark:text-gray-400 text-right">
+                        <div className="w-16 text-sm text-gray-600 dark:text-gray-400 text-end">
                           {count}×
                         </div>
                       </div>

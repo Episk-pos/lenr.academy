@@ -207,12 +207,12 @@ export default function AppUpdateBanner({ className = '', onVisibilityChange, on
             >
               {isUpdating ? (
                 <>
-                  <Loader2 className="w-4 h-4 inline mr-1 animate-spin" aria-hidden="true" />
+                  <Loader2 className="w-4 h-4 inline me-1 animate-spin" aria-hidden="true" />
                   {t('updates.updating', 'Updating...')}
                 </>
               ) : (
                 <>
-                  <RefreshCw className="w-4 h-4 inline mr-1" aria-hidden="true" />
+                  <RefreshCw className="w-4 h-4 inline me-1" aria-hidden="true" />
                   {t('updates.refreshNow')}
                 </>
               )}

@@ -28,7 +28,7 @@ type SortDirection = 'asc' | 'desc'
 
 function NuclideBadge({ nuclide }: { nuclide: { E: string; A: number } }) {
   return (
-    <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-primary-100 dark:bg-primary-900/40 text-primary-800 dark:text-primary-200 mr-1 mb-1">
+    <span dir="ltr" className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-primary-100 dark:bg-primary-900/40 text-primary-800 dark:text-primary-200 me-1 mb-1">
       <sup className="text-[10px] mr-0.5">{nuclide.A}</sup>
       {nuclide.E}
     </span>
@@ -103,7 +103,7 @@ function ScoreBar({ value, color }: { value: number; color: string }) {
           style={{ width: `${Math.min(100, Math.max(0, value))}%` }}
         />
       </div>
-      <span className="text-xs text-gray-600 dark:text-gray-400 w-8 text-right">
+      <span className="text-xs text-gray-600 dark:text-gray-400 w-8 text-end">
         {value.toFixed(0)}
       </span>
     </div>
@@ -270,7 +270,7 @@ export default function CycleResultsTable({
                   <span className="font-mono text-sm font-medium text-green-700 dark:text-green-400">
                     {cycle.totalEnergy.toFixed(2)}
                   </span>
-                  <span className="text-xs text-gray-500 dark:text-gray-400 ml-1">
+                  <span className="text-xs text-gray-500 dark:text-gray-400 ms-1">
                     MeV
                   </span>
                 </td>

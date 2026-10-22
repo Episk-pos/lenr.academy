@@ -34,7 +34,7 @@ export default function AboutToolSection({
         onClick={() => setOpen(o => !o)}
         aria-expanded={open}
         aria-controls={contentId}
-        className="w-full flex items-center justify-between gap-3 px-6 py-4 text-left"
+        className="w-full flex items-center justify-between gap-3 px-6 py-4 text-start"
         data-testid={`${testId}-toggle`}
       >
         <span className="flex items-center gap-3 font-semibold text-gray-900 dark:text-white">

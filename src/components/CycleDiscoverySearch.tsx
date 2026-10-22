@@ -189,8 +189,8 @@ export default function CycleDiscoverySearch({
               }`}
             >
               <div
-                className={`absolute top-1 left-1 w-4 h-4 rounded-full bg-white transition-transform ${
-                  params.includeFission ? 'translate-x-4' : ''
+                className={`absolute top-1 start-1 w-4 h-4 rounded-full bg-white transition-transform ${
+                  params.includeFission ? 'translate-x-4 rtl:-translate-x-4' : ''
                 }`}
               />
             </div>
@@ -201,7 +201,7 @@ export default function CycleDiscoverySearch({
         </label>
 
         {params.includeFission && (
-          <div className="mt-3 ml-12 max-w-xs">
+          <div className="mt-3 ms-12 max-w-xs">
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               {t('cycleDiscovery.minFissionEnergy')}
             </label>
@@ -237,7 +237,7 @@ export default function CycleDiscoverySearch({
         </button>
 
         {showAdvanced && (
-          <div className="mt-4 space-y-4 pl-1">
+          <div className="mt-4 space-y-4 ps-1">
             <label className="flex items-center gap-2">
               <input
                 type="checkbox"
@@ -319,7 +319,7 @@ export default function CycleDiscoverySearch({
           </div>
           <div className="relative w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
             <div
-              className="absolute top-0 left-0 h-full bg-blue-600 dark:bg-blue-500 transition-all duration-300"
+              className="absolute top-0 start-0 h-full bg-blue-600 dark:bg-blue-500 transition-all duration-300"
               style={{
                 width: `${Math.min(100, Math.max(0, progress.percentage))}%`,
               }}
@@ -342,7 +342,7 @@ export default function CycleDiscoverySearch({
             className="btn bg-red-600 text-white hover:bg-red-700 px-8 py-3"
             onClick={onCancel}
           >
-            <X className="w-5 h-5 mr-2 inline" />
+            <X className="w-5 h-5 me-2 inline" />
             {t('common.cancel')}
           </button>
         ) : (
@@ -350,7 +350,7 @@ export default function CycleDiscoverySearch({
             className="btn btn-primary px-8 py-3"
             onClick={onSearch}
           >
-            <Search className="w-5 h-5 mr-2 inline" />
+            <Search className="w-5 h-5 me-2 inline" />
             {t('cycleDiscovery.discoverCycles')}
           </button>
         )}

@@ -215,7 +215,9 @@ export default function DecayChainDiagram({ root, maxHeight = 600, showWrapper =
     )
   }
 
+  // dir="ltr": the tree layout and SVG coordinates are language-independent
   const content = (
+    <div dir="ltr">
     <TransformWrapper
         initialScale={1}
         minScale={0.1}
@@ -256,7 +258,7 @@ export default function DecayChainDiagram({ root, maxHeight = 600, showWrapper =
               >
                 <Maximize2 className="w-4 h-4 text-gray-700 dark:text-gray-300" />
               </button>
-              <span className="text-xs text-gray-600 dark:text-gray-400 ml-2">
+              <span className="text-xs text-gray-600 dark:text-gray-400 ms-2">
                 {t('decayChain.controlsHint')}
               </span>
             </div>
@@ -455,6 +457,7 @@ export default function DecayChainDiagram({ root, maxHeight = 600, showWrapper =
           </>
         )}
       </TransformWrapper>
+    </div>
   )
 
   return showWrapper ? (

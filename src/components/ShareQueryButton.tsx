@@ -40,12 +40,12 @@ export default function ShareQueryButton() {
     >
       {copied ? (
         <>
-          <Check className="w-4 h-4 mr-2 inline" />
+          <Check className="w-4 h-4 me-2 inline" />
           {t('reactions.linkCopied')}
         </>
       ) : (
         <>
-          <Share2 className="w-4 h-4 mr-2 inline" />
+          <Share2 className="w-4 h-4 me-2 inline" />
           {t('reactions.copyShareLink')}
         </>
       )}

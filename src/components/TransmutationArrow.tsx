@@ -43,7 +43,7 @@ export default function TransmutationArrow({
   const toLabel = toA !== undefined ? `${toSymbol}-${toA}` : toSymbol
 
   return (
-    <div className="flex items-center gap-2" data-testid="transmutation-arrow">
+    <div className="flex items-center gap-2" dir="ltr" data-testid="transmutation-arrow">
       <span className={fromClass} data-testid="transmutation-from">
         <span className="font-bold">{fromLabel}</span>
       </span>

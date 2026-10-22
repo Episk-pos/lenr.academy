@@ -536,10 +536,10 @@ export default function MullerResonance() {
                     <table className="w-full text-sm" data-testid="muller-pairs-table">
                       <thead>
                         <tr className="border-b border-gray-200 dark:border-gray-700">
-                          <th className="text-left py-2 px-3 text-gray-700 dark:text-gray-300">
+                          <th className="text-start py-2 px-3 text-gray-700 dark:text-gray-300">
                             {isGlobal ? t('mullerResonance.pair') : t('mullerResonance.partner')}
                           </th>
-                          <th className="text-right py-2 px-3 text-gray-700 dark:text-gray-300">{t('mullerResonance.mismatchHeader')}</th>
+                          <th className="text-end py-2 px-3 text-gray-700 dark:text-gray-300">{t('mullerResonance.mismatchHeader')}</th>
                           <th className="text-center py-2 px-3 text-gray-700 dark:text-gray-300">{t('mullerResonance.quality')}</th>
                           <th className="text-center py-2 px-3 text-gray-700 dark:text-gray-300" title={t('mullerResonance.deltaNTitle')}>
                             {t('mullerResonance.deltaN')}
@@ -549,12 +549,12 @@ export default function MullerResonance() {
                               <th className="text-center py-2 px-3 text-gray-700 dark:text-gray-300" title={t('mullerResonance.band.lowestNTitle')}>
                                 {t('mullerResonance.octaves')}
                               </th>
-                              <th className="text-right py-2 px-3 text-gray-700 dark:text-gray-300">{t('mullerResonance.wavelength')}</th>
+                              <th className="text-end py-2 px-3 text-gray-700 dark:text-gray-300">{t('mullerResonance.wavelength')}</th>
                             </>
                           )}
-                          <th className="text-right py-2 px-3 text-gray-700 dark:text-gray-300">{t('mullerResonance.twoToTwo')}</th>
-                          <th className="text-right py-2 px-3 text-gray-700 dark:text-gray-300">{t('mullerResonance.fusion')}</th>
-                          <th className="text-right py-2 px-3 text-gray-700 dark:text-gray-300">{t('mullerResonance.avgMeV')}</th>
+                          <th className="text-end py-2 px-3 text-gray-700 dark:text-gray-300">{t('mullerResonance.twoToTwo')}</th>
+                          <th className="text-end py-2 px-3 text-gray-700 dark:text-gray-300">{t('mullerResonance.fusion')}</th>
+                          <th className="text-end py-2 px-3 text-gray-700 dark:text-gray-300">{t('mullerResonance.avgMeV')}</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -604,7 +604,7 @@ export default function MullerResonance() {
                                         e.stopPropagation()
                                         toggle()
                                       }}
-                                      className="inline-flex items-center gap-1 rounded text-left font-medium text-gray-900 dark:text-white hover:text-primary-600 dark:hover:text-primary-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1 dark:focus-visible:ring-offset-gray-800"
+                                      className="inline-flex items-center gap-1 rounded text-start font-medium text-gray-900 dark:text-white hover:text-primary-600 dark:hover:text-primary-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1 dark:focus-visible:ring-offset-gray-800"
                                     >
                                       <ChevronDown
                                         aria-hidden="true"
@@ -614,7 +614,7 @@ export default function MullerResonance() {
                                     </button>
                                   ) : pairCellContent}
                                 </td>
-                                <td className="py-2 px-3 text-right font-mono text-gray-700 dark:text-gray-300">
+                                <td className="py-2 px-3 text-end font-mono text-gray-700 dark:text-gray-300">
                                   {pair.mismatch < 0.01 ? pair.mismatch.toFixed(4) : pair.mismatch.toFixed(2)}%
                                 </td>
                                 <td className="py-2 px-3 text-center">
@@ -624,7 +624,7 @@ export default function MullerResonance() {
                                 </td>
                                 <td className="py-2 px-3 text-center font-mono text-gray-700 dark:text-gray-300" data-testid="muller-delta-n">
                                   <span title={t('mullerResonance.deltaNTitle')}>{pair.deltaN}</span>
-                                  <span className="ml-1 text-xs text-gray-400 dark:text-gray-500">({eSym}e → {pSym}p)</span>
+                                  <span className="ms-1 text-xs text-gray-400 dark:text-gray-500">({eSym}e → {pSym}p)</span>
                                 </td>
                                 {bandActive && (
                                   <>
@@ -639,12 +639,12 @@ export default function MullerResonance() {
                                         <span className="text-gray-400 dark:text-gray-600">-</span>
                                       )}
                                     </td>
-                                    <td className="py-2 px-3 text-right font-mono text-gray-700 dark:text-gray-300 whitespace-nowrap">
+                                    <td className="py-2 px-3 text-end font-mono text-gray-700 dark:text-gray-300 whitespace-nowrap">
                                       {first ? (
                                         <>
                                           {formatWavelength(first.wavelength)}
                                           {rungs.length > 1 && (
-                                            <span className="ml-1 text-xs text-primary-600 dark:text-primary-400">
+                                            <span className="ms-1 text-xs text-primary-600 dark:text-primary-400">
                                               {t('mullerResonance.band.moreCount', { count: rungs.length - 1 })}
                                             </span>
                                           )}
@@ -655,17 +655,17 @@ export default function MullerResonance() {
                                     </td>
                                   </>
                                 )}
-                                <td className="py-2 px-3 text-right text-gray-700 dark:text-gray-300">
+                                <td className="py-2 px-3 text-end text-gray-700 dark:text-gray-300">
                                   {overlap && overlap.twoToTwoCount > 0 ? overlap.twoToTwoCount.toLocaleString() : (
                                     <span className="text-gray-400 dark:text-gray-600" title={noReactionsTitle}>-</span>
                                   )}
                                 </td>
-                                <td className="py-2 px-3 text-right text-gray-700 dark:text-gray-300">
+                                <td className="py-2 px-3 text-end text-gray-700 dark:text-gray-300">
                                   {overlap && overlap.fusionCount > 0 ? overlap.fusionCount : (
                                     <span className="text-gray-400 dark:text-gray-600" title={noReactionsTitle}>-</span>
                                   )}
                                 </td>
-                                <td className="py-2 px-3 text-right font-mono text-gray-700 dark:text-gray-300">
+                                <td className="py-2 px-3 text-end font-mono text-gray-700 dark:text-gray-300">
                                   {overlap && overlap.avgMeV > 0 ? overlap.avgMeV.toFixed(1) : (
                                     <span className="text-gray-400 dark:text-gray-600" title={noReactionsTitle}>-</span>
                                   )}
@@ -689,7 +689,7 @@ export default function MullerResonance() {
                                             <th className="text-center py-1 px-3 text-gray-500 dark:text-gray-400">
                                               {t('mullerResonance.band.protonN', { element: pSym })}
                                             </th>
-                                            <th className="text-right py-1 px-3 text-gray-500 dark:text-gray-400">{t('mullerResonance.wavelength')}</th>
+                                            <th className="text-end py-1 px-3 text-gray-500 dark:text-gray-400">{t('mullerResonance.wavelength')}</th>
                                           </tr>
                                         </thead>
                                         <tbody>
@@ -697,7 +697,7 @@ export default function MullerResonance() {
                                             <tr key={r.N} className="border-b border-gray-100 dark:border-gray-800/50">
                                               <td className="py-1 px-3 text-center font-mono text-gray-700 dark:text-gray-300">{r.N}</td>
                                               <td className="py-1 px-3 text-center font-mono text-gray-700 dark:text-gray-300">{r.protonN}</td>
-                                              <td className="py-1 px-3 text-right font-mono text-gray-900 dark:text-white">{formatWavelength(r.wavelength)}</td>
+                                              <td className="py-1 px-3 text-end font-mono text-gray-900 dark:text-white">{formatWavelength(r.wavelength)}</td>
                                             </tr>
                                           ))}
                                         </tbody>
@@ -797,7 +797,7 @@ export default function MullerResonance() {
                       <thead>
                         <tr className="border-b border-gray-200 dark:border-gray-700">
                           <th className="text-center py-1 px-2 text-gray-500 dark:text-gray-400">N</th>
-                          <th className="text-right py-1 px-2 text-gray-500 dark:text-gray-400">{t('mullerResonance.wavelength')}</th>
+                          <th className="text-end py-1 px-2 text-gray-500 dark:text-gray-400">{t('mullerResonance.wavelength')}</th>
                           <th className="text-center py-1 px-2 text-gray-500 dark:text-gray-400">{t('mullerResonance.nae.inNAERange')}</th>
                         </tr>
                       </thead>
@@ -812,7 +812,7 @@ export default function MullerResonance() {
                               }`}
                             >
                               <td className="py-1 px-2 text-center text-gray-600 dark:text-gray-400">{res.N}</td>
-                              <td className="py-1 px-2 text-right font-mono text-gray-700 dark:text-gray-300">
+                              <td className="py-1 px-2 text-end font-mono text-gray-700 dark:text-gray-300">
                                 {formatWavelength(res.L)}
                               </td>
                               <td className="py-1 px-2 text-center">
@@ -871,13 +871,13 @@ export default function MullerResonance() {
           <div className="card p-4 mb-6">
             <div className="flex flex-col sm:flex-row sm:items-center gap-3">
               <div className="relative flex-1 max-w-xs">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                <Search className="absolute start-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                 <input
                   type="text"
                   value={naeSearch}
                   onChange={(e) => setNaeSearch(e.target.value)}
                   placeholder={t('mullerResonance.nae.searchPlaceholder')}
-                  className="w-full pl-9 pr-3 py-1.5 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                  className="w-full ps-9 pe-3 py-1.5 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                 />
               </div>
               <label className="flex items-center gap-2 cursor-pointer">
@@ -904,7 +904,7 @@ export default function MullerResonance() {
                 <thead>
                   <tr className="border-b border-gray-200 dark:border-gray-700">
                     <th
-                      className="text-left py-2 px-3 text-gray-700 dark:text-gray-300 cursor-pointer hover:text-primary-600 dark:hover:text-primary-400 select-none"
+                      className="text-start py-2 px-3 text-gray-700 dark:text-gray-300 cursor-pointer hover:text-primary-600 dark:hover:text-primary-400 select-none"
                       aria-sort={ariaSort('element')}
                       onClick={() => handleNAESort('element')}
                     >
@@ -918,7 +918,7 @@ export default function MullerResonance() {
                       {t('mullerResonance.nae.octave')}{sortIndicator('naeScore')}
                     </th>
                     <th
-                      className="text-right py-2 px-3 text-gray-700 dark:text-gray-300 cursor-pointer hover:text-primary-600 dark:hover:text-primary-400 select-none"
+                      className="text-end py-2 px-3 text-gray-700 dark:text-gray-300 cursor-pointer hover:text-primary-600 dark:hover:text-primary-400 select-none"
                       aria-sort={ariaSort('wavelength')}
                       onClick={() => handleNAESort('wavelength')}
                     >
@@ -935,14 +935,14 @@ export default function MullerResonance() {
                       {t('mullerResonance.nae.deuteriumOverlap')}{sortIndicator('deuterium')}
                     </th>
                     <th
-                      className="text-right py-2 px-3 text-gray-700 dark:text-gray-300 cursor-pointer hover:text-primary-600 dark:hover:text-primary-400 select-none"
+                      className="text-end py-2 px-3 text-gray-700 dark:text-gray-300 cursor-pointer hover:text-primary-600 dark:hover:text-primary-400 select-none"
                       aria-sort={ariaSort('phonon')}
                       onClick={() => handleNAESort('phonon')}
                     >
                       {t('mullerResonance.nae.phononFrequency')}{sortIndicator('phonon')}
                     </th>
                     <th
-                      className="text-right py-2 px-3 text-gray-700 dark:text-gray-300 cursor-pointer hover:text-primary-600 dark:hover:text-primary-400 select-none"
+                      className="text-end py-2 px-3 text-gray-700 dark:text-gray-300 cursor-pointer hover:text-primary-600 dark:hover:text-primary-400 select-none"
                       aria-sort={ariaSort('reactions')}
                       onClick={() => handleNAESort('reactions')}
                     >
@@ -1005,7 +1005,7 @@ export default function MullerResonance() {
                         <td className="py-2 px-3 text-center font-mono text-gray-700 dark:text-gray-300">
                           N={pred.naeOctave ?? '-'}
                         </td>
-                        <td className="py-2 px-3 text-right font-mono text-gray-700 dark:text-gray-300">
+                        <td className="py-2 px-3 text-end font-mono text-gray-700 dark:text-gray-300">
                           {pred.naeWavelength !== null ? `${(pred.naeWavelength * 1e9).toFixed(2)} nm` : '-'}
                         </td>
                         <td className="py-2 px-3 text-center">
@@ -1024,12 +1024,12 @@ export default function MullerResonance() {
                             </>
                           ) : '-'}
                         </td>
-                        <td className="py-2 px-3 text-right font-mono text-gray-700 dark:text-gray-300">
+                        <td className="py-2 px-3 text-end font-mono text-gray-700 dark:text-gray-300">
                           {pred.phononFrequency !== null ? formatFrequency(pred.phononFrequency) : (
                             <span className="text-gray-400 dark:text-gray-600">-</span>
                           )}
                         </td>
-                        <td className="py-2 px-3 text-right text-gray-700 dark:text-gray-300">
+                        <td className="py-2 px-3 text-end text-gray-700 dark:text-gray-300">
                           {rxCount > 0 ? rxCount.toLocaleString() : (
                             <span className="text-gray-400 dark:text-gray-600">-</span>
                           )}

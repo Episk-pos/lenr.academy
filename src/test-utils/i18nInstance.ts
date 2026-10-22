@@ -20,10 +20,11 @@ import uk from '../i18n/locales/uk.json';
 import pl from '../i18n/locales/pl.json';
 import ko from '../i18n/locales/ko.json';
 import hi from '../i18n/locales/hi.json';
+import ar from '../i18n/locales/ar.json';
 
 type Tree = Record<string, unknown>;
 
-const locales: Record<string, Tree> = { en, de, es, fr, ja, ru, zh, it, pt, uk, pl, ko, hi };
+const locales: Record<string, Tree> = { en, de, es, fr, ja, ru, zh, it, pt, uk, pl, ko, hi, ar };
 
 /**
  * Return a copy of `target` where every leaf that exists in English but is missing

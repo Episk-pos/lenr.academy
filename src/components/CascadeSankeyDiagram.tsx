@@ -495,7 +495,7 @@ export default function CascadeSankeyDiagram({ pathways, fuelNuclides = [], useW
               </div>
               <div className="text-sm text-blue-800 dark:text-blue-200 space-y-2">
                 <p>👋 {t('cascades.sankey.flowDescription')}</p>
-                <ul className="list-disc list-inside space-y-1 ml-2">
+                <ul className="list-disc list-inside space-y-1 ms-2">
                   <li><strong className="text-green-700 dark:text-green-300">{t('cascades.sankey.greenBoxes')}</strong> = {t('cascades.sankey.fuelNuclides')}</li>
                   <li><strong className="text-blue-700 dark:text-blue-300">{t('cascades.sankey.blueBoxes')}</strong> = {t('cascades.sankey.intermediateProducts')}</li>
                   <li><strong className="text-orange-700 dark:text-orange-300">{t('cascades.sankey.orangeBoxes')}</strong> = {t('cascades.sankey.finalProducts')}</li>
@@ -635,8 +635,8 @@ export default function CascadeSankeyDiagram({ pathways, fuelNuclides = [], useW
             <span className="text-gray-500"> ({t(useWeighted ? 'cascades.sankey.topNByWeightedFrequency' : 'cascades.sankey.topNByFrequency', { n: safeTopN })})</span>
           )}
           {useWeighted && (
-            <span className="ml-2 text-purple-600 dark:text-purple-400 font-medium">
-              <Scale className="w-3 h-3 inline mr-0.5" />
+            <span className="ms-2 text-purple-600 dark:text-purple-400 font-medium">
+              <Scale className="w-3 h-3 inline me-0.5" />
               {t('cascades.sankey.weightedView')}
             </span>
           )}
@@ -677,7 +677,7 @@ export default function CascadeSankeyDiagram({ pathways, fuelNuclides = [], useW
 
       {/* Sankey Diagram */}
       {!renderError && sankeyData.nodes.length > 0 && (
-        <div className="overflow-hidden rounded-lg">
+        <div className="overflow-hidden rounded-lg" dir="ltr">
           <SankeyErrorBoundary
             onError={(error) => {
               console.error('Sankey Error Boundary caught:', error);

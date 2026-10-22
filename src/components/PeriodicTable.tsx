@@ -430,7 +430,8 @@ export default function PeriodicTable({
   }
 
   return (
-    <div className={`${hideCardContainer ? 'overflow-x-auto' : 'card p-3 sm:p-6 overflow-x-auto'}`}>
+    // dir="ltr": the periodic table's grid geometry is language-independent
+    <div dir="ltr" className={`${hideCardContainer ? 'overflow-x-auto' : 'card p-3 sm:p-6 overflow-x-auto'}`}>
       {/* Centre with auto margins rather than justify-center: when the table is wider than its
           container, justify-center overflows to the left where it can't be scrolled to, so tiles
           end up under the sidebar or neighbouring cards. Auto margins collapse to 0 instead. */}

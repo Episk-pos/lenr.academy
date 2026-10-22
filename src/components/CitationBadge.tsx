@@ -44,7 +44,7 @@ export default function CitationBadge({
   })
 
   const tooltipContent = (
-    <div className="text-left max-w-xs sm:max-w-sm">
+    <div className="text-start max-w-xs sm:max-w-sm">
       <div className="font-semibold mb-1.5 text-amber-200">
         {t('citations.tooltipTitle', {
           defaultValue: 'Documented in literature',

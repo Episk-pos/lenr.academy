@@ -84,7 +84,7 @@ export default function QueryHistoryPanel({
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 top-full mt-1 z-50 w-80 max-h-96 overflow-y-auto rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-lg">
+        <div className="absolute end-0 top-full mt-1 z-50 w-80 max-h-96 overflow-y-auto rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-lg">
           {/* Header */}
           <div className="sticky top-0 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-3 py-2 flex items-center justify-between">
             <span className="text-sm font-medium text-gray-900 dark:text-white">
@@ -197,7 +197,7 @@ function QueryHistoryItem({
       <div className="flex items-start justify-between gap-2">
         <button
           onClick={() => onLoad(query.filter, query.queryType)}
-          className="flex-1 text-left min-w-0"
+          className="flex-1 text-start min-w-0"
         >
           <div className="text-sm font-medium text-gray-900 dark:text-white truncate flex items-center gap-1.5">
             <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-medium inline-block flex-shrink-0 ${TYPE_BADGE_STYLES[query.queryType]}`}>

@@ -160,7 +160,7 @@ export default function RussellChartDiagram({ onElementClick }: RussellChartDiag
   const radZoneWidth = 4 * (CELL_W + COL_GAP)
 
   return (
-    <div className="russell-chart-container relative">
+    <div className="russell-chart-container relative" dir="ltr">
       <div className="overflow-x-auto">
         <svg
           width={svgWidth}

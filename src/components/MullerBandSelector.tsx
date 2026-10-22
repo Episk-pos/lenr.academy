@@ -107,7 +107,7 @@ export default function MullerBandSelector({ value, onChange }: MullerBandSelect
   return (
     <div data-testid="muller-band-selector">
       <div className="flex flex-wrap items-center gap-2" role="group" aria-label={t('mullerResonance.band.label')}>
-        <span className="text-sm font-medium text-gray-700 dark:text-gray-300 mr-1">
+        <span className="text-sm font-medium text-gray-700 dark:text-gray-300 me-1">
           {t('mullerResonance.band.label')}:
         </span>
         {CHIPS.map(chip => (

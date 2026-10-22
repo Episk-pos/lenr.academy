@@ -251,7 +251,7 @@ export default function SortableTable<T extends Record<string, any>>({
               {renderExpandedContent && colIdx === 0 && (
                 <ChevronRight
                   className={`w-4 h-4 text-gray-500 dark:text-gray-400 transition-transform flex-shrink-0 ${
-                    isExpanded ? 'rotate-90' : ''
+                    isExpanded ? 'rotate-90' : 'rtl:rotate-180'
                   }`}
                 />
               )}

@@ -70,7 +70,7 @@ function CollapsibleSection({
     <div className="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
       <button
         onClick={onToggle}
-        className="w-full flex items-center justify-between px-4 py-3 text-left hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors"
+        className="w-full flex items-center justify-between px-4 py-3 text-start hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors"
         aria-expanded={isOpen}
       >
         <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">

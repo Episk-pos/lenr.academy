@@ -18,6 +18,7 @@ vi.mock('../i18n/config', () => ({
     pl: { name: 'Polish', nativeName: 'Polski', flag: '🇵🇱' },
     ko: { name: 'Korean', nativeName: '한국어', flag: '🇰🇷' },
     hi: { name: 'Hindi', nativeName: 'हिन्दी', flag: '🇮🇳' },
+    ar: { name: 'Arabic', nativeName: 'العربية', flag: '🇸🇦' },
   },
   DEFAULT_LANGUAGE: 'en',
 }))
@@ -68,6 +69,7 @@ describe('LanguageContext', () => {
       expect(langs).toContain('pl')
       expect(langs).toContain('ko')
       expect(langs).toContain('hi')
+      expect(langs).toContain('ar')
     })
 
     it('detects first visit when no language selected key exists', () => {

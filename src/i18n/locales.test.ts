@@ -13,6 +13,7 @@ import uk from './locales/uk.json';
 import pl from './locales/pl.json';
 import ko from './locales/ko.json';
 import hi from './locales/hi.json';
+import ar from './locales/ar.json';
 
 /**
  * Recursively get all keys from a nested object as dot-notation paths
@@ -57,7 +58,7 @@ const PLURAL_SUFFIX = /^(.*)_(zero|one|two|few|many|other)$/;
 // CLDR plural categories a locale may need that English does not have
 const EXTRA_PLURAL_SUFFIX = /^(.*)_(zero|two|few|many)$/;
 
-const locales = { de, es, fr, ja, ru, zh, it: it_, pt, uk, pl, ko, hi };
+const locales = { de, es, fr, ja, ru, zh, it: it_, pt, uk, pl, ko, hi, ar };
 const enKeys = getAllKeys(en as Record<string, unknown>);
 const enFlat = flatten(en as Record<string, unknown>);
 

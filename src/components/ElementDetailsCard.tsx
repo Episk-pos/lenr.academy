@@ -270,7 +270,7 @@ export default function ElementDetailsCard({ element, atomicRadii, onClose, comp
                       href={href}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="ml-1.5 inline-flex items-center gap-0.5 text-primary-600 dark:text-primary-400 hover:underline text-xs whitespace-nowrap"
+                      className="ms-1.5 inline-flex items-center gap-0.5 text-primary-600 dark:text-primary-400 hover:underline text-xs whitespace-nowrap"
                     >
                       {t('elementData.viewSource')}
                       <ExternalLink className="w-3 h-3" />
