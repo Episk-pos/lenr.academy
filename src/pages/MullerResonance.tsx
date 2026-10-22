@@ -8,6 +8,8 @@ import { useMullerWorker } from '../hooks/useMullerWorker'
 import DatabaseLoadingCard from '../components/DatabaseLoadingCard'
 import MullerBandSelector from '../components/MullerBandSelector'
 import PeriodicTable from '../components/PeriodicTable'
+import MullerHeatmapLegend from '../components/MullerHeatmapLegend'
+import { filterChipClass } from '../utils/chipStyles'
 import TabNavigation from '../components/TabNavigation'
 import type { Tab } from '../components/TabNavigation'
 import type { Element, HeatmapMetrics } from '../types'
@@ -446,12 +448,11 @@ export default function MullerResonance() {
               {THRESHOLD_OPTIONS.map(t_val => (
                 <button
                   key={t_val}
+                  type="button"
+                  data-testid={`threshold-chip-${t_val}`}
+                  aria-pressed={threshold === t_val}
                   onClick={() => setThreshold(t_val)}
-                  className={`px-3 py-1 rounded text-sm font-medium transition-colors ${
-                    threshold === t_val
-                      ? 'bg-primary-600 text-white'
-                      : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
-                  }`}
+                  className={filterChipClass(threshold === t_val)}
                 >
                   &lt; {t_val}%
                 </button>
@@ -477,6 +478,7 @@ export default function MullerResonance() {
               hideLegend
               hideCardContainer
             />
+            {heatmapData.size > 0 && <MullerHeatmapLegend variant="resonance" />}
             {selectedElement && (
               <div className="mt-3 flex flex-wrap gap-4 text-sm">
                 <span className="text-gray-600 dark:text-gray-400">
@@ -507,6 +509,7 @@ export default function MullerResonance() {
             const overlapByKey = new Map(displayOverlaps.map(o => [pairKey(o.Z1, o.Z2), o]))
             const bandRangeLabel = `${formatWavelength(band.min)} – ${formatWavelength(band.max)}`
             const colCount = bandActive ? 10 : 8
+            const noReactionsTitle = t('mullerResonance.noReactionsTitle')
 
             const qualityColors: Record<string, string> = {
               exact: 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-200',
@@ -654,17 +657,17 @@ export default function MullerResonance() {
                                 )}
                                 <td className="py-2 px-3 text-right text-gray-700 dark:text-gray-300">
                                   {overlap && overlap.twoToTwoCount > 0 ? overlap.twoToTwoCount.toLocaleString() : (
-                                    <span className="text-gray-400 dark:text-gray-600">-</span>
+                                    <span className="text-gray-400 dark:text-gray-600" title={noReactionsTitle}>-</span>
                                   )}
                                 </td>
                                 <td className="py-2 px-3 text-right text-gray-700 dark:text-gray-300">
                                   {overlap && overlap.fusionCount > 0 ? overlap.fusionCount : (
-                                    <span className="text-gray-400 dark:text-gray-600">-</span>
+                                    <span className="text-gray-400 dark:text-gray-600" title={noReactionsTitle}>-</span>
                                   )}
                                 </td>
                                 <td className="py-2 px-3 text-right font-mono text-gray-700 dark:text-gray-300">
                                   {overlap && overlap.avgMeV > 0 ? overlap.avgMeV.toFixed(1) : (
-                                    <span className="text-gray-400 dark:text-gray-600">-</span>
+                                    <span className="text-gray-400 dark:text-gray-600" title={noReactionsTitle}>-</span>
                                   )}
                                 </td>
                               </tr>
@@ -708,6 +711,9 @@ export default function MullerResonance() {
                         })}
                       </tbody>
                     </table>
+                    <p className="mt-2 text-xs text-gray-500 dark:text-gray-400" data-testid="muller-no-reactions-footnote">
+                      {t('mullerResonance.noReactionsFootnote')}
+                    </p>
                   </div>
                 )}
               </div>
@@ -756,6 +762,7 @@ export default function MullerResonance() {
               hideLegend
               hideCardContainer
             />
+            <MullerHeatmapLegend variant="nae" />
             <div className="mt-3 flex flex-wrap gap-4 text-sm">
               <span className="text-gray-600 dark:text-gray-400">
                 {t('mullerResonance.nae.elementsInRange')}: <strong className="text-emerald-600 dark:text-emerald-400">{naeStats.inRange}</strong>

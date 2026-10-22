@@ -129,7 +129,12 @@
     "tryAgain": "Tente novamente",
     "contactSupport": "Se o problema persistir, entre em contato com o suporte",
     "reloadPage": "Recarregar Página",
-    "goHome": "Ir para o Início"
+    "goHome": "Ir para o Início",
+    "workerError": "Ocorreu um erro no worker",
+    "simulationCancelled": "Simulação cancelada",
+    "simulationCancelledByUser": "Simulação cancelada pelo usuário",
+    "discoveryCancelled": "Busca cancelada",
+    "discoveryCancelledByUser": "Busca de ciclos cancelada pelo usuário"
   },
   "home": {
     "title": "LENR Academy",
@@ -622,7 +627,7 @@
     "simulationTitle": "Simulações de Cascata",
     "simulationDescription": "Modele reações em cadeia em cascata a partir de nuclídeos combustíveis iniciais",
     "databaseLimitsTitle": "Limites definidos pelo banco de dados",
-    "databaseLimitsDescription": "O banco de dados contém 324 nuclídeos de 92 elementos, com 3.921 reações de fusão e 1,2 milhão de reações dois-para-dois. Os intervalos dos controles deslizantes refletem essas restrições. As configurações padrão (máx. de 5000 nuclídeos, 25 ciclos) fornecem resultados abrangentes. O tempo de processamento varia de 30 segundos a 15 minutos, dependendo dos parâmetros.",
+    "databaseLimitsDescription": "O banco de dados contém 324 nuclídeos de 92 elementos, com 3.921 reações de fusão e 1,2 milhão de reações dois-para-dois. Os intervalos dos controles deslizantes refletem essas restrições. Por padrão, o limite de nuclídeos é igual ao número de nuclídeos do banco de dados (sem limite) e a cascata executa até 25 ciclos.",
     "fuelNuclides": "Nuclídeos Combustíveis",
     "weighted": "Ponderado",
     "weightedMode": "Modo Ponderado",
@@ -635,15 +640,29 @@
     "minFusionEnergy": "Energia Mínima de Fusão (MeV)",
     "minTwoToTwoEnergy": "Energia Mínima 2-2 (MeV)",
     "maxNuclidesToPair": "Máx. de Nuclídeos a Parear",
-    "databaseNuclidesCount": "O banco de dados tem 324 nuclídeos no total",
+    "databaseNuclidesCount": "O banco de dados tem {{total}} nuclídeos no total",
     "maxCascadeLoops": "Máx. de Ciclos da Cascata",
     "recommendedLoops": "Recomendado: 10-50",
     "feedbackOptions": "Opções de Realimentação",
     "feedbackBosons": "Realimentar Bósons",
     "feedbackFermions": "Realimentar Férmions",
     "allowDimers": "Permitir Formação de Dímeros (H, N, O, F, Cl, Br, I)",
-    "excludeMelted": "Excluir elementos abaixo do ponto de fusão",
-    "excludeBoiledOff": "Excluir elementos que evaporaram",
+    "excludeMelted": "Excluir elementos ainda sólidos a {{temperature}} K (ponto de fusão acima da temperatura do reator)",
+    "excludeBoiledOff": "Excluir elementos evaporados a {{temperature}} K (ponto de ebulição abaixo da temperatura do reator)",
+    "databaseNotLoaded": "Banco de dados ainda não carregado. Aguarde...",
+    "selectAtLeastOneFuel": "Selecione pelo menos um nuclídeo combustível",
+    "temperatureHint": "Temperatura do reator em kelvin, usada pelos filtros de ponto de fusão e de ebulição abaixo.",
+    "minFusionEnergyHint": "Somente reações de fusão que liberam pelo menos esta energia são incluídas.",
+    "minTwoToTwoEnergyHint": "Somente reações dois-para-dois que liberam pelo menos esta energia são incluídas.",
+    "maxNuclidesHint": "A cascata para quando há mais nuclídeos distintos ativos do que este valor. O máximo é igual ao número de nuclídeos do banco de dados, ou seja, sem limite.",
+    "maxCascadeLoopsHint": "Em cada ciclo, os nuclídeos ativos reagem entre si e os produtos qualificados são realimentados.",
+    "feedbackOptionsHint": "Escolha quais produtos de reação são realimentados como reagentes no próximo ciclo.",
+    "feedbackBosonsHint": "Realimentar produtos com número de massa par (bósons nucleares).",
+    "feedbackFermionsHint": "Realimentar produtos com número de massa ímpar (férmions nucleares).",
+    "allowDimersHint": "Quando desativado, nuclídeos desses elementos não podem reagir com um nuclídeo idêntico (ex.: N-14 + N-14).",
+    "excludeMeltedHint": "Os produtos desses elementos não são realimentados no próximo ciclo.",
+    "excludeBoiledOffHint": "Supõe-se que os produtos desses elementos deixam o reator e não são realimentados.",
+    "runTimeWarning": "As simulações levam de 30 segundos a 15 minutos, dependendo dos parâmetros.",
     "running": "Executando...",
     "runSimulation": "Executar Simulação de Cascata",
     "resetParameters": "Redefinir Parâmetros",
@@ -1288,6 +1307,18 @@
     "about2": "Exemplo: os elétrons do cobre (Z=29) e os prótons do ferro (Z=26) ressoam com diferença de oitavas ΔN = 11, com desvio de 0,0008%, porque 29 × 1836,15 ≈ 26 × 2¹¹. A diferença é determinada pela razão de massas elétron/próton (log₂(1836,15) ≈ 10,84). A mesma coincidência aparece em todos os degraus da escada: em N = 20 / 31 o comprimento de onda comum é 73,78 µm, em N = 31 / 42 é 151,10 mm, e cada oitava seguinte o dobra. Apenas 8 dos 4.186 pares de elementos possíveis coincidem com < 0,01%.",
     "about3": "As contagens de reações mostradas vêm das tabelas de reações nucleares exotérmicas do Dr. Alexander Parkhomov. Essas contagens indicam quantas reações energeticamente possíveis existem entre cada par, e não taxas ou probabilidades de reação. A análise estatística não mostra correlação significativa entre a ressonância de Muller e a densidade de reações de Parkhomov — o banco de dados é governado pelas energias de ligação nuclear, e não pela ressonância de comprimento de onda. Esta ferramenta é exploratória.",
     "disclaimer": "Nota: a equação de Muller produz uma matemática elegante, mas carece de verificação experimental independente do mecanismo de ressonância. Esta ferramenta é apresentada para exploração e geração de hipóteses, e não como um modelo preditivo validado.",
+    "legend": {
+      "title": "Escala de cores",
+      "weaker": "Ressonância mais fraca",
+      "stronger": "Ressonância mais forte (menor discrepância)",
+      "uncoloured": "Elementos sem cor não têm ressonância na visualização atual.",
+      "naeWeaker": "Na faixa NAE (mais fraca)",
+      "naeBest": "Melhor correspondência NAE",
+      "naeOutside": "Ressonância fora da faixa NAE",
+      "naeUncoloured": "Elementos sem cor não têm comprimento de onda de ressonância eletrônica calculado."
+    },
+    "noReactionsTitle": "Nenhuma reação para este par nas tabelas de Parkhomov",
+    "noReactionsFootnote": "Um traço (-) significa que as tabelas de Parkhomov não contêm reações desse tipo para este par. Muitos pares ressonantes envolvem elementos ausentes dessas tabelas, por isso os traços são comuns.",
     "tabs": {
       "resonancePairs": "Pares de Ressonância",
       "naePredictions": "Previsões de NAE"
@@ -1349,6 +1380,7 @@
     "filterAllSources": "Todas as fontes",
     "filterByLab": "Filtrar por laboratório de origem",
     "noResults": "Nenhuma transmutação corresponde aos filtros atuais.",
+    "pathwayResultsHint": "Os caminhos candidatos das tabelas de Parkhomov aparecem abaixo deste cartão.",
     "curatedFrom": "Selecionado a partir da <1>revisão da literatura LENR do HumanScholars</1>. {{count}} entradas.",
     "stepCount_one": "1 etapa",
     "stepCount_other": "{{count}} etapas",
@@ -1385,26 +1417,26 @@
       "iwamura-cs-pr": {
         "source": "Iwamura et al., Mitsubishi Heavy Industries (2002)",
         "setup": "Filme fino multicamada de Pd/CaO com permeação de gás deutério",
-        "hypothesizedMechanism": "Captura alfa sequencial: 133Cs + 2 × 4He → 141Pr",
+        "hypothesizedMechanism": "Captura alfa sequencial: $133Cs + 2 × 4He → 141Pr$",
         "sourceTag": "JJAP 2002",
         "replicatedBy": "Toyota Central R&D (2013), Universidade de Osaka (2003)"
       },
       "iwamura-sr-mo": {
         "source": "Iwamura et al., Mitsubishi Heavy Industries (2002)",
         "setup": "Filme fino multicamada de Pd/CaO com permeação de deutério",
-        "hypothesizedMechanism": "Captura alfa sequencial: 88Sr + 2 × 4He → 96Mo",
+        "hypothesizedMechanism": "Captura alfa sequencial: $88Sr + 2 × 4He → 96Mo$",
         "sourceTag": "JJAP 2002",
         "replicatedBy": "Toyota Central R&D (2013)"
       },
       "iwamura-ba-sm": {
         "source": "Iwamura et al., Mitsubishi Heavy Industries (2006)",
         "setup": "Filme fino multicamada de Pd/CaO com permeação de deutério",
-        "hypothesizedMechanism": "Captura alfa em múltiplas etapas: 138Ba + 3 × 4He → 150Sm"
+        "hypothesizedMechanism": "Captura alfa em múltiplas etapas: $138Ba + 3 × 4He → 150Sm$"
       },
       "iwamura-w-pt": {
         "source": "Iwamura et al., Mitsubishi Heavy Industries (2007)",
         "setup": "Filme fino multicamada de Pd/CaO com permeação de deutério",
-        "hypothesizedMechanism": "Captura alfa sequencial: 184W + 2 × 4He → 192Pt"
+        "hypothesizedMechanism": "Captura alfa sequencial: $184W + 2 × 4He → 192Pt$"
       },
       "vysotskii-cs-ba": {
         "source": "Vysotskii & Kornilova (Universidade Estatal de Kiev, 2003)",
@@ -1415,7 +1447,7 @@
       "vysotskii-mn-fe": {
         "source": "Vysotskii & Kornilova (Universidade Estatal de Kiev, 1996-2008)",
         "setup": "Culturas microbianas deficientes em ferro suplementadas com Mn-55 e D2O; espectroscopia Mössbauer do produto Fe-57",
-        "hypothesizedMechanism": "Reação líquida proposta como 55Mn + d → 57Fe via fusão de baixa energia mediada biologicamente"
+        "hypothesizedMechanism": "Reação líquida proposta como $55Mn + d → 57Fe$ via fusão de baixa energia mediada biologicamente"
       },
       "miley-multi-element": {
         "source": "Miley & Patterson (UIUC / CETI, 1996)",
@@ -1432,12 +1464,12 @@
       "savvatimova-pd-rh": {
         "source": "Savvatimova et al. (Luch, Rússia, anos 1990-2000)",
         "setup": "Bombardeamento por descarga luminescente de cátodos de Pd em plasma de deutério",
-        "hypothesizedMechanism": "Perda líquida de (p + 2n) relatada; mecanismo não resolvido"
+        "hypothesizedMechanism": "Perda líquida de ($p + 2n$) relatada; mecanismo não resolvido"
       },
       "spawar-tritium": {
         "source": "Mosier-Boss et al., SPAWAR Systems Center (2007-2009)",
         "setup": "Codeposição de Pd/D sobre substrato de Au ou Ag; detectores CR-39 registram trilhas de partículas carregadas; acúmulo de trítio medido",
-        "hypothesizedMechanism": "D + D → T + p relatado; não é estritamente uma transmutação elementar, mas um processo nuclear anômalo",
+        "hypothesizedMechanism": "$D + D → T + p$ relatado; não é estritamente uma transmutação elementar, mas um processo nuclear anômalo",
         "notes": "Incluído como alegação de referência de processo nuclear anômalo. A transmutação líquida é D → T (semelhante a captura de nêutron)."
       }
     }
@@ -1680,7 +1712,8 @@
       "description": "Este erro geralmente ocorre quando o arquivo do banco de dados em cache está corrompido. Você pode corrigir isso limpando o cache e baixando o banco de dados novamente.",
       "clearing": "Limpando Cache...",
       "clearAndReload": "Limpar Cache e Recarregar",
-      "redownloadNote": "Observação: isso baixará novamente o arquivo de banco de dados de {{size}}MB"
+      "redownloadNote": "Observação: isso baixará novamente o arquivo de banco de dados de {{size}}MB",
+      "confirmClearCache": "Isso limpará o banco de dados em cache e recarregará a página. O banco de dados ({{size}}MB) será baixado novamente. Continuar?"
     },
     "searchSimilar": "Pesquisar Problemas Semelhantes",
     "searchFirstTitle": "Pesquise primeiro problemas semelhantes para evitar relatos duplicados",

@@ -50,7 +50,7 @@ test.describe('Cascade State Persistence', () => {
 
     // Adjust sliders
     const maxNuclidesSlider = page.locator('input[type="range"]').first();
-    await maxNuclidesSlider.fill('1000');
+    await maxNuclidesSlider.fill('200'); // max = DB nuclide count (324)
     await page.waitForTimeout(300);
 
     const maxLoopsSlider = page.locator('input[type="range"]').nth(1);

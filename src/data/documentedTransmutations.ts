@@ -69,7 +69,7 @@ export const DOCUMENTED_TRANSMUTATIONS: DocumentedTransmutation[] = [
     deltaA: 8,
     source: 'Iwamura et al., Mitsubishi Heavy Industries (2002)',
     setup: 'Pd/CaO multilayer thin film with deuterium gas permeation',
-    hypothesizedMechanism: 'Sequential alpha-capture: 133Cs + 2 × 4He → 141Pr',
+    hypothesizedMechanism: 'Sequential alpha-capture: $133Cs + 2 × 4He → 141Pr$',
     replicatedBy: ['Toyota Central R&D (2013)', 'Osaka University (2003)'],
     category: 'thin-film',
     doiOrUrl: 'https://doi.org/10.1143/JJAP.41.4642',
@@ -85,7 +85,7 @@ export const DOCUMENTED_TRANSMUTATIONS: DocumentedTransmutation[] = [
     deltaA: 8,
     source: 'Iwamura et al., Mitsubishi Heavy Industries (2002)',
     setup: 'Pd/CaO multilayer thin film with deuterium permeation',
-    hypothesizedMechanism: 'Sequential alpha-capture: 88Sr + 2 × 4He → 96Mo',
+    hypothesizedMechanism: 'Sequential alpha-capture: $88Sr + 2 × 4He → 96Mo$',
     replicatedBy: ['Toyota Central R&D (2013)'],
     category: 'thin-film',
     doiOrUrl: 'https://doi.org/10.1143/JJAP.41.4642',
@@ -101,7 +101,7 @@ export const DOCUMENTED_TRANSMUTATIONS: DocumentedTransmutation[] = [
     deltaA: 12,
     source: 'Iwamura et al., Mitsubishi Heavy Industries (2006)',
     setup: 'Pd/CaO multilayer thin film with deuterium permeation',
-    hypothesizedMechanism: 'Multi-step alpha-capture: 138Ba + 3 × 4He → 150Sm',
+    hypothesizedMechanism: 'Multi-step alpha-capture: $138Ba + 3 × 4He → 150Sm$',
     category: 'thin-film',
     doiOrUrl:
       'https://jcmns.org/article/72216-recent-advances-in-deuterium-permeation-transmutation-experiments',
@@ -116,7 +116,7 @@ export const DOCUMENTED_TRANSMUTATIONS: DocumentedTransmutation[] = [
     deltaA: 8,
     source: 'Iwamura et al., Mitsubishi Heavy Industries (2007)',
     setup: 'Pd/CaO multilayer thin film with deuterium permeation',
-    hypothesizedMechanism: 'Sequential alpha-capture: 184W + 2 × 4He → 192Pt',
+    hypothesizedMechanism: 'Sequential alpha-capture: $184W + 2 × 4He → 192Pt$',
     category: 'thin-film',
     doiOrUrl:
       'https://jcmns.org/article/72216-recent-advances-in-deuterium-permeation-transmutation-experiments',
@@ -151,7 +151,7 @@ export const DOCUMENTED_TRANSMUTATIONS: DocumentedTransmutation[] = [
     setup:
       'Iron-deficient microbial cultures supplemented with Mn-55 and D2O; Mössbauer spectroscopy of Fe-57 product',
     hypothesizedMechanism:
-      'Net reaction proposed as 55Mn + d → 57Fe via biologically-mediated low-energy fusion',
+      'Net reaction proposed as $55Mn + d → 57Fe$ via biologically-mediated low-energy fusion',
     category: 'biological',
     doiOrUrl: 'https://doi.org/10.1016/j.anucene.2013.02.008',
   },
@@ -197,7 +197,7 @@ export const DOCUMENTED_TRANSMUTATIONS: DocumentedTransmutation[] = [
     deltaA: -2,
     source: 'Savvatimova et al. (Luch, Russia, 1990s-2000s)',
     setup: 'Glow-discharge bombardment of Pd cathodes in deuterium plasma',
-    hypothesizedMechanism: 'Net loss of (p + 2n) reported; mechanism unresolved',
+    hypothesizedMechanism: 'Net loss of ($p + 2n$) reported; mechanism unresolved',
     category: 'glow-discharge',
     doiOrUrl:
       'https://jcmns.org/article/72170-transmutation-of-elements-in-low-energy-glow-discharge-and-the-associated-processes',
@@ -214,7 +214,7 @@ export const DOCUMENTED_TRANSMUTATIONS: DocumentedTransmutation[] = [
     setup:
       'Pd/D co-deposition on Au or Ag substrate; CR-39 detectors record charged-particle tracks; tritium accumulation measured',
     hypothesizedMechanism:
-      'D + D → T + p reported; not strictly elemental transmutation but an anomalous nuclear process',
+      '$D + D → T + p$ reported; not strictly elemental transmutation but an anomalous nuclear process',
     category: 'co-deposition',
     doiOrUrl: 'https://doi.org/10.1007/s00114-008-0449-x',
     notes:

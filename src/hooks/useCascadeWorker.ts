@@ -1,4 +1,6 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
+import { WorkerCancelledError } from './workerCancellation';
 import type { CascadeParameters, CascadeResults } from '../types';
 import type {
   CascadeWorkerRequest,
@@ -36,6 +38,10 @@ export function useCascadeWorker(): UseCascadeWorkerReturn {
   const workerRef = useRef<Worker | null>(null);
   const resolveRef = useRef<((results: CascadeResults) => void) | null>(null);
   const rejectRef = useRef<((error: Error) => void) | null>(null);
+  // Keep the latest t() in a ref so the worker (created once) uses the current language
+  const { t } = useTranslation();
+  const tRef = useRef(t);
+  tRef.current = t;
 
   // Initialize worker
   useEffect(() => {
@@ -83,7 +89,7 @@ export function useCascadeWorker(): UseCascadeWorkerReturn {
     worker.onerror = (event) => {
       setIsRunning(false);
       setProgress(null);
-      const errorMsg = event.message || 'Worker error occurred';
+      const errorMsg = event.message || tRef.current('errors.workerError');
       setError(errorMsg);
 
       if (rejectRef.current) {
@@ -146,10 +152,10 @@ export function useCascadeWorker(): UseCascadeWorkerReturn {
       workerRef.current.postMessage({ type: 'cancel' });
       setIsRunning(false);
       setProgress(null);
-      setError('Simulation cancelled');
+      setError(tRef.current('errors.simulationCancelled'));
 
       if (rejectRef.current) {
-        rejectRef.current(new Error('Simulation cancelled by user'));
+        rejectRef.current(new WorkerCancelledError(tRef.current('errors.simulationCancelledByUser')));
         resolveRef.current = null;
         rejectRef.current = null;
       }

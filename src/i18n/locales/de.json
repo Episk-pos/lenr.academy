@@ -129,7 +129,12 @@
     "tryAgain": "Bitte versuchen Sie es erneut",
     "contactSupport": "Wenn das Problem weiterhin besteht, kontaktieren Sie bitte den Support",
     "reloadPage": "Seite neu laden",
-    "goHome": "Zur Startseite"
+    "goHome": "Zur Startseite",
+    "workerError": "Worker-Fehler aufgetreten",
+    "simulationCancelled": "Simulation abgebrochen",
+    "simulationCancelledByUser": "Simulation vom Benutzer abgebrochen",
+    "discoveryCancelled": "Suche abgebrochen",
+    "discoveryCancelledByUser": "Zyklensuche vom Benutzer abgebrochen"
   },
   "home": {
     "title": "LENR Academy",
@@ -621,7 +626,7 @@
     "simulationTitle": "Kaskadensimulationen",
     "simulationDescription": "Modellieren Sie kaskadierende Kettenreaktionen aus Ausgangskraftstoff-Nukliden",
     "databaseLimitsTitle": "Datenbankgesteuerte Grenzen",
-    "databaseLimitsDescription": "Die Datenbank enthält 324 Nuklide über 92 Elemente, mit 3.921 Fusionsreaktionen und 1,2M Zwei-zu-Zwei-Reaktionen. Schieberglerbereiche spiegeln diese Einschränkungen wider. Standardeinstellungen (5000 max. Nuklide, 25 Schleifen) liefern umfassende Ergebnisse. Verarbeitungszeit reicht von 30 Sekunden bis 15 Minuten je nach Parametern.",
+    "databaseLimitsDescription": "Die Datenbank enthält 324 Nuklide aus 92 Elementen mit 3.921 Fusionsreaktionen und 1,2 Mio. Zwei-zu-Zwei-Reaktionen. Die Bereiche der Schieberegler spiegeln diese Einschränkungen wider. Standardmäßig entspricht das Nuklidlimit der Anzahl der Nuklide in der Datenbank (keine Begrenzung), und die Kaskade läuft bis zu 25 Schleifen.",
     "fuelNuclides": "Kraftstoff-Nuklide",
     "weighted": "Gewichtet",
     "weightedMode": "Gewichteter Modus",
@@ -634,15 +639,29 @@
     "minFusionEnergy": "Minimale Fusionsenergie (MeV)",
     "minTwoToTwoEnergy": "Minimale 2-2-Energie (MeV)",
     "maxNuclidesToPair": "Max. Nuklide zum Paaren",
-    "databaseNuclidesCount": "Datenbank hat 324 Nuklide insgesamt",
+    "databaseNuclidesCount": "Datenbank hat insgesamt {{total}} Nuklide",
     "maxCascadeLoops": "Max. Kaskadenschleifen",
     "recommendedLoops": "Empfohlen: 10-50",
     "feedbackOptions": "Rückkopplungsoptionen",
     "feedbackBosons": "Rückkopplung Bosonen",
     "feedbackFermions": "Rückkopplung Fermionen",
     "allowDimers": "Dimerbildung erlauben (H, N, O, F, Cl, Br, I)",
-    "excludeMelted": "Elemente unter Schmelzpunkt ausschließen",
-    "excludeBoiledOff": "Verdampfte Elemente ausschließen",
+    "excludeMelted": "Elemente ausschließen, die bei {{temperature}} K noch fest sind (Schmelzpunkt über der Reaktortemperatur)",
+    "excludeBoiledOff": "Elemente ausschließen, die bei {{temperature}} K verdampft sind (Siedepunkt unter der Reaktortemperatur)",
+    "databaseNotLoaded": "Datenbank noch nicht geladen. Bitte warten...",
+    "selectAtLeastOneFuel": "Bitte wählen Sie mindestens ein Brennstoffnuklid aus",
+    "temperatureHint": "Reaktortemperatur in Kelvin; wird von den Schmelz- und Siedepunktfiltern unten verwendet.",
+    "minFusionEnergyHint": "Nur Fusionsreaktionen, die mindestens diese Energie freisetzen, werden berücksichtigt.",
+    "minTwoToTwoEnergyHint": "Nur Zwei-zu-Zwei-Reaktionen, die mindestens diese Energie freisetzen, werden berücksichtigt.",
+    "maxNuclidesHint": "Die Kaskade stoppt, sobald mehr verschiedene Nuklide als dieser Wert aktiv sind. Das Maximum entspricht der Anzahl der Nuklide in der Datenbank, also keiner Begrenzung.",
+    "maxCascadeLoopsHint": "In jeder Schleife reagieren die aktiven Nuklide miteinander, und geeignete Produkte werden zurückgeführt.",
+    "feedbackOptionsHint": "Legen Sie fest, welche Reaktionsprodukte in der nächsten Schleife als Reaktanten zurückgeführt werden.",
+    "feedbackBosonsHint": "Produkte mit gerader Massenzahl (Kernbosonen) zurückführen.",
+    "feedbackFermionsHint": "Produkte mit ungerader Massenzahl (Kernfermionen) zurückführen.",
+    "allowDimersHint": "Wenn deaktiviert, können Nuklide dieser Elemente nicht mit einem identischen Nuklid reagieren (z. B. N-14 + N-14).",
+    "excludeMeltedHint": "Produkte dieser Elemente werden nicht in die nächste Schleife zurückgeführt.",
+    "excludeBoiledOffHint": "Produkte dieser Elemente verlassen vermutlich den Reaktor und werden nicht zurückgeführt.",
+    "runTimeWarning": "Simulationen dauern je nach Parametern zwischen 30 Sekunden und 15 Minuten.",
     "running": "Läuft...",
     "runSimulation": "Kaskadensimulation starten",
     "resetParameters": "Parameter zurücksetzen",
@@ -1285,6 +1304,18 @@
     "about2": "Beispiel: Elektronen von Kupfer (Z=29) und Protonen von Eisen (Z=26) sind mit dem Oktavabstand ΔN = 11 auf 0,0008% genau in Resonanz, denn 29 × 1836,15 ≈ 26 × 2¹¹. Der Abstand wird durch das Elektron/Proton-Massenverhältnis bestimmt (log₂(1836,15) ≈ 10,84). Dieselbe Übereinstimmung erscheint auf jeder Sprosse der Leiter: Bei N = 20 / 31 beträgt die gemeinsame Wellenlänge 73,78 µm, bei N = 31 / 42 sind es 151,10 mm, und jede weitere Oktave verdoppelt sie. Nur 8 von 4.186 möglichen Elementpaaren stimmen auf < 0,01% überein.",
     "about3": "Die angezeigten Reaktionszahlen stammen aus Dr. Alexander Parkhomovs Tabellen exothermer Kernreaktionen. Die statistische Analyse zeigt keine signifikante Korrelation zwischen Muller-Resonanz und Parkhomov-Reaktionsdichte. Dieses Tool ist explorativ.",
     "disclaimer": "Hinweis: Mullers Gleichung erzeugt elegante Mathematik, aber es fehlt eine unabhängige experimentelle Verifizierung des Resonanzmechanismus. Dieses Tool dient der Erkundung und Hypothesengenerierung.",
+    "legend": {
+      "title": "Farbskala",
+      "weaker": "Schwächere Resonanz",
+      "stronger": "Stärkere Resonanz (geringere Abweichung)",
+      "uncoloured": "Nicht eingefärbte Elemente haben in der aktuellen Ansicht keine Resonanz.",
+      "naeWeaker": "Im NAE-Bereich (schwächer)",
+      "naeBest": "Beste NAE-Übereinstimmung",
+      "naeOutside": "Resonanz außerhalb des NAE-Bereichs",
+      "naeUncoloured": "Für nicht eingefärbte Elemente wurde keine Elektronenresonanz-Wellenlänge berechnet."
+    },
+    "noReactionsTitle": "Keine Reaktionen für dieses Paar in den Parkhomov-Tabellen",
+    "noReactionsFootnote": "Ein Strich (-) bedeutet, dass die Parkhomov-Tabellen keine Reaktionen dieses Typs für dieses Paar enthalten. Viele resonante Paare enthalten Elemente, die in diesen Tabellen fehlen, daher sind Striche häufig.",
     "tabs": {
       "resonancePairs": "Resonanzpaare",
       "naePredictions": "NAE-Vorhersagen"
@@ -1346,6 +1377,7 @@
     "filterAllSources": "Alle Quellen",
     "filterByLab": "Nach Quelllabor filtern",
     "noResults": "Keine Transmutationen entsprechen den aktuellen Filtern.",
+    "pathwayResultsHint": "Mögliche Pfade aus den Parkhomov-Tabellen erscheinen unterhalb dieser Karte.",
     "curatedFrom": "Zusammengestellt aus der <1>HumanScholars LENR-Literaturübersicht</1>. {{count}} Einträge.",
     "stepCount_one": "1 Schritt",
     "stepCount_other": "{{count}} Schritte",
@@ -1382,26 +1414,26 @@
       "iwamura-cs-pr": {
         "source": "Iwamura et al., Mitsubishi Heavy Industries (2002)",
         "setup": "Pd/CaO multilayer thin film with deuterium gas permeation",
-        "hypothesizedMechanism": "Sequential alpha-capture: 133Cs + 2 × 4He → 141Pr",
+        "hypothesizedMechanism": "Sequential alpha-capture: $133Cs + 2 × 4He → 141Pr$",
         "sourceTag": "JJAP 2002",
         "replicatedBy": "Toyota Central R&D (2013), Osaka University (2003)"
       },
       "iwamura-sr-mo": {
         "source": "Iwamura et al., Mitsubishi Heavy Industries (2002)",
         "setup": "Pd/CaO multilayer thin film with deuterium permeation",
-        "hypothesizedMechanism": "Sequential alpha-capture: 88Sr + 2 × 4He → 96Mo",
+        "hypothesizedMechanism": "Sequential alpha-capture: $88Sr + 2 × 4He → 96Mo$",
         "sourceTag": "JJAP 2002",
         "replicatedBy": "Toyota Central R&D (2013)"
       },
       "iwamura-ba-sm": {
         "source": "Iwamura et al., Mitsubishi Heavy Industries (2006)",
         "setup": "Pd/CaO multilayer thin film with deuterium permeation",
-        "hypothesizedMechanism": "Multi-step alpha-capture: 138Ba + 3 × 4He → 150Sm"
+        "hypothesizedMechanism": "Multi-step alpha-capture: $138Ba + 3 × 4He → 150Sm$"
       },
       "iwamura-w-pt": {
         "source": "Iwamura et al., Mitsubishi Heavy Industries (2007)",
         "setup": "Pd/CaO multilayer thin film with deuterium permeation",
-        "hypothesizedMechanism": "Sequential alpha-capture: 184W + 2 × 4He → 192Pt"
+        "hypothesizedMechanism": "Sequential alpha-capture: $184W + 2 × 4He → 192Pt$"
       },
       "vysotskii-cs-ba": {
         "source": "Vysotskii & Kornilova (Kiev State University, 2003)",
@@ -1412,7 +1444,7 @@
       "vysotskii-mn-fe": {
         "source": "Vysotskii & Kornilova (Kiev State University, 1996-2008)",
         "setup": "Iron-deficient microbial cultures supplemented with Mn-55 and D2O; Mössbauer spectroscopy of Fe-57 product",
-        "hypothesizedMechanism": "Net reaction proposed as 55Mn + d → 57Fe via biologically-mediated low-energy fusion"
+        "hypothesizedMechanism": "Net reaction proposed as $55Mn + d → 57Fe$ via biologically-mediated low-energy fusion"
       },
       "miley-multi-element": {
         "source": "Miley & Patterson (UIUC / CETI, 1996)",
@@ -1429,12 +1461,12 @@
       "savvatimova-pd-rh": {
         "source": "Savvatimova et al. (Luch, Russia, 1990s-2000s)",
         "setup": "Glow-discharge bombardment of Pd cathodes in deuterium plasma",
-        "hypothesizedMechanism": "Net loss of (p + 2n) reported; mechanism unresolved"
+        "hypothesizedMechanism": "Net loss of ($p + 2n$) reported; mechanism unresolved"
       },
       "spawar-tritium": {
         "source": "Mosier-Boss et al., SPAWAR Systems Center (2007-2009)",
         "setup": "Pd/D co-deposition on Au or Ag substrate; CR-39 detectors record charged-particle tracks; tritium accumulation measured",
-        "hypothesizedMechanism": "D + D → T + p reported; not strictly elemental transmutation but an anomalous nuclear process",
+        "hypothesizedMechanism": "$D + D → T + p$ reported; not strictly elemental transmutation but an anomalous nuclear process",
         "notes": "Included as a reference anomalous-nuclear-process claim. Net transmutation is D → T (neutron capture-like)."
       }
     }
@@ -1675,7 +1707,8 @@
       "description": "Dieser Fehler tritt typischerweise auf, wenn die zwischengespeicherte Datenbankdatei beschädigt ist. Sie können ihn beheben, indem Sie den Cache leeren und die Datenbank erneut herunterladen.",
       "clearing": "Cache wird geleert...",
       "clearAndReload": "Cache leeren & neu laden",
-      "redownloadNote": "Hinweis: Dadurch wird die {{size}} MB große Datenbankdatei erneut heruntergeladen"
+      "redownloadNote": "Hinweis: Dadurch wird die {{size}} MB große Datenbankdatei erneut heruntergeladen",
+      "confirmClearCache": "Dadurch wird die zwischengespeicherte Datenbank gelöscht und die Seite neu geladen. Die Datenbank ({{size}} MB) wird erneut heruntergeladen. Fortfahren?"
     },
     "searchSimilar": "Ähnliche Issues suchen",
     "searchFirstTitle": "Bitte suchen Sie zuerst nach ähnlichen Issues, um doppelte Meldungen zu vermeiden",

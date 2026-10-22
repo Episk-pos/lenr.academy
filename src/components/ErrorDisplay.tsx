@@ -134,7 +134,7 @@ export default function ErrorDisplay({
   };
 
   const handleClearCache = async () => {
-    if (!confirm('This will clear the cached database and reload the page. The database (161MB) will be re-downloaded. Continue?')) {
+    if (!confirm(t('errorDisplay.corruption.confirmClearCache', { size: 161 }))) {
       return;
     }
 

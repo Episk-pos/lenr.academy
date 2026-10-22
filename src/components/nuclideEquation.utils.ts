@@ -140,3 +140,33 @@ export function toLatex(input: string): string {
     .replace(/\s+/g, ' ')
     .trim()
 }
+
+export type MechanismSegment = { type: 'text' | 'math'; value: string }
+
+/**
+ * Split a mechanism description into prose and math segments using explicit
+ * `$...$` delimiters, e.g.
+ *   "Net reaction proposed as $55Mn + d → 57Fe$ via low-energy fusion"
+ * → text "Net reaction proposed as ", math "55Mn + d → 57Fe", text " via low-energy fusion".
+ *
+ * Math can appear anywhere in the string (start, middle, end, or several
+ * times), so no punctuation heuristic is needed. A string without `$` is a
+ * single text segment; an unmatched trailing `$` is kept as literal text.
+ */
+export function parseMechanism(raw: string): MechanismSegment[] {
+  const segments: MechanismSegment[] = []
+  let rest = raw
+  while (rest.length > 0) {
+    const open = rest.indexOf('$')
+    const close = open === -1 ? -1 : rest.indexOf('$', open + 1)
+    if (open === -1 || close === -1) {
+      segments.push({ type: 'text', value: rest })
+      break
+    }
+    if (open > 0) segments.push({ type: 'text', value: rest.slice(0, open) })
+    const math = rest.slice(open + 1, close).trim()
+    if (math.length > 0) segments.push({ type: 'math', value: math })
+    rest = rest.slice(close + 1)
+  }
+  return segments
+}

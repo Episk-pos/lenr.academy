@@ -7,6 +7,7 @@ import { useQueryState } from '../contexts/QueryStateContext'
 import { useCycleDiscoveryWorker } from '../hooks/useCycleDiscoveryWorker'
 import CycleDiscoverySearch from '../components/CycleDiscoverySearch'
 import CycleResultsTable from '../components/CycleResultsTable'
+import { isWorkerCancelled } from '../hooks/workerCancellation'
 import CycleVisualization from '../components/CycleVisualization'
 import type {
   CycleDiscoveryParameters,
@@ -84,10 +85,10 @@ export default function CycleDiscovery() {
       const discoveryResults = await runDiscovery(params, dbBuffer as ArrayBuffer)
       setResults(discoveryResults)
     } catch (err) {
-      const message =
-        err instanceof Error ? err.message : t('common.unknownError')
-      if (message !== 'Cycle discovery cancelled by user') {
-        setError(message)
+      // User cancellation is flagged on the error (its message is translated);
+      // the hook already reports "Discovery cancelled" via its own error state.
+      if (!isWorkerCancelled(err)) {
+        setError(err instanceof Error ? err.message : t('common.unknownError'))
       }
       console.error('Cycle discovery error:', err)
     }

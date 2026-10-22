@@ -129,7 +129,12 @@
     "tryAgain": "다시 시도하세요",
     "contactSupport": "문제가 계속되면 지원팀에 문의하세요",
     "reloadPage": "페이지 새로고침",
-    "goHome": "홈으로 이동"
+    "goHome": "홈으로 이동",
+    "workerError": "워커 오류가 발생했습니다",
+    "simulationCancelled": "시뮬레이션이 취소되었습니다",
+    "simulationCancelledByUser": "사용자가 시뮬레이션을 취소했습니다",
+    "discoveryCancelled": "탐색이 취소되었습니다",
+    "discoveryCancelledByUser": "사용자가 사이클 탐색을 취소했습니다"
   },
   "home": {
     "title": "LENR Academy",
@@ -621,7 +626,7 @@
     "simulationTitle": "캐스케이드 시뮬레이션",
     "simulationDescription": "초기 연료 핵종으로부터 연속되는 연쇄 반응을 모델링합니다",
     "databaseLimitsTitle": "데이터베이스 기반 제한",
-    "databaseLimitsDescription": "데이터베이스에는 92개 원소에 걸친 324개 핵종과 3,921개의 핵융합 반응, 120만 개의 2-대-2 반응이 있습니다. 슬라이더 범위는 이러한 제약을 반영합니다. 기본 설정(최대 핵종 5000개, 루프 25회)으로 포괄적인 결과를 얻을 수 있습니다. 처리 시간은 매개변수에 따라 30초에서 15분까지 걸립니다.",
+    "databaseLimitsDescription": "데이터베이스에는 92개 원소에 걸친 324개 핵종과 3,921개의 핵융합 반응, 120만 개의 2-대-2 반응이 있습니다. 슬라이더 범위는 이러한 제약을 반영합니다. 기본적으로 핵종 한도는 데이터베이스의 핵종 수와 같고(제한 없음), 캐스케이드는 최대 25회 루프를 실행합니다.",
     "fuelNuclides": "연료 핵종",
     "weighted": "가중",
     "weightedMode": "가중 모드",
@@ -634,15 +639,29 @@
     "minFusionEnergy": "최소 핵융합 에너지 (MeV)",
     "minTwoToTwoEnergy": "최소 2-2 에너지 (MeV)",
     "maxNuclidesToPair": "짝지을 최대 핵종 수",
-    "databaseNuclidesCount": "데이터베이스에는 총 324개의 핵종이 있습니다",
+    "databaseNuclidesCount": "데이터베이스에는 총 {{total}}개의 핵종이 있습니다",
     "maxCascadeLoops": "최대 캐스케이드 루프 수",
     "recommendedLoops": "권장: 10-50",
     "feedbackOptions": "피드백 옵션",
     "feedbackBosons": "보손 피드백",
     "feedbackFermions": "페르미온 피드백",
     "allowDimers": "이합체 형성 허용 (H, N, O, F, Cl, Br, I)",
-    "excludeMelted": "녹는점 미만의 원소 제외",
-    "excludeBoiledOff": "끓어 날아간 원소 제외",
+    "excludeMelted": "{{temperature}} K에서 아직 고체인 원소 제외 (녹는점이 반응기 온도보다 높음)",
+    "excludeBoiledOff": "{{temperature}} K에서 끓어 날아간 원소 제외 (끓는점이 반응기 온도보다 낮음)",
+    "databaseNotLoaded": "데이터베이스가 아직 로드되지 않았습니다. 잠시 기다려 주세요...",
+    "selectAtLeastOneFuel": "연료 핵종을 하나 이상 선택하세요",
+    "temperatureHint": "반응기 온도(켈빈)로, 아래의 녹는점 및 끓는점 필터에 사용됩니다.",
+    "minFusionEnergyHint": "최소 이 에너지 이상을 방출하는 핵융합 반응만 포함됩니다.",
+    "minTwoToTwoEnergyHint": "최소 이 에너지 이상을 방출하는 2-대-2 반응만 포함됩니다.",
+    "maxNuclidesHint": "활성화된 서로 다른 핵종 수가 이 값을 넘으면 캐스케이드가 멈춥니다. 최댓값은 데이터베이스의 핵종 수와 같으며, 제한이 없음을 뜻합니다.",
+    "maxCascadeLoopsHint": "각 루프에서 활성 핵종끼리 반응하고, 조건을 만족하는 생성물이 다시 투입됩니다.",
+    "feedbackOptionsHint": "다음 루프에서 반응물로 다시 투입할 반응 생성물을 선택하세요.",
+    "feedbackBosonsHint": "질량수가 짝수인 생성물(핵 보손)을 다시 투입합니다.",
+    "feedbackFermionsHint": "질량수가 홀수인 생성물(핵 페르미온)을 다시 투입합니다.",
+    "allowDimersHint": "끄면 이 원소들의 핵종은 동일한 핵종과 반응할 수 없습니다(예: N-14 + N-14).",
+    "excludeMeltedHint": "이 원소들의 생성물은 다음 루프에 다시 투입되지 않습니다.",
+    "excludeBoiledOffHint": "이 원소들의 생성물은 반응기를 빠져나간 것으로 간주되어 다시 투입되지 않습니다.",
+    "runTimeWarning": "시뮬레이션은 매개변수에 따라 30초에서 15분이 걸립니다.",
     "running": "실행 중...",
     "runSimulation": "캐스케이드 시뮬레이션 실행",
     "resetParameters": "매개변수 초기화",
@@ -1285,6 +1304,18 @@
     "about2": "예: 구리(Z=29)의 전자와 철(Z=26)의 양성자는 29 × 1836.15 ≈ 26 × 2¹¹이므로 옥타브 간격 ΔN = 11로 0.0008% 이내에서 공명합니다. 이 간격은 전자/양성자 질량비(log₂(1836.15) ≈ 10.84)에 의해 정해집니다. 같은 일치가 사다리의 모든 단에서 나타납니다. N = 20 / 31에서 공통 파장은 73.78 µm, N = 31 / 42에서는 151.10 mm이며, 옥타브가 하나 올라갈 때마다 두 배가 됩니다. 가능한 4,186개 원소 쌍 중 < 0.01% 이내로 일치하는 쌍은 8개뿐입니다.",
     "about3": "표시된 반응 수는 Dr. Alexander Parkhomov의 발열 핵반응 표에서 가져온 것입니다. 이 수치는 각 쌍 사이에 에너지적으로 가능한 반응이 몇 개 있는지를 나타내며, 반응 속도나 확률을 의미하지 않습니다. 통계 분석 결과 Muller 공명과 Parkhomov 반응 밀도 사이에는 유의미한 상관관계가 없습니다 — 이 데이터베이스는 파장 공명이 아니라 핵 결합 에너지에 의해 결정됩니다. 이 도구는 탐색용입니다.",
     "disclaimer": "참고: Muller의 방정식은 수학적으로 우아하지만, 공명 메커니즘에 대한 독립적인 실험 검증이 부족합니다. 이 도구는 검증된 예측 모델이 아니라 탐색과 가설 생성을 위해 제공됩니다.",
+    "legend": {
+      "title": "색상 척도",
+      "weaker": "약한 공명",
+      "stronger": "강한 공명 (불일치 낮음)",
+      "uncoloured": "색이 없는 원소는 현재 보기에서 공명이 없습니다.",
+      "naeWeaker": "NAE 범위 내 (약함)",
+      "naeBest": "최적 NAE 일치",
+      "naeOutside": "NAE 범위 밖의 공명",
+      "naeUncoloured": "색이 없는 원소는 계산된 전자 공명 파장이 없습니다."
+    },
+    "noReactionsTitle": "Parkhomov 표에 이 쌍의 반응이 없습니다",
+    "noReactionsFootnote": "대시(-)는 Parkhomov 표에 이 쌍에 대한 해당 유형의 반응이 없다는 뜻입니다. 많은 공명 쌍에 이 표에 없는 원소가 포함되어 있어 대시가 자주 나타납니다.",
     "tabs": {
       "resonancePairs": "공명 쌍",
       "naePredictions": "NAE 예측"
@@ -1346,6 +1377,7 @@
     "filterAllSources": "모든 출처",
     "filterByLab": "출처 연구실로 필터",
     "noResults": "현재 필터와 일치하는 핵변환이 없습니다.",
+    "pathwayResultsHint": "Parkhomov 표의 후보 경로는 이 카드 아래에 표시됩니다.",
     "curatedFrom": "<1>HumanScholars LENR 문헌 리뷰</1>에서 선별했습니다. 항목 {{count}}개.",
     "stepCount_one": "1단계",
     "stepCount_other": "{{count}}단계",
@@ -1382,26 +1414,26 @@
       "iwamura-cs-pr": {
         "source": "Iwamura et al., Mitsubishi Heavy Industries (2002)",
         "setup": "중수소 기체 투과를 이용한 Pd/CaO 다층 박막",
-        "hypothesizedMechanism": "순차적 알파 포획: 133Cs + 2 × 4He → 141Pr",
+        "hypothesizedMechanism": "순차적 알파 포획: $133Cs + 2 × 4He → 141Pr$",
         "sourceTag": "JJAP 2002",
         "replicatedBy": "Toyota Central R&D (2013), Osaka University (2003)"
       },
       "iwamura-sr-mo": {
         "source": "Iwamura et al., Mitsubishi Heavy Industries (2002)",
         "setup": "중수소 투과를 이용한 Pd/CaO 다층 박막",
-        "hypothesizedMechanism": "순차적 알파 포획: 88Sr + 2 × 4He → 96Mo",
+        "hypothesizedMechanism": "순차적 알파 포획: $88Sr + 2 × 4He → 96Mo$",
         "sourceTag": "JJAP 2002",
         "replicatedBy": "Toyota Central R&D (2013)"
       },
       "iwamura-ba-sm": {
         "source": "Iwamura et al., Mitsubishi Heavy Industries (2006)",
         "setup": "중수소 투과를 이용한 Pd/CaO 다층 박막",
-        "hypothesizedMechanism": "다단계 알파 포획: 138Ba + 3 × 4He → 150Sm"
+        "hypothesizedMechanism": "다단계 알파 포획: $138Ba + 3 × 4He → 150Sm$"
       },
       "iwamura-w-pt": {
         "source": "Iwamura et al., Mitsubishi Heavy Industries (2007)",
         "setup": "중수소 투과를 이용한 Pd/CaO 다층 박막",
-        "hypothesizedMechanism": "순차적 알파 포획: 184W + 2 × 4He → 192Pt"
+        "hypothesizedMechanism": "순차적 알파 포획: $184W + 2 × 4He → 192Pt$"
       },
       "vysotskii-cs-ba": {
         "source": "Vysotskii & Kornilova (Kiev State University, 2003)",
@@ -1412,7 +1444,7 @@
       "vysotskii-mn-fe": {
         "source": "Vysotskii & Kornilova (Kiev State University, 1996-2008)",
         "setup": "Mn-55와 D2O를 보충한 철 결핍 미생물 배양체; 생성물 Fe-57의 뫼스바우어 분광법 분석",
-        "hypothesizedMechanism": "생물학적으로 매개된 저에너지 핵융합을 통한 55Mn + d → 57Fe 순 반응이 제안됨"
+        "hypothesizedMechanism": "생물학적으로 매개된 저에너지 핵융합을 통한 $55Mn + d → 57Fe$ 순 반응이 제안됨"
       },
       "miley-multi-element": {
         "source": "Miley & Patterson (UIUC / CETI, 1996)",
@@ -1429,12 +1461,12 @@
       "savvatimova-pd-rh": {
         "source": "Savvatimova et al. (Luch, 러시아, 1990~2000년대)",
         "setup": "중수소 플라스마에서 Pd 음극에 대한 글로 방전 충격",
-        "hypothesizedMechanism": "(p + 2n)의 순 손실이 보고됨; 메커니즘은 미해결"
+        "hypothesizedMechanism": "($p + 2n$)의 순 손실이 보고됨; 메커니즘은 미해결"
       },
       "spawar-tritium": {
         "source": "Mosier-Boss et al., SPAWAR Systems Center (2007-2009)",
         "setup": "Au 또는 Ag 기판 위의 Pd/D 공동 전착; CR-39 검출기로 하전 입자 궤적 기록; 삼중수소 축적 측정",
-        "hypothesizedMechanism": "D + D → T + p가 보고됨; 엄밀한 의미의 원소 핵변환은 아니지만 이상 핵 과정",
+        "hypothesizedMechanism": "$D + D → T + p$가 보고됨; 엄밀한 의미의 원소 핵변환은 아니지만 이상 핵 과정",
         "notes": "이상 핵 과정 주장의 참고 사례로 포함되었습니다. 순 핵변환은 D → T (중성자 포획 유사)입니다."
       }
     }
@@ -1675,7 +1707,8 @@
       "description": "이 오류는 보통 캐시된 데이터베이스 파일이 손상되었을 때 발생합니다. 캐시를 지우고 데이터베이스를 다시 다운로드하면 해결할 수 있습니다.",
       "clearing": "캐시 지우는 중...",
       "clearAndReload": "캐시 지우고 다시 로드",
-      "redownloadNote": "참고: {{size}}MB 데이터베이스 파일을 다시 다운로드합니다"
+      "redownloadNote": "참고: {{size}}MB 데이터베이스 파일을 다시 다운로드합니다",
+      "confirmClearCache": "캐시된 데이터베이스를 지우고 페이지를 새로 고칩니다. 데이터베이스({{size}}MB)를 다시 다운로드합니다. 계속하시겠습니까?"
     },
     "searchSimilar": "유사한 문제 검색",
     "searchFirstTitle": "중복 보고를 방지하려면 먼저 유사한 문제를 검색하세요",
