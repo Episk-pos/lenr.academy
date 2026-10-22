@@ -37,6 +37,10 @@ const ALLOWLIST: Record<string, { tokens: string[]; reason: string }> = {
     tokens: ['mr-0.5'],
     reason: 'mass-number superscript in dir="ltr" nuclide notation',
   },
+  'utils/transientNotice.ts': {
+    tokens: ['left-1/2'],
+    reason: 'toast centred horizontally with -translate-x-1/2 (symmetric in both directions)',
+  },
   'components/CascadeNetworkDiagram.tsx': {
     tokens: ['right-4'],
     reason: 'zoom controls overlaying the dir="ltr" D3 network chart',

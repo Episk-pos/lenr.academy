@@ -415,6 +415,7 @@
     "linkCopied": "تم نسخ الرابط!",
     "exportJson": "تصدير JSON",
     "exportPdf": "تصدير PDF",
+    "pdfFontFallback": "تعذّر تحميل خط ملف PDF. قد لا تظهر بعض الأحرف بشكل صحيح.",
     "inputs": "المدخلات",
     "output": "الناتج",
     "outputs": "النواتج",
