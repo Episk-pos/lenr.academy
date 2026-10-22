@@ -14,7 +14,7 @@ import {
  * - Language selection modal on first visit
  * - Language switcher in the header
  * - Translation persistence across page reloads
- * - Multiple language support (en, ja, zh, ru, de, fr, es)
+ * - Multiple language support (en, de, es, fr, ja, ru, zh, it, pt, uk, pl, ko, hi)
  * - Cascade simulation tab translations
  */
 
