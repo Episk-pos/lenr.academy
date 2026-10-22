@@ -819,7 +819,7 @@ export function getRadioactiveDecayData(db: Database, Z: number, A: number): Dec
 }
 
 /**
- * Primary (highest-intensity) half-life record for a nuclide from RadioNuclides
+ * Ground-state half-life record for a nuclide from RadioNuclides
  */
 export interface NuclideHalfLife {
   halfLife: number | null;
@@ -828,25 +828,42 @@ export interface NuclideHalfLife {
   decayMode: string | null;
 }
 
+/** Max |RadioNuclides.LHL - NuclidesPlus.LHL| for a row to count as the same (ground) state */
+export const HALF_LIFE_LHL_TOLERANCE = 0.05;
+
+/** NuclidesPlus uses LHL = 50 as a sentinel for "stable" (no measured half-life) */
+export const STABLE_LHL_SENTINEL = 50;
+
 /**
- * Batch-look up the primary half-life of each nuclide in RadioNuclides.
+ * Batch-look up the ground-state half-life of each nuclide in RadioNuclides.
  *
  * Matches on (Z, A) rather than the element symbol: NuclidesPlus stores the
  * hydrogen isotopes as 'H', 'D' and 'T', but RadioNuclides lists tritium under
  * 'H' (Z=1, A=3), so a symbol-keyed lookup silently misses it.
  *
- * Returns a Map keyed by "Z-A" (e.g. "1-3"); nuclides without decay data
- * (stable, e.g. D-2) are absent from the map.
+ * RadioNuclides mixes ground-state and isomer rows under the same Z/A (e.g.
+ * Co-60 5.27 y alongside Co-60m 10.5 min; Ba-137m under stable Ba-137), so
+ * "most intense row" is not reliable:
+ * - When `logHalfLife` (NuclidesPlus.LHL) is given, only the row whose LHL is
+ *   closest to it, within HALF_LIFE_LHL_TOLERANCE, is used. Stable nuclides
+ *   (LHL sentinel 50) and nuclides with no matching row are omitted.
+ * - When `logHalfLife` is null/undefined (nuclide absent from NuclidesPlus),
+ *   the highest-intensity RadioNuclides row is used.
+ *
+ * Returns a Map keyed by "Z-A" (e.g. "1-3").
  */
 export function getNuclideHalfLives(
   db: Database,
-  nuclides: Array<{ Z: number; A: number }>
+  nuclides: Array<{ Z: number; A: number; logHalfLife?: number | null }>
 ): Map<string, NuclideHalfLife> {
   const halfLives = new Map<string, NuclideHalfLife>();
-  if (nuclides.length === 0) return halfLives;
+  const lookups = nuclides.filter(
+    n => typeof n.logHalfLife !== 'number' || n.logHalfLife < STABLE_LHL_SENTINEL
+  );
+  if (lookups.length === 0) return halfLives;
 
-  const conditions = nuclides.map(() => '(Z = ? AND A = ?)').join(' OR ');
-  const params = nuclides.flatMap(n => [n.Z, n.A]);
+  const conditions = lookups.map(() => '(Z = ? AND A = ?)').join(' OR ');
+  const params = lookups.flatMap(n => [n.Z, n.A]);
   const sql = `
     SELECT Z, A, HL, Units, LHL, RDM
     FROM RadioNuclides
@@ -856,15 +873,43 @@ export function getNuclideHalfLives(
   const results = db.exec(sql, params);
   if (results.length === 0) return halfLives;
 
+  // Group rows (already intensity-ordered) by Z-A
+  const rowsByKey = new Map<string, NuclideHalfLife[]>();
   results[0].values.forEach((row) => {
     const key = `${row[0]}-${row[1]}`;
-    if (halfLives.has(key)) return; // keep the highest-intensity row
-    halfLives.set(key, {
+    const rows = rowsByKey.get(key) ?? [];
+    rows.push({
       halfLife: row[2] as number | null,
       units: row[3] as string | null,
       logHalfLife: row[4] as number | null,
       decayMode: row[5] as string | null,
     });
+    rowsByKey.set(key, rows);
+  });
+
+  lookups.forEach(n => {
+    const key = `${n.Z}-${n.A}`;
+    const rows = rowsByKey.get(key);
+    if (!rows || rows.length === 0) return;
+
+    if (typeof n.logHalfLife !== 'number') {
+      halfLives.set(key, rows[0]);
+      return;
+    }
+
+    const target = n.logHalfLife;
+    let best: NuclideHalfLife | null = null;
+    let bestDelta = Infinity;
+    for (const r of rows) {
+      if (typeof r.logHalfLife !== 'number') continue;
+      const delta = Math.abs(r.logHalfLife - target);
+      // Strict < keeps the higher-intensity row on ties
+      if (delta <= HALF_LIFE_LHL_TOLERANCE && delta < bestDelta) {
+        best = r;
+        bestDelta = delta;
+      }
+    }
+    if (best) halfLives.set(key, best);
   });
 
   return halfLives;

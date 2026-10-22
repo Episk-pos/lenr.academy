@@ -279,6 +279,13 @@ describe('AllTables', () => {
       expect(mockExec).toHaveBeenCalledTimes(1);
     });
 
+    it('ignores Ctrl+Enter while an IME composition is in progress', () => {
+      render(<AllTables />);
+      const textarea = screen.getByPlaceholderText(en.allTables.queryPlaceholder);
+      fireEvent.keyDown(textarea, { key: 'Enter', ctrlKey: true, isComposing: true });
+      expect(mockExec).not.toHaveBeenCalled();
+    });
+
     it('does not run the query on plain Enter (inserts a newline instead)', () => {
       render(<AllTables />);
       const textarea = screen.getByPlaceholderText(en.allTables.queryPlaceholder);

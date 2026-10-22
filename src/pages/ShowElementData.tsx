@@ -1196,14 +1196,19 @@ export default function ShowElementData() {
     return isotopes.filter(displayNuclide => displayNuclide.type === 'full')
   }, [isotopes, showLimitedDataNuclides])
 
-  // Primary half-life for full-data (NuclidesPlus) isotopes that also have decay
-  // records, keyed by "Z-A". Looked up by Z/A because RadioNuclides files tritium
-  // under 'H' while NuclidesPlus uses 'T'.
+  // Ground-state half-life for full-data (NuclidesPlus) isotopes, keyed by "Z-A".
+  // Looked up by Z/A because RadioNuclides files tritium under 'H' while
+  // NuclidesPlus uses 'T'; matched on LHL so isomer rows are ignored.
   const fullIsotopeHalfLives = useMemo(() => {
     if (!db) return new Map<string, { halfLife: number | null; units: string | null }>()
     const fullIsotopes = isotopes
       .filter(displayNuclide => displayNuclide.type === 'full')
-      .map(displayNuclide => ({ Z: displayNuclide.data.Z, A: displayNuclide.data.A }))
+      .map(displayNuclide => ({
+        Z: displayNuclide.data.Z,
+        A: displayNuclide.data.A,
+        // Match the RadioNuclides ground-state row, not an isomer (e.g. Co-60m)
+        logHalfLife: typeof displayNuclide.data.logHalfLife === 'number' ? displayNuclide.data.logHalfLife : null,
+      }))
     return getNuclideHalfLives(db, fullIsotopes)
   }, [db, isotopes])
 

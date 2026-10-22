@@ -72,6 +72,8 @@ export default function AllTables() {
   }
 
   const handleEditorKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
+    // Ignore Enter while an IME composition is in progress
+    if (e.nativeEvent.isComposing) return
     if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
       e.preventDefault()
       if (!isExecuting) executeQuery()

@@ -4,7 +4,7 @@ import { getRadiationTypeInfo } from '../constants/radiationTypes'
 import { X, ChevronDown, ChevronUp, ArrowRight, Radiation } from 'lucide-react'
 import type { Nuclide, DecayData, DecayChainResult } from '../types'
 import { useDatabase } from '../contexts/DatabaseContext'
-import { getRadioactiveDecayData, getElementSymbolByZ, getNuclideBySymbol } from '../services/queryService'
+import { getRadioactiveDecayData, getElementSymbolByZ, getNuclideBySymbol, getNuclideHalfLives, type NuclideHalfLife } from '../services/queryService'
 import { traceDecayChain } from '../services/decayChainService'
 import { useNavigate, Link } from 'react-router-dom'
 import { expandHalfLifeUnit } from '../utils/formatUtils'
@@ -78,6 +78,7 @@ export default function NuclideDetailsCard({ nuclide, onClose }: NuclideDetailsC
   const { db } = useDatabase()
   const navigate = useNavigate()
   const [decayData, setDecayData] = useState<DecayData[]>([])
+  const [groundStateHalfLife, setGroundStateHalfLife] = useState<NuclideHalfLife | null>(null)
   const [showFullDecayTable, setShowFullDecayTable] = useState(false)
   const [decayChain, setDecayChain] = useState<DecayChainResult | null>(null)
   const [showDecayChain, setShowDecayChain] = useState(false)
@@ -87,12 +88,19 @@ export default function NuclideDetailsCard({ nuclide, onClose }: NuclideDetailsC
   useEffect(() => {
     if (!nuclide || !db) {
       setDecayData([])
+      setGroundStateHalfLife(null)
       setDecayChain(null)
       return
     }
 
     const data = getRadioactiveDecayData(db, nuclide.Z, nuclide.A)
     setDecayData(data)
+
+    // Ground-state half-life: the RadioNuclides row whose LHL matches NuclidesPlus.LHL
+    // (skips isomer rows such as Co-60m or Ba-137m)
+    const lhl = typeof nuclide.logHalfLife === 'number' ? nuclide.logHalfLife : null
+    const halfLives = getNuclideHalfLives(db, [{ Z: nuclide.Z, A: nuclide.A, logHalfLife: lhl }])
+    setGroundStateHalfLife(halfLives.get(`${nuclide.Z}-${nuclide.A}`) ?? null)
 
     // Build decay chain if nuclide is radioactive
     if (data.length > 0) {
@@ -151,13 +159,16 @@ export default function NuclideDetailsCard({ nuclide, onClose }: NuclideDetailsC
 
   if (!nuclide) return null
 
-  // Primary decay record (highest intensity) gives the half-life in its natural
-  // units, e.g. tritium's 12.33 years, rather than 10^LHL in years only.
-  const primaryDecay = decayData.find(d => d.halfLife !== null && d.halfLifeUnits !== null)
-  const primaryHalfLife = primaryDecay && primaryDecay.halfLife !== null && primaryDecay.halfLifeUnits !== null
-    ? { halfLife: primaryDecay.halfLife, units: primaryDecay.halfLifeUnits }
+  // Ground-state half-life in its natural units (e.g. T-3 12.33 years, Co-60
+  // 5.2714 years); falls back to 10^LHL years when no RadioNuclides row matches.
+  const primaryHalfLife = groundStateHalfLife && groundStateHalfLife.halfLife !== null && groundStateHalfLife.units !== null
+    ? { halfLife: groundStateHalfLife.halfLife, units: groundStateHalfLife.units }
     : null
-  const primaryDecayMode = nuclide.RDM || decayData[0]?.decayMode || null
+  const isStableNuclide = typeof nuclide.logHalfLife === 'number' && nuclide.logHalfLife > 9
+  // Ground state actually decays (U-238, Co-60) — not merely an isomer listed under a stable Z/A (Ba-137m)
+  const isRadioactive = groundStateHalfLife !== null
+  // Never surface an isomer's mode (e.g. IT) as the primary decay of a stable nuclide
+  const primaryDecayMode = nuclide.RDM || (!isStableNuclide ? groundStateHalfLife?.decayMode : null) || null
 
   const statusLabel =
     nuclide.SUS === 'SPN' ? t('elementData.status.stablePrimordial') :
@@ -187,7 +198,7 @@ export default function NuclideDetailsCard({ nuclide, onClose }: NuclideDetailsC
             >
               {nuclide.E}-{nuclide.A}
             </Link>
-            {decayData.length > 0 && (
+            {isRadioactive && (
               <span title={t('reactions.radioactive')}>
                 <Radiation className="w-5 h-5 text-amber-600 dark:text-amber-400" />
               </span>
@@ -391,7 +402,7 @@ export default function NuclideDetailsCard({ nuclide, onClose }: NuclideDetailsC
                 <dt className="text-gray-600 dark:text-gray-400 flex-shrink-0">{t('elements.halfLife')}:</dt>
                 <dd className="font-medium text-gray-900 dark:text-gray-100 text-right truncate" data-testid="nuclide-half-life">
                   {primaryHalfLife
-                    ? `${primaryHalfLife.halfLife} ${expandHalfLifeUnit(primaryHalfLife.units)}`
+                    ? `${primaryHalfLife.halfLife >= 10000 ? primaryHalfLife.halfLife.toExponential(2) : primaryHalfLife.halfLife} ${expandHalfLifeUnit(primaryHalfLife.units)}`
                     : t('elements.valueYears', { value: Math.pow(10, nuclide.logHalfLife).toExponential(2) })}
                 </dd>
               </div>
