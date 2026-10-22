@@ -1,6 +1,7 @@
 import { describe, it, expect, vi } from 'vitest'
 import { render, screen, fireEvent, within } from '@testing-library/react'
 import ResultNuclidesByElement from './ResultNuclidesByElement'
+import { HoverHighlightContext, createHoverHighlightStore } from '../contexts/HoverHighlightContext'
 import type { Nuclide } from '../types'
 
 vi.mock('react-i18next', () => ({
@@ -138,5 +139,51 @@ describe('ResultNuclidesByElement', () => {
     expect(c.tagName).toBe('BUTTON')
     c.focus()
     expect(c).toHaveFocus()
+  })
+
+  describe('with a HoverHighlightContext store', () => {
+    const cardFor = (id: string) =>
+      screen.getAllByTestId('isotope-card').find(c => c.getAttribute('data-nuclide') === id)!
+
+    function renderWithStore(overrides: Partial<Props> = {}) {
+      const store = createHoverHighlightStore()
+      const props: Props = {
+        nuclides,
+        radioactiveNuclides: new Set(),
+        pinnedElement: 'Fe',
+        highlightedNuclide: null,
+        pinnedNuclide: false,
+        onElementSelect: vi.fn(),
+        onNuclideSelect: vi.fn(),
+        ...overrides,
+      }
+      render(
+        <HoverHighlightContext.Provider value={store}>
+          <ResultNuclidesByElement {...props} />
+        </HoverHighlightContext.Provider>
+      )
+      return { store, props }
+    }
+
+    it('writes hover to the store and highlights/dims cards from it', () => {
+      const { store } = renderWithStore()
+      fireEvent.mouseEnter(cardFor('Fe-58'))
+      expect(store.getState().nuclide).toBe('Fe-58')
+      expect(cardFor('Fe-58').className).toContain('border-blue-400')
+      expect(cardFor('Fe-58')).toHaveAttribute('aria-pressed', 'false')
+      expect(cardFor('Fe-56').className).toContain('opacity-50')
+
+      fireEvent.mouseLeave(cardFor('Fe-58'))
+      expect(store.getState().nuclide).toBeNull()
+      expect(cardFor('Fe-56').className).not.toContain('opacity-50')
+    })
+
+    it('ignores hover while a nuclide is pinned and shows the pinned card as selected', () => {
+      const { store } = renderWithStore({ highlightedNuclide: 'Fe-56', pinnedNuclide: true })
+      fireEvent.mouseEnter(cardFor('Fe-58'))
+      expect(store.getState().nuclide).toBeNull()
+      expect(cardFor('Fe-56')).toHaveAttribute('aria-pressed', 'true')
+      expect(cardFor('Fe-58').className).toContain('opacity-50')
+    })
   })
 })

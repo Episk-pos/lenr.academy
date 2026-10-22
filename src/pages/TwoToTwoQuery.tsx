@@ -9,8 +9,8 @@ import { useQueryState } from '../contexts/QueryStateContext'
 import { queryTwoToTwo, getAllElements, getNuclideBySymbol, getElementBySymbol, getAtomicRadii, calculateHeatmapMetrics } from '../services/queryService'
 import PeriodicTableSelector from '../components/PeriodicTableSelector'
 import PeriodicTable from '../components/PeriodicTable'
-import ElementDetailsCard from '../components/ElementDetailsCard'
-import NuclideDetailsCard from '../components/NuclideDetailsCard'
+import DetailsRail, { PinnedDetails } from '../components/DetailsRail'
+import { HoverHighlightContext, createHoverHighlightStore } from '../contexts/HoverHighlightContext'
 import ResultNuclidesByElement from '../components/ResultNuclidesByElement'
 import DatabaseLoadingCard from '../components/DatabaseLoadingCard'
 import { VirtualizedList } from '../components/VirtualizedList'
@@ -180,6 +180,8 @@ export default function TwoToTwoQuery() {
   const [selectedElementDetails, setSelectedElementDetails] = useState<Element | null>(null)
   const [selectedElementRadii, setSelectedElementRadii] = useState<AtomicRadiiData | null>(null)
   const [hasInitializedFromUrl, setHasInitializedFromUrl] = useState(false)
+  // Transient hover highlight lives outside page state so hovering doesn't re-render the page
+  const [hoverStore] = useState(createHoverHighlightStore)
 
   // Heatmap state
   const [showHeatmap, setShowHeatmap] = useState(false) // collapsed by default; persisted preference restored below
@@ -258,6 +260,16 @@ export default function TwoToTwoQuery() {
       }
     }
   }, [pinnedNuclide, highlightedNuclide, pinnedElement, highlightedElement])
+
+  // Any pin change (or new results) resets the transient hover highlight
+  useEffect(() => {
+    hoverStore.setNuclide(null)
+  }, [hoverStore, pinnedNuclide, highlightedNuclide, pinnedElement, highlightedElement, nuclides])
+
+  // Identity of what's pinned; a new value auto-opens the details drawer on narrow screens
+  const detailsPinKey = (pinnedNuclide && highlightedNuclide) || (pinnedElement && highlightedElement)
+    ? `${pinnedElement ? highlightedElement : ''}|${pinnedNuclide ? highlightedNuclide : ''}`
+    : null
 
   // Filter reactions - mutually exclusive element/nuclide filtering
   const filteredResults = useMemo(() => {
@@ -688,7 +700,9 @@ export default function TwoToTwoQuery() {
   }
 
   return (
-    <div className="max-w-7xl mx-auto">
+    <HoverHighlightContext.Provider value={hoverStore}>
+    <div className={`mx-auto ${showResults ? 'xl:flex xl:items-start xl:gap-6 xl:max-w-[calc(80rem+344px)] 2xl:max-w-[calc(80rem+444px)]' : ''}`}>
+    <div className="max-w-7xl mx-auto min-w-0 xl:flex-1">
       <div className="mb-6 flex items-start justify-between">
         <PageHeader
           icon={PAGE_ICONS.twoToTwo}
@@ -900,8 +914,8 @@ export default function TwoToTwoQuery() {
       {/* Results */}
       {showResults && (
         <div className="space-y-6">
-          {/* Heatmap Visualization */}
-          <div className="card p-6">
+          {/* Heatmap Visualization (xl:px-4 keeps the full periodic table inside the column beside the details rail) */}
+          <div className="card p-6 xl:px-4">
             <div className="flex items-center justify-between mb-4">
               <div className="flex-1">
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
@@ -1585,52 +1599,31 @@ export default function TwoToTwoQuery() {
             highlightedNuclide={highlightedNuclide}
             pinnedNuclide={pinnedNuclide}
             onElementSelect={handleElementPinToggle}
-            onNuclideHover={setHighlightedNuclide}
             onNuclideSelect={handleNuclideSelect}
           />
-
-          {/* Details Section */}
-          {selectedNuclideDetails ? (
-            <>
-              {selectedElementDetails && selectedElementRadii && (
-                <ElementDetailsCard
-                  element={selectedElementDetails}
-                  atomicRadii={selectedElementRadii}
-                  onClose={() => {
-                    setPinnedNuclide(false)
-                    setHighlightedNuclide(null)
-                  }}
-                />
-              )}
-              <NuclideDetailsCard
-                nuclide={selectedNuclideDetails}
-                onClose={() => {
-                  setPinnedNuclide(false)
-                  setHighlightedNuclide(null)
-                }}
-              />
-            </>
-          ) : selectedElementDetails && selectedElementRadii ? (
-            <ElementDetailsCard
-              element={selectedElementDetails}
-              atomicRadii={selectedElementRadii}
-              onClose={() => {
-                setPinnedElement(false)
-                setHighlightedElement(null)
-              }}
-            />
-          ) : (
-            <div className="card p-6">
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-                {t('reactions.details')}
-              </h3>
-              <div className="text-center py-8 text-gray-500 dark:text-gray-400">
-                <p className="text-sm">{t('reactions.clickForDetails')}</p>
-              </div>
-            </div>
-          )}
         </div>
       )}
     </div>
+
+      {/* Details: sticky rail at xl+, slide-in drawer below */}
+      {showResults && (
+        <DetailsRail pinKey={detailsPinKey}>
+          <PinnedDetails
+            nuclide={selectedNuclideDetails}
+            element={selectedElementRadii ? selectedElementDetails : null}
+            atomicRadii={selectedElementRadii}
+            onCloseNuclide={() => {
+              setPinnedNuclide(false)
+              setHighlightedNuclide(null)
+            }}
+            onCloseElement={() => {
+              setPinnedElement(false)
+              setHighlightedElement(null)
+            }}
+          />
+        </DetailsRail>
+      )}
+    </div>
+    </HoverHighlightContext.Provider>
   )
 }
