@@ -2033,5 +2033,26 @@
       "name": "द्वि-प्रोटॉन उत्सर्जन",
       "description": "नाभिक दो प्रोटॉन उत्सर्जित करता है"
     }
+  },
+  "export": {
+    "pdf": {
+      "title": "{{type}}: {{equation}}",
+      "generated": "{{date}} को बनाया गया",
+      "reactionCount_one": "{{count}} अभिक्रिया में से {{shown}}",
+      "reactionCount_other": "{{count}} अभिक्रियाओं में से {{shown}}",
+      "queryParameters": "क्वेरी पैरामीटर: {{params}}",
+      "noFilters": "कोई फ़िल्टर लागू नहीं",
+      "filterValue": "{{label}}: {{value}}",
+      "inputElement": "इनपुट तत्व",
+      "inputElementN": "इनपुट तत्व {{n}}",
+      "outputElement": "आउटपुट तत्व",
+      "outputElementN": "आउटपुट तत्व {{n}}",
+      "minEnergy": "न्यूनतम ऊर्जा",
+      "maxEnergy": "अधिकतम ऊर्जा",
+      "limit": "सीमा",
+      "columnElement": "तत्व",
+      "footer": "{{brand}} · {{url}} | डॉ. अलेक्ज़ेंडर पार्खोमोव के कार्य पर आधारित",
+      "pageNumber": "पृष्ठ {{page}} / {{total}}"
+    }
   }
 }

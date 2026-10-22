@@ -14,6 +14,12 @@ math operators) because jsPDF cannot fall back between fonts per glyph.
 OpenType layout tables (GSUB/GPOS/GDEF) are dropped: jsPDF does not apply
 them, so they would only add weight. Hinting is dropped as well.
 
+Exception: NotoSansDevanagari-Shaping.ttf is NOT given to jsPDF. It is loaded
+as a CSS FontFace and used to rasterise Devanagari text on a <canvas>, where
+the browser's shaping engine (HarfBuzz) needs GSUB/GPOS/GDEF to reorder
+matras and form conjuncts. It keeps those tables and is not merged with the
+base (the canvas falls back to other fonts per glyph on its own).
+
 CJK/Hangul coverage = a broad common-character set derived from the legacy
 national encodings (JIS X 0208 level 1, GB2312 level 1, KS X 1001 Hangul)
 plus every character that appears in the matching UI locale file, so all
@@ -44,6 +50,7 @@ DROP_TABLES = [
     "GSUB", "GPOS", "GDEF", "BASE", "JSTF", "MATH", "STAT", "DSIG",
     "vhea", "vmtx", "VORG", "meta", "kern", "morx", "feat",
 ]
+LAYOUT_TABLES = {"GSUB", "GPOS", "GDEF"}
 
 
 def rng(a: int, b: int) -> set[int]:
@@ -173,6 +180,20 @@ TARGETS: list[tuple[str, str | None, set[int]]] = [
 ]
 
 
+# Fonts for canvas shaping only (see module docstring): layout tables kept.
+# (output file, source file, codepoints)
+SHAPING_TARGETS: list[tuple[str, str, set[int]]] = [
+    (
+        "NotoSansDevanagari-Shaping.ttf",
+        "NotoSansDevanagari[wdth,wght].ttf",
+        rng(0x0020, 0x007E) | {0x00A0, 0x00D7}                  # ASCII (mixed runs, digits)
+        | rng(0x0900, 0x097F) | rng(0xA8E0, 0xA8FF) | rng(0x1CD0, 0x1CFF)
+        | rng(0x2010, 0x2027) | {0x200B, 0x200C, 0x200D, 0x25CC}
+        | locale_chars("hi"),
+    ),
+]
+
+
 def static_instance(path: Path) -> TTFont:
     font = TTFont(path)
     if "fvar" in font:
@@ -182,10 +203,11 @@ def static_instance(path: Path) -> TTFont:
     return font
 
 
-def subset_font(font: TTFont, codepoints: set[int]) -> TTFont:
+def subset_font(font: TTFont, codepoints: set[int], keep_layout: bool = False) -> TTFont:
+    drop = [t for t in DROP_TABLES if not (keep_layout and t in LAYOUT_TABLES)]
     opts = subset.Options()
-    opts.layout_features = []
-    opts.drop_tables += DROP_TABLES
+    opts.layout_features = ["*"] if keep_layout else []
+    opts.drop_tables += drop
     opts.hinting = False
     opts.notdef_outline = True
     opts.glyph_names = False
@@ -194,7 +216,7 @@ def subset_font(font: TTFont, codepoints: set[int]) -> TTFont:
     s = subset.Subsetter(opts)
     s.populate(unicodes=sorted(codepoints))
     s.subset(font)
-    for tag in DROP_TABLES:
+    for tag in drop:
         if tag in font:
             del font[tag]
     return font
@@ -247,6 +269,16 @@ def main() -> int:
                 merge([base, script_path], target)
             cmap = TTFont(target).getBestCmap()
             print(f"{out_name}: {target.stat().st_size / 1024:.0f} KiB, {len(cmap)} code points")
+
+        for out_name, src_name, codepoints in SHAPING_TARGETS:
+            target = out_dir / out_name
+            subset_font(static_instance(src / src_name), codepoints, keep_layout=True).save(target)
+            check = TTFont(target)
+            missing = LAYOUT_TABLES - set(check.keys())
+            if missing:
+                raise SystemExit(f"{out_name}: layout tables missing after subsetting: {sorted(missing)}")
+            print(f"{out_name}: {target.stat().st_size / 1024:.0f} KiB, "
+                  f"{len(check.getBestCmap())} code points, layout tables kept")
 
     write_license(src, out_dir)
     return 0

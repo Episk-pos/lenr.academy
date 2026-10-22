@@ -2033,5 +2033,26 @@
       "name": "双质子发射",
       "description": "原子核发射两个质子"
     }
+  },
+  "export": {
+    "pdf": {
+      "title": "{{type}}：{{equation}}",
+      "generated": "生成时间：{{date}}",
+      "reactionCount_one": "共 {{count}} 个反应，显示 {{shown}} 个",
+      "reactionCount_other": "共 {{count}} 个反应，显示 {{shown}} 个",
+      "queryParameters": "查询参数：{{params}}",
+      "noFilters": "未应用筛选条件",
+      "filterValue": "{{label}}：{{value}}",
+      "inputElement": "输入元素",
+      "inputElementN": "输入元素 {{n}}",
+      "outputElement": "输出元素",
+      "outputElementN": "输出元素 {{n}}",
+      "minEnergy": "最小能量",
+      "maxEnergy": "最大能量",
+      "limit": "数量上限",
+      "columnElement": "元素",
+      "footer": "{{brand}} · {{url}} | 基于亚历山大·帕尔霍莫夫博士的研究",
+      "pageNumber": "第 {{page}} 页，共 {{total}} 页"
+    }
   }
 }

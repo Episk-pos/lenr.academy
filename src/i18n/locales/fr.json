@@ -2038,5 +2038,27 @@
       "name": "Émission de deux protons",
       "description": "le noyau émet deux protons"
     }
+  },
+  "export": {
+    "pdf": {
+      "title": "{{type}} : {{equation}}",
+      "generated": "Généré le {{date}}",
+      "reactionCount_one": "{{shown}} sur {{count}} réaction",
+      "reactionCount_many": "{{shown}} sur {{count}} réactions",
+      "reactionCount_other": "{{shown}} sur {{count}} réactions",
+      "queryParameters": "Paramètres de la requête : {{params}}",
+      "noFilters": "Aucun filtre appliqué",
+      "filterValue": "{{label}} : {{value}}",
+      "inputElement": "Élément d'entrée",
+      "inputElementN": "Élément d'entrée {{n}}",
+      "outputElement": "Élément de sortie",
+      "outputElementN": "Élément de sortie {{n}}",
+      "minEnergy": "Énergie min.",
+      "maxEnergy": "Énergie max.",
+      "limit": "Limite",
+      "columnElement": "Élément",
+      "footer": "{{brand}} · {{url}} | D'après les travaux du Dr Alexander Parkhomov",
+      "pageNumber": "Page {{page}} sur {{total}}"
+    }
   }
 }

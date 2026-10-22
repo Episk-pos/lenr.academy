@@ -2038,5 +2038,27 @@
       "name": "Emissão dupla de prótons",
       "description": "núcleo emite dois prótons"
     }
+  },
+  "export": {
+    "pdf": {
+      "title": "{{type}}: {{equation}}",
+      "generated": "Gerado em {{date}}",
+      "reactionCount_one": "{{shown}} de {{count}} reação",
+      "reactionCount_many": "{{shown}} de {{count}} reações",
+      "reactionCount_other": "{{shown}} de {{count}} reações",
+      "queryParameters": "Parâmetros da consulta: {{params}}",
+      "noFilters": "Nenhum filtro aplicado",
+      "filterValue": "{{label}}: {{value}}",
+      "inputElement": "Elemento de entrada",
+      "inputElementN": "Elemento de entrada {{n}}",
+      "outputElement": "Elemento de saída",
+      "outputElementN": "Elemento de saída {{n}}",
+      "minEnergy": "Energia mín.",
+      "maxEnergy": "Energia máx.",
+      "limit": "Limite",
+      "columnElement": "Elemento",
+      "footer": "{{brand}} · {{url}} | Baseado no trabalho do Dr. Alexander Parkhomov",
+      "pageNumber": "Página {{page}} de {{total}}"
+    }
   }
 }

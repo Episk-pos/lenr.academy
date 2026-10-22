@@ -32,13 +32,20 @@
  *   which double-reverses after the bidi engine and mangles digits and Latin.
  *   Remaining gaps: no mark positioning (harakat sit at default offsets) and
  *   no right-aligned/mirrored layout, so the page layout stays LTR.
- * - Devanagari (hi): there is no shaper at all. Glyphs render in logical
- *   order without reordering or conjunct formation, so the short-i matra
- *   (ि) appears after its consonant instead of before it, and conjuncts show
- *   as consonant + visible virama (क्ष renders as क् + ष). The text is still
- *   legible to Hindi readers, so it beats boxes or Helvetica garbage. A proper
- *   fix needs a shaping engine (e.g. harfbuzzjs) or rasterising the text via
- *   canvas, which the browser shapes correctly.
+ * - Devanagari (hi): jsPDF has no shaper for it, so doc.text() would draw
+ *   glyphs in logical order without reordering or conjunct formation (the
+ *   short-i matra ि after its consonant instead of before it, क्ष as क् + ष).
+ *   Instead, every text run or table cell containing Devanagari is rasterised
+ *   on an offscreen canvas, where the browser shapes it, using a FontFace from
+ *   NotoSansDevanagari-Shaping.ttf (a separate subset that keeps GSUB/GPOS/GDEF;
+ *   the jsPDF font below has them stripped), and placed with doc.addImage. See
+ *   ./pdfShaping.ts. The Devanagari jsPDF font is still embedded and used for
+ *   an invisible text layer under each image, so the PDF stays searchable and
+ *   copyable (copied text is the correct Unicode, in logical order).
+ *   Remaining gaps: shaped runs are images (they scale with zoom at 3x
+ *   resolution but are not vector text), and if FontFace/canvas is unavailable
+ *   or the shaping font fails to load, export falls back to the unshaped
+ *   doc.text() rendering described above, which is still legible.
  * - Only one font is active per document. Mixing two complex scripts (e.g.
  *   Arabic + CJK) renders the lower-priority one as missing glyphs.
  */
@@ -62,8 +69,8 @@ export interface PdfFontSpec {
   file: string
   /** Name registered with jsPDF (doc.setFont / autotable styles.font) */
   family: string
-  /** How jsPDF handles the script's shaping, see module comment. */
-  shaping: 'none-needed' | 'jspdf-arabic' | 'unshaped'
+  /** How the script gets shaped, see module comment. */
+  shaping: 'none-needed' | 'jspdf-arabic' | 'canvas'
 }
 
 export const PDF_FONTS: Record<PdfFontId, PdfFontSpec> = {
@@ -71,7 +78,7 @@ export const PDF_FONTS: Record<PdfFontId, PdfFontSpec> = {
   jp: { id: 'jp', file: 'NotoSansJP-Regular.ttf', family: 'NotoSansJPPdf', shaping: 'none-needed' },
   sc: { id: 'sc', file: 'NotoSansSC-Regular.ttf', family: 'NotoSansSCPdf', shaping: 'none-needed' },
   kr: { id: 'kr', file: 'NotoSansKR-Regular.ttf', family: 'NotoSansKRPdf', shaping: 'none-needed' },
-  devanagari: { id: 'devanagari', file: 'NotoSansDevanagari-Regular.ttf', family: 'NotoSansDevanagariPdf', shaping: 'unshaped' },
+  devanagari: { id: 'devanagari', file: 'NotoSansDevanagari-Regular.ttf', family: 'NotoSansDevanagariPdf', shaping: 'canvas' },
   arabic: { id: 'arabic', file: 'NotoSansArabic-Regular.ttf', family: 'NotoSansArabicPdf', shaping: 'jspdf-arabic' },
 }
 
@@ -95,12 +102,14 @@ function classify(cp: number): PdfScript {
 
 /**
  * Prepare a string for jsPDF: compose to NFC (so "e" + U+0301 uses the
- * precomposed glyph, since jsPDF cannot position combining marks) and drop
+ * precomposed glyph, since jsPDF cannot position combining marks), drop
  * emoji variation selectors (U+FE00-FE0F), which have no glyph and would
- * otherwise render as a .notdef box.
+ * otherwise render as a .notdef box, and drop invisible bidi formatting
+ * characters (LRM/RLM/ALM, embeddings, isolates). Intl puts RLMs in Arabic
+ * dates, and jsPDF's bidi engine reverses the whole run when it meets one.
  */
 export function normalizePdfText(text: string): string {
-  return text.normalize('NFC').replace(/[︀-️]/g, '')
+  return text.normalize('NFC').replace(/[\uFE00-\uFE0F\u200E\u200F\u061C\u202A-\u202E\u2066-\u2069]/g, '')
 }
 
 /** Scan strings and return every script they use. */
@@ -148,7 +157,8 @@ export function clearPdfFontCache(): void {
   fontCache.clear()
 }
 
-function fontUrl(file: string): string {
+/** URL of a file under public/fonts/pdf/, honouring Vite's base path. */
+export function pdfFontUrl(file: string): string {
   const base = (import.meta.env?.BASE_URL as string | undefined) ?? '/'
   return `${base.endsWith('/') ? base : `${base}/`}fonts/pdf/${file}`
 }
@@ -172,7 +182,7 @@ export function loadPdfFont(spec: PdfFontSpec, fetchImpl: typeof fetch = fetch):
   const cached = fontCache.get(spec.file)
   if (cached) return cached
   const promise = (async () => {
-    const res = await fetchImpl(fontUrl(spec.file))
+    const res = await fetchImpl(pdfFontUrl(spec.file))
     if (!res.ok) throw new Error(`Failed to fetch PDF font ${spec.file}: HTTP ${res.status}`)
     return arrayBufferToBase64(await res.arrayBuffer())
   })()
@@ -241,6 +251,8 @@ const LATIN1_REPLACEMENTS: Record<string, string> = {
   '≤': '<=', '≥': '>=', '≈': '~', '…': '...', '‘': "'", '’': "'", '“': '"', '”': '"',
   'ν': 'nu', 'α': 'alpha', 'β': 'beta', 'γ': 'gamma', 'μ': 'mu', '⁻': '-', '⁺': '+',
   '⁰': '0', '⁴': '4', '⁵': '5', '⁶': '6', '⁷': '7', '⁸': '8', '⁹': '9',
+  // Thin / narrow no-break spaces (e.g. before AM/PM in localised dates)
+  '\u2009': ' ', '\u202f': ' ',
 }
 
 /**

@@ -2041,5 +2041,27 @@
       "name": "Emissione di due protoni",
       "description": "il nucleo emette due protoni"
     }
+  },
+  "export": {
+    "pdf": {
+      "title": "{{type}}: {{equation}}",
+      "generated": "Generato il {{date}}",
+      "reactionCount_one": "{{shown}} di {{count}} reazione",
+      "reactionCount_many": "{{shown}} di {{count}} reazioni",
+      "reactionCount_other": "{{shown}} di {{count}} reazioni",
+      "queryParameters": "Parametri della query: {{params}}",
+      "noFilters": "Nessun filtro applicato",
+      "filterValue": "{{label}}: {{value}}",
+      "inputElement": "Elemento in ingresso",
+      "inputElementN": "Elemento in ingresso {{n}}",
+      "outputElement": "Elemento in uscita",
+      "outputElementN": "Elemento in uscita {{n}}",
+      "minEnergy": "Energia min.",
+      "maxEnergy": "Energia max.",
+      "limit": "Limite",
+      "columnElement": "Elemento",
+      "footer": "{{brand}} · {{url}} | Basato sul lavoro del Dott. Alexander Parkhomov",
+      "pageNumber": "Pagina {{page}} di {{total}}"
+    }
   }
 }

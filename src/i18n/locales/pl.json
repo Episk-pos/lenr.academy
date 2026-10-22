@@ -2049,5 +2049,28 @@
       "name": "Emisja dwóch protonów",
       "description": "jądro emituje dwa protony"
     }
+  },
+  "export": {
+    "pdf": {
+      "title": "{{type}}: {{equation}}",
+      "generated": "Wygenerowano {{date}}",
+      "reactionCount_one": "{{shown}} z {{count}} reakcji",
+      "reactionCount_few": "{{shown}} z {{count}} reakcji",
+      "reactionCount_many": "{{shown}} z {{count}} reakcji",
+      "reactionCount_other": "{{shown}} z {{count}} reakcji",
+      "queryParameters": "Parametry zapytania: {{params}}",
+      "noFilters": "Brak zastosowanych filtrów",
+      "filterValue": "{{label}}: {{value}}",
+      "inputElement": "Pierwiastek wejściowy",
+      "inputElementN": "Pierwiastek wejściowy {{n}}",
+      "outputElement": "Pierwiastek wyjściowy",
+      "outputElementN": "Pierwiastek wyjściowy {{n}}",
+      "minEnergy": "Min. energia",
+      "maxEnergy": "Maks. energia",
+      "limit": "Limit",
+      "columnElement": "Pierwiastek",
+      "footer": "{{brand}} · {{url}} | Na podstawie prac dr. Aleksandra Parchomowa",
+      "pageNumber": "Strona {{page}} z {{total}}"
+    }
   }
 }

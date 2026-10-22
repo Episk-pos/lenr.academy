@@ -2033,5 +2033,26 @@
       "name": "이중 양성자 방출",
       "description": "원자핵이 양성자 두 개를 방출"
     }
+  },
+  "export": {
+    "pdf": {
+      "title": "{{type}}: {{equation}}",
+      "generated": "생성 일시: {{date}}",
+      "reactionCount_one": "{{count}}개 반응 중 {{shown}}개",
+      "reactionCount_other": "{{count}}개 반응 중 {{shown}}개",
+      "queryParameters": "쿼리 매개변수: {{params}}",
+      "noFilters": "적용된 필터 없음",
+      "filterValue": "{{label}}: {{value}}",
+      "inputElement": "입력 원소",
+      "inputElementN": "입력 원소 {{n}}",
+      "outputElement": "출력 원소",
+      "outputElementN": "출력 원소 {{n}}",
+      "minEnergy": "최소 에너지",
+      "maxEnergy": "최대 에너지",
+      "limit": "제한",
+      "columnElement": "원소",
+      "footer": "{{brand}} · {{url}} | 알렉산드르 파르호모프 박사의 연구를 바탕으로 함",
+      "pageNumber": "{{page}} / {{total}} 페이지"
+    }
   }
 }

@@ -120,7 +120,7 @@ describe('selectPdfFont', () => {
 
   it('declares shaping support per font', () => {
     expect(PDF_FONTS.arabic.shaping).toBe('jspdf-arabic')
-    expect(PDF_FONTS.devanagari.shaping).toBe('unshaped')
+    expect(PDF_FONTS.devanagari.shaping).toBe('canvas')
   })
 })
 
@@ -214,6 +214,11 @@ describe('applyPdfFont', () => {
 describe('normalizePdfText', () => {
   it('composes to NFC and strips emoji variation selectors', () => {
     expect(normalizePdfText('Cafe\u0301 \u26A0\uFE0F')).toBe('Café \u26A0')
+  })
+
+  it('strips bidi marks that make jsPDF reverse Arabic runs (Intl adds RLMs to Arabic dates)', () => {
+    expect(normalizePdfText('22\u200F/10\u200F/2026\u060C 9:40 \u0645')).toBe('22/10/2026\u060C 9:40 \u0645')
+    expect(normalizePdfText('\u2067x\u2069 \u200Ey\u061C')).toBe('x y')
   })
 })
 
