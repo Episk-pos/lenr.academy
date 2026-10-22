@@ -431,8 +431,11 @@ export default function PeriodicTable({
 
   return (
     <div className={`${hideCardContainer ? 'overflow-x-auto' : 'card p-3 sm:p-6 overflow-x-auto'}`}>
-      <div className="flex justify-start sm:justify-center">
-        <div className="inline-block pr-3 sm:pr-6">
+      {/* Centre with auto margins rather than justify-center: when the table is wider than its
+          container, justify-center overflows to the left where it can't be scrolled to, so tiles
+          end up under the sidebar or neighbouring cards. Auto margins collapse to 0 instead. */}
+      <div className="flex">
+        <div className={`inline-block sm:mx-auto ${hideCardContainer ? 'pr-1' : 'pr-3 sm:pr-6'}`}>
         {/* Main periodic table grid (periods 1-7); D/T and particles occupy the period-1 gap */}
         <div className="grid gap-0.5 sm:gap-1 mb-1 sm:mb-2" style={{ gridTemplateColumns: 'repeat(18, minmax(1.75rem, 3rem))' }}>
           {[1, 2, 3, 4, 5, 6, 7].map(period => (

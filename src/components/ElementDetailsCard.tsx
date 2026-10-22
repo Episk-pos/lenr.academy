@@ -23,7 +23,7 @@ export default function ElementDetailsCard({ element, atomicRadii, onClose, comp
   const elementCitations = getCitationsForElement(element.Z)
 
   return (
-    <div className={`card ${compact ? 'p-4' : 'p-6'} animate-fade-in`}>
+    <div className={`card ${compact ? 'p-4 [&_dd]:min-w-0 [&_dd]:break-words' : 'p-6'} animate-fade-in`}>
       <div className="flex items-start justify-between mb-4">
         <div>
           <h2 className="text-2xl font-bold mb-1">

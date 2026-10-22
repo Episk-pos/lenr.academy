@@ -804,7 +804,7 @@ export default function FissionQuery() {
 
   return (
     <HoverHighlightContext.Provider value={hoverStore}>
-    <div className={`mx-auto ${showResults ? 'xl:flex xl:items-start xl:gap-6 xl:max-w-[calc(80rem+404px)] 2xl:max-w-[calc(80rem+444px)]' : ''}`}>
+    <div className={`mx-auto ${showResults ? 'xl:flex xl:items-start xl:gap-6 xl:max-w-[calc(80rem+344px)] 2xl:max-w-[calc(80rem+444px)]' : ''}`}>
     <div className="max-w-7xl mx-auto min-w-0 xl:flex-1">
       <div className="mb-6 flex items-start justify-between">
         <PageHeader
@@ -1003,8 +1003,8 @@ export default function FissionQuery() {
       {/* Results */}
       {showResults && (
         <div className="space-y-6">
-          {/* Heatmap Visualization */}
-          <div className="card p-6">
+          {/* Heatmap Visualization (xl:px-4 keeps the full periodic table inside the column beside the details rail) */}
+          <div className="card p-6 xl:px-4">
             <div className="flex items-center justify-between mb-4">
               <div className="flex-1">
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">

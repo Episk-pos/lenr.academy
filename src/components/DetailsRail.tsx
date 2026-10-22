@@ -184,7 +184,7 @@ export default function DetailsRail({ pinKey, children }: DetailsRailProps) {
         ref={railRef}
         aria-label={t('reactions.details')}
         data-testid="details-rail"
-        className="w-[380px] 2xl:w-[420px] shrink-0 sticky top-4 max-h-[calc(100vh-2rem)] overflow-y-auto overscroll-contain space-y-4"
+        className="w-80 2xl:w-[420px] shrink-0 sticky top-4 max-h-[calc(100vh-2rem)] overflow-y-auto overscroll-contain space-y-4"
       >
         {children}
       </aside>

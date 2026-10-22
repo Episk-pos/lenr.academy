@@ -163,7 +163,7 @@ export default function NuclideDetailsCard({ nuclide, onClose, compact = false }
 
   return (
     <>
-    <div className={`card ${compact ? 'p-4' : 'p-6'} animate-fade-in max-w-full`}>
+    <div className={`card ${compact ? 'p-4 [&_dd]:min-w-0 [&_dd]:break-words' : 'p-6'} animate-fade-in max-w-full`}>
       <div className="flex items-start justify-between mb-4">
         <div>
           <h2 className="text-2xl font-bold mb-1 flex items-center gap-2">
