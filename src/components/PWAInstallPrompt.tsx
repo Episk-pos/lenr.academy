@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Download, X, Smartphone } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 
 // Extend Window interface for beforeinstallprompt event
 interface BeforeInstallPromptEvent extends Event {
@@ -19,6 +20,7 @@ const SNOOZE_DURATION_MS = 7 * 24 * 60 * 60 * 1000 // 7 days in milliseconds
  * - Dismissal snoozes for 7 days
  */
 export default function PWAInstallPrompt() {
+  const { t } = useTranslation()
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null)
   const [isIOS, setIsIOS] = useState(false)
   const [isStandalone, setIsStandalone] = useState(false)
@@ -107,7 +109,7 @@ export default function PWAInstallPrompt() {
       <div
         className="fixed bottom-4 left-4 right-4 md:left-auto md:right-4 md:max-w-md z-40 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-xl"
         role="dialog"
-        aria-label="Install app prompt"
+        aria-label={t('pwa.installPromptLabel')}
         data-testid="pwa-install-prompt"
         style={{
           animation: isAnimatingOut ? 'slideDown 0.3s ease-out forwards' : 'slideUp 0.3s ease-out'
@@ -125,22 +127,22 @@ export default function PWAInstallPrompt() {
 
           <div className="flex-1 min-w-0">
             <h3 className="font-semibold text-gray-900 dark:text-white mb-1">
-              Install LENR Academy
+              {t('pwa.installTitle', { appName: 'LENR Academy' })}
             </h3>
             <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
-              Install the app for quick access and offline functionality
+              {t('pwa.installDescription')}
             </p>
 
             {isIOS ? (
               // iOS installation instructions
               <div className="text-xs text-gray-600 dark:text-gray-400 space-y-1 bg-gray-50 dark:bg-gray-900/50 p-3 rounded">
                 <p className="font-medium text-gray-900 dark:text-white mb-2">
-                  To install on iOS:
+                  {t('pwa.iosTitle')}
                 </p>
                 <ol className="list-decimal list-inside space-y-1">
-                  <li>Tap the Share button in Safari</li>
-                  <li>Scroll down and tap "Add to Home Screen"</li>
-                  <li>Tap "Add" in the top right</li>
+                  <li>{t('pwa.iosStep1')}</li>
+                  <li>{t('pwa.iosStep2')}</li>
+                  <li>{t('pwa.iosStep3')}</li>
                 </ol>
               </div>
             ) : (
@@ -150,7 +152,7 @@ export default function PWAInstallPrompt() {
                 className="w-full px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors text-sm font-medium"
                 data-testid="pwa-install-button"
               >
-                Install Now
+                {t('pwa.installNow')}
               </button>
             )}
           </div>
@@ -158,7 +160,7 @@ export default function PWAInstallPrompt() {
           <button
             onClick={handleDismiss}
             className="flex-shrink-0 p-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
-            aria-label="Dismiss install prompt"
+            aria-label={t('pwa.dismissInstall')}
             data-testid="pwa-install-dismiss"
           >
             <X className="w-5 h-5" />

@@ -5,6 +5,15 @@ import { Search, BookOpen, Beaker, ArrowRight } from 'lucide-react'
 import { GLOSSARY, GLOSSARY_CATEGORIES, GlossaryEntry } from '../data/glossary'
 import { EXAMPLE_QUERIES, ExampleQuery } from '../data/exampleQueries'
 
+const EXAMPLE_TYPE_KEYS: Record<ExampleQuery['queryType'], string> = {
+  fusion: 'fusion',
+  fission: 'fission',
+  twotwo: 'twotwo',
+  'element-data': 'elementData',
+  cascades: 'cascades',
+  'muller-resonance': 'mullerResonance',
+}
+
 export default function Help() {
   const { t } = useTranslation()
   const navigate = useNavigate()
@@ -106,14 +115,14 @@ export default function Help() {
             >
               <div className="flex items-start justify-between mb-1">
                 <h3 className="text-sm font-medium text-gray-900 dark:text-white">
-                  {query.name}
+                  {t(`help.examples.${query.key}.name`, { defaultValue: query.name })}
                 </h3>
                 <span className="text-xs px-1.5 py-0.5 rounded bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 shrink-0 ml-2">
-                  {{ fusion: 'fusion', fission: 'fission', twotwo: '2→2', 'element-data': 'element', cascades: 'cascade', 'muller-resonance': 'resonance' }[query.queryType]}
+                  {t(`help.exampleTypes.${EXAMPLE_TYPE_KEYS[query.queryType]}`)}
                 </span>
               </div>
               <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">
-                {query.description}
+                {t(`help.examples.${query.key}.description`, { defaultValue: query.description })}
               </p>
               <span className="text-xs text-primary-600 dark:text-primary-400 flex items-center gap-1 opacity-0 group-hover:opacity-100 group-focus:opacity-100 transition-opacity">
                 {t('help.tryQuery')} <ArrowRight className="w-3 h-3" />

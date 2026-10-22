@@ -25,7 +25,11 @@
     "back": "返回",
     "next": "下一步",
     "previous": "上一步",
-    "continue": "继续"
+    "continue": "继续",
+    "selectAll": "全选",
+    "expand": "展开",
+    "collapse": "收起",
+    "unknownError": "发生未知错误"
   },
   "brand": {
     "appName": "Nanosoft Suite",
@@ -201,7 +205,23 @@
     "filterAll": "全部",
     "filterFusion": "聚变",
     "filterFission": "裂变",
-    "filterTwoToTwo": "2→2"
+    "filterTwoToTwo": "2→2",
+    "allElements": "所有元素",
+    "label": "{{type}} {{elements}}",
+    "resultCount_one": "{{count}} 个结果",
+    "resultCount_other": "{{count}} 个结果",
+    "bookmark": "收藏",
+    "removeBookmark": "取消收藏",
+    "remove": "移除",
+    "summary": {
+      "e1": "E1：{{list}}",
+      "e2": "E2：{{list}}",
+      "e": "E：{{list}}",
+      "out": "产物：{{list}}",
+      "outN": "产物{{n}}：{{list}}",
+      "limit": "上限：{{limit}}",
+      "noFilters": "无筛选条件"
+    }
   },
   "elements": {
     "element": "元素",
@@ -353,7 +373,9 @@
     "stableCount": "稳定",
     "radioactiveCount": "放射性",
     "radiationTypeLegend": "辐射类型图例",
-    "notAvailableInDatabase": "数据库中不可用"
+    "notAvailableInDatabase": "数据库中不可用",
+    "electricalConductivity": "电导率",
+    "valueYears": "{{value}} 年"
   },
   "reactions": {
     "reaction": "反应",
@@ -475,7 +497,14 @@
       "rightTitle": "反中微子（ν̄，右旋）：总核电荷增加 1（β⁻ 型）",
       "none": "—",
       "noneTitle": "不涉及中微子"
-    }
+    },
+    "selectHeatmapMetric": "选择热力图指标",
+    "removeLimitTitle": "取消上限，在表格中显示所有匹配的反应",
+    "resizeHandleDisabled": "调整大小手柄（结果较少时禁用）",
+    "resizeHandle": "拖动以调整表格高度（双击重置）",
+    "fusionResultsLabel": "聚变反应结果",
+    "fissionResultsLabel": "裂变反应结果",
+    "twoToTwoResultsLabel": "二对二反应结果"
   },
   "histogram": {
     "title": "能量分布",
@@ -810,7 +839,10 @@
       "zoomReset": "重置缩放",
       "advancedSettings": "高级设置",
       "maxPathways": "最大路径数: {{count}}"
-    }
+    },
+    "customMaterialNamePlaceholder": "我的自定义燃料混合物",
+    "optionalDescription": "可选描述...",
+    "pathwayResultsTable": "路径结果表"
   },
   "materials": {
     "natural-lithium": {
@@ -1007,7 +1039,11 @@
     "databaseUpdateReady": "数据库更新就绪 (v{{version}}) - 刷新以使用新数据",
     "downloadingUpdate": "正在后台下载更新...",
     "downloadUpdate": "下载更新",
-    "updating": "更新中..."
+    "updating": "更新中...",
+    "noChangelogDetails": "此版本未提供更新日志详情。",
+    "latestRelease": "最新版本",
+    "releaseNotesUnavailable": "此构建没有详细的版本说明。",
+    "releaseNotesLoadFailed": "加载版本说明失败。"
   },
   "columnToggle": {
     "title": "自定义可见列",
@@ -1020,7 +1056,11 @@
     "youAreOffline": "您已离线",
     "offlineMessage": "某些功能可能不可用",
     "reconnecting": "正在重新连接...",
-    "backOnline": "您已重新上线"
+    "backOnline": "您已重新上线",
+    "connectionRestored": "连接已恢复",
+    "offlineTitle": "您已离线",
+    "cachedQueryHint": "如果数据库已在本地缓存，您仍可以进行查询",
+    "offlineShort": "离线"
   },
   "cycleDiscovery": {
     "databaseNotLoaded": "数据库未加载。请等待数据库加载完成。",
@@ -1110,7 +1150,10 @@
     "netLabelNoByproducts": "（无）",
     "cycleClosesLabel": "Cycle closes — fuel returned to start",
     "catalystCenterLabel": "催化剂（循环利用）",
-    "byproductLabel": "副产物"
+    "byproductLabel": "副产物",
+    "cycleAroundCatalyst": "← 反应围绕催化剂循环 →",
+    "cycleIconLabel_one": "{{count}} 步循环",
+    "cycleIconLabel_other": "{{count}} 步循环"
   },
   "help": {
     "title": "帮助与术语表",
@@ -1128,6 +1171,56 @@
       "reaction": "反应类型",
       "database": "数据库字段",
       "measurement": "测量与单位"
+    },
+    "examples": {
+      "hLiFusion": {
+        "name": "氢-锂聚变",
+        "description": "经典的 LENR 反应路径。H + Li 聚变产生铍和氦的同位素，并释放大量能量。"
+      },
+      "niHFusion": {
+        "name": "镍-氢聚变",
+        "description": "Rossi E-Cat 和 Parkhomov 重复实验中研究的反应。Ni + H 反应产生铜的同位素。"
+      },
+      "uraniumFission": {
+        "name": "铀裂变路径",
+        "description": "铀同位素的所有裂变路径，展示铀分裂产物的多样分布。"
+      },
+      "palladiumFission": {
+        "name": "钯裂变",
+        "description": "与使用钯电极的 Fleischmann-Pons 冷聚变实验相关的 Pd 裂变路径。"
+      },
+      "protonBoron": {
+        "name": "质子-硼反应",
+        "description": "H + B-11 通过无中子聚变反应（p + B-11 → 3α）产生三个α粒子，被认为是理想的清洁能源。"
+      },
+      "deuteriumNickel": {
+        "name": "氘-镍反应",
+        "description": "D + Ni 二对二反应，展示氘与镍、锂、铝、硼和氮之间的嬗变。"
+      },
+      "u238DecayChain": {
+        "name": "铀-238 衰变链",
+        "description": "最著名的天然衰变系（4n+2）。追踪从 U-238 经镭和氡到稳定的 Pb-206 的 14 个步骤。"
+      },
+      "iron56": {
+        "name": "铁-56 — 结合能峰值",
+        "description": "Fe-56 是所有核素中每核子结合能最高的，因此是恒星核合成的终点。"
+      },
+      "palladiumNae": {
+        "name": "钯 NAE 分析",
+        "description": "探索钯的核活性环境（NAE）预测 — 这是 Fleischmann-Pons 氘加载实验的核心。"
+      },
+      "parkhomovCascade": {
+        "name": "Parkhomov Ni-LiAlH₄ 级联",
+        "description": "模拟 2014 年 Parkhomov 使用天然镍和氢化铝锂燃料对 Rossi 反应器的重复实验。"
+      }
+    },
+    "exampleTypes": {
+      "fusion": "聚变",
+      "fission": "裂变",
+      "twotwo": "2→2",
+      "elementData": "元素",
+      "cascades": "级联",
+      "mullerResonance": "共振"
     }
   },
   "mullerResonance": {
@@ -1454,6 +1547,428 @@
         "institution": "U.S. Department of Energy ARPA-E",
         "excerpt": "ARPA-E announced ~$10M in exploratory LENR research funding in 2023, signalling renewed institutional interest."
       }
+    }
+  },
+  "periodicSelector": {
+    "any": "任意",
+    "selectedSummary_one": "已选择 {{count}} 个：{{list}}",
+    "selectedSummary_other": "已选择 {{count}} 个：{{list}}",
+    "clearAll": "全部清除",
+    "removeItem": "移除 {{item}}",
+    "lanthanides": "镧系元素（57-71）",
+    "actinides": "锕系元素（89-103）"
+  },
+  "limitSelector": {
+    "resultLimit": "结果上限",
+    "all": "全部",
+    "unlimited": "无限制 ⚠️",
+    "custom": "自定义",
+    "enterCustomLimit": "输入自定义上限",
+    "recommended": "建议 ≤ {{max}}"
+  },
+  "badgeSelector": {
+    "allTypesShown": "显示所有类型",
+    "typesSelected_one": "已选择 {{count}} 种类型",
+    "typesSelected_other": "已选择 {{count}} 种类型"
+  },
+  "elementData": {
+    "subtitle": "通过多个数据视图查看详细的化学、物理和核性质",
+    "presets": {
+      "alphaDecay": "α衰变",
+      "betaMinusDecay": "β⁻衰变",
+      "betaPlusDecay": "β⁺衰变",
+      "gammaRadiation": "γ辐射"
+    },
+    "columns": {
+      "meltingK": "熔点（K）",
+      "boilingK": "沸点（K）",
+      "densityGcm3": "密度（g/cm³）",
+      "massAmu": "质量（amu）"
+    },
+    "radiiMeasured": "实测",
+    "radiiTheoretical": "理论",
+    "radiiNonBonded": "非键合",
+    "radiiBonded": "键合原子",
+    "viewSource": "查看来源",
+    "required": "（必填）",
+    "nuclideNotAvailable": "核素不可用",
+    "nuclideNotAvailableMessage": "核素 <strong>{{nuclide}}</strong> 在稳定核素数据库和放射性衰变数据库中均不存在。该同位素可能寿命极短，或超出已记录核素的范围。",
+    "availableNuclidesShown": "上方显示了 {{element}} 的可用核素。选择其中一个以查看其详细性质。",
+    "noNuclidesAvailable": "无可用核素",
+    "noNuclidesForElement": "数据库中没有 <strong>{{element}}</strong> 的核素。",
+    "elementNotInDataset": "当前数据集侧重于与低能核反应（LENR）研究相关的元素，此元素可能未被收录。",
+    "elementsTable": "元素表",
+    "elementsTableDescription": "浏览和搜索所有化学元素。点击任意行可在集成标签页中查看详细性质。",
+    "nuclidesTable": "核素表",
+    "nuclidesTableDescription": "浏览所有核素的结合能、玻色子/费米子分类和稳定性指标。点击任意行可在集成标签页中查看详细性质。",
+    "decaysTable": "放射性衰变表",
+    "decaysTableDescription": "浏览所有不稳定同位素的衰变模式、半衰期、能量和强度。点击任意行可在集成标签页中查看母核素。",
+    "searchElements": "按符号或名称搜索元素...",
+    "searchNuclides": "按元素名称、符号、Z 或 A 搜索核素...",
+    "searchDecays": "按元素、衰变模式或辐射类型搜索衰变...",
+    "status": {
+      "unknown": "未知",
+      "stablePrimordial": "稳定原生核素",
+      "synthetic": "人工合成",
+      "unstablePrimordial": "不稳定原生核素"
+    },
+    "classification": "分类",
+    "nuclearSpin": "核自旋",
+    "magneticMoment": "磁矩",
+    "nmrFrequency": "NMR 频率",
+    "primaryDecay": "主要衰变",
+    "decayEnergy": "衰变能",
+    "chemicalProperties": "化学性质",
+    "otherProperties": "其他性质",
+    "naturalOccurrence": "天然存在",
+    "additionalProperties": "附加性质"
+  },
+  "decayChain": {
+    "noData": "无衰变链数据",
+    "zoomIn": "放大",
+    "zoomOut": "缩小",
+    "resetView": "重置视图",
+    "controlsHint": "滚动缩放 • 拖动平移 • 双击放大",
+    "clickToViewDetails": "点击查看详情",
+    "decayModes": "衰变模式",
+    "alpha": "α衰变（α）",
+    "betaMinus": "β⁻衰变（β-）",
+    "betaPlus": "β⁺衰变（β+）"
+  },
+  "databaseLoading": {
+    "downloadingTitle": "正在下载数据库",
+    "loadingTitle": "正在加载数据库",
+    "downloadingMessage": "正在下载 Parkhomov 核反应数据库...",
+    "initializingMessage": "正在初始化数据库引擎...",
+    "cachedNotice": "此数据库将被缓存，以后访问时可即时加载",
+    "pleaseWait": "请稍候..."
+  },
+  "errorDisplay": {
+    "databaseErrorTitle": "数据库错误",
+    "somethingWentWrong": "出现问题",
+    "autoReported": "此错误已自动报告给我们的团队。",
+    "technicalDetails": "技术详情",
+    "fingerprint": "错误指纹",
+    "timestamp": "时间戳",
+    "browser": "浏览器",
+    "os": "操作系统",
+    "device": "设备",
+    "url": "URL",
+    "appVersion": "应用版本",
+    "clickToCopy": "点击复制",
+    "stackTrace": "堆栈跟踪",
+    "moduleLoad": {
+      "title": "模块加载失败",
+      "description": "当内容拦截器或广告拦截器阻止 JavaScript 模块加载时，此错误常见于 Safari（尤其是 iOS）。",
+      "trySolutions": "请尝试以下解决方法：",
+      "solution1": "为本站禁用 Safari 内容拦截器（设置 → Safari → 内容拦截器）",
+      "solution2": "禁用 AdBlock 等广告拦截浏览器扩展",
+      "solution3": "尝试使用无痕浏览模式或其他浏览器",
+      "solution4": "检查专用代理是否造成干扰（iCloud 设置 → 专用代理）",
+      "solution5": "清除 Safari 缓存和 Cookie，然后重新加载",
+      "note": "<strong>注意：</strong>此问题影响约 0.6% 的用户，通常可通过禁用内容拦截器解决。"
+    },
+    "corruption": {
+      "title": "检测到数据库损坏",
+      "description": "此错误通常在缓存的数据库文件损坏时发生。您可以清除缓存并重新下载数据库来修复。",
+      "clearing": "正在清除缓存...",
+      "clearAndReload": "清除缓存并重新加载",
+      "redownloadNote": "注意：这将重新下载 {{size}}MB 的数据库文件"
+    },
+    "searchSimilar": "搜索类似问题",
+    "searchFirstTitle": "请先搜索类似问题，以避免重复报告",
+    "copyingAndOpening": "正在复制到剪贴板并打开 GitHub...",
+    "copyAndReportTitle": "复制错误详情并打开 GitHub 报告",
+    "openingIn": "{{seconds}} 秒后打开...",
+    "copied": "已复制！",
+    "reportThisError": "报告此错误",
+    "reportCopied": "错误报告已复制到剪贴板！",
+    "openingGitHubIn": "{{seconds}} 秒后打开 GitHub... 粘贴后请填写复现步骤。",
+    "tryAgain": "重试",
+    "returnHome": "返回首页",
+    "searchFirstHint": "请<strong>先</strong>搜索类似问题，以避免重复报告",
+    "afterPastingHint": "<strong>重要：</strong>粘贴错误报告后，请填写“复现步骤”“预期行为”和“实际行为”部分，以帮助我们尽快修复此问题"
+  },
+  "filterPanel": {
+    "noFiltersActive": "无生效的筛选条件",
+    "errors": {
+      "nameRequired": "请输入预设名称",
+      "nameTooShort": "预设名称至少需要 {{min}} 个字符",
+      "nameTooLong": "预设名称必须少于 {{max}} 个字符",
+      "nameExists": "已存在同名预设"
+    },
+    "multiSelectHint": "按住 Ctrl/Cmd 可多选",
+    "min": "最小",
+    "max": "最大",
+    "clearSearch": "清除搜索",
+    "showingRecords": "显示 {{shown}} / {{total}} 条记录",
+    "loadPreset": "加载预设...",
+    "builtInPresets": "内置预设",
+    "myPresets": "我的预设",
+    "deletePresetTitle": "删除此预设",
+    "deletePreset": "删除预设",
+    "savePresetTitle": "将当前筛选条件保存为预设",
+    "savePreset": "保存预设...",
+    "clearAll": "全部清除",
+    "saveFilterPreset": "保存筛选预设",
+    "presetName": "预设名称",
+    "presetNamePlaceholder": "例如：我的自定义筛选",
+    "searchPlaceholder": "搜索...",
+    "confirmDeletePreset": "确定要删除此预设吗？"
+  },
+  "pwa": {
+    "installPromptLabel": "安装应用提示",
+    "installTitle": "安装 {{appName}}",
+    "installDescription": "安装应用以便快速访问并支持离线使用",
+    "iosTitle": "在 iOS 上安装：",
+    "iosStep1": "点击 Safari 中的分享按钮",
+    "iosStep2": "向下滚动并点击“添加到主屏幕”",
+    "iosStep3": "点击右上角的“添加”",
+    "installNow": "立即安装",
+    "dismissInstall": "关闭安装提示",
+    "newVersionAvailable": "有新版本可用！",
+    "updateDescription": "点击更新以获取最新功能和改进",
+    "dismissUpdate": "关闭更新通知"
+  },
+  "particleDetails": {
+    "electronDescription": "带负电荷的基本轻子，围绕原子核运动。",
+    "neutronDescription": "存在于几乎所有原子核中的电中性重子。",
+    "neutrinoDescription": "质量几乎为零、电中性的轻子，仅通过弱相互作用发生作用。",
+    "notAvailable": "不适用",
+    "quickFacts": "基本信息",
+    "charge": "电荷",
+    "spin": "自旋",
+    "databaseMapping": "数据库映射",
+    "nuclideId": "核素 ID",
+    "nuclearBaryonic": "核/重子",
+    "atomicFermionic": "原子/费米子",
+    "notes": "备注",
+    "storageNote": "该粒子因出现在反应中而与核素一起存储，但并不对应任何化学元素。"
+  },
+  "proportions": {
+    "fuelProportions": "燃料比例",
+    "formatLabel": {
+      "percentage": "百分比（%）",
+      "atomicRatio": "原子比",
+      "massRatio": "质量比（g）"
+    },
+    "formatHelp": {
+      "percentage": "输入百分比（0-100）。数值将归一化为 100%。",
+      "atomicRatio": "输入原子比（例如 3:1 变为 75%:25%）。",
+      "massRatio": "以克为单位输入质量。将使用原子质量换算为摩尔。"
+    },
+    "selectFuelFirst": "选择燃料核素以配置比例",
+    "equal": "均等",
+    "natural": "天然",
+    "normalize": "归一化",
+    "total": "总计",
+    "willBeNormalized": "（将被归一化）"
+  },
+  "sortableTable": {
+    "noData": "暂无数据",
+    "collapseAll": "全部收起",
+    "tabs": "标签页"
+  },
+  "radioactiveCard": {
+    "limitedData": "<strong>数据有限：</strong>该同位素仅存在于放射性衰变数据库中。此短寿命核素没有完整的核性质数据（结合能、原子质量、量子性质）。",
+    "primaryDecayMode": "主要衰变模式",
+    "radiation": "辐射"
+  },
+  "privacyPage": {
+    "title": "隐私设置",
+    "subtitle": "管理您的分析和错误报告偏好，了解我们如何保护您的隐私",
+    "reloadToApply": "要应用错误报告设置的更改，请重新加载页面。",
+    "reloadNow": "立即重新加载页面",
+    "errorReporting": {
+      "title": "错误报告",
+      "disabledStatus": "错误报告已禁用",
+      "disabledStatusDescription": "错误不会报告给我们的开发团队",
+      "enabledStatusDescription": "正在帮助我们自动发现并修复错误",
+      "saved": "✓ 您的错误报告偏好已保存",
+      "whyTitle": "为什么错误报告至关重要",
+      "whyIntro": "错误报告帮助我们发现并修复影响您使用体验的错误。发生错误时，我们会收到匿名化的技术详情，帮助我们：",
+      "why1": "更快地修复错误并提高稳定性",
+      "why2": "了解哪些功能需要改进",
+      "why3": "根据实际问题确定开发优先级",
+      "why4": "确保应用对所有用户都能正常运行",
+      "manage": "管理错误报告",
+      "enable": "启用错误报告",
+      "enableDescription": "自动报告错误，帮助我们修复问题",
+      "disable": "禁用错误报告",
+      "disableDescription": "不发送错误报告（应用可能不够稳定）",
+      "whatReported": "报告的内容：",
+      "reported1": "错误消息和堆栈跟踪",
+      "reported2": "浏览器类型和版本",
+      "reported3": "页面 URL（已清除查询参数）",
+      "reported4": "应用版本和发布信息",
+      "whatNotReported": "不会报告的内容：",
+      "notReported1": "个人信息或 IP 地址",
+      "notReported3": "会话录制或屏幕截图",
+      "notReported4": "任何可识别身份的用户数据",
+      "enabledStatus": "错误报告已启用",
+      "helpMessage": "<strong>您的帮助让这个项目对所有人都更好！</strong>启用错误报告是您为 LENR Academy 的成功做出贡献的最有效方式之一。",
+      "sentryNotice": "我们使用托管于欧盟的 <strong>Sentry</strong> 以符合 GDPR。所有数据均已匿名化，仅用于调试。"
+    },
+    "searchQueriesOrInputs": "搜索查询或表单输入",
+    "analytics": {
+      "title": "分析",
+      "enabledStatus": "分析已启用",
+      "enabledStatusDescription": "正在通过隐私友好的分析帮助我们改进网站",
+      "disabledStatus": "分析已禁用",
+      "disabledStatusDescription": "我们不会从您的访问中收集任何使用数据",
+      "noPreference": "未设置偏好",
+      "noPreferenceDescription": "您尚未做出选择",
+      "saved": "✓ 您的分析偏好已保存",
+      "manage": "管理分析",
+      "enable": "启用分析",
+      "enableDescription": "帮助我们了解访问者如何使用本网站",
+      "disable": "禁用分析",
+      "disableDescription": "不从您的访问中收集使用数据",
+      "whatTracked": "我们跟踪的内容：",
+      "tracked1": "页面浏览量和导航模式",
+      "tracked2": "来源网站（访问者从何处而来）",
+      "tracked3": "浏览器和设备类型（匿名化）",
+      "tracked4": "国家/地区（基于 IP，不存储）",
+      "whatNotTracked": "我们不跟踪的内容：",
+      "notTracked1": "个人信息或可识别身份的数据",
+      "notTracked2": "跨会话的单个用户",
+      "notTracked3": "Cookie（我们不使用任何跟踪 Cookie）",
+      "notTracked4": "IP 地址（不存储）",
+      "transparencyTitle": "完全透明",
+      "transparencyDescription": "我们坚持完全透明。您可以查看我们的公开分析仪表板，准确了解我们收集了哪些数据以及如何展示。没有秘密，没有隐藏的跟踪。",
+      "viewDashboard": "查看公开分析仪表板",
+      "umamiCompliance": "Umami 完全符合 GDPR、CCPA 和 PECR。它旨在为网站所有者提供洞察，同时不侵犯访问者隐私。",
+      "learnMoreUmami": "了解更多关于 Umami 的信息",
+      "umamiIntro": "我们使用 <strong>Umami Analytics</strong>，这是一个尊重您隐私的开源分析平台。"
+    },
+    "default": "（默认）"
+  },
+  "radiationTypes": {
+    "A": {
+      "name": "α粒子",
+      "description": "He-4 原子核"
+    },
+    "B-": {
+      "name": "β⁻",
+      "description": "电子发射"
+    },
+    "B+": {
+      "name": "β⁺",
+      "description": "正电子发射"
+    },
+    "B": {
+      "name": "β衰变",
+      "description": "符号未指明"
+    },
+    "EC": {
+      "name": "电子俘获",
+      "description": "吸收轨道电子"
+    },
+    "IT": {
+      "name": "同质异能跃迁",
+      "description": "激发态衰变"
+    },
+    "G": {
+      "name": "γ射线",
+      "description": "高能光子"
+    },
+    "G-AN": {
+      "name": "湮灭γ射线",
+      "description": "正电子湮灭"
+    },
+    "G-X-K": {
+      "name": "K层X射线",
+      "description": "K层跃迁"
+    },
+    "G-X-KA1": {
+      "name": "Kα1 X射线",
+      "description": "K层 α1 跃迁"
+    },
+    "G-X-KA2": {
+      "name": "Kα2 X射线",
+      "description": "K层 α2 跃迁"
+    },
+    "G-X-KB": {
+      "name": "Kβ X射线",
+      "description": "K层 β 跃迁"
+    },
+    "G-X-L": {
+      "name": "L层X射线",
+      "description": "L层跃迁"
+    },
+    "E-CE-K": {
+      "name": "K层内转换电子",
+      "description": "K层内转换"
+    },
+    "E-CE-L": {
+      "name": "L层内转换电子",
+      "description": "L层内转换"
+    },
+    "E-CE-M": {
+      "name": "M层内转换电子",
+      "description": "M层内转换"
+    },
+    "E-CE-M+": {
+      "name": "M+层内转换电子",
+      "description": "M+层内转换"
+    },
+    "E-CE-MN+": {
+      "name": "MN+层内转换电子",
+      "description": "MN+层内转换"
+    },
+    "E-CE-N+": {
+      "name": "N+层内转换电子",
+      "description": "N+层内转换"
+    },
+    "E-AU-K": {
+      "name": "K层俄歇电子",
+      "description": "K层原子退激发"
+    },
+    "E-AU-L": {
+      "name": "L层俄歇电子",
+      "description": "L层原子退激发"
+    }
+  },
+  "decayModes": {
+    "A": {
+      "name": "α衰变",
+      "description": "发射一个α粒子（2个质子 + 2个中子）"
+    },
+    "B-": {
+      "name": "β⁻衰变",
+      "description": "中子转变为质子、电子和反中微子"
+    },
+    "B+": {
+      "name": "β⁺衰变",
+      "description": "质子转变为中子、正电子和中微子"
+    },
+    "EC": {
+      "name": "电子俘获",
+      "description": "质子俘获内层轨道电子，转变为中子"
+    },
+    "IT": {
+      "name": "同质异能跃迁",
+      "description": "激发态原子核释放能量而不改变组成"
+    },
+    "SF": {
+      "name": "自发裂变",
+      "description": "原子核分裂为较轻的原子核"
+    },
+    "N": {
+      "name": "中子发射",
+      "description": "原子核发射一个或多个中子"
+    },
+    "P": {
+      "name": "质子发射",
+      "description": "原子核发射一个质子"
+    },
+    "2N": {
+      "name": "双中子发射",
+      "description": "原子核发射两个中子"
+    },
+    "2P": {
+      "name": "双质子发射",
+      "description": "原子核发射两个质子"
     }
   }
 }

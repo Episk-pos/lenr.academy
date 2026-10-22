@@ -25,7 +25,11 @@
     "back": "Wstecz",
     "next": "Dalej",
     "previous": "Poprzedni",
-    "continue": "Kontynuuj"
+    "continue": "Kontynuuj",
+    "selectAll": "Zaznacz wszystko",
+    "expand": "Rozwiń",
+    "collapse": "Zwiń",
+    "unknownError": "Wystąpił nieznany błąd"
   },
   "brand": {
     "appName": "Nanosoft Suite",
@@ -201,7 +205,25 @@
     "filterAll": "Wszystkie",
     "filterFusion": "Synteza",
     "filterFission": "Rozszczepienie",
-    "filterTwoToTwo": "2→2"
+    "filterTwoToTwo": "2→2",
+    "allElements": "Wszystkie pierwiastki",
+    "label": "{{type}} {{elements}}",
+    "resultCount_one": "{{count}} wynik",
+    "resultCount_few": "{{count}} wyniki",
+    "resultCount_many": "{{count}} wyników",
+    "resultCount_other": "{{count}} wyniku",
+    "bookmark": "Dodaj zakładkę",
+    "removeBookmark": "Usuń zakładkę",
+    "remove": "Usuń",
+    "summary": {
+      "e1": "E1: {{list}}",
+      "e2": "E2: {{list}}",
+      "e": "E: {{list}}",
+      "out": "Wyj.: {{list}}",
+      "outN": "Wyj.{{n}}: {{list}}",
+      "limit": "limit: {{limit}}",
+      "noFilters": "Brak filtrów"
+    }
   },
   "elements": {
     "element": "Pierwiastek",
@@ -353,7 +375,9 @@
     "stableCount": "stabilne",
     "radioactiveCount": "promieniotwórcze",
     "radiationTypeLegend": "Legenda rodzajów promieniowania",
-    "notAvailableInDatabase": "Niedostępne w bazie danych"
+    "notAvailableInDatabase": "Niedostępne w bazie danych",
+    "electricalConductivity": "Przewodność elektryczna",
+    "valueYears": "{{value}} lat"
   },
   "reactions": {
     "reaction": "Reakcja",
@@ -479,7 +503,14 @@
       "rightTitle": "Antyneutrino (ν̄, prawoskrętne): całkowity ładunek jądrowy rośnie o 1 (typ β⁻)",
       "none": "—",
       "noneTitle": "Bez udziału neutrin"
-    }
+    },
+    "selectHeatmapMetric": "Wybierz metrykę mapy cieplnej",
+    "removeLimitTitle": "Usuń limit i pokaż w tabeli wszystkie pasujące reakcje",
+    "resizeHandleDisabled": "Uchwyt zmiany rozmiaru (wyłączony dla małych zbiorów wyników)",
+    "resizeHandle": "Przeciągnij, aby zmienić wysokość tabeli (dwuklik przywraca domyślną)",
+    "fusionResultsLabel": "Wyniki reakcji syntezy",
+    "fissionResultsLabel": "Wyniki reakcji rozszczepienia",
+    "twoToTwoResultsLabel": "Wyniki reakcji dwa-na-dwa"
   },
   "histogram": {
     "title": "Rozkład energii",
@@ -814,7 +845,10 @@
       "zoomReset": "Resetuj powiększenie",
       "advancedSettings": "Ustawienia zaawansowane",
       "maxPathways": "Maks. liczba ścieżek: {{count}}"
-    }
+    },
+    "customMaterialNamePlaceholder": "Moja mieszanka paliwowa",
+    "optionalDescription": "Opcjonalny opis...",
+    "pathwayResultsTable": "Tabela wyników ścieżek"
   },
   "materials": {
     "natural-lithium": {
@@ -1011,7 +1045,11 @@
     "databaseUpdateAvailable": "Dostępna aktualizacja bazy danych: v{{current}} → v{{available}}",
     "databaseUpdateReady": "Aktualizacja bazy danych gotowa (v{{version}}) — odśwież, aby korzystać z nowych danych",
     "downloadingUpdate": "Pobieranie aktualizacji bazy danych w tle...",
-    "downloadUpdate": "Pobierz aktualizację"
+    "downloadUpdate": "Pobierz aktualizację",
+    "noChangelogDetails": "Brak szczegółów zmian dla tego wydania.",
+    "latestRelease": "Najnowsze wydanie",
+    "releaseNotesUnavailable": "Szczegółowe informacje o wydaniu nie są dostępne dla tej kompilacji.",
+    "releaseNotesLoadFailed": "Nie udało się wczytać informacji o wydaniu."
   },
   "columnToggle": {
     "title": "Dostosuj widoczne kolumny",
@@ -1024,7 +1062,11 @@
     "youAreOffline": "Jesteś offline",
     "offlineMessage": "Niektóre funkcje mogą być niedostępne",
     "reconnecting": "Ponowne łączenie...",
-    "backOnline": "Znowu jesteś online"
+    "backOnline": "Znowu jesteś online",
+    "connectionRestored": "Połączenie przywrócone",
+    "offlineTitle": "Jesteś offline",
+    "cachedQueryHint": "Nadal możesz przeszukiwać bazę danych, jeśli jest zapisana lokalnie w pamięci podręcznej",
+    "offlineShort": "Offline"
   },
   "cycleDiscovery": {
     "databaseNotLoaded": "Baza danych nie została załadowana. Poczekaj na zakończenie ładowania bazy danych.",
@@ -1114,7 +1156,12 @@
     "netLabelNoByproducts": "(brak)",
     "cycleClosesLabel": "Cykl się zamyka — katalizator zregenerowany",
     "catalystCenterLabel": "Katalizator (zawracany)",
-    "byproductLabel": "produkt uboczny"
+    "byproductLabel": "produkt uboczny",
+    "cycleAroundCatalyst": "← reakcje krążą wokół katalizatora →",
+    "cycleIconLabel_one": "Cykl: {{count}} krok",
+    "cycleIconLabel_few": "Cykl: {{count}} kroki",
+    "cycleIconLabel_many": "Cykl: {{count}} kroków",
+    "cycleIconLabel_other": "Cykl: {{count}} kroku"
   },
   "help": {
     "title": "Pomoc i słowniczek",
@@ -1132,6 +1179,56 @@
       "reaction": "Typy reakcji",
       "database": "Pola bazy danych",
       "measurement": "Pomiary i jednostki"
+    },
+    "examples": {
+      "hLiFusion": {
+        "name": "Synteza wodór-lit",
+        "description": "Klasyczna ścieżka reakcji LENR. Synteza H + Li daje izotopy berylu i helu ze znacznym wydzieleniem energii."
+      },
+      "niHFusion": {
+        "name": "Synteza nikiel-wodór",
+        "description": "Badana w E-Cat Rossiego i eksperymentach replikacyjnych Parkhomova. Reakcje Ni + H dają izotopy miedzi."
+      },
+      "uraniumFission": {
+        "name": "Ścieżki rozszczepienia uranu",
+        "description": "Wszystkie ścieżki rozszczepienia izotopów uranu. Pokazuje zróżnicowane spektrum produktów rozpadu uranu."
+      },
+      "palladiumFission": {
+        "name": "Rozszczepienie palladu",
+        "description": "Ścieżki rozszczepienia Pd istotne dla eksperymentów zimnej fuzji Fleischmanna-Ponsa z elektrodami palladowymi."
+      },
+      "protonBoron": {
+        "name": "Reakcje proton-bor",
+        "description": "H + B-11 daje trzy cząstki alfa w bezneutronowej reakcji syntezy (p + B-11 → 3α), uważanej za idealną dla czystej energii."
+      },
+      "deuteriumNickel": {
+        "name": "Reakcje deuter-nikiel",
+        "description": "Reakcje dwa-na-dwa D + Ni ukazujące transmutacje z udziałem deuteru z niklem, litem, glinem, borem i azotem."
+      },
+      "u238DecayChain": {
+        "name": "Łańcuch rozpadu uranu-238",
+        "description": "Najsłynniejszy naturalny szereg promieniotwórczy (4n+2). Prześledź 14 kroków od U-238 przez rad i radon aż do stabilnego Pb-206."
+      },
+      "iron56": {
+        "name": "Żelazo-56 — szczyt energii wiązania",
+        "description": "Fe-56 ma najwyższą energię wiązania na nukleon spośród wszystkich nuklidów, co czyni go punktem końcowym nukleosyntezy gwiazdowej."
+      },
+      "palladiumNae": {
+        "name": "Analiza NAE palladu",
+        "description": "Zbadaj przewidywania jądrowo aktywnego środowiska (NAE) palladu — kluczowe dla eksperymentów Fleischmanna-Ponsa z nasycaniem deuterem."
+      },
+      "parkhomovCascade": {
+        "name": "Kaskada Ni-LiAlH₄ Parkhomova",
+        "description": "Zasymuluj replikację reaktora Rossiego wykonaną przez Parkhomova w 2014 roku z użyciem naturalnego niklu i paliwa z wodorku litowo-glinowego."
+      }
+    },
+    "exampleTypes": {
+      "fusion": "synteza",
+      "fission": "rozszczepienie",
+      "twotwo": "2→2",
+      "elementData": "pierwiastek",
+      "cascades": "kaskada",
+      "mullerResonance": "rezonans"
     }
   },
   "mullerResonance": {
@@ -1462,6 +1559,432 @@
         "institution": "ARPA-E, Departament Energii USA",
         "excerpt": "W 2023 roku ARPA-E ogłosiła ok. 10 mln USD finansowania eksploracyjnych badań LENR, co sygnalizuje odnowione zainteresowanie instytucjonalne."
       }
+    }
+  },
+  "periodicSelector": {
+    "any": "Dowolny",
+    "selectedSummary_one": "Wybrano {{count}}: {{list}}",
+    "selectedSummary_few": "Wybrano {{count}}: {{list}}",
+    "selectedSummary_many": "Wybrano {{count}}: {{list}}",
+    "selectedSummary_other": "Wybrano {{count}}: {{list}}",
+    "clearAll": "Wyczyść wszystko",
+    "removeItem": "Usuń {{item}}",
+    "lanthanides": "Lantanowce (57-71)",
+    "actinides": "Aktynowce (89-103)"
+  },
+  "limitSelector": {
+    "resultLimit": "Limit wyników",
+    "all": "Wszystkie",
+    "unlimited": "Bez limitu ⚠️",
+    "custom": "Własny",
+    "enterCustomLimit": "Wpisz własny limit",
+    "recommended": "Zalecane ≤ {{max}}"
+  },
+  "badgeSelector": {
+    "allTypesShown": "Pokazano wszystkie typy",
+    "typesSelected_one": "Wybrano {{count}} typ",
+    "typesSelected_few": "Wybrano {{count}} typy",
+    "typesSelected_many": "Wybrano {{count}} typów",
+    "typesSelected_other": "Wybrano {{count}} typu"
+  },
+  "elementData": {
+    "subtitle": "Przeglądaj szczegółowe właściwości chemiczne, fizyczne i jądrowe w wielu widokach danych",
+    "presets": {
+      "alphaDecay": "Rozpad alfa",
+      "betaMinusDecay": "Rozpad beta minus",
+      "betaPlusDecay": "Rozpad beta plus",
+      "gammaRadiation": "Promieniowanie gamma"
+    },
+    "columns": {
+      "meltingK": "Topnienie (K)",
+      "boilingK": "Wrzenie (K)",
+      "densityGcm3": "Gęstość (g/cm³)",
+      "massAmu": "Masa (amu)"
+    },
+    "radiiMeasured": "Zmierzony",
+    "radiiTheoretical": "Teoretyczny",
+    "radiiNonBonded": "Niezwiązany",
+    "radiiBonded": "Atomy związane",
+    "viewSource": "zobacz źródło",
+    "required": "(wymagane)",
+    "nuclideNotAvailable": "Nuklid niedostępny",
+    "nuclideNotAvailableMessage": "Nuklid <strong>{{nuclide}}</strong> nie jest dostępny ani w bazie nuklidów stabilnych, ani w bazie rozpadów promieniotwórczych. Ten izotop może być skrajnie krótkożyciowy lub wykraczać poza zakres udokumentowanych nuklidów.",
+    "availableNuclidesShown": "Dostępne nuklidy dla {{element}} są pokazane powyżej. Wybierz jeden, aby zobaczyć jego szczegółowe właściwości.",
+    "noNuclidesAvailable": "Brak dostępnych nuklidów",
+    "noNuclidesForElement": "W bazie danych nie ma nuklidów dla <strong>{{element}}</strong>.",
+    "elementNotInDataset": "Ten pierwiastek może nie być uwzględniony w bieżącym zbiorze danych, który koncentruje się na pierwiastkach istotnych dla badań niskoenergetycznych reakcji jądrowych (LENR).",
+    "elementsTable": "Tabela pierwiastków",
+    "elementsTableDescription": "Przeglądaj i wyszukuj wszystkie pierwiastki chemiczne. Kliknij dowolny wiersz, aby zobaczyć szczegółowe właściwości na karcie Zintegrowany.",
+    "nuclidesTable": "Tabela nuklidów",
+    "nuclidesTableDescription": "Przeglądaj wszystkie izotopy z energiami wiązania, klasyfikacją bozon/fermion i wskaźnikami stabilności. Kliknij dowolny wiersz, aby zobaczyć szczegółowe właściwości na karcie Zintegrowany.",
+    "decaysTable": "Tabela rozpadów promieniotwórczych",
+    "decaysTableDescription": "Przeglądaj tryby rozpadu, czasy połowicznego rozpadu, energie i intensywności dla wszystkich niestabilnych izotopów. Kliknij dowolny wiersz, aby zobaczyć nuklid macierzysty na karcie Zintegrowany.",
+    "searchElements": "Szukaj pierwiastków po symbolu lub nazwie...",
+    "searchNuclides": "Szukaj nuklidów po nazwie pierwiastka, symbolu, Z lub A...",
+    "searchDecays": "Szukaj rozpadów po pierwiastku, trybie rozpadu lub rodzaju promieniowania...",
+    "status": {
+      "unknown": "Nieznany",
+      "stablePrimordial": "Stabilny pierwotny",
+      "synthetic": "Syntetyczny",
+      "unstablePrimordial": "Niestabilny pierwotny"
+    },
+    "classification": "Klasyfikacja",
+    "nuclearSpin": "Spin jądrowy",
+    "magneticMoment": "Moment magnetyczny",
+    "nmrFrequency": "Częstotliwość NMR",
+    "primaryDecay": "Główny rozpad",
+    "decayEnergy": "Energia rozpadu",
+    "chemicalProperties": "Właściwości chemiczne",
+    "otherProperties": "Inne właściwości",
+    "naturalOccurrence": "Występowanie naturalne",
+    "additionalProperties": "Dodatkowe właściwości"
+  },
+  "decayChain": {
+    "noData": "Brak danych o łańcuchu rozpadu",
+    "zoomIn": "Powiększ",
+    "zoomOut": "Pomniejsz",
+    "resetView": "Resetuj widok",
+    "controlsHint": "Przewiń, aby powiększyć • Przeciągnij, aby przesunąć • Dwuklik, aby przybliżyć",
+    "clickToViewDetails": "Kliknij, aby zobaczyć szczegóły",
+    "decayModes": "Tryby rozpadu",
+    "alpha": "Alfa (α)",
+    "betaMinus": "Beta- (β-)",
+    "betaPlus": "Beta+ (β+)"
+  },
+  "databaseLoading": {
+    "downloadingTitle": "Pobieranie bazy danych",
+    "loadingTitle": "Ładowanie bazy danych",
+    "downloadingMessage": "Pobieranie bazy danych reakcji jądrowych Parkhomova...",
+    "initializingMessage": "Inicjalizacja silnika bazy danych...",
+    "cachedNotice": "Ta baza danych zostanie zapisana w pamięci podręcznej, aby przy kolejnych wizytach ładowała się natychmiast",
+    "pleaseWait": "Proszę chwilę poczekać..."
+  },
+  "errorDisplay": {
+    "databaseErrorTitle": "Błąd bazy danych",
+    "somethingWentWrong": "Coś poszło nie tak",
+    "autoReported": "Ten błąd został automatycznie zgłoszony naszemu zespołowi.",
+    "technicalDetails": "Szczegóły techniczne",
+    "fingerprint": "Odcisk błędu",
+    "timestamp": "Znacznik czasu",
+    "browser": "Przeglądarka",
+    "os": "System",
+    "device": "Urządzenie",
+    "url": "URL",
+    "appVersion": "Wersja aplikacji",
+    "clickToCopy": "Kliknij, aby skopiować",
+    "stackTrace": "Ślad stosu",
+    "moduleLoad": {
+      "title": "Nie udało się załadować modułu",
+      "description": "Ten błąd występuje zwykle w Safari (zwłaszcza na iOS), gdy blokery treści lub reklam uniemożliwiają ładowanie modułów JavaScript.",
+      "trySolutions": "Wypróbuj te rozwiązania:",
+      "solution1": "Wyłącz blokery treści Safari dla tej witryny (Ustawienia → Safari → Blokery treści)",
+      "solution2": "Wyłącz rozszerzenia przeglądarki, takie jak AdBlock lub podobne blokery reklam",
+      "solution3": "Spróbuj trybu przeglądania prywatnego lub innej przeglądarki",
+      "solution4": "Sprawdź, czy nie przeszkadza Przekaźnik prywatny (Ustawienia iCloud → Przekaźnik prywatny)",
+      "solution5": "Wyczyść pamięć podręczną i pliki cookie Safari, a następnie odśwież stronę",
+      "note": "<strong>Uwaga:</strong> Dotyczy to około 0,6% użytkowników i zwykle rozwiązuje się po wyłączeniu blokerów treści."
+    },
+    "corruption": {
+      "title": "Wykryto uszkodzenie bazy danych",
+      "description": "Ten błąd występuje zwykle, gdy plik bazy danych w pamięci podręcznej jest uszkodzony. Możesz to naprawić, czyszcząc pamięć podręczną i pobierając bazę danych ponownie.",
+      "clearing": "Czyszczenie pamięci podręcznej...",
+      "clearAndReload": "Wyczyść pamięć podręczną i odśwież",
+      "redownloadNote": "Uwaga: spowoduje to ponowne pobranie pliku bazy danych o rozmiarze {{size}}MB"
+    },
+    "searchSimilar": "Szukaj podobnych zgłoszeń",
+    "searchFirstTitle": "Najpierw poszukaj podobnych zgłoszeń, aby uniknąć duplikatów",
+    "copyingAndOpening": "Kopiowanie do schowka i otwieranie GitHuba...",
+    "copyAndReportTitle": "Skopiuj szczegóły błędu i otwórz GitHub, aby go zgłosić",
+    "openingIn": "Otwieranie za {{seconds}}s...",
+    "copied": "Skopiowano!",
+    "reportThisError": "Zgłoś ten błąd",
+    "reportCopied": "Raport o błędzie skopiowano do schowka!",
+    "openingGitHubIn": "Otwieranie GitHuba za {{seconds}}s... Po wklejeniu uzupełnij kroki odtworzenia błędu.",
+    "tryAgain": "Spróbuj ponownie",
+    "returnHome": "Wróć do strony głównej",
+    "searchFirstHint": "<strong>Najpierw</strong> poszukaj podobnych zgłoszeń, aby uniknąć duplikatów",
+    "afterPastingHint": "<strong>Ważne:</strong> Po wklejeniu raportu o błędzie uzupełnij sekcje Kroki odtworzenia, Oczekiwane zachowanie i Rzeczywiste zachowanie, aby pomóc nam szybko naprawić ten problem"
+  },
+  "filterPanel": {
+    "noFiltersActive": "Brak aktywnych filtrów",
+    "errors": {
+      "nameRequired": "Wpisz nazwę ustawienia wstępnego",
+      "nameTooShort": "Nazwa ustawienia wstępnego musi mieć co najmniej {{min}} znaki",
+      "nameTooLong": "Nazwa ustawienia wstępnego musi mieć mniej niż {{max}} znaków",
+      "nameExists": "Ustawienie wstępne o tej nazwie już istnieje"
+    },
+    "multiSelectHint": "Przytrzymaj Ctrl/Cmd, aby zaznaczyć wiele",
+    "min": "Min",
+    "max": "Maks",
+    "clearSearch": "Wyczyść wyszukiwanie",
+    "showingRecords": "Wyświetlono {{shown}} z {{total}} rekordów",
+    "loadPreset": "Wczytaj ustawienie wstępne...",
+    "builtInPresets": "Wbudowane ustawienia wstępne",
+    "myPresets": "Moje ustawienia wstępne",
+    "deletePresetTitle": "Usuń to ustawienie wstępne",
+    "deletePreset": "Usuń ustawienie wstępne",
+    "savePresetTitle": "Zapisz bieżące filtry jako ustawienie wstępne",
+    "savePreset": "Zapisz ustawienie wstępne...",
+    "clearAll": "Wyczyść wszystko",
+    "saveFilterPreset": "Zapisz ustawienie wstępne filtrów",
+    "presetName": "Nazwa ustawienia wstępnego",
+    "presetNamePlaceholder": "np. Mój własny filtr",
+    "searchPlaceholder": "Szukaj...",
+    "confirmDeletePreset": "Czy na pewno chcesz usunąć to ustawienie wstępne?"
+  },
+  "pwa": {
+    "installPromptLabel": "Monit instalacji aplikacji",
+    "installTitle": "Zainstaluj {{appName}}",
+    "installDescription": "Zainstaluj aplikację, aby mieć szybki dostęp i działanie offline",
+    "iosTitle": "Aby zainstalować na iOS:",
+    "iosStep1": "Stuknij przycisk Udostępnij w Safari",
+    "iosStep2": "Przewiń w dół i stuknij „Do ekranu początkowego”",
+    "iosStep3": "Stuknij „Dodaj” w prawym górnym rogu",
+    "installNow": "Zainstaluj teraz",
+    "dismissInstall": "Zamknij monit instalacji",
+    "newVersionAvailable": "Dostępna nowa wersja!",
+    "updateDescription": "Kliknij aktualizuj, aby uzyskać najnowsze funkcje i ulepszenia",
+    "dismissUpdate": "Zamknij powiadomienie o aktualizacji"
+  },
+  "particleDetails": {
+    "electronDescription": "Podstawowy lepton o ujemnym ładunku elektrycznym, krążący wokół jąder atomowych.",
+    "neutronDescription": "Obojętny barion występujący w jądrach niemal wszystkich atomów.",
+    "neutrinoDescription": "Niemal bezmasowy, elektrycznie obojętny lepton oddziałujący wyłącznie poprzez oddziaływanie słabe.",
+    "notAvailable": "b.d.",
+    "quickFacts": "Najważniejsze fakty",
+    "charge": "Ładunek",
+    "spin": "Spin",
+    "databaseMapping": "Mapowanie w bazie danych",
+    "nuclideId": "ID nuklidu",
+    "nuclearBaryonic": "Jądrowy/barionowy",
+    "atomicFermionic": "Atomowy/fermionowy",
+    "notes": "Uwagi",
+    "storageNote": "Ta cząstka jest przechowywana razem z nuklidami, ponieważ występuje w reakcjach, ale nie odpowiada żadnemu pierwiastkowi chemicznemu."
+  },
+  "proportions": {
+    "fuelProportions": "Proporcje paliwa",
+    "formatLabel": {
+      "percentage": "Procent (%)",
+      "atomicRatio": "Stosunek atomowy",
+      "massRatio": "Stosunek masowy (g)"
+    },
+    "formatHelp": {
+      "percentage": "Wpisz wartości procentowe (0-100). Wartości zostaną znormalizowane do 100%.",
+      "atomicRatio": "Wpisz stosunki atomowe (np. 3:1 daje 75%:25%).",
+      "massRatio": "Wpisz masy w gramach. Są przeliczane na mole na podstawie masy atomowej."
+    },
+    "selectFuelFirst": "Wybierz nuklidy paliwowe, aby skonfigurować proporcje",
+    "equal": "Równe",
+    "natural": "Naturalne",
+    "normalize": "Normalizuj",
+    "total": "Suma",
+    "willBeNormalized": "(zostanie znormalizowane)"
+  },
+  "sortableTable": {
+    "noData": "Brak danych",
+    "collapseAll": "Zwiń wszystko",
+    "tabs": "Karty"
+  },
+  "radioactiveCard": {
+    "limitedData": "<strong>Dostępne ograniczone dane:</strong> Ten izotop występuje tylko w bazie rozpadów promieniotwórczych. Pełne dane o właściwościach jądrowych (energia wiązania, masa atomowa, właściwości kwantowe) nie są dostępne dla tego krótkożyciowego nuklidu.",
+    "primaryDecayMode": "Główny tryb rozpadu",
+    "radiation": "Promieniowanie"
+  },
+  "privacyPage": {
+    "title": "Ustawienia prywatności",
+    "subtitle": "Zarządzaj preferencjami analityki i zgłaszania błędów oraz dowiedz się, jak chronimy Twoją prywatność",
+    "reloadToApply": "Aby zastosować zmiany w zgłaszaniu błędów, odśwież stronę.",
+    "reloadNow": "Odśwież stronę teraz",
+    "errorReporting": {
+      "title": "Zgłaszanie błędów",
+      "disabledStatus": "Zgłaszanie błędów wyłączone",
+      "disabledStatusDescription": "Błędy nie będą zgłaszane naszemu zespołowi programistów",
+      "enabledStatusDescription": "Pomagasz nam automatycznie wykrywać i naprawiać błędy",
+      "saved": "✓ Twoja preferencja zgłaszania błędów została zapisana",
+      "whyTitle": "Dlaczego zgłaszanie błędów jest tak ważne",
+      "whyIntro": "Zgłaszanie błędów pomaga nam wykrywać i naprawiać usterki, które wpływają na Twoje doświadczenia. Gdy wystąpi błąd, otrzymujemy zanonimizowane szczegóły techniczne, które pomagają nam:",
+      "why1": "Szybciej naprawiać błędy i poprawiać stabilność",
+      "why2": "Zrozumieć, które funkcje wymagają ulepszeń",
+      "why3": "Ustalać priorytety rozwoju na podstawie rzeczywistych problemów",
+      "why4": "Zapewnić poprawne działanie aplikacji dla wszystkich użytkowników",
+      "manage": "Zarządzaj zgłaszaniem błędów",
+      "enable": "Włącz zgłaszanie błędów",
+      "enableDescription": "Automatycznie zgłaszaj błędy, aby pomóc nam je naprawiać",
+      "disable": "Wyłącz zgłaszanie błędów",
+      "disableDescription": "Nie wysyłaj raportów o błędach (aplikacja może być mniej stabilna)",
+      "whatReported": "Co jest zgłaszane:",
+      "reported1": "Komunikaty o błędach i ślady stosu",
+      "reported2": "Typ i wersja przeglądarki",
+      "reported3": "Adres URL strony (bez parametrów zapytania)",
+      "reported4": "Wersja aplikacji i informacje o wydaniu",
+      "whatNotReported": "Co NIE jest zgłaszane:",
+      "notReported1": "Dane osobowe ani adresy IP",
+      "notReported3": "Nagrania sesji ani zrzuty ekranu",
+      "notReported4": "Jakiekolwiek dane umożliwiające identyfikację użytkownika",
+      "enabledStatus": "Zgłaszanie błędów włączone",
+      "helpMessage": "<strong>Twoja pomoc ulepsza ten projekt dla wszystkich!</strong> Włączenie zgłaszania błędów to jeden z najskuteczniejszych sposobów, w jaki możesz przyczynić się do sukcesu LENR Academy.",
+      "sentryNotice": "Korzystamy z <strong>Sentry</strong> z hostingiem w UE, aby zapewnić zgodność z RODO. Wszystkie dane są anonimizowane i wykorzystywane wyłącznie do debugowania."
+    },
+    "searchQueriesOrInputs": "Wyszukiwane frazy ani dane z formularzy",
+    "analytics": {
+      "title": "Analityka",
+      "enabledStatus": "Analityka włączona",
+      "enabledStatusDescription": "Pomagasz nam ulepszać witrynę dzięki analityce przyjaznej prywatności",
+      "disabledStatus": "Analityka wyłączona",
+      "disabledStatusDescription": "Nie zbieramy żadnych danych o użytkowaniu z Twoich wizyt",
+      "noPreference": "Nie ustawiono preferencji",
+      "noPreferenceDescription": "Nie dokonano jeszcze wyboru",
+      "saved": "✓ Twoja preferencja analityki została zapisana",
+      "manage": "Zarządzaj analityką",
+      "enable": "Włącz analitykę",
+      "enableDescription": "Pomóż nam zrozumieć, jak odwiedzający korzystają z witryny",
+      "disable": "Wyłącz analitykę",
+      "disableDescription": "Nie zbieraj danych o użytkowaniu z moich wizyt",
+      "whatTracked": "Co śledzimy:",
+      "tracked1": "Wyświetlenia stron i wzorce nawigacji",
+      "tracked2": "Witryny odsyłające (skąd przychodzą odwiedzający)",
+      "tracked3": "Typ przeglądarki i urządzenia (zanonimizowany)",
+      "tracked4": "Kraj/region (na podstawie IP, bez zapisywania)",
+      "whatNotTracked": "Czego NIE śledzimy:",
+      "notTracked1": "Danych osobowych ani danych umożliwiających identyfikację",
+      "notTracked2": "Poszczególnych użytkowników między sesjami",
+      "notTracked3": "Plików cookie (nie używamy żadnych śledzących plików cookie)",
+      "notTracked4": "Adresów IP (nie są zapisywane)",
+      "transparencyTitle": "Pełna przejrzystość",
+      "transparencyDescription": "Wierzymy w pełną przejrzystość. Możesz obejrzeć nasz publiczny panel analityczny, aby zobaczyć dokładnie, jakie dane zbieramy i jak są prezentowane. Bez tajemnic, bez ukrytego śledzenia.",
+      "viewDashboard": "Zobacz publiczny panel analityczny",
+      "umamiCompliance": "Umami jest w pełni zgodne z RODO, CCPA i PECR. Zostało zaprojektowane tak, aby dostarczać właścicielom witryn informacji bez naruszania prywatności odwiedzających.",
+      "learnMoreUmami": "Dowiedz się więcej o Umami",
+      "umamiIntro": "Korzystamy z <strong>Umami Analytics</strong> — przyjaznej prywatności platformy analitycznej o otwartym kodzie źródłowym, która szanuje Twoją prywatność."
+    },
+    "default": "(domyślnie)"
+  },
+  "radiationTypes": {
+    "A": {
+      "name": "Cząstka alfa",
+      "description": "jądro He-4"
+    },
+    "B-": {
+      "name": "Beta minus",
+      "description": "emisja elektronu"
+    },
+    "B+": {
+      "name": "Beta plus",
+      "description": "emisja pozytonu"
+    },
+    "B": {
+      "name": "Rozpad beta",
+      "description": "nieokreślony znak"
+    },
+    "EC": {
+      "name": "Wychwyt elektronu",
+      "description": "pochłonięcie elektronu orbitalnego"
+    },
+    "IT": {
+      "name": "Przejście izomeryczne",
+      "description": "rozpad stanu wzbudzonego"
+    },
+    "G": {
+      "name": "Promień gamma",
+      "description": "foton o wysokiej energii"
+    },
+    "G-AN": {
+      "name": "Gamma anihilacyjne",
+      "description": "anihilacja pozytonu"
+    },
+    "G-X-K": {
+      "name": "Promieniowanie X powłoki K",
+      "description": "przejście w powłoce K"
+    },
+    "G-X-KA1": {
+      "name": "Promieniowanie X Kα1",
+      "description": "przejście α1 w powłoce K"
+    },
+    "G-X-KA2": {
+      "name": "Promieniowanie X Kα2",
+      "description": "przejście α2 w powłoce K"
+    },
+    "G-X-KB": {
+      "name": "Promieniowanie X Kβ",
+      "description": "przejście β w powłoce K"
+    },
+    "G-X-L": {
+      "name": "Promieniowanie X powłoki L",
+      "description": "przejście w powłoce L"
+    },
+    "E-CE-K": {
+      "name": "Elektron konwersji z powłoki K",
+      "description": "konwersja wewnętrzna z powłoki K"
+    },
+    "E-CE-L": {
+      "name": "Elektron konwersji z powłoki L",
+      "description": "konwersja wewnętrzna z powłoki L"
+    },
+    "E-CE-M": {
+      "name": "Elektron konwersji z powłoki M",
+      "description": "konwersja wewnętrzna z powłoki M"
+    },
+    "E-CE-M+": {
+      "name": "Elektron konwersji z powłoki M+",
+      "description": "konwersja wewnętrzna z powłoki M+"
+    },
+    "E-CE-MN+": {
+      "name": "Elektron konwersji z powłoki MN+",
+      "description": "konwersja wewnętrzna z powłoki MN+"
+    },
+    "E-CE-N+": {
+      "name": "Elektron konwersji z powłoki N+",
+      "description": "konwersja wewnętrzna z powłoki N+"
+    },
+    "E-AU-K": {
+      "name": "Elektron Augera z powłoki K",
+      "description": "deekscytacja atomowa z powłoki K"
+    },
+    "E-AU-L": {
+      "name": "Elektron Augera z powłoki L",
+      "description": "deekscytacja atomowa z powłoki L"
+    }
+  },
+  "decayModes": {
+    "A": {
+      "name": "Rozpad alfa",
+      "description": "emisja cząstki alfa (2 protony + 2 neutrony)"
+    },
+    "B-": {
+      "name": "Rozpad beta minus",
+      "description": "neutron przekształca się w proton, elektron i antyneutrino"
+    },
+    "B+": {
+      "name": "Rozpad beta plus",
+      "description": "proton przekształca się w neutron, pozyton i neutrino"
+    },
+    "EC": {
+      "name": "Wychwyt elektronu",
+      "description": "proton wychwytuje elektron z wewnętrznej orbity i staje się neutronem"
+    },
+    "IT": {
+      "name": "Przejście izomeryczne",
+      "description": "wzbudzone jądro uwalnia energię bez zmiany składu"
+    },
+    "SF": {
+      "name": "Rozszczepienie samorzutne",
+      "description": "jądro dzieli się na lżejsze jądra"
+    },
+    "N": {
+      "name": "Emisja neutronu",
+      "description": "jądro emituje jeden lub więcej neutronów"
+    },
+    "P": {
+      "name": "Emisja protonu",
+      "description": "jądro emituje proton"
+    },
+    "2N": {
+      "name": "Emisja dwóch neutronów",
+      "description": "jądro emituje dwa neutrony"
+    },
+    "2P": {
+      "name": "Emisja dwóch protonów",
+      "description": "jądro emituje dwa protony"
     }
   }
 }

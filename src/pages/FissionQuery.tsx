@@ -555,7 +555,7 @@ export default function FissionQuery() {
       }
     } catch (error) {
       console.error('Query failed:', error)
-      setQueryError(error instanceof Error ? error : new Error('Unknown error'))
+      setQueryError(error instanceof Error ? error : new Error(t('common.unknownError')))
     } finally {
       setIsQuerying(false)
     }
@@ -877,14 +877,14 @@ export default function FissionQuery() {
                 <div className="flex gap-2">
                   <input
                     type="number"
-                    placeholder="Min"
+                    placeholder={t('filterPanel.min')}
                     className="input flex-1"
                     value={filter.minMeV || ''}
                     onChange={(e) => setFilter({...filter, minMeV: e.target.value ? parseFloat(e.target.value) : undefined})}
                   />
                   <input
                     type="number"
-                    placeholder="Max"
+                    placeholder={t('filterPanel.max')}
                     className="input flex-1"
                     value={filter.maxMeV || ''}
                     onChange={(e) => setFilter({...filter, maxMeV: e.target.value ? parseFloat(e.target.value) : undefined})}
@@ -1000,7 +1000,7 @@ export default function FissionQuery() {
                 onClick={() => setShowHeatmap(!showHeatmap)}
                 className="btn btn-secondary p-2 ml-4"
                 title={showHeatmap ? t('reactions.collapsePeriodicTable') : t('reactions.expandPeriodicTable')}
-                aria-label={showHeatmap ? 'Collapse periodic table' : 'Expand periodic table'}
+                aria-label={showHeatmap ? t('reactions.collapsePeriodicTable') : t('reactions.expandPeriodicTable')}
               >
                 <ChevronDown className={`w-5 h-5 transition-transform duration-200 ${showHeatmap ? 'rotate-180' : ''}`} />
               </button>
@@ -1019,7 +1019,7 @@ export default function FissionQuery() {
                       value={heatmapMode}
                       onChange={(e) => setHeatmapMode(e.target.value as HeatmapMode)}
                       className="input px-3 py-2 text-sm"
-                      aria-label="Select heatmap metric"
+                      aria-label={t('reactions.selectHeatmapMetric')}
                     >
                       <option value="frequency">{t('reactions.frequency')}</option>
                       <option value="energy">{t('reactions.energy')}</option>
@@ -1109,7 +1109,7 @@ export default function FissionQuery() {
                       }}
                       disabled={filter.limit === 0}
                       className="btn btn-secondary px-4 py-2 text-sm whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed"
-                      title={filter.limit === 0 ? t('reactions.alreadyShowingAll') : "Remove limit and show all matching reactions in table"}
+                      title={filter.limit === 0 ? t('reactions.alreadyShowingAll') : t('reactions.removeLimitTitle')}
                     >
                       {t('reactions.showAllInTable')}
                     </button>
@@ -1180,7 +1180,7 @@ export default function FissionQuery() {
               </div>
             </div>
 
-            <div ref={tableContainerRef} className="overflow-auto -mx-6 sm:mx-0" role="region" aria-label="Fission reaction results">
+            <div ref={tableContainerRef} className="overflow-auto -mx-6 sm:mx-0" role="region" aria-label={t('reactions.fissionResultsLabel')}>
               <div className="w-fit min-w-full border border-gray-200 dark:border-gray-700 rounded-b-none rounded-t-none sm:rounded-t-lg" >
                 <div
                   className="sticky top-0 z-[5]"
@@ -1218,7 +1218,7 @@ export default function FissionQuery() {
                               setUseAllResultsForHeatmap(true)
                             }}
                             className="btn btn-secondary px-4 py-2 text-sm whitespace-nowrap"
-                            title="Remove limit and show all matching reactions in table"
+                            title={t('reactions.removeLimitTitle')}
                           >
                             {t('reactions.showAllInTable')}
                           </button>
@@ -1240,7 +1240,7 @@ export default function FissionQuery() {
                       height={filteredListHeight}
                       overscanRowCount={6}
                       className="relative"
-                      ariaLabel="Fission reaction results"
+                      ariaLabel={t('reactions.fissionResultsLabel')}
                     >
                       {(reaction, { index }) => renderFissionRow(reaction, index)}
                     </VirtualizedList>
@@ -1265,8 +1265,8 @@ export default function FissionQuery() {
               onDoubleClick={filteredResults.length > SMALL_RESULT_THRESHOLD ? handleResizeReset : undefined}
               title={
                 filteredResults.length <= SMALL_RESULT_THRESHOLD
-                  ? 'Resize handle (disabled for small result sets)'
-                  : 'Drag to resize table height (double-click to reset)'
+                  ? t('reactions.resizeHandleDisabled')
+                  : t('reactions.resizeHandle')
               }
             >
               <div className="flex flex-col gap-0.5">

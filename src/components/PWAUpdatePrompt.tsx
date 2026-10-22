@@ -1,5 +1,6 @@
 import { useRegisterSW } from 'virtual:pwa-register/react'
 import { RefreshCw, X } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 
 /**
  * PWA Update Prompt Component
@@ -8,6 +9,7 @@ import { RefreshCw, X } from 'lucide-react'
  * Users can update immediately or dismiss to update later.
  */
 export default function PWAUpdatePrompt() {
+  const { t } = useTranslation()
   const {
     needRefresh: [needRefresh, setNeedRefresh],
     updateServiceWorker,
@@ -40,9 +42,9 @@ export default function PWAUpdatePrompt() {
         <div className="flex items-center gap-3 flex-1">
           <RefreshCw className="w-5 h-5 flex-shrink-0" />
           <div>
-            <p className="font-semibold text-sm">New version available!</p>
+            <p className="font-semibold text-sm">{t('pwa.newVersionAvailable')}</p>
             <p className="text-xs text-blue-100">
-              Click update to get the latest features and improvements
+              {t('pwa.updateDescription')}
             </p>
           </div>
         </div>
@@ -53,12 +55,12 @@ export default function PWAUpdatePrompt() {
             className="px-4 py-2 bg-white text-blue-600 rounded-lg hover:bg-blue-50 transition-colors text-sm font-medium"
             data-testid="pwa-update-button"
           >
-            Update Now
+            {t('updates.updateNow')}
           </button>
           <button
             onClick={handleDismiss}
             className="p-2 hover:bg-blue-700 rounded-lg transition-colors"
-            aria-label="Dismiss update notification"
+            aria-label={t('pwa.dismissUpdate')}
             data-testid="pwa-update-dismiss"
           >
             <X className="w-5 h-5" />

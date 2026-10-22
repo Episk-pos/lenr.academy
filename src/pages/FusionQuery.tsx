@@ -564,7 +564,7 @@ export default function FusionQuery() {
       }
     } catch (error) {
       console.error('Query failed:', error)
-      setQueryError(error instanceof Error ? error : new Error('Unknown error'))
+      setQueryError(error instanceof Error ? error : new Error(t('common.unknownError')))
     } finally {
       setIsQuerying(false)
     }
@@ -747,14 +747,14 @@ export default function FusionQuery() {
                 <div className="flex gap-2">
                   <input
                     type="number"
-                    placeholder="Min"
+                    placeholder={t('filterPanel.min')}
                     className="input flex-1"
                     value={filter.minMeV || ''}
                     onChange={(e) => setFilter({...filter, minMeV: e.target.value ? parseFloat(e.target.value) : undefined})}
                   />
                   <input
                     type="number"
-                    placeholder="Max"
+                    placeholder={t('filterPanel.max')}
                     className="input flex-1"
                     value={filter.maxMeV || ''}
                     onChange={(e) => setFilter({...filter, maxMeV: e.target.value ? parseFloat(e.target.value) : undefined})}
@@ -1033,7 +1033,7 @@ export default function FusionQuery() {
               ref={tableContainerRef}
               className="overflow-auto -mx-6 sm:mx-0"
               role="region"
-              aria-label="Fusion reaction results"
+              aria-label={t('reactions.fusionResultsLabel')}
             >
               <div className="w-fit min-w-full border border-gray-200 dark:border-gray-700 rounded-b-none rounded-t-none sm:rounded-t-lg" >
                 <div
@@ -1237,7 +1237,7 @@ export default function FusionQuery() {
                       height={filteredListHeight}
                       overscanRowCount={4}
                       className="fusion-results-list"
-                      ariaLabel="Fusion reactions list"
+                      ariaLabel={t('reactions.fusionResultsLabel')}
                     >
                       {(reaction) => {
                         const isE1Radioactive = radioactiveNuclides.has(`${reaction.Z1}-${reaction.A1}`)
@@ -1404,8 +1404,8 @@ export default function FusionQuery() {
               onDoubleClick={filteredResults.length > SMALL_RESULT_THRESHOLD ? handleResizeReset : undefined}
               title={
                 filteredResults.length <= SMALL_RESULT_THRESHOLD
-                  ? 'Resize handle (disabled for small result sets)'
-                  : 'Drag to resize table height (double-click to reset)'
+                  ? t('reactions.resizeHandleDisabled')
+                  : t('reactions.resizeHandle')
               }
             >
               <div className="flex flex-col gap-0.5">

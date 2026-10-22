@@ -190,7 +190,7 @@ export default function MaterialsCatalog({
   // Handle delete custom material
   const handleDeleteCustom = (id: string, e: React.MouseEvent) => {
     e.stopPropagation();
-    if (confirm('Delete this custom material?')) {
+    if (confirm(t('cascades.deleteCustomMaterial'))) {
       deleteCustomMaterial(id);
       if (selectedMaterial?.id === id) {
         setSelectedMaterial(null);
@@ -630,7 +630,7 @@ export default function MaterialsCatalog({
                   type="text"
                   value={saveName}
                   onChange={(e) => setSaveName(e.target.value)}
-                  placeholder="My Custom Fuel Mix"
+                  placeholder={t('cascades.customMaterialNamePlaceholder')}
                   className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
                   data-testid="save-material-name-input"
                 />
@@ -642,7 +642,7 @@ export default function MaterialsCatalog({
                 <textarea
                   value={saveDescription}
                   onChange={(e) => setSaveDescription(e.target.value)}
-                  placeholder="Optional description..."
+                  placeholder={t('cascades.optionalDescription')}
                   rows={3}
                   className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white resize-none"
                 />

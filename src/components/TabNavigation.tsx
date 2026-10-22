@@ -1,5 +1,6 @@
 import { useSearchParams } from 'react-router-dom'
 import { Menu } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import { useState, useEffect, useRef } from 'react'
 
 export interface Tab {
@@ -18,6 +19,7 @@ interface TabNavigationProps {
 }
 
 export default function TabNavigation({ tabs, activeTab, onTabChange, className = '', onMenuClick, onStuckChange }: TabNavigationProps) {
+  const { t } = useTranslation()
   const [searchParams, setSearchParams] = useSearchParams()
   const [isStuck, setIsStuck] = useState(false)
   const sentinelRef = useRef<HTMLDivElement>(null)
@@ -115,14 +117,14 @@ export default function TabNavigation({ tabs, activeTab, onTabChange, className 
           <button
             onClick={onMenuClick}
             className="p-3 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 border-r border-gray-200 dark:border-gray-700 transition-all duration-200"
-            aria-label="Open menu"
+            aria-label={t('navigation.openMenu')}
             data-testid="tab-navigation-menu-button"
           >
             <Menu className="h-5 w-5" />
           </button>
         )}
 
-        <nav className="-mb-px flex flex-1 space-x-2 sm:space-x-4 md:space-x-8 px-2 sm:px-4 md:px-6 overflow-x-auto" aria-label="Tabs" role="tablist">
+        <nav className="-mb-px flex flex-1 space-x-2 sm:space-x-4 md:space-x-8 px-2 sm:px-4 md:px-6 overflow-x-auto" aria-label={t('sortableTable.tabs')} role="tablist">
         {tabs.map((tab) => {
           const isActive = activeTab === tab.id
 

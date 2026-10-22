@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Check, ChevronDown, ChevronUp } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import Tooltip from './Tooltip'
 
 export interface BadgeOption {
@@ -48,6 +49,7 @@ export default function BadgeSelector({
   collapsible = false,
   defaultCollapsed = false
 }: BadgeSelectorProps) {
+  const { t } = useTranslation()
   const [collapsed, setCollapsed] = useState(defaultCollapsed)
 
   const colors = colorSchemes[colorScheme]
@@ -98,7 +100,7 @@ export default function BadgeSelector({
               className="text-xs text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 transition-colors"
               type="button"
             >
-              Clear
+              {t('common.clear')}
             </button>
           )}
           {!allSelected && (
@@ -107,14 +109,14 @@ export default function BadgeSelector({
               className="text-xs text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 transition-colors"
               type="button"
             >
-              Select All
+              {t('common.selectAll')}
             </button>
           )}
           {collapsible && (
             <button
               onClick={() => setCollapsed(!collapsed)}
               className="p-1 rounded hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
-              aria-label={collapsed ? 'Expand' : 'Collapse'}
+              aria-label={collapsed ? t('common.expand') : t('common.collapse')}
               type="button"
             >
               {collapsed ? (
@@ -165,7 +167,7 @@ export default function BadgeSelector({
 
       {collapsible && collapsed && (
         <div className="text-xs text-gray-500 dark:text-gray-400">
-          {noneSelected ? 'All types shown' : `${selectedValues.length} type${selectedValues.length !== 1 ? 's' : ''} selected`}
+          {noneSelected ? t('badgeSelector.allTypesShown') : t('badgeSelector.typesSelected', { count: selectedValues.length })}
         </div>
       )}
     </div>

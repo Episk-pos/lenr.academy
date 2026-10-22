@@ -25,7 +25,11 @@
     "back": "Retour",
     "next": "Suivant",
     "previous": "Précédent",
-    "continue": "Continuer"
+    "continue": "Continuer",
+    "selectAll": "Tout sélectionner",
+    "expand": "Développer",
+    "collapse": "Réduire",
+    "unknownError": "Une erreur inconnue s'est produite"
   },
   "brand": {
     "appName": "Nanosoft Suite",
@@ -201,7 +205,24 @@
     "filterAll": "Tous",
     "filterFusion": "Fusion",
     "filterFission": "Fission",
-    "filterTwoToTwo": "2→2"
+    "filterTwoToTwo": "2→2",
+    "allElements": "Tous les éléments",
+    "label": "{{type}} {{elements}}",
+    "resultCount_one": "{{count}} résultat",
+    "resultCount_many": "{{count}} résultats",
+    "resultCount_other": "{{count}} résultats",
+    "bookmark": "Ajouter aux favoris",
+    "removeBookmark": "Retirer des favoris",
+    "remove": "Supprimer",
+    "summary": {
+      "e1": "E1 : {{list}}",
+      "e2": "E2 : {{list}}",
+      "e": "E : {{list}}",
+      "out": "Sortie : {{list}}",
+      "outN": "Sortie{{n}} : {{list}}",
+      "limit": "limite : {{limit}}",
+      "noFilters": "Aucun filtre"
+    }
   },
   "elements": {
     "element": "Élément",
@@ -353,7 +374,9 @@
     "stableCount": "stable",
     "radioactiveCount": "radioactif",
     "radiationTypeLegend": "Légende des types de rayonnement",
-    "notAvailableInDatabase": "Non disponible dans la base de données"
+    "notAvailableInDatabase": "Non disponible dans la base de données",
+    "electricalConductivity": "Conductivité électrique",
+    "valueYears": "{{value}} ans"
   },
   "reactions": {
     "reaction": "Réaction",
@@ -475,7 +498,14 @@
       "rightTitle": "Antineutrino (ν̄, droit) : la charge nucléaire totale augmente de 1 (type β⁻)",
       "none": "—",
       "noneTitle": "Aucun neutrino impliqué"
-    }
+    },
+    "selectHeatmapMetric": "Sélectionner la métrique de la carte thermique",
+    "removeLimitTitle": "Supprimer la limite et afficher toutes les réactions correspondantes dans le tableau",
+    "resizeHandleDisabled": "Poignée de redimensionnement (désactivée pour les petits ensembles de résultats)",
+    "resizeHandle": "Faire glisser pour redimensionner la hauteur du tableau (double-clic pour réinitialiser)",
+    "fusionResultsLabel": "Résultats des réactions de fusion",
+    "fissionResultsLabel": "Résultats des réactions de fission",
+    "twoToTwoResultsLabel": "Résultats des réactions deux-à-deux"
   },
   "histogram": {
     "title": "Distribution d'energie",
@@ -810,7 +840,10 @@
       "zoomReset": "Réinitialiser le zoom",
       "advancedSettings": "Paramètres avancés",
       "maxPathways": "Voies max : {{count}}"
-    }
+    },
+    "customMaterialNamePlaceholder": "Mon mélange de combustible personnalisé",
+    "optionalDescription": "Description facultative...",
+    "pathwayResultsTable": "Tableau des résultats par voie"
   },
   "materials": {
     "natural-lithium": {
@@ -1007,7 +1040,11 @@
     "databaseUpdateReady": "Mise à jour de base de données prête (v{{version}}) - Actualisez pour utiliser les nouvelles données",
     "downloadingUpdate": "Téléchargement de la mise à jour en arrière-plan...",
     "downloadUpdate": "Télécharger la mise à jour",
-    "updating": "Mise à jour en cours..."
+    "updating": "Mise à jour en cours...",
+    "noChangelogDetails": "Aucun détail du journal des modifications n'est fourni pour cette version.",
+    "latestRelease": "Dernière version",
+    "releaseNotesUnavailable": "Les notes de version détaillées ne sont pas disponibles pour cette build.",
+    "releaseNotesLoadFailed": "Échec du chargement des notes de version."
   },
   "columnToggle": {
     "title": "Personnaliser les colonnes visibles",
@@ -1020,7 +1057,11 @@
     "youAreOffline": "Vous êtes hors ligne",
     "offlineMessage": "Certaines fonctionnalités peuvent ne pas être disponibles",
     "reconnecting": "Reconnexion...",
-    "backOnline": "Vous êtes de nouveau en ligne"
+    "backOnline": "Vous êtes de nouveau en ligne",
+    "connectionRestored": "Connexion rétablie",
+    "offlineTitle": "Vous êtes hors ligne",
+    "cachedQueryHint": "Vous pouvez toujours interroger la base de données si elle est en cache localement",
+    "offlineShort": "Hors ligne"
   },
   "cycleDiscovery": {
     "databaseNotLoaded": "Base de données non chargée. Veuillez attendre la fin du chargement de la base de données.",
@@ -1110,7 +1151,11 @@
     "netLabelNoByproducts": "(aucun)",
     "cycleClosesLabel": "Cycle closes — fuel returned to start",
     "catalystCenterLabel": "Catalyseur (recyclé)",
-    "byproductLabel": "sous-produit"
+    "byproductLabel": "sous-produit",
+    "cycleAroundCatalyst": "← les réactions forment un cycle autour du catalyseur →",
+    "cycleIconLabel_one": "Cycle de {{count}} étape",
+    "cycleIconLabel_many": "Cycle de {{count}} étapes",
+    "cycleIconLabel_other": "Cycle de {{count}} étapes"
   },
   "help": {
     "title": "Aide et glossaire",
@@ -1128,6 +1173,56 @@
       "reaction": "Types de réaction",
       "database": "Champs de base de données",
       "measurement": "Mesures et unités"
+    },
+    "examples": {
+      "hLiFusion": {
+        "name": "Fusion hydrogène-lithium",
+        "description": "Voie de réaction LENR classique. La fusion H + Li produit des isotopes de béryllium et d'hélium avec une libération d'énergie importante."
+      },
+      "niHFusion": {
+        "name": "Fusion nickel-hydrogène",
+        "description": "Étudiée dans l'E-Cat de Rossi et les expériences de réplication de Parkhomov. Les réactions Ni + H produisent des isotopes de cuivre."
+      },
+      "uraniumFission": {
+        "name": "Voies de fission de l'uranium",
+        "description": "Toutes les voies de fission des isotopes de l'uranium. Montre la diversité du spectre de produits de la fission de l'uranium."
+      },
+      "palladiumFission": {
+        "name": "Fission du palladium",
+        "description": "Voies de fission du Pd pertinentes pour les expériences de fusion froide de Fleischmann et Pons utilisant des électrodes en palladium."
+      },
+      "protonBoron": {
+        "name": "Réactions proton-bore",
+        "description": "H + B-11 produit trois particules alpha dans la réaction de fusion aneutronique (p + B-11 → 3α), considérée comme idéale pour une énergie propre."
+      },
+      "deuteriumNickel": {
+        "name": "Réactions deutérium-nickel",
+        "description": "Réactions deux-à-deux D + Ni illustrant des transmutations à base de deutérium avec le nickel, le lithium, l'aluminium, le bore et l'azote."
+      },
+      "u238DecayChain": {
+        "name": "Chaîne de désintégration de l'uranium 238",
+        "description": "La série de désintégration naturelle la plus célèbre (4n+2). Suivez les 14 étapes de U-238 jusqu'au Pb-206 stable, en passant par le radium et le radon."
+      },
+      "iron56": {
+        "name": "Fer 56 — énergie de liaison maximale",
+        "description": "Le Fe-56 possède l'énergie de liaison par nucléon la plus élevée de tous les nucléides, ce qui en fait le point final de la nucléosynthèse stellaire."
+      },
+      "palladiumNae": {
+        "name": "Analyse NAE du palladium",
+        "description": "Explorez les prédictions d'environnement nucléaire actif (NAE) du palladium — un point central des expériences de chargement en deutérium de Fleischmann et Pons."
+      },
+      "parkhomovCascade": {
+        "name": "Cascade Parkhomov Ni-LiAlH₄",
+        "description": "Simulez la réplication de 2014 du réacteur de Rossi par Parkhomov, utilisant du nickel naturel avec de l'hydrure de lithium-aluminium comme combustible."
+      }
+    },
+    "exampleTypes": {
+      "fusion": "fusion",
+      "fission": "fission",
+      "twotwo": "2→2",
+      "elementData": "élément",
+      "cascades": "cascade",
+      "mullerResonance": "résonance"
     }
   },
   "mullerResonance": {
@@ -1455,6 +1550,430 @@
         "institution": "U.S. Department of Energy ARPA-E",
         "excerpt": "ARPA-E announced ~$10M in exploratory LENR research funding in 2023, signalling renewed institutional interest."
       }
+    }
+  },
+  "periodicSelector": {
+    "any": "Tous",
+    "selectedSummary_one": "{{count}} sélectionné : {{list}}",
+    "selectedSummary_many": "{{count}} sélectionnés : {{list}}",
+    "selectedSummary_other": "{{count}} sélectionnés : {{list}}",
+    "clearAll": "Tout effacer",
+    "removeItem": "Retirer {{item}}",
+    "lanthanides": "Lanthanides (57-71)",
+    "actinides": "Actinides (89-103)"
+  },
+  "limitSelector": {
+    "resultLimit": "Limite de résultats",
+    "all": "Tous",
+    "unlimited": "Illimité ⚠️",
+    "custom": "Personnalisé",
+    "enterCustomLimit": "Saisir une limite personnalisée",
+    "recommended": "Recommandé ≤ {{max}}"
+  },
+  "badgeSelector": {
+    "allTypesShown": "Tous les types affichés",
+    "typesSelected_one": "{{count}} type sélectionné",
+    "typesSelected_many": "{{count}} types sélectionnés",
+    "typesSelected_other": "{{count}} types sélectionnés"
+  },
+  "elementData": {
+    "subtitle": "Consultez les propriétés chimiques, physiques et nucléaires détaillées à travers plusieurs vues de données",
+    "presets": {
+      "alphaDecay": "Désintégration alpha",
+      "betaMinusDecay": "Désintégration bêta moins",
+      "betaPlusDecay": "Désintégration bêta plus",
+      "gammaRadiation": "Rayonnement gamma"
+    },
+    "columns": {
+      "meltingK": "Fusion (K)",
+      "boilingK": "Ébullition (K)",
+      "densityGcm3": "Densité (g/cm³)",
+      "massAmu": "Masse (u)"
+    },
+    "radiiMeasured": "Mesuré",
+    "radiiTheoretical": "Théorique",
+    "radiiNonBonded": "Non lié",
+    "radiiBonded": "Atomes liés",
+    "viewSource": "voir la source",
+    "required": "(obligatoire)",
+    "nuclideNotAvailable": "Nucléide non disponible",
+    "nuclideNotAvailableMessage": "Le nucléide <strong>{{nuclide}}</strong> n'est disponible ni dans la base des nucléides stables ni dans celle de la désintégration radioactive. Cet isotope a peut-être une durée de vie extrêmement courte ou se situe hors de la plage des nucléides documentés.",
+    "availableNuclidesShown": "Les nucléides disponibles pour {{element}} sont affichés ci-dessus. Sélectionnez-en un pour voir ses propriétés détaillées.",
+    "noNuclidesAvailable": "Aucun nucléide disponible",
+    "noNuclidesForElement": "Aucun nucléide de <strong>{{element}}</strong> n'est disponible dans la base de données.",
+    "elementNotInDataset": "Cet élément n'est peut-être pas inclus dans le jeu de données actuel, qui se concentre sur les éléments pertinents pour la recherche sur les réactions nucléaires à basse énergie (LENR).",
+    "elementsTable": "Tableau des éléments",
+    "elementsTableDescription": "Parcourez et recherchez tous les éléments chimiques. Cliquez sur une ligne pour voir les propriétés détaillées dans l'onglet Intégré.",
+    "nuclidesTable": "Tableau des nucléides",
+    "nuclidesTableDescription": "Parcourez tous les isotopes avec leurs énergies de liaison, classifications boson/fermion et indicateurs de stabilité. Cliquez sur une ligne pour voir les propriétés détaillées dans l'onglet Intégré.",
+    "decaysTable": "Tableau des désintégrations radioactives",
+    "decaysTableDescription": "Parcourez les modes de désintégration, demi-vies, énergies et intensités de tous les isotopes instables. Cliquez sur une ligne pour voir le nucléide parent dans l'onglet Intégré.",
+    "searchElements": "Rechercher des éléments par symbole ou nom...",
+    "searchNuclides": "Rechercher des nucléides par nom d'élément, symbole, Z ou A...",
+    "searchDecays": "Rechercher des désintégrations par élément, mode de désintégration ou type de rayonnement...",
+    "status": {
+      "unknown": "Inconnu",
+      "stablePrimordial": "Primordial stable",
+      "synthetic": "Synthétique",
+      "unstablePrimordial": "Primordial instable"
+    },
+    "classification": "Classification",
+    "nuclearSpin": "Spin nucléaire",
+    "magneticMoment": "Moment magnétique",
+    "nmrFrequency": "Fréquence RMN",
+    "primaryDecay": "Désintégration principale",
+    "decayEnergy": "Énergie de désintégration",
+    "chemicalProperties": "Propriétés chimiques",
+    "otherProperties": "Autres propriétés",
+    "naturalOccurrence": "Présence naturelle",
+    "additionalProperties": "Propriétés supplémentaires"
+  },
+  "decayChain": {
+    "noData": "Aucune donnée de chaîne de désintégration disponible",
+    "zoomIn": "Zoom avant",
+    "zoomOut": "Zoom arrière",
+    "resetView": "Réinitialiser la vue",
+    "controlsHint": "Molette pour zoomer • Glisser pour déplacer • Double-clic pour zoomer",
+    "clickToViewDetails": "Cliquer pour voir les détails",
+    "decayModes": "Modes de désintégration",
+    "alpha": "Alpha (α)",
+    "betaMinus": "Bêta- (β-)",
+    "betaPlus": "Bêta+ (β+)"
+  },
+  "databaseLoading": {
+    "downloadingTitle": "Téléchargement de la base de données",
+    "loadingTitle": "Chargement de la base de données",
+    "downloadingMessage": "Téléchargement de la base de données de réactions nucléaires de Parkhomov...",
+    "initializingMessage": "Initialisation du moteur de base de données...",
+    "cachedNotice": "Cette base de données sera mise en cache pour un chargement instantané lors de vos prochaines visites",
+    "pleaseWait": "Veuillez patienter un instant..."
+  },
+  "errorDisplay": {
+    "databaseErrorTitle": "Erreur de base de données",
+    "somethingWentWrong": "Une erreur s'est produite",
+    "autoReported": "Cette erreur a été automatiquement signalée à notre équipe.",
+    "technicalDetails": "Détails techniques",
+    "fingerprint": "Empreinte de l'erreur",
+    "timestamp": "Horodatage",
+    "browser": "Navigateur",
+    "os": "Système d'exploitation",
+    "device": "Appareil",
+    "url": "URL",
+    "appVersion": "Version de l'application",
+    "clickToCopy": "Cliquer pour copier",
+    "stackTrace": "Trace de pile",
+    "moduleLoad": {
+      "title": "Échec du chargement du module",
+      "description": "Cette erreur survient fréquemment sur Safari (surtout sur iOS) lorsque des bloqueurs de contenu ou de publicités empêchent le chargement des modules JavaScript.",
+      "trySolutions": "Essayez ces solutions :",
+      "solution1": "Désactivez les bloqueurs de contenu Safari pour ce site (Réglages → Safari → Bloqueurs de contenu)",
+      "solution2": "Désactivez les extensions de navigateur comme AdBlock ou d'autres bloqueurs de publicités",
+      "solution3": "Essayez la navigation privée ou un autre navigateur",
+      "solution4": "Vérifiez si le Relais privé interfère (Réglages iCloud → Relais privé)",
+      "solution5": "Videz le cache et les cookies de Safari, puis rechargez",
+      "note": "<strong>Remarque :</strong> cela concerne environ 0,6 % des utilisateurs et se résout généralement en désactivant les bloqueurs de contenu."
+    },
+    "corruption": {
+      "title": "Corruption de la base de données détectée",
+      "description": "Cette erreur survient généralement lorsque le fichier de base de données en cache est corrompu. Vous pouvez la corriger en vidant le cache et en retéléchargeant la base de données.",
+      "clearing": "Vidage du cache...",
+      "clearAndReload": "Vider le cache et recharger",
+      "redownloadNote": "Remarque : cela retéléchargera le fichier de base de données de {{size}} Mo"
+    },
+    "searchSimilar": "Rechercher des problèmes similaires",
+    "searchFirstTitle": "Veuillez d'abord rechercher des problèmes similaires pour éviter les signalements en double",
+    "copyingAndOpening": "Copie dans le presse-papiers et ouverture de GitHub...",
+    "copyAndReportTitle": "Copier les détails de l'erreur et ouvrir GitHub pour la signaler",
+    "openingIn": "Ouverture dans {{seconds}} s...",
+    "copied": "Copié !",
+    "reportThisError": "Signaler cette erreur",
+    "reportCopied": "Rapport d'erreur copié dans le presse-papiers !",
+    "openingGitHubIn": "Ouverture de GitHub dans {{seconds}} s... Après le collage, veuillez renseigner les étapes de reproduction.",
+    "tryAgain": "Réessayer",
+    "returnHome": "Retour à l'accueil",
+    "searchFirstHint": "Veuillez <strong>d'abord</strong> rechercher des problèmes similaires pour éviter les signalements en double",
+    "afterPastingHint": "<strong>Important :</strong> après avoir collé le rapport d'erreur, veuillez remplir les sections « Steps to Reproduce », « Expected Behavior » et « Actual Behavior » pour nous aider à corriger ce problème rapidement"
+  },
+  "filterPanel": {
+    "noFiltersActive": "Aucun filtre actif",
+    "errors": {
+      "nameRequired": "Veuillez saisir un nom de préréglage",
+      "nameTooShort": "Le nom du préréglage doit comporter au moins {{min}} caractères",
+      "nameTooLong": "Le nom du préréglage doit comporter moins de {{max}} caractères",
+      "nameExists": "Un préréglage portant ce nom existe déjà"
+    },
+    "multiSelectHint": "Maintenez Ctrl/Cmd pour une sélection multiple",
+    "min": "Min",
+    "max": "Max",
+    "clearSearch": "Effacer la recherche",
+    "showingRecords": "Affichage de {{shown}} sur {{total}} enregistrements",
+    "loadPreset": "Charger un préréglage...",
+    "builtInPresets": "Préréglages intégrés",
+    "myPresets": "Mes préréglages",
+    "deletePresetTitle": "Supprimer ce préréglage",
+    "deletePreset": "Supprimer le préréglage",
+    "savePresetTitle": "Enregistrer les filtres actuels comme préréglage",
+    "savePreset": "Enregistrer le préréglage...",
+    "clearAll": "Tout effacer",
+    "saveFilterPreset": "Enregistrer le préréglage de filtres",
+    "presetName": "Nom du préréglage",
+    "presetNamePlaceholder": "ex. : Mon filtre personnalisé",
+    "searchPlaceholder": "Rechercher...",
+    "confirmDeletePreset": "Voulez-vous vraiment supprimer ce préréglage ?"
+  },
+  "pwa": {
+    "installPromptLabel": "Invite d'installation de l'application",
+    "installTitle": "Installer {{appName}}",
+    "installDescription": "Installez l'application pour un accès rapide et une utilisation hors ligne",
+    "iosTitle": "Pour installer sur iOS :",
+    "iosStep1": "Touchez le bouton Partager dans Safari",
+    "iosStep2": "Faites défiler vers le bas et touchez « Sur l'écran d'accueil »",
+    "iosStep3": "Touchez « Ajouter » en haut à droite",
+    "installNow": "Installer maintenant",
+    "dismissInstall": "Fermer l'invite d'installation",
+    "newVersionAvailable": "Nouvelle version disponible !",
+    "updateDescription": "Cliquez sur Mettre à jour pour obtenir les dernières fonctionnalités et améliorations",
+    "dismissUpdate": "Fermer la notification de mise à jour"
+  },
+  "particleDetails": {
+    "electronDescription": "Lepton fondamental de charge électrique négative qui gravite autour des noyaux atomiques.",
+    "neutronDescription": "Baryon neutre présent dans le noyau de presque tous les atomes.",
+    "neutrinoDescription": "Lepton presque sans masse, électriquement neutre, qui n'interagit que par l'interaction faible.",
+    "notAvailable": "N/D",
+    "quickFacts": "En bref",
+    "charge": "Charge",
+    "spin": "Spin",
+    "databaseMapping": "Correspondance en base de données",
+    "nuclideId": "ID du nucléide",
+    "nuclearBaryonic": "Nucléaire/Baryonique",
+    "atomicFermionic": "Atomique/Fermionique",
+    "notes": "Remarques",
+    "storageNote": "Cette particule est stockée avec les nucléides en raison de sa présence dans les réactions, mais ne correspond à aucun élément chimique."
+  },
+  "proportions": {
+    "fuelProportions": "Proportions du combustible",
+    "formatLabel": {
+      "percentage": "Pourcentage (%)",
+      "atomicRatio": "Rapport atomique",
+      "massRatio": "Rapport massique (g)"
+    },
+    "formatHelp": {
+      "percentage": "Saisissez des pourcentages (0-100). Les valeurs seront normalisées à 100 %.",
+      "atomicRatio": "Saisissez des rapports atomiques (ex. : 3:1 devient 75 %:25 %).",
+      "massRatio": "Saisissez des masses en grammes. Converties en moles à l'aide de la masse atomique."
+    },
+    "selectFuelFirst": "Sélectionnez des nucléides combustibles pour configurer les proportions",
+    "equal": "Égales",
+    "natural": "Naturelles",
+    "normalize": "Normaliser",
+    "total": "Total",
+    "willBeNormalized": "(sera normalisé)"
+  },
+  "sortableTable": {
+    "noData": "Aucune donnée disponible",
+    "collapseAll": "Tout réduire",
+    "tabs": "Onglets"
+  },
+  "radioactiveCard": {
+    "limitedData": "<strong>Données limitées :</strong> cet isotope n'existe que dans la base de données de désintégration radioactive. Les données complètes de propriétés nucléaires (énergie de liaison, masse atomique, propriétés quantiques) ne sont pas disponibles pour ce nucléide à vie courte.",
+    "primaryDecayMode": "Mode de désintégration principal",
+    "radiation": "Rayonnement"
+  },
+  "privacyPage": {
+    "title": "Paramètres de confidentialité",
+    "subtitle": "Gérez vos préférences d'analyses et de rapport d'erreurs et découvrez comment nous protégeons votre vie privée",
+    "reloadToApply": "Pour appliquer vos modifications du rapport d'erreurs, veuillez recharger la page.",
+    "reloadNow": "Recharger la page maintenant",
+    "errorReporting": {
+      "title": "Rapport d'erreurs",
+      "disabledStatus": "Rapport d'erreurs désactivé",
+      "disabledStatusDescription": "Les erreurs ne seront pas signalées à notre équipe de développement",
+      "enabledStatusDescription": "Vous nous aidez à détecter et corriger les bugs automatiquement",
+      "saved": "✓ Votre préférence de rapport d'erreurs a été enregistrée",
+      "whyTitle": "Pourquoi le rapport d'erreurs est essentiel",
+      "whyIntro": "Le rapport d'erreurs nous aide à identifier et corriger les bugs qui affectent votre expérience. Lorsque des erreurs surviennent, nous recevons des détails techniques anonymisés qui nous aident à :",
+      "why1": "Corriger les bugs plus vite et améliorer la stabilité",
+      "why2": "Comprendre quelles fonctionnalités doivent être améliorées",
+      "why3": "Prioriser le développement en fonction de problèmes réels",
+      "why4": "Garantir que l'application fonctionne correctement pour tous les utilisateurs",
+      "manage": "Gérer le rapport d'erreurs",
+      "enable": "Activer le rapport d'erreurs",
+      "enableDescription": "Signaler automatiquement les erreurs pour nous aider à corriger les bugs",
+      "disable": "Désactiver le rapport d'erreurs",
+      "disableDescription": "Ne pas envoyer de rapports d'erreurs (l'application peut être moins stable)",
+      "whatReported": "Ce qui est signalé :",
+      "reported1": "Messages d'erreur et traces de pile",
+      "reported2": "Type et version du navigateur",
+      "reported3": "URL de la page (paramètres de requête supprimés)",
+      "reported4": "Version de l'application et informations de publication",
+      "whatNotReported": "Ce qui n'est PAS signalé :",
+      "notReported1": "Informations personnelles ou adresses IP",
+      "notReported3": "Enregistrements de session ou captures d'écran",
+      "notReported4": "Aucune donnée utilisateur identifiable",
+      "enabledStatus": "Rapport d'erreurs activé",
+      "helpMessage": "<strong>Votre aide améliore ce projet pour tout le monde !</strong> Activer le rapport d'erreurs est l'une des façons les plus efficaces de contribuer au succès de LENR Academy.",
+      "sentryNotice": "Nous utilisons <strong>Sentry</strong> hébergé dans l'UE pour respecter le RGPD. Toutes les données sont anonymisées et utilisées uniquement à des fins de débogage."
+    },
+    "searchQueriesOrInputs": "Requêtes de recherche ou saisies de formulaires",
+    "analytics": {
+      "title": "Analyses",
+      "enabledStatus": "Analyses activées",
+      "enabledStatusDescription": "Vous nous aidez à améliorer le site grâce à des analyses respectueuses de la vie privée",
+      "disabledStatus": "Analyses désactivées",
+      "disabledStatusDescription": "Nous ne collectons aucune donnée d'utilisation lors de vos visites",
+      "noPreference": "Aucune préférence définie",
+      "noPreferenceDescription": "Vous n'avez pas encore fait de choix",
+      "saved": "✓ Votre préférence d'analyses a été enregistrée",
+      "manage": "Gérer les analyses",
+      "enable": "Activer les analyses",
+      "enableDescription": "Aidez-nous à comprendre comment les visiteurs utilisent le site",
+      "disable": "Désactiver les analyses",
+      "disableDescription": "Ne pas collecter de données d'utilisation lors de vos visites",
+      "whatTracked": "Ce que nous mesurons :",
+      "tracked1": "Pages vues et parcours de navigation",
+      "tracked2": "Sites référents (d'où viennent les visiteurs)",
+      "tracked3": "Type de navigateur et d'appareil (anonymisé)",
+      "tracked4": "Pays/région (d'après l'IP, non stockée)",
+      "whatNotTracked": "Ce que nous ne mesurons PAS :",
+      "notTracked1": "Informations personnelles ou données identifiables",
+      "notTracked2": "Les utilisateurs individuels d'une session à l'autre",
+      "notTracked3": "Cookies (nous n'utilisons aucun cookie de suivi)",
+      "notTracked4": "Adresses IP (non stockées)",
+      "transparencyTitle": "Transparence totale",
+      "transparencyDescription": "Nous croyons en une transparence complète. Vous pouvez consulter notre tableau de bord d'analyses public pour voir exactement quelles données nous collectons et comment elles sont présentées. Aucun secret, aucun suivi caché.",
+      "viewDashboard": "Voir le tableau de bord d'analyses public",
+      "umamiCompliance": "Umami est entièrement conforme au RGPD, au CCPA et au PECR. Il est conçu pour offrir des informations aux propriétaires de sites sans porter atteinte à la vie privée des visiteurs.",
+      "learnMoreUmami": "En savoir plus sur Umami",
+      "umamiIntro": "Nous utilisons <strong>Umami Analytics</strong>, une plateforme d'analyse open source et respectueuse de la vie privée."
+    },
+    "default": "(par défaut)"
+  },
+  "radiationTypes": {
+    "A": {
+      "name": "Particule alpha",
+      "description": "noyau d'He-4"
+    },
+    "B-": {
+      "name": "Bêta moins",
+      "description": "émission d'électron"
+    },
+    "B+": {
+      "name": "Bêta plus",
+      "description": "émission de positron"
+    },
+    "B": {
+      "name": "Désintégration bêta",
+      "description": "signe non précisé"
+    },
+    "EC": {
+      "name": "Capture électronique",
+      "description": "électron orbital absorbé"
+    },
+    "IT": {
+      "name": "Transition isomérique",
+      "description": "désintégration d'un état excité"
+    },
+    "G": {
+      "name": "Rayon gamma",
+      "description": "photon de haute énergie"
+    },
+    "G-AN": {
+      "name": "Gamma d'annihilation",
+      "description": "annihilation de positron"
+    },
+    "G-X-K": {
+      "name": "Rayon X de la couche K",
+      "description": "transition de la couche K"
+    },
+    "G-X-KA1": {
+      "name": "Rayon X Kα1",
+      "description": "transition α1 de la couche K"
+    },
+    "G-X-KA2": {
+      "name": "Rayon X Kα2",
+      "description": "transition α2 de la couche K"
+    },
+    "G-X-KB": {
+      "name": "Rayon X Kβ",
+      "description": "transition β de la couche K"
+    },
+    "G-X-L": {
+      "name": "Rayon X de la couche L",
+      "description": "transition de la couche L"
+    },
+    "E-CE-K": {
+      "name": "Électron de conversion de la couche K",
+      "description": "conversion interne depuis la couche K"
+    },
+    "E-CE-L": {
+      "name": "Électron de conversion de la couche L",
+      "description": "conversion interne depuis la couche L"
+    },
+    "E-CE-M": {
+      "name": "Électron de conversion de la couche M",
+      "description": "conversion interne depuis la couche M"
+    },
+    "E-CE-M+": {
+      "name": "Électron de conversion des couches M+",
+      "description": "conversion interne depuis les couches M+"
+    },
+    "E-CE-MN+": {
+      "name": "Électron de conversion des couches MN+",
+      "description": "conversion interne depuis les couches MN+"
+    },
+    "E-CE-N+": {
+      "name": "Électron de conversion des couches N+",
+      "description": "conversion interne depuis les couches N+"
+    },
+    "E-AU-K": {
+      "name": "Électron Auger de la couche K",
+      "description": "désexcitation atomique depuis la couche K"
+    },
+    "E-AU-L": {
+      "name": "Électron Auger de la couche L",
+      "description": "désexcitation atomique depuis la couche L"
+    }
+  },
+  "decayModes": {
+    "A": {
+      "name": "Désintégration alpha",
+      "description": "émission d'une particule alpha (2 protons + 2 neutrons)"
+    },
+    "B-": {
+      "name": "Désintégration bêta moins",
+      "description": "un neutron se transforme en proton, électron et antineutrino"
+    },
+    "B+": {
+      "name": "Désintégration bêta plus",
+      "description": "un proton se transforme en neutron, positron et neutrino"
+    },
+    "EC": {
+      "name": "Capture électronique",
+      "description": "un proton capture un électron d'une orbitale interne et devient un neutron"
+    },
+    "IT": {
+      "name": "Transition isomérique",
+      "description": "le noyau excité libère de l'énergie sans changer de composition"
+    },
+    "SF": {
+      "name": "Fission spontanée",
+      "description": "le noyau se scinde en noyaux plus légers"
+    },
+    "N": {
+      "name": "Émission de neutron",
+      "description": "le noyau émet un ou plusieurs neutrons"
+    },
+    "P": {
+      "name": "Émission de proton",
+      "description": "le noyau émet un proton"
+    },
+    "2N": {
+      "name": "Émission de deux neutrons",
+      "description": "le noyau émet deux neutrons"
+    },
+    "2P": {
+      "name": "Émission de deux protons",
+      "description": "le noyau émet deux protons"
     }
   }
 }

@@ -11,20 +11,29 @@ import en from '../i18n/locales/en.json';
  * Resolve a dotted i18n key against the English locale JSON.
  * Supports {{param}} interpolation when params are provided.
  */
-function resolveI18nKey(key: string, params?: Record<string, unknown>): string {
-  const parts = key.split('.');
+function lookup(key: string): unknown {
   let value: unknown = en;
-  for (const part of parts) {
+  for (const part of key.split('.')) {
     if (value && typeof value === 'object' && part in value) {
       value = (value as Record<string, unknown>)[part];
     } else {
-      return key;
+      return undefined;
     }
   }
-  let result = value as string;
+  return value;
+}
+
+function resolveI18nKey(key: string, params?: Record<string, unknown>): string {
+  let value = lookup(key);
+  // English plural keys (key_one / key_other) when a count is supplied
+  if (typeof value !== 'string' && params && typeof params.count === 'number') {
+    value = lookup(`${key}_${params.count === 1 ? 'one' : 'other'}`) ?? lookup(`${key}_other`);
+  }
+  if (typeof value !== 'string') return key;
+  let result = value;
   if (params) {
     Object.entries(params).forEach(([k, v]) => {
-      result = result.replace(`{{${k}}}`, String(v));
+      result = result.split(`{{${k}}}`).join(String(v));
     });
   }
   return result;
@@ -37,6 +46,7 @@ function resolveI18nKey(key: string, params?: Record<string, unknown>): string {
 export const mockReactI18next = {
   useTranslation: () => ({
     t: resolveI18nKey,
+    i18n: { language: 'en', resolvedLanguage: 'en', changeLanguage: () => Promise.resolve() },
   }),
   Trans: ({ children, i18nKey }: { children?: React.ReactNode; i18nKey?: string }) => {
     if (i18nKey) {

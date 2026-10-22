@@ -25,7 +25,11 @@
     "back": "뒤로",
     "next": "다음",
     "previous": "이전",
-    "continue": "계속"
+    "continue": "계속",
+    "selectAll": "모두 선택",
+    "expand": "펼치기",
+    "collapse": "접기",
+    "unknownError": "알 수 없는 오류가 발생했습니다"
   },
   "brand": {
     "appName": "Nanosoft Suite",
@@ -201,7 +205,23 @@
     "filterAll": "전체",
     "filterFusion": "핵융합",
     "filterFission": "핵분열",
-    "filterTwoToTwo": "2→2"
+    "filterTwoToTwo": "2→2",
+    "allElements": "모든 원소",
+    "label": "{{type}} {{elements}}",
+    "resultCount_one": "결과 {{count}}개",
+    "resultCount_other": "결과 {{count}}개",
+    "bookmark": "북마크",
+    "removeBookmark": "북마크 해제",
+    "remove": "삭제",
+    "summary": {
+      "e1": "E1: {{list}}",
+      "e2": "E2: {{list}}",
+      "e": "E: {{list}}",
+      "out": "출력: {{list}}",
+      "outN": "출력{{n}}: {{list}}",
+      "limit": "제한: {{limit}}",
+      "noFilters": "필터 없음"
+    }
   },
   "elements": {
     "element": "원소",
@@ -353,7 +373,9 @@
     "stableCount": "안정",
     "radioactiveCount": "방사성",
     "radiationTypeLegend": "방사선 유형 범례",
-    "notAvailableInDatabase": "데이터베이스에 없음"
+    "notAvailableInDatabase": "데이터베이스에 없음",
+    "electricalConductivity": "전기 전도도",
+    "valueYears": "{{value}}년"
   },
   "reactions": {
     "reaction": "반응",
@@ -475,7 +497,14 @@
       "rightTitle": "반중성미자 (ν̄, 오른손잡이): 총 핵전하가 1 증가 (β⁻ 유형)",
       "none": "—",
       "noneTitle": "중성미자 관여 없음"
-    }
+    },
+    "selectHeatmapMetric": "히트맵 지표 선택",
+    "removeLimitTitle": "제한을 해제하고 일치하는 모든 반응을 표에 표시",
+    "resizeHandleDisabled": "크기 조절 핸들 (결과가 적을 때는 비활성화됨)",
+    "resizeHandle": "드래그하여 표 높이 조절 (더블클릭하면 초기화)",
+    "fusionResultsLabel": "핵융합 반응 결과",
+    "fissionResultsLabel": "핵분열 반응 결과",
+    "twoToTwoResultsLabel": "2-대-2 반응 결과"
   },
   "histogram": {
     "title": "에너지 분포",
@@ -810,7 +839,10 @@
       "zoomReset": "확대/축소 초기화",
       "advancedSettings": "고급 설정",
       "maxPathways": "최대 경로 수: {{count}}"
-    }
+    },
+    "customMaterialNamePlaceholder": "나만의 연료 혼합물",
+    "optionalDescription": "설명 (선택 사항)...",
+    "pathwayResultsTable": "경로 결과 표"
   },
   "materials": {
     "natural-lithium": {
@@ -1007,7 +1039,11 @@
     "databaseUpdateAvailable": "데이터베이스 업데이트 가능: v{{current}} → v{{available}}",
     "databaseUpdateReady": "데이터베이스 업데이트 준비 완료 (v{{version}}) - 새로고침하면 새 데이터를 사용합니다",
     "downloadingUpdate": "백그라운드에서 데이터베이스 업데이트를 다운로드하는 중...",
-    "downloadUpdate": "업데이트 다운로드"
+    "downloadUpdate": "업데이트 다운로드",
+    "noChangelogDetails": "이 릴리스에 대한 변경 내역 정보가 없습니다.",
+    "latestRelease": "최신 릴리스",
+    "releaseNotesUnavailable": "이 빌드에는 상세 릴리스 노트가 없습니다.",
+    "releaseNotesLoadFailed": "릴리스 노트를 불러오지 못했습니다."
   },
   "columnToggle": {
     "title": "표시할 열 사용자 지정",
@@ -1020,7 +1056,11 @@
     "youAreOffline": "오프라인 상태입니다",
     "offlineMessage": "일부 기능을 사용할 수 없습니다",
     "reconnecting": "다시 연결하는 중...",
-    "backOnline": "다시 온라인 상태입니다"
+    "backOnline": "다시 온라인 상태입니다",
+    "connectionRestored": "연결이 복구되었습니다",
+    "offlineTitle": "오프라인 상태입니다",
+    "cachedQueryHint": "데이터베이스가 로컬에 캐시되어 있으면 계속 조회할 수 있습니다",
+    "offlineShort": "오프라인"
   },
   "cycleDiscovery": {
     "databaseNotLoaded": "데이터베이스가 로드되지 않았습니다. 데이터베이스 로딩이 끝날 때까지 기다려 주세요.",
@@ -1110,7 +1150,10 @@
     "netLabelNoByproducts": "(없음)",
     "cycleClosesLabel": "순환 완결 — 촉매 재생됨",
     "catalystCenterLabel": "촉매 (재활용)",
-    "byproductLabel": "부산물"
+    "byproductLabel": "부산물",
+    "cycleAroundCatalyst": "← 촉매를 중심으로 반응이 순환합니다 →",
+    "cycleIconLabel_one": "{{count}}단계 순환",
+    "cycleIconLabel_other": "{{count}}단계 순환"
   },
   "help": {
     "title": "도움말 및 용어집",
@@ -1128,6 +1171,56 @@
       "reaction": "반응 유형",
       "database": "데이터베이스 필드",
       "measurement": "측정 및 단위"
+    },
+    "examples": {
+      "hLiFusion": {
+        "name": "수소-리튬 핵융합",
+        "description": "대표적인 LENR 반응 경로입니다. H + Li 핵융합은 상당한 에너지를 방출하며 베릴륨과 헬륨 동위원소를 생성합니다."
+      },
+      "niHFusion": {
+        "name": "니켈-수소 핵융합",
+        "description": "Rossi E-Cat 및 Parkhomov 재현 실험에서 연구되었습니다. Ni + H 반응은 구리 동위원소를 생성합니다."
+      },
+      "uraniumFission": {
+        "name": "우라늄 핵분열 경로",
+        "description": "우라늄 동위원소의 모든 핵분열 경로입니다. 우라늄 분열로 생기는 다양한 생성물 스펙트럼을 보여줍니다."
+      },
+      "palladiumFission": {
+        "name": "팔라듐 핵분열",
+        "description": "팔라듐 전극을 사용한 Fleischmann-Pons 상온 핵융합 실험과 관련된 Pd 핵분열 경로입니다."
+      },
+      "protonBoron": {
+        "name": "양성자-붕소 반응",
+        "description": "H + B-11은 무중성자 핵융합 반응(p + B-11 → 3α)에서 알파 입자 3개를 생성하며, 청정 에너지에 이상적인 반응으로 여겨집니다."
+      },
+      "deuteriumNickel": {
+        "name": "중수소-니켈 반응",
+        "description": "니켈, 리튬, 알루미늄, 붕소, 질소와의 중수소 기반 핵변환을 보여주는 D + Ni 2-대-2 반응입니다."
+      },
+      "u238DecayChain": {
+        "name": "우라늄-238 붕괴 사슬",
+        "description": "가장 유명한 자연 붕괴 계열(4n+2)입니다. U-238에서 라듐과 라돈을 거쳐 안정한 Pb-206에 이르는 14단계를 추적합니다."
+      },
+      "iron56": {
+        "name": "철-56 — 최대 결합 에너지",
+        "description": "Fe-56은 모든 핵종 중 핵자당 결합 에너지가 가장 높아 항성 핵합성의 종착점이 됩니다."
+      },
+      "palladiumNae": {
+        "name": "팔라듐 NAE 분석",
+        "description": "팔라듐의 핵 활성 환경(NAE) 예측을 살펴보세요 — Fleischmann-Pons 중수소 장입 실험의 핵심입니다."
+      },
+      "parkhomovCascade": {
+        "name": "Parkhomov Ni-LiAlH₄ 캐스케이드",
+        "description": "천연 니켈과 수소화 알루미늄 리튬 연료를 사용한 2014년 Parkhomov의 Rossi 반응로 재현 실험을 시뮬레이션합니다."
+      }
+    },
+    "exampleTypes": {
+      "fusion": "핵융합",
+      "fission": "핵분열",
+      "twotwo": "2→2",
+      "elementData": "원소",
+      "cascades": "캐스케이드",
+      "mullerResonance": "공명"
     }
   },
   "mullerResonance": {
@@ -1454,6 +1547,428 @@
         "institution": "U.S. Department of Energy ARPA-E",
         "excerpt": "ARPA-E는 2023년에 약 1,000만 달러 규모의 탐색적 LENR 연구 자금 지원을 발표하여 제도권의 관심이 다시 높아졌음을 보여 주었습니다."
       }
+    }
+  },
+  "periodicSelector": {
+    "any": "전체",
+    "selectedSummary_one": "{{count}}개 선택됨: {{list}}",
+    "selectedSummary_other": "{{count}}개 선택됨: {{list}}",
+    "clearAll": "모두 지우기",
+    "removeItem": "{{item}} 제거",
+    "lanthanides": "란타넘족 (57-71)",
+    "actinides": "악티늄족 (89-103)"
+  },
+  "limitSelector": {
+    "resultLimit": "결과 제한",
+    "all": "전체",
+    "unlimited": "무제한 ⚠️",
+    "custom": "사용자 지정",
+    "enterCustomLimit": "사용자 지정 제한 입력",
+    "recommended": "권장 ≤ {{max}}"
+  },
+  "badgeSelector": {
+    "allTypesShown": "모든 유형 표시 중",
+    "typesSelected_one": "{{count}}개 유형 선택됨",
+    "typesSelected_other": "{{count}}개 유형 선택됨"
+  },
+  "elementData": {
+    "subtitle": "여러 데이터 보기에서 화학적, 물리적, 핵적 특성을 자세히 확인하세요",
+    "presets": {
+      "alphaDecay": "알파 붕괴",
+      "betaMinusDecay": "베타 마이너스 붕괴",
+      "betaPlusDecay": "베타 플러스 붕괴",
+      "gammaRadiation": "감마선"
+    },
+    "columns": {
+      "meltingK": "녹는점 (K)",
+      "boilingK": "끓는점 (K)",
+      "densityGcm3": "밀도 (g/cm³)",
+      "massAmu": "질량 (amu)"
+    },
+    "radiiMeasured": "측정값",
+    "radiiTheoretical": "이론값",
+    "radiiNonBonded": "비결합",
+    "radiiBonded": "결합 원자",
+    "viewSource": "출처 보기",
+    "required": "(필수)",
+    "nuclideNotAvailable": "핵종 정보 없음",
+    "nuclideNotAvailableMessage": "핵종 <strong>{{nuclide}}</strong>은(는) 안정 핵종 데이터베이스와 방사성 붕괴 데이터베이스 어디에도 없습니다. 이 동위원소는 수명이 극히 짧거나 문서화된 핵종 범위를 벗어났을 수 있습니다.",
+    "availableNuclidesShown": "{{element}}의 이용 가능한 핵종이 위에 표시되어 있습니다. 하나를 선택하여 상세 특성을 확인하세요.",
+    "noNuclidesAvailable": "이용 가능한 핵종 없음",
+    "noNuclidesForElement": "데이터베이스에 <strong>{{element}}</strong>의 핵종이 없습니다.",
+    "elementNotInDataset": "이 원소는 저에너지 핵반응(LENR) 연구와 관련된 원소를 중심으로 구성된 현재 데이터셋에 포함되지 않았을 수 있습니다.",
+    "elementsTable": "원소 표",
+    "elementsTableDescription": "모든 화학 원소를 탐색하고 검색하세요. 행을 클릭하면 통합 탭에서 상세 특성을 볼 수 있습니다.",
+    "nuclidesTable": "핵종 표",
+    "nuclidesTableDescription": "결합 에너지, 보손/페르미온 분류, 안정성 지표와 함께 모든 핵 동위원소를 탐색하세요. 행을 클릭하면 통합 탭에서 상세 특성을 볼 수 있습니다.",
+    "decaysTable": "방사성 붕괴 표",
+    "decaysTableDescription": "모든 불안정 동위원소의 방사성 붕괴 모드, 반감기, 에너지, 강도를 탐색하세요. 행을 클릭하면 통합 탭에서 모핵종을 볼 수 있습니다.",
+    "searchElements": "기호 또는 이름으로 원소 검색...",
+    "searchNuclides": "원소 이름, 기호, Z 또는 A로 핵종 검색...",
+    "searchDecays": "원소, 붕괴 모드 또는 방사선 유형으로 붕괴 검색...",
+    "status": {
+      "unknown": "알 수 없음",
+      "stablePrimordial": "안정 원시 핵종",
+      "synthetic": "합성",
+      "unstablePrimordial": "불안정 원시 핵종"
+    },
+    "classification": "분류",
+    "nuclearSpin": "핵스핀",
+    "magneticMoment": "자기 모멘트",
+    "nmrFrequency": "NMR 주파수",
+    "primaryDecay": "주 붕괴",
+    "decayEnergy": "붕괴 에너지",
+    "chemicalProperties": "화학적 특성",
+    "otherProperties": "기타 특성",
+    "naturalOccurrence": "자연 존재",
+    "additionalProperties": "추가 특성"
+  },
+  "decayChain": {
+    "noData": "붕괴 사슬 데이터가 없습니다",
+    "zoomIn": "확대",
+    "zoomOut": "축소",
+    "resetView": "보기 초기화",
+    "controlsHint": "스크롤하여 확대/축소 • 드래그하여 이동 • 더블클릭하여 확대",
+    "clickToViewDetails": "클릭하여 상세 정보 보기",
+    "decayModes": "붕괴 모드",
+    "alpha": "알파 (α)",
+    "betaMinus": "베타- (β-)",
+    "betaPlus": "베타+ (β+)"
+  },
+  "databaseLoading": {
+    "downloadingTitle": "데이터베이스 다운로드 중",
+    "loadingTitle": "데이터베이스 로드 중",
+    "downloadingMessage": "Parkhomov 핵반응 데이터베이스를 다운로드하는 중...",
+    "initializingMessage": "데이터베이스 엔진을 초기화하는 중...",
+    "cachedNotice": "이 데이터베이스는 캐시되어 다음 방문 시 즉시 로드됩니다",
+    "pleaseWait": "잠시만 기다려 주세요..."
+  },
+  "errorDisplay": {
+    "databaseErrorTitle": "데이터베이스 오류",
+    "somethingWentWrong": "문제가 발생했습니다",
+    "autoReported": "이 오류는 개발팀에 자동으로 보고되었습니다.",
+    "technicalDetails": "기술 세부 정보",
+    "fingerprint": "오류 지문",
+    "timestamp": "타임스탬프",
+    "browser": "브라우저",
+    "os": "OS",
+    "device": "기기",
+    "url": "URL",
+    "appVersion": "앱 버전",
+    "clickToCopy": "클릭하여 복사",
+    "stackTrace": "스택 트레이스",
+    "moduleLoad": {
+      "title": "모듈 로드 실패",
+      "description": "이 오류는 Safari(특히 iOS)에서 콘텐츠 차단기나 광고 차단기가 JavaScript 모듈 로드를 막을 때 흔히 발생합니다.",
+      "trySolutions": "다음 해결 방법을 시도해 보세요:",
+      "solution1": "이 사이트에 대해 Safari 콘텐츠 차단기를 끄세요 (설정 → Safari → 콘텐츠 차단기)",
+      "solution2": "AdBlock 등 광고 차단 브라우저 확장 프로그램을 끄세요",
+      "solution3": "개인 정보 보호 브라우징 모드나 다른 브라우저를 사용해 보세요",
+      "solution4": "Private Relay가 간섭하고 있는지 확인하세요 (iCloud 설정 → Private Relay)",
+      "solution5": "Safari 캐시와 쿠키를 지운 후 다시 로드하세요",
+      "note": "<strong>참고:</strong> 이 문제는 사용자의 약 0.6%에게 영향을 미치며, 보통 콘텐츠 차단기를 끄면 해결됩니다."
+    },
+    "corruption": {
+      "title": "데이터베이스 손상 감지됨",
+      "description": "이 오류는 보통 캐시된 데이터베이스 파일이 손상되었을 때 발생합니다. 캐시를 지우고 데이터베이스를 다시 다운로드하면 해결할 수 있습니다.",
+      "clearing": "캐시 지우는 중...",
+      "clearAndReload": "캐시 지우고 다시 로드",
+      "redownloadNote": "참고: {{size}}MB 데이터베이스 파일을 다시 다운로드합니다"
+    },
+    "searchSimilar": "유사한 문제 검색",
+    "searchFirstTitle": "중복 보고를 방지하려면 먼저 유사한 문제를 검색하세요",
+    "copyingAndOpening": "클립보드에 복사하고 GitHub를 여는 중...",
+    "copyAndReportTitle": "오류 세부 정보를 복사하고 GitHub를 열어 보고",
+    "openingIn": "{{seconds}}초 후 열림...",
+    "copied": "복사됨!",
+    "reportThisError": "이 오류 보고",
+    "reportCopied": "오류 보고서가 클립보드에 복사되었습니다!",
+    "openingGitHubIn": "{{seconds}}초 후 GitHub가 열립니다... 붙여넣은 후 재현 단계를 작성해 주세요.",
+    "tryAgain": "다시 시도",
+    "returnHome": "홈으로 돌아가기",
+    "searchFirstHint": "중복 보고를 방지하려면 <strong>먼저</strong> 유사한 문제를 검색하세요",
+    "afterPastingHint": "<strong>중요:</strong> 오류 보고서를 붙여넣은 후, 문제를 빠르게 해결할 수 있도록 재현 단계, 예상 동작, 실제 동작 항목을 작성해 주세요"
+  },
+  "filterPanel": {
+    "noFiltersActive": "활성 필터 없음",
+    "errors": {
+      "nameRequired": "프리셋 이름을 입력하세요",
+      "nameTooShort": "프리셋 이름은 {{min}}자 이상이어야 합니다",
+      "nameTooLong": "프리셋 이름은 {{max}}자 미만이어야 합니다",
+      "nameExists": "같은 이름의 프리셋이 이미 있습니다"
+    },
+    "multiSelectHint": "Ctrl/Cmd를 누른 채 여러 항목 선택",
+    "min": "최소",
+    "max": "최대",
+    "clearSearch": "검색 지우기",
+    "showingRecords": "{{total}}개 레코드 중 {{shown}}개 표시",
+    "loadPreset": "프리셋 불러오기...",
+    "builtInPresets": "기본 제공 프리셋",
+    "myPresets": "내 프리셋",
+    "deletePresetTitle": "이 프리셋 삭제",
+    "deletePreset": "프리셋 삭제",
+    "savePresetTitle": "현재 필터를 프리셋으로 저장",
+    "savePreset": "프리셋 저장...",
+    "clearAll": "모두 지우기",
+    "saveFilterPreset": "필터 프리셋 저장",
+    "presetName": "프리셋 이름",
+    "presetNamePlaceholder": "예: 나만의 필터",
+    "searchPlaceholder": "검색...",
+    "confirmDeletePreset": "이 프리셋을 삭제하시겠습니까?"
+  },
+  "pwa": {
+    "installPromptLabel": "앱 설치 안내",
+    "installTitle": "{{appName}} 설치",
+    "installDescription": "빠른 접근과 오프라인 기능을 위해 앱을 설치하세요",
+    "iosTitle": "iOS에 설치하려면:",
+    "iosStep1": "Safari에서 공유 버튼을 탭하세요",
+    "iosStep2": "아래로 스크롤하여 \"홈 화면에 추가\"를 탭하세요",
+    "iosStep3": "오른쪽 위의 \"추가\"를 탭하세요",
+    "installNow": "지금 설치",
+    "dismissInstall": "설치 안내 닫기",
+    "newVersionAvailable": "새 버전을 사용할 수 있습니다!",
+    "updateDescription": "업데이트를 클릭하여 최신 기능과 개선 사항을 받으세요",
+    "dismissUpdate": "업데이트 알림 닫기"
+  },
+  "particleDetails": {
+    "electronDescription": "원자핵 주위를 도는, 음전하를 띤 기본 렙톤입니다.",
+    "neutronDescription": "거의 모든 원자의 핵에 존재하는 중성 바리온입니다.",
+    "neutrinoDescription": "질량이 거의 없고 전기적으로 중성이며 약력을 통해서만 상호작용하는 렙톤입니다.",
+    "notAvailable": "해당 없음",
+    "quickFacts": "주요 정보",
+    "charge": "전하",
+    "spin": "스핀",
+    "databaseMapping": "데이터베이스 매핑",
+    "nuclideId": "핵종 ID",
+    "nuclearBaryonic": "핵/바리온",
+    "atomicFermionic": "원자/페르미온",
+    "notes": "참고",
+    "storageNote": "이 입자는 반응에 등장하기 때문에 핵종과 함께 저장되지만, 화학 원소에 해당하지는 않습니다."
+  },
+  "proportions": {
+    "fuelProportions": "연료 비율",
+    "formatLabel": {
+      "percentage": "백분율 (%)",
+      "atomicRatio": "원자 비율",
+      "massRatio": "질량 비율 (g)"
+    },
+    "formatHelp": {
+      "percentage": "백분율(0-100)을 입력하세요. 값은 100%로 정규화됩니다.",
+      "atomicRatio": "원자 비율을 입력하세요 (예: 3:1은 75%:25%가 됩니다).",
+      "massRatio": "질량을 그램 단위로 입력하세요. 원자 질량을 사용해 몰로 변환됩니다."
+    },
+    "selectFuelFirst": "비율을 설정하려면 연료 핵종을 선택하세요",
+    "equal": "균등",
+    "natural": "천연",
+    "normalize": "정규화",
+    "total": "합계",
+    "willBeNormalized": "(정규화됨)"
+  },
+  "sortableTable": {
+    "noData": "데이터가 없습니다",
+    "collapseAll": "모두 접기",
+    "tabs": "탭"
+  },
+  "radioactiveCard": {
+    "limitedData": "<strong>제한된 데이터:</strong> 이 동위원소는 방사성 붕괴 데이터베이스에만 존재합니다. 수명이 짧은 이 핵종에 대해서는 전체 핵 특성 데이터(결합 에너지, 원자 질량, 양자 특성)를 사용할 수 없습니다.",
+    "primaryDecayMode": "주 붕괴 모드",
+    "radiation": "방사선"
+  },
+  "privacyPage": {
+    "title": "개인정보 설정",
+    "subtitle": "분석 및 오류 보고 설정을 관리하고 개인정보 보호 방식을 알아보세요",
+    "reloadToApply": "오류 보고 변경 사항을 적용하려면 페이지를 다시 로드하세요.",
+    "reloadNow": "지금 페이지 다시 로드",
+    "errorReporting": {
+      "title": "오류 보고",
+      "disabledStatus": "오류 보고 비활성화됨",
+      "disabledStatusDescription": "오류가 개발팀에 보고되지 않습니다",
+      "enabledStatusDescription": "버그를 자동으로 발견하고 수정하는 데 도움을 주고 있습니다",
+      "saved": "✓ 오류 보고 설정이 저장되었습니다",
+      "whyTitle": "오류 보고가 중요한 이유",
+      "whyIntro": "오류 보고는 사용 경험에 영향을 주는 버그를 찾아 수정하는 데 도움이 됩니다. 오류가 발생하면 익명화된 기술 정보를 받아 다음과 같이 활용합니다:",
+      "why1": "버그를 더 빨리 수정하고 안정성 향상",
+      "why2": "개선이 필요한 기능 파악",
+      "why3": "실제 문제를 바탕으로 개발 우선순위 결정",
+      "why4": "모든 사용자에게 앱이 올바르게 작동하도록 보장",
+      "manage": "오류 보고 관리",
+      "enable": "오류 보고 활성화",
+      "enableDescription": "오류를 자동으로 보고하여 버그 수정에 도움을 주세요",
+      "disable": "오류 보고 비활성화",
+      "disableDescription": "오류 보고서를 보내지 않습니다 (앱 안정성이 떨어질 수 있음)",
+      "whatReported": "보고되는 항목:",
+      "reported1": "오류 메시지 및 스택 트레이스",
+      "reported2": "브라우저 종류 및 버전",
+      "reported3": "페이지 URL (쿼리 매개변수 제거)",
+      "reported4": "앱 버전 및 릴리스 정보",
+      "whatNotReported": "보고되지 않는 항목:",
+      "notReported1": "개인 정보 또는 IP 주소",
+      "notReported3": "세션 녹화 또는 스크린샷",
+      "notReported4": "식별 가능한 모든 사용자 데이터",
+      "enabledStatus": "오류 보고 활성화됨",
+      "helpMessage": "<strong>여러분의 도움이 모두를 위해 이 프로젝트를 더 좋게 만듭니다!</strong> 오류 보고를 활성화하는 것은 LENR Academy의 성공에 기여할 수 있는 가장 효과적인 방법 중 하나입니다.",
+      "sentryNotice": "GDPR 준수를 위해 EU 호스팅 <strong>Sentry</strong>를 사용합니다. 모든 데이터는 익명화되며 디버깅 목적으로만 사용됩니다."
+    },
+    "searchQueriesOrInputs": "검색어 또는 양식 입력값",
+    "analytics": {
+      "title": "분석",
+      "enabledStatus": "분석 활성화됨",
+      "enabledStatusDescription": "개인정보 친화적 분석으로 사이트 개선에 도움을 주고 있습니다",
+      "disabledStatus": "분석 비활성화됨",
+      "disabledStatusDescription": "방문 시 사용 데이터를 전혀 수집하지 않습니다",
+      "noPreference": "설정 안 함",
+      "noPreferenceDescription": "아직 선택하지 않았습니다",
+      "saved": "✓ 분석 설정이 저장되었습니다",
+      "manage": "분석 관리",
+      "enable": "분석 활성화",
+      "enableDescription": "방문자가 사이트를 어떻게 이용하는지 파악하는 데 도움을 주세요",
+      "disable": "분석 비활성화",
+      "disableDescription": "방문 시 사용 데이터를 수집하지 않습니다",
+      "whatTracked": "추적하는 항목:",
+      "tracked1": "페이지 조회수 및 탐색 패턴",
+      "tracked2": "유입 웹사이트 (방문자가 온 곳)",
+      "tracked3": "브라우저 및 기기 유형 (익명화)",
+      "tracked4": "국가/지역 (IP 기반, 저장하지 않음)",
+      "whatNotTracked": "추적하지 않는 항목:",
+      "notTracked1": "개인 정보 또는 식별 가능한 데이터",
+      "notTracked2": "세션 간 개별 사용자",
+      "notTracked3": "쿠키 (추적 쿠키를 전혀 사용하지 않음)",
+      "notTracked4": "IP 주소 (저장하지 않음)",
+      "transparencyTitle": "완전한 투명성",
+      "transparencyDescription": "저희는 완전한 투명성을 추구합니다. 공개 분석 대시보드에서 어떤 데이터를 수집하고 어떻게 표시하는지 정확히 확인할 수 있습니다. 비밀도, 숨겨진 추적도 없습니다.",
+      "viewDashboard": "공개 분석 대시보드 보기",
+      "umamiCompliance": "Umami는 GDPR, CCPA, PECR을 완전히 준수합니다. 방문자의 개인정보를 침해하지 않으면서 웹사이트 운영자에게 인사이트를 제공하도록 설계되었습니다.",
+      "learnMoreUmami": "Umami에 대해 자세히 알아보기",
+      "umamiIntro": "개인정보를 존중하는 오픈 소스 분석 플랫폼인 <strong>Umami Analytics</strong>를 사용합니다."
+    },
+    "default": "(기본값)"
+  },
+  "radiationTypes": {
+    "A": {
+      "name": "알파 입자",
+      "description": "He-4 원자핵"
+    },
+    "B-": {
+      "name": "베타 마이너스",
+      "description": "전자 방출"
+    },
+    "B+": {
+      "name": "베타 플러스",
+      "description": "양전자 방출"
+    },
+    "B": {
+      "name": "베타 붕괴",
+      "description": "부호 미지정"
+    },
+    "EC": {
+      "name": "전자 포획",
+      "description": "궤도 전자 흡수"
+    },
+    "IT": {
+      "name": "핵이성질체 전이",
+      "description": "들뜬 상태 붕괴"
+    },
+    "G": {
+      "name": "감마선",
+      "description": "고에너지 광자"
+    },
+    "G-AN": {
+      "name": "소멸 감마선",
+      "description": "양전자 소멸"
+    },
+    "G-X-K": {
+      "name": "K껍질 X선",
+      "description": "K껍질 전이"
+    },
+    "G-X-KA1": {
+      "name": "Kα1 X선",
+      "description": "K껍질 α1 전이"
+    },
+    "G-X-KA2": {
+      "name": "Kα2 X선",
+      "description": "K껍질 α2 전이"
+    },
+    "G-X-KB": {
+      "name": "Kβ X선",
+      "description": "K껍질 β 전이"
+    },
+    "G-X-L": {
+      "name": "L껍질 X선",
+      "description": "L껍질 전이"
+    },
+    "E-CE-K": {
+      "name": "K껍질 내부 전환 전자",
+      "description": "K껍질에서의 내부 전환"
+    },
+    "E-CE-L": {
+      "name": "L껍질 내부 전환 전자",
+      "description": "L껍질에서의 내부 전환"
+    },
+    "E-CE-M": {
+      "name": "M껍질 내부 전환 전자",
+      "description": "M껍질에서의 내부 전환"
+    },
+    "E-CE-M+": {
+      "name": "M+ 껍질 내부 전환 전자",
+      "description": "M+ 껍질에서의 내부 전환"
+    },
+    "E-CE-MN+": {
+      "name": "MN+ 껍질 내부 전환 전자",
+      "description": "MN+ 껍질에서의 내부 전환"
+    },
+    "E-CE-N+": {
+      "name": "N+ 껍질 내부 전환 전자",
+      "description": "N+ 껍질에서의 내부 전환"
+    },
+    "E-AU-K": {
+      "name": "K껍질 오제 전자",
+      "description": "K껍질에서의 원자 탈들뜸"
+    },
+    "E-AU-L": {
+      "name": "L껍질 오제 전자",
+      "description": "L껍질에서의 원자 탈들뜸"
+    }
+  },
+  "decayModes": {
+    "A": {
+      "name": "알파 붕괴",
+      "description": "알파 입자(양성자 2개 + 중성자 2개) 방출"
+    },
+    "B-": {
+      "name": "베타 마이너스 붕괴",
+      "description": "중성자가 양성자, 전자, 반중성미자로 변환"
+    },
+    "B+": {
+      "name": "베타 플러스 붕괴",
+      "description": "양성자가 중성자, 양전자, 중성미자로 변환"
+    },
+    "EC": {
+      "name": "전자 포획",
+      "description": "양성자가 내부 궤도 전자를 포획하여 중성자가 됨"
+    },
+    "IT": {
+      "name": "핵이성질체 전이",
+      "description": "들뜬 원자핵이 구성 변화 없이 에너지를 방출"
+    },
+    "SF": {
+      "name": "자발 핵분열",
+      "description": "원자핵이 더 가벼운 원자핵들로 분열"
+    },
+    "N": {
+      "name": "중성자 방출",
+      "description": "원자핵이 하나 이상의 중성자를 방출"
+    },
+    "P": {
+      "name": "양성자 방출",
+      "description": "원자핵이 양성자 하나를 방출"
+    },
+    "2N": {
+      "name": "이중 중성자 방출",
+      "description": "원자핵이 중성자 두 개를 방출"
+    },
+    "2P": {
+      "name": "이중 양성자 방출",
+      "description": "원자핵이 양성자 두 개를 방출"
     }
   }
 }

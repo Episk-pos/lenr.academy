@@ -123,6 +123,6 @@ describe('QueryHistoryPanel', () => {
 
   it('shows time ago for recent queries', () => {
     renderAndOpen([baseQuery]);
-    expect(screen.getByText('5m ago')).toBeInTheDocument();
+    expect(screen.getByText('5 minutes ago')).toBeInTheDocument();
   });
 });

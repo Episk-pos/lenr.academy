@@ -1,4 +1,5 @@
 import { Loader } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import type { DownloadProgress } from '../services/database'
 
 interface DatabaseLoadingCardProps {
@@ -6,6 +7,7 @@ interface DatabaseLoadingCardProps {
 }
 
 export default function DatabaseLoadingCard({ downloadProgress }: DatabaseLoadingCardProps) {
+  const { t } = useTranslation()
   const formatBytes = (bytes: number): string => {
     return (bytes / 1024 / 1024).toFixed(1)
   }
@@ -17,13 +19,13 @@ export default function DatabaseLoadingCard({ downloadProgress }: DatabaseLoadin
           <Loader className="w-12 h-12 animate-spin text-blue-500 mb-4" />
 
           <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
-            {downloadProgress ? 'Downloading Database' : 'Loading Database'}
+            {downloadProgress ? t('databaseLoading.downloadingTitle') : t('databaseLoading.loadingTitle')}
           </h2>
 
           <p className="text-sm text-gray-600 dark:text-gray-400 mb-6">
             {downloadProgress
-              ? 'Downloading Parkhomov nuclear reactions database...'
-              : 'Initializing database engine...'}
+              ? t('databaseLoading.downloadingMessage')
+              : t('databaseLoading.initializingMessage')}
           </p>
 
           {downloadProgress && downloadProgress.totalBytes > 0 && (
@@ -46,14 +48,14 @@ export default function DatabaseLoadingCard({ downloadProgress }: DatabaseLoadin
 
               {/* Info */}
               <p className="text-xs text-gray-500 dark:text-gray-500 mt-4">
-                This database will be cached for instant loading on future visits
+                {t('databaseLoading.cachedNotice')}
               </p>
             </>
           )}
 
           {!downloadProgress && (
             <p className="text-xs text-gray-500 dark:text-gray-500">
-              Please wait a moment...
+              {t('databaseLoading.pleaseWait')}
             </p>
           )}
         </div>

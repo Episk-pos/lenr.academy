@@ -25,7 +25,11 @@
     "back": "戻る",
     "next": "次へ",
     "previous": "前へ",
-    "continue": "続ける"
+    "continue": "続ける",
+    "selectAll": "すべて選択",
+    "expand": "展開",
+    "collapse": "折りたたむ",
+    "unknownError": "不明なエラーが発生しました"
   },
   "brand": {
     "appName": "Nanosoft Suite",
@@ -201,7 +205,23 @@
     "filterAll": "すべて",
     "filterFusion": "核融合",
     "filterFission": "核分裂",
-    "filterTwoToTwo": "2→2"
+    "filterTwoToTwo": "2→2",
+    "allElements": "すべての元素",
+    "label": "{{type}} {{elements}}",
+    "resultCount_one": "{{count}}件の結果",
+    "resultCount_other": "{{count}}件の結果",
+    "bookmark": "ブックマーク",
+    "removeBookmark": "ブックマークを解除",
+    "remove": "削除",
+    "summary": {
+      "e1": "E1：{{list}}",
+      "e2": "E2：{{list}}",
+      "e": "E：{{list}}",
+      "out": "出力：{{list}}",
+      "outN": "出力{{n}}：{{list}}",
+      "limit": "上限：{{limit}}",
+      "noFilters": "フィルターなし"
+    }
   },
   "elements": {
     "element": "元素",
@@ -353,7 +373,9 @@
     "stableCount": "安定",
     "radioactiveCount": "放射性",
     "radiationTypeLegend": "放射線タイプ凡例",
-    "notAvailableInDatabase": "データベースで利用できません"
+    "notAvailableInDatabase": "データベースで利用できません",
+    "electricalConductivity": "電気伝導率",
+    "valueYears": "{{value}}年"
   },
   "reactions": {
     "reaction": "反応",
@@ -475,7 +497,14 @@
       "rightTitle": "反ニュートリノ（ν̄、右巻き）：全核電荷が1増加（β⁻型）",
       "none": "—",
       "noneTitle": "ニュートリノの関与なし"
-    }
+    },
+    "selectHeatmapMetric": "ヒートマップの指標を選択",
+    "removeLimitTitle": "上限を解除して一致するすべての反応を表に表示",
+    "resizeHandleDisabled": "サイズ変更ハンドル（結果が少ないため無効）",
+    "resizeHandle": "ドラッグして表の高さを変更（ダブルクリックでリセット）",
+    "fusionResultsLabel": "核融合反応の結果",
+    "fissionResultsLabel": "核分裂反応の結果",
+    "twoToTwoResultsLabel": "2対2反応の結果"
   },
   "histogram": {
     "title": "エネルギー分布",
@@ -810,7 +839,10 @@
       "zoomReset": "ズームをリセット",
       "advancedSettings": "詳細設定",
       "maxPathways": "最大パスウェイ数: {{count}}"
-    }
+    },
+    "customMaterialNamePlaceholder": "カスタム燃料混合物",
+    "optionalDescription": "説明（任意）...",
+    "pathwayResultsTable": "経路結果テーブル"
   },
   "materials": {
     "natural-lithium": {
@@ -1007,7 +1039,11 @@
     "databaseUpdateReady": "データベースの更新が準備完了 (v{{version}}) - 新しいデータを使用するには更新してください",
     "downloadingUpdate": "バックグラウンドで更新をダウンロード中...",
     "downloadUpdate": "更新をダウンロード",
-    "updating": "更新中..."
+    "updating": "更新中...",
+    "noChangelogDetails": "このリリースには変更履歴の詳細がありません。",
+    "latestRelease": "最新リリース",
+    "releaseNotesUnavailable": "このビルドの詳細なリリースノートはありません。",
+    "releaseNotesLoadFailed": "リリースノートの読み込みに失敗しました。"
   },
   "columnToggle": {
     "title": "表示列をカスタマイズ",
@@ -1020,7 +1056,11 @@
     "youAreOffline": "オフラインです",
     "offlineMessage": "一部の機能が利用できない可能性があります",
     "reconnecting": "再接続中...",
-    "backOnline": "オンラインに戻りました"
+    "backOnline": "オンラインに戻りました",
+    "connectionRestored": "接続が回復しました",
+    "offlineTitle": "オフラインです",
+    "cachedQueryHint": "データベースがローカルにキャッシュされていれば、引き続き検索できます",
+    "offlineShort": "オフライン"
   },
   "cycleDiscovery": {
     "databaseNotLoaded": "データベースが読み込まれていません。データベースの読み込みが完了するまでお待ちください。",
@@ -1110,7 +1150,10 @@
     "netLabelNoByproducts": "（なし）",
     "cycleClosesLabel": "Cycle closes — fuel returned to start",
     "catalystCenterLabel": "触媒（再利用）",
-    "byproductLabel": "副産物"
+    "byproductLabel": "副産物",
+    "cycleAroundCatalyst": "← 触媒を中心に反応が循環 →",
+    "cycleIconLabel_one": "{{count}}ステップのサイクル",
+    "cycleIconLabel_other": "{{count}}ステップのサイクル"
   },
   "help": {
     "title": "ヘルプ＆用語集",
@@ -1128,6 +1171,56 @@
       "reaction": "反応タイプ",
       "database": "データベースフィールド",
       "measurement": "測定と単位"
+    },
+    "examples": {
+      "hLiFusion": {
+        "name": "水素-リチウム核融合",
+        "description": "代表的なLENR反応経路。H + Li 核融合により、大きなエネルギー放出を伴ってベリリウムとヘリウムの同位体が生成されます。"
+      },
+      "niHFusion": {
+        "name": "ニッケル-水素核融合",
+        "description": "Rossi E-Cat および Parkhomov の追試実験で研究されました。Ni + H 反応により銅の同位体が生成されます。"
+      },
+      "uraniumFission": {
+        "name": "ウランの核分裂経路",
+        "description": "ウラン同位体からのすべての核分裂経路。ウラン分裂による多様な生成物スペクトルを示します。"
+      },
+      "palladiumFission": {
+        "name": "パラジウムの核分裂",
+        "description": "パラジウム電極を用いた Fleischmann-Pons 常温核融合実験に関連する Pd の核分裂経路。"
+      },
+      "protonBoron": {
+        "name": "陽子-ホウ素反応",
+        "description": "H + B-11 は非中性子核融合反応（p + B-11 → 3α）で3個のアルファ粒子を生成し、クリーンエネルギーに理想的とされています。"
+      },
+      "deuteriumNickel": {
+        "name": "重水素-ニッケル反応",
+        "description": "D + Ni の2対2反応。ニッケル、リチウム、アルミニウム、ホウ素、窒素との重水素ベースの核変換を示します。"
+      },
+      "u238DecayChain": {
+        "name": "ウラン238崩壊系列",
+        "description": "最も有名な天然崩壊系列（4n+2）。U-238 からラジウム、ラドンを経て安定な Pb-206 に至る14ステップをたどります。"
+      },
+      "iron56": {
+        "name": "鉄56 — 結合エネルギーの頂点",
+        "description": "Fe-56 は全核種の中で核子あたりの結合エネルギーが最も高く、恒星内元素合成の終着点となっています。"
+      },
+      "palladiumNae": {
+        "name": "パラジウムのNAE解析",
+        "description": "パラジウムの核活性環境（NAE）予測を探索します — Fleischmann-Pons の重水素充填実験の中心テーマです。"
+      },
+      "parkhomovCascade": {
+        "name": "Parkhomov Ni-LiAlH₄ カスケード",
+        "description": "天然ニッケルと水素化リチウムアルミニウム燃料を用いた、2014年の Parkhomov による Rossi 反応炉追試をシミュレートします。"
+      }
+    },
+    "exampleTypes": {
+      "fusion": "核融合",
+      "fission": "核分裂",
+      "twotwo": "2→2",
+      "elementData": "元素",
+      "cascades": "カスケード",
+      "mullerResonance": "共鳴"
     }
   },
   "mullerResonance": {
@@ -1454,6 +1547,428 @@
         "institution": "U.S. Department of Energy ARPA-E",
         "excerpt": "ARPA-E announced ~$10M in exploratory LENR research funding in 2023, signalling renewed institutional interest."
       }
+    }
+  },
+  "periodicSelector": {
+    "any": "任意",
+    "selectedSummary_one": "{{count}}個選択：{{list}}",
+    "selectedSummary_other": "{{count}}個選択：{{list}}",
+    "clearAll": "すべてクリア",
+    "removeItem": "{{item}}を削除",
+    "lanthanides": "ランタノイド（57-71）",
+    "actinides": "アクチノイド（89-103）"
+  },
+  "limitSelector": {
+    "resultLimit": "結果の上限",
+    "all": "すべて",
+    "unlimited": "無制限 ⚠️",
+    "custom": "カスタム",
+    "enterCustomLimit": "カスタム上限を入力",
+    "recommended": "推奨 ≤ {{max}}"
+  },
+  "badgeSelector": {
+    "allTypesShown": "すべてのタイプを表示中",
+    "typesSelected_one": "{{count}}タイプ選択",
+    "typesSelected_other": "{{count}}タイプ選択"
+  },
+  "elementData": {
+    "subtitle": "化学的・物理的・核的性質を複数のデータビューで詳しく表示",
+    "presets": {
+      "alphaDecay": "アルファ崩壊",
+      "betaMinusDecay": "ベータマイナス崩壊",
+      "betaPlusDecay": "ベータプラス崩壊",
+      "gammaRadiation": "ガンマ線"
+    },
+    "columns": {
+      "meltingK": "融点（K）",
+      "boilingK": "沸点（K）",
+      "densityGcm3": "密度（g/cm³）",
+      "massAmu": "質量（amu）"
+    },
+    "radiiMeasured": "実測値",
+    "radiiTheoretical": "理論値",
+    "radiiNonBonded": "非結合",
+    "radiiBonded": "結合原子",
+    "viewSource": "出典を表示",
+    "required": "（必須）",
+    "nuclideNotAvailable": "核種データなし",
+    "nuclideNotAvailableMessage": "核種 <strong>{{nuclide}}</strong> は安定核種データベースにも放射性崩壊データベースにも存在しません。この同位体は極めて短寿命であるか、記録された核種の範囲外である可能性があります。",
+    "availableNuclidesShown": "{{element}}の利用可能な核種が上に表示されています。1つ選択すると詳細な性質を表示します。",
+    "noNuclidesAvailable": "利用可能な核種なし",
+    "noNuclidesForElement": "<strong>{{element}}</strong> の核種はデータベースにありません。",
+    "elementNotInDataset": "この元素は、低エネルギー核反応（LENR）研究に関連する元素に焦点を当てた現在のデータセットに含まれていない可能性があります。",
+    "elementsTable": "元素テーブル",
+    "elementsTableDescription": "すべての化学元素を閲覧・検索できます。行をクリックすると統合タブで詳細な性質を表示します。",
+    "nuclidesTable": "核種テーブル",
+    "nuclidesTableDescription": "結合エネルギー、ボソン/フェルミオン分類、安定性指標を含むすべての核種を閲覧できます。行をクリックすると統合タブで詳細な性質を表示します。",
+    "decaysTable": "放射性崩壊テーブル",
+    "decaysTableDescription": "すべての不安定同位体の崩壊モード、半減期、エネルギー、強度を閲覧できます。行をクリックすると統合タブで親核種を表示します。",
+    "searchElements": "記号または名前で元素を検索...",
+    "searchNuclides": "元素名、記号、Z、A で核種を検索...",
+    "searchDecays": "元素、崩壊モード、放射線タイプで崩壊を検索...",
+    "status": {
+      "unknown": "不明",
+      "stablePrimordial": "安定始原核種",
+      "synthetic": "合成",
+      "unstablePrimordial": "不安定始原核種"
+    },
+    "classification": "分類",
+    "nuclearSpin": "核スピン",
+    "magneticMoment": "磁気モーメント",
+    "nmrFrequency": "NMR周波数",
+    "primaryDecay": "主な崩壊",
+    "decayEnergy": "崩壊エネルギー",
+    "chemicalProperties": "化学的性質",
+    "otherProperties": "その他の性質",
+    "naturalOccurrence": "天然存在",
+    "additionalProperties": "追加の性質"
+  },
+  "decayChain": {
+    "noData": "崩壊系列データがありません",
+    "zoomIn": "拡大",
+    "zoomOut": "縮小",
+    "resetView": "表示をリセット",
+    "controlsHint": "スクロールでズーム • ドラッグで移動 • ダブルクリックで拡大",
+    "clickToViewDetails": "クリックして詳細を表示",
+    "decayModes": "崩壊モード",
+    "alpha": "アルファ（α）",
+    "betaMinus": "ベータマイナス（β-）",
+    "betaPlus": "ベータプラス（β+）"
+  },
+  "databaseLoading": {
+    "downloadingTitle": "データベースをダウンロード中",
+    "loadingTitle": "データベースを読み込み中",
+    "downloadingMessage": "Parkhomov 核反応データベースをダウンロード中...",
+    "initializingMessage": "データベースエンジンを初期化中...",
+    "cachedNotice": "このデータベースはキャッシュされ、次回以降は即座に読み込まれます",
+    "pleaseWait": "しばらくお待ちください..."
+  },
+  "errorDisplay": {
+    "databaseErrorTitle": "データベースエラー",
+    "somethingWentWrong": "問題が発生しました",
+    "autoReported": "このエラーは開発チームに自動的に報告されました。",
+    "technicalDetails": "技術的な詳細",
+    "fingerprint": "エラーフィンガープリント",
+    "timestamp": "タイムスタンプ",
+    "browser": "ブラウザ",
+    "os": "OS",
+    "device": "デバイス",
+    "url": "URL",
+    "appVersion": "アプリバージョン",
+    "clickToCopy": "クリックしてコピー",
+    "stackTrace": "スタックトレース",
+    "moduleLoad": {
+      "title": "モジュールの読み込みに失敗しました",
+      "description": "このエラーは、コンテンツブロッカーや広告ブロッカーが JavaScript モジュールの読み込みを妨げた場合に、Safari（特に iOS）でよく発生します。",
+      "trySolutions": "以下の解決策をお試しください：",
+      "solution1": "このサイトで Safari のコンテンツブロッカーを無効にする（設定 → Safari → コンテンツブロッカー）",
+      "solution2": "AdBlock などの広告ブロック系ブラウザ拡張機能を無効にする",
+      "solution3": "プライベートブラウズモードまたは別のブラウザを試す",
+      "solution4": "プライベートリレーが干渉していないか確認する（iCloud 設定 → プライベートリレー）",
+      "solution5": "Safari のキャッシュと Cookie を消去してから再読み込みする",
+      "note": "<strong>注意：</strong>この問題はユーザーの約0.6%に影響し、通常はコンテンツブロッカーを無効にすることで解決します。"
+    },
+    "corruption": {
+      "title": "データベースの破損を検出しました",
+      "description": "このエラーは通常、キャッシュされたデータベースファイルが破損している場合に発生します。キャッシュを消去してデータベースを再ダウンロードすることで修正できます。",
+      "clearing": "キャッシュを消去中...",
+      "clearAndReload": "キャッシュを消去して再読み込み",
+      "redownloadNote": "注意：{{size}}MBのデータベースファイルを再ダウンロードします"
+    },
+    "searchSimilar": "類似の問題を検索",
+    "searchFirstTitle": "重複報告を避けるため、まず類似の問題を検索してください",
+    "copyingAndOpening": "クリップボードにコピーして GitHub を開いています...",
+    "copyAndReportTitle": "エラーの詳細をコピーして GitHub で報告",
+    "openingIn": "{{seconds}}秒後に開きます...",
+    "copied": "コピーしました!",
+    "reportThisError": "このエラーを報告",
+    "reportCopied": "エラーレポートをクリップボードにコピーしました!",
+    "openingGitHubIn": "{{seconds}}秒後に GitHub を開きます... 貼り付け後、再現手順を記入してください。",
+    "tryAgain": "再試行",
+    "returnHome": "ホームに戻る",
+    "searchFirstHint": "重複報告を避けるため、<strong>まず</strong>類似の問題を検索してください",
+    "afterPastingHint": "<strong>重要：</strong>エラーレポートを貼り付けた後、迅速な修正のために「再現手順」「期待される動作」「実際の動作」の各セクションを記入してください"
+  },
+  "filterPanel": {
+    "noFiltersActive": "有効なフィルターはありません",
+    "errors": {
+      "nameRequired": "プリセット名を入力してください",
+      "nameTooShort": "プリセット名は{{min}}文字以上にしてください",
+      "nameTooLong": "プリセット名は{{max}}文字未満にしてください",
+      "nameExists": "この名前のプリセットは既に存在します"
+    },
+    "multiSelectHint": "Ctrl/Cmd を押しながらで複数選択",
+    "min": "最小",
+    "max": "最大",
+    "clearSearch": "検索をクリア",
+    "showingRecords": "{{total}}件中{{shown}}件を表示",
+    "loadPreset": "プリセットを読み込む...",
+    "builtInPresets": "組み込みプリセット",
+    "myPresets": "マイプリセット",
+    "deletePresetTitle": "このプリセットを削除",
+    "deletePreset": "プリセットを削除",
+    "savePresetTitle": "現在のフィルターをプリセットとして保存",
+    "savePreset": "プリセットを保存...",
+    "clearAll": "すべてクリア",
+    "saveFilterPreset": "フィルタープリセットを保存",
+    "presetName": "プリセット名",
+    "presetNamePlaceholder": "例：マイカスタムフィルター",
+    "searchPlaceholder": "検索...",
+    "confirmDeletePreset": "このプリセットを削除してもよろしいですか？"
+  },
+  "pwa": {
+    "installPromptLabel": "アプリのインストール案内",
+    "installTitle": "{{appName}}をインストール",
+    "installDescription": "アプリをインストールすると、すばやくアクセスでき、オフラインでも使用できます",
+    "iosTitle": "iOS でインストールするには：",
+    "iosStep1": "Safari の共有ボタンをタップ",
+    "iosStep2": "下にスクロールして「ホーム画面に追加」をタップ",
+    "iosStep3": "右上の「追加」をタップ",
+    "installNow": "今すぐインストール",
+    "dismissInstall": "インストール案内を閉じる",
+    "newVersionAvailable": "新しいバージョンが利用可能です!",
+    "updateDescription": "更新をクリックして最新の機能と改善を入手してください",
+    "dismissUpdate": "更新通知を閉じる"
+  },
+  "particleDetails": {
+    "electronDescription": "負の電荷を持ち、原子核の周りを回る基本的なレプトン。",
+    "neutronDescription": "ほぼすべての原子の原子核に存在する電気的に中性なバリオン。",
+    "neutrinoDescription": "質量がほぼゼロで電気的に中性なレプトン。弱い力を介してのみ相互作用します。",
+    "notAvailable": "該当なし",
+    "quickFacts": "概要",
+    "charge": "電荷",
+    "spin": "スピン",
+    "databaseMapping": "データベース対応",
+    "nuclideId": "核種ID",
+    "nuclearBaryonic": "核/バリオン",
+    "atomicFermionic": "原子/フェルミオン",
+    "notes": "注記",
+    "storageNote": "この粒子は反応に現れるため核種と一緒に格納されていますが、化学元素には対応しません。"
+  },
+  "proportions": {
+    "fuelProportions": "燃料の割合",
+    "formatLabel": {
+      "percentage": "百分率（%）",
+      "atomicRatio": "原子比",
+      "massRatio": "質量比（g）"
+    },
+    "formatHelp": {
+      "percentage": "百分率（0-100）を入力してください。値は合計100%に正規化されます。",
+      "atomicRatio": "原子比を入力してください（例：3:1 は 75%:25% になります）。",
+      "massRatio": "質量をグラムで入力してください。原子質量を用いてモルに換算されます。"
+    },
+    "selectFuelFirst": "割合を設定するには燃料核種を選択してください",
+    "equal": "均等",
+    "natural": "天然",
+    "normalize": "正規化",
+    "total": "合計",
+    "willBeNormalized": "（正規化されます）"
+  },
+  "sortableTable": {
+    "noData": "データがありません",
+    "collapseAll": "すべて折りたたむ",
+    "tabs": "タブ"
+  },
+  "radioactiveCard": {
+    "limitedData": "<strong>限定データ：</strong>この同位体は放射性崩壊データベースにのみ存在します。この短寿命核種については、完全な核特性データ（結合エネルギー、原子質量、量子的性質）は利用できません。",
+    "primaryDecayMode": "主な崩壊モード",
+    "radiation": "放射線"
+  },
+  "privacyPage": {
+    "title": "プライバシー設定",
+    "subtitle": "分析とエラー報告の設定を管理し、プライバシー保護の取り組みについて確認できます",
+    "reloadToApply": "エラー報告の変更を適用するには、ページを再読み込みしてください。",
+    "reloadNow": "今すぐページを再読み込み",
+    "errorReporting": {
+      "title": "エラー報告",
+      "disabledStatus": "エラー報告は無効です",
+      "disabledStatusDescription": "エラーは開発チームに報告されません",
+      "enabledStatusDescription": "バグの自動検出と修正に役立っています",
+      "saved": "✓ エラー報告の設定を保存しました",
+      "whyTitle": "エラー報告が重要な理由",
+      "whyIntro": "エラー報告は、ユーザー体験に影響するバグの特定と修正に役立ちます。エラーが発生すると、匿名化された技術情報を受け取り、次のことに役立てます：",
+      "why1": "バグをより速く修正し、安定性を向上させる",
+      "why2": "改善が必要な機能を把握する",
+      "why3": "実際の問題に基づいて開発の優先順位を決める",
+      "why4": "すべてのユーザーでアプリが正しく動作するようにする",
+      "manage": "エラー報告の管理",
+      "enable": "エラー報告を有効にする",
+      "enableDescription": "エラーを自動的に報告してバグ修正に協力する",
+      "disable": "エラー報告を無効にする",
+      "disableDescription": "エラーレポートを送信しない（アプリが不安定になる可能性があります）",
+      "whatReported": "報告される内容：",
+      "reported1": "エラーメッセージとスタックトレース",
+      "reported2": "ブラウザの種類とバージョン",
+      "reported3": "ページURL（クエリパラメータは除去）",
+      "reported4": "アプリのバージョンとリリース情報",
+      "whatNotReported": "報告されない内容：",
+      "notReported1": "個人情報やIPアドレス",
+      "notReported3": "セッション記録やスクリーンショット",
+      "notReported4": "個人を特定できるユーザーデータ",
+      "enabledStatus": "エラー報告は有効です",
+      "helpMessage": "<strong>皆さまのご協力がこのプロジェクトをより良くします!</strong> エラー報告を有効にすることは、LENR Academy の成功に貢献する最も効果的な方法の一つです。",
+      "sentryNotice": "GDPR 準拠のため、EU でホストされた <strong>Sentry</strong> を使用しています。すべてのデータは匿名化され、デバッグ目的にのみ使用されます。"
+    },
+    "searchQueriesOrInputs": "検索クエリやフォーム入力",
+    "analytics": {
+      "title": "分析",
+      "enabledStatus": "分析は有効です",
+      "enabledStatusDescription": "プライバシーに配慮した分析でサイト改善に協力いただいています",
+      "disabledStatus": "分析は無効です",
+      "disabledStatusDescription": "あなたの訪問から利用データは一切収集していません",
+      "noPreference": "設定なし",
+      "noPreferenceDescription": "まだ選択されていません",
+      "saved": "✓ 分析の設定を保存しました",
+      "manage": "分析の管理",
+      "enable": "分析を有効にする",
+      "enableDescription": "訪問者のサイト利用状況の把握に協力する",
+      "disable": "分析を無効にする",
+      "disableDescription": "訪問時の利用データを収集しない",
+      "whatTracked": "収集する情報：",
+      "tracked1": "ページビューとナビゲーションのパターン",
+      "tracked2": "参照元サイト（訪問者の流入元）",
+      "tracked3": "ブラウザとデバイスの種類（匿名化）",
+      "tracked4": "国/地域（IPに基づくが保存しない）",
+      "whatNotTracked": "収集しない情報：",
+      "notTracked1": "個人情報や個人を特定できるデータ",
+      "notTracked2": "セッションをまたいだ個々のユーザー",
+      "notTracked3": "Cookie（トラッキング Cookie は一切使用しません）",
+      "notTracked4": "IPアドレス（保存しません）",
+      "transparencyTitle": "完全な透明性",
+      "transparencyDescription": "私たちは完全な透明性を重視しています。公開分析ダッシュボードで、収集しているデータとその表示方法を正確に確認できます。秘密や隠れたトラッキングはありません。",
+      "viewDashboard": "公開分析ダッシュボードを表示",
+      "umamiCompliance": "Umami は GDPR、CCPA、PECR に完全準拠しています。訪問者のプライバシーを侵害することなく、サイト運営者に有用な情報を提供するよう設計されています。",
+      "learnMoreUmami": "Umami について詳しく見る",
+      "umamiIntro": "プライバシーを尊重するオープンソースの分析プラットフォーム <strong>Umami Analytics</strong> を使用しています。"
+    },
+    "default": "（デフォルト）"
+  },
+  "radiationTypes": {
+    "A": {
+      "name": "アルファ粒子",
+      "description": "He-4 原子核"
+    },
+    "B-": {
+      "name": "ベータマイナス",
+      "description": "電子放出"
+    },
+    "B+": {
+      "name": "ベータプラス",
+      "description": "陽電子放出"
+    },
+    "B": {
+      "name": "ベータ崩壊",
+      "description": "符号不明"
+    },
+    "EC": {
+      "name": "電子捕獲",
+      "description": "軌道電子の吸収"
+    },
+    "IT": {
+      "name": "核異性体転移",
+      "description": "励起状態の崩壊"
+    },
+    "G": {
+      "name": "ガンマ線",
+      "description": "高エネルギー光子"
+    },
+    "G-AN": {
+      "name": "消滅ガンマ線",
+      "description": "陽電子消滅"
+    },
+    "G-X-K": {
+      "name": "K殻X線",
+      "description": "K殻遷移"
+    },
+    "G-X-KA1": {
+      "name": "Kα1 X線",
+      "description": "K殻 α1 遷移"
+    },
+    "G-X-KA2": {
+      "name": "Kα2 X線",
+      "description": "K殻 α2 遷移"
+    },
+    "G-X-KB": {
+      "name": "Kβ X線",
+      "description": "K殻 β 遷移"
+    },
+    "G-X-L": {
+      "name": "L殻X線",
+      "description": "L殻遷移"
+    },
+    "E-CE-K": {
+      "name": "K殻内部転換電子",
+      "description": "K殻からの内部転換"
+    },
+    "E-CE-L": {
+      "name": "L殻内部転換電子",
+      "description": "L殻からの内部転換"
+    },
+    "E-CE-M": {
+      "name": "M殻内部転換電子",
+      "description": "M殻からの内部転換"
+    },
+    "E-CE-M+": {
+      "name": "M+殻内部転換電子",
+      "description": "M+殻からの内部転換"
+    },
+    "E-CE-MN+": {
+      "name": "MN+殻内部転換電子",
+      "description": "MN+殻からの内部転換"
+    },
+    "E-CE-N+": {
+      "name": "N+殻内部転換電子",
+      "description": "N+殻からの内部転換"
+    },
+    "E-AU-K": {
+      "name": "K殻オージェ電子",
+      "description": "K殻からの原子の脱励起"
+    },
+    "E-AU-L": {
+      "name": "L殻オージェ電子",
+      "description": "L殻からの原子の脱励起"
+    }
+  },
+  "decayModes": {
+    "A": {
+      "name": "アルファ崩壊",
+      "description": "アルファ粒子（陽子2個 + 中性子2個）の放出"
+    },
+    "B-": {
+      "name": "ベータマイナス崩壊",
+      "description": "中性子が陽子、電子、反ニュートリノに変換"
+    },
+    "B+": {
+      "name": "ベータプラス崩壊",
+      "description": "陽子が中性子、陽電子、ニュートリノに変換"
+    },
+    "EC": {
+      "name": "電子捕獲",
+      "description": "陽子が内殻の軌道電子を捕獲して中性子になる"
+    },
+    "IT": {
+      "name": "核異性体転移",
+      "description": "励起した原子核が組成を変えずにエネルギーを放出"
+    },
+    "SF": {
+      "name": "自発核分裂",
+      "description": "原子核がより軽い原子核に分裂"
+    },
+    "N": {
+      "name": "中性子放出",
+      "description": "原子核が1個以上の中性子を放出"
+    },
+    "P": {
+      "name": "陽子放出",
+      "description": "原子核が陽子を1個放出"
+    },
+    "2N": {
+      "name": "二中性子放出",
+      "description": "原子核が中性子を2個放出"
+    },
+    "2P": {
+      "name": "二陽子放出",
+      "description": "原子核が陽子を2個放出"
     }
   }
 }

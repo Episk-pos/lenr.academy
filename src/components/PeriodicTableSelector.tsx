@@ -387,8 +387,11 @@ const allElementNames: Record<number, string> = {
       >
         <span className="text-sm">
           {selectedElements.length === 0
-            ? 'Any'
-            : `${selectedElements.length} selected: ${selectedElements.join(', ')}`}
+            ? t('periodicSelector.any')
+            : t('periodicSelector.selectedSummary', {
+                count: selectedElements.length,
+                list: selectedElements.join(', '),
+              })}
         </span>
         <ChevronDown className={`w-4 h-4 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
       </button>
@@ -434,6 +437,8 @@ const allElementNames: Record<number, string> = {
                     onSelectionChange(selectedElements.filter(e => e !== symbol))
                   }}
                   className="hover:text-primary-900 dark:hover:text-primary-200"
+                  aria-label={t('periodicSelector.removeItem', { item: symbol })}
+                  title={t('periodicSelector.removeItem', { item: symbol })}
                 >
                   <X className="w-3 h-3" />
                 </button>
@@ -445,7 +450,7 @@ const allElementNames: Record<number, string> = {
             onClick={clearSelection}
             className="text-xs text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 px-2 py-1"
           >
-            Clear all
+            {t('periodicSelector.clearAll')}
           </button>
         </div>
       )}
@@ -501,7 +506,7 @@ const allElementNames: Record<number, string> = {
 
           {/* Lanthanides */}
           <div className="mb-2">
-            <div className="text-xs text-gray-600 dark:text-gray-400 mb-1 font-medium">Lanthanides (57-71)</div>
+            <div className="text-xs text-gray-600 dark:text-gray-400 mb-1 font-medium">{t('periodicSelector.lanthanides')}</div>
             <div className="periodic-row">
               {[3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17].map(group =>
                 renderCell(8, group)
@@ -511,7 +516,7 @@ const allElementNames: Record<number, string> = {
 
           {/* Actinides */}
           <div>
-            <div className="text-xs text-gray-600 dark:text-gray-400 mb-1 font-medium">Actinides (89-103)</div>
+            <div className="text-xs text-gray-600 dark:text-gray-400 mb-1 font-medium">{t('periodicSelector.actinides')}</div>
             <div className="periodic-row">
               {[3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17].map(group =>
                 renderCell(9, group)
