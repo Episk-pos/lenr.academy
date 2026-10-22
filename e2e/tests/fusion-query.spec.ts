@@ -734,7 +734,7 @@ test.describe('Fusion Query Page', () => {
 
     // Get all result rows (skip header rows by excluding rows with uppercase text class)
     const resultsRegion = page.getByRole('region', { name: /Fusion reaction results/i });
-    const allRows = resultsRegion.locator('div[class*="grid"][class*="border-b"]:not([class*="uppercase"])');
+    const allRows = resultsRegion.locator('div[class*="grid"][class*="border-b"]:not([class*="uppercase"]):not([data-testid="reaction-table-header"])');
     const rowCount = await allRows.count();
     expect(rowCount).toBeGreaterThan(0);
 
