@@ -4,7 +4,10 @@ import {
   acceptMeteredWarningIfPresent,
   acceptPrivacyConsent,
   waitForReactionResults,
-  verifyBothDetailsCards
+  verifyBothDetailsCards,
+  resultNuclidesSection,
+  resultNuclideCards,
+  getResultNuclideCard
 } from '../fixtures/test-helpers';
 
 test.describe('Fusion Query Page', () => {
@@ -348,12 +351,12 @@ test.describe('Fusion Query Page', () => {
     );
 
     // Scroll to and wait for nuclides section to be visible
-    await page.locator('text=Nuclides Appearing in Results').waitFor({ state: 'visible', timeout: 10000 });
-    await page.locator('text=Nuclides Appearing in Results').scrollIntoViewIfNeeded();
+    await resultNuclidesSection(page).waitFor({ state: 'visible', timeout: 10000 });
+    await resultNuclidesSection(page).scrollIntoViewIfNeeded();
     await page.waitForTimeout(500);
 
     // Test A: Pin a nuclide - should show BOTH element AND nuclide details cards
-    const nuclideCards = page.locator('text=Nuclides Appearing in Results').locator('..').locator('div[class*="cursor-pointer"]');
+    const nuclideCards = resultNuclideCards(page);
     const firstNuclideCard = nuclideCards.first();
 
     await firstNuclideCard.click();
@@ -380,16 +383,16 @@ test.describe('Fusion Query Page', () => {
     await page.waitForTimeout(500); // Wait for state update
 
     // Scroll back down to nuclides section to verify unpinning
-    await page.locator('text=/Nuclides.*in Results/').scrollIntoViewIfNeeded();
+    await resultNuclidesSection(page).scrollIntoViewIfNeeded();
 
     // Verify Nitrogen element is now pinned (element details card shows Atomic Number 7)
     await expect(page.getByText(/Atomic Number.*7/).first()).toBeVisible();
 
     // Re-query nuclide cards after heading changed (now shows "Nuclides of N in Results")
-    const updatedNuclideCards = page.locator('text=/Nuclides.*in Results/').locator('..').locator('div[class*="cursor-pointer"]');
+    const updatedNuclideCards = resultNuclideCards(page);
 
     // Verify no nuclides are pinned (mutually exclusive - element pin cleared nuclide pin)
-    const pinnedNuclides = updatedNuclideCards.locator('.ring-2.ring-blue-400');
+    const pinnedNuclides = updatedNuclideCards.and(page.locator('[aria-pressed="true"]'));
     await expect(pinnedNuclides).toHaveCount(0);
 
     // Test C: Pin a nuclide from a DIFFERENT element - should clear element pin (mutual exclusivity across elements)
@@ -399,8 +402,8 @@ test.describe('Fusion Query Page', () => {
     await page.waitForTimeout(300);
 
     // Find and click any nuclide that is NOT nitrogen (first nuclide in list)
-    await page.locator('text=Nuclides Appearing in Results').scrollIntoViewIfNeeded();
-    const firstNuclideCard2 = page.locator('div[class*="cursor-pointer"]').first();
+    await resultNuclidesSection(page).scrollIntoViewIfNeeded();
+    const firstNuclideCard2 = resultNuclideCards(page).first();
     await firstNuclideCard2.scrollIntoViewIfNeeded();
     await firstNuclideCard2.click();
     await page.waitForTimeout(300);
@@ -444,12 +447,12 @@ test.describe('Fusion Query Page', () => {
     );
 
     // Look for "Nuclides Appearing in Results" section
-    const nuclidesSection = page.locator('text=Nuclides Appearing in Results');
+    const nuclidesSection = resultNuclidesSection(page);
     const hasNuclides = await nuclidesSection.isVisible().catch(() => false);
 
     if (hasNuclides) {
       // Look for nuclide cards
-      const nuclideCards = page.locator('text=Nuclides Appearing in Results').locator('..').locator('div[class*="cursor-pointer"]');
+      const nuclideCards = resultNuclideCards(page);
       const cardCount = await nuclideCards.count();
 
       // Just verify cards are visible
@@ -494,7 +497,7 @@ test.describe('Fusion Query Page', () => {
     );
 
     // Click a nuclide card from "Nuclides Appearing in Results"
-    const nuclideCard = page.locator('text=Nuclides Appearing in Results').locator('..').locator('div[class*="cursor-pointer"]').first();
+    const nuclideCard = resultNuclideCards(page).first();
     await nuclideCard.click();
 
     // Verify nuclide is pinned
@@ -545,16 +548,16 @@ test.describe('Fusion Query Page', () => {
     );
 
     // Wait for "Nuclides Appearing in Results" section to be visible
-    await page.locator('text=Nuclides Appearing in Results').waitFor({ state: 'visible', timeout: 10000 });
+    await resultNuclidesSection(page).waitFor({ state: 'visible', timeout: 10000 });
 
     // Scroll section into view
-    await page.locator('text=Nuclides Appearing in Results').scrollIntoViewIfNeeded();
+    await resultNuclidesSection(page).scrollIntoViewIfNeeded();
 
     // Wait for URL initialization
     await page.waitForTimeout(1000);
 
     // Find the Li-6 nuclide card
-    const li6Card = page.locator('div.cursor-pointer:has-text("Li-6")').first();
+    const li6Card = await getResultNuclideCard(page, 'Li-6');
 
     // Verify Li-6 is pinned (has ring-2 ring-blue-400 class)
     await expect(li6Card).toBeVisible();
@@ -585,12 +588,12 @@ test.describe('Fusion Query Page', () => {
     await expect(lithiumButton).toBeVisible();
 
     // Wait for nuclides section
-    await page.locator('text=Nuclides Appearing in Results').waitFor({ state: 'visible', timeout: 10000 });
-    await page.locator('text=Nuclides Appearing in Results').scrollIntoViewIfNeeded();
+    await resultNuclidesSection(page).waitFor({ state: 'visible', timeout: 10000 });
+    await resultNuclidesSection(page).scrollIntoViewIfNeeded();
     await page.waitForTimeout(1000);
 
     // Find the Li-6 nuclide card
-    const li6Card = page.locator('div.cursor-pointer:has-text("Li-6")').first();
+    const li6Card = await getResultNuclideCard(page, 'Li-6');
 
     // Verify nuclide is pinned
     await expect(li6Card).toBeVisible();
@@ -643,7 +646,7 @@ test.describe('Fusion Query Page', () => {
     );
 
     // No cards should be pinned when parameters are invalid
-    const pinnedCards = page.locator('div[class*="ring-2 ring-blue-400"]');
+    const pinnedCards = resultNuclidesSection(page).locator('[data-testid="isotope-card"][aria-pressed="true"]');
     await expect(pinnedCards).toHaveCount(0);
 
     // Scroll to bottom to see Details section
@@ -662,12 +665,12 @@ test.describe('Fusion Query Page', () => {
     );
 
     // Scroll to and wait for nuclides section to be visible
-    await page.locator('text=Nuclides Appearing in Results').waitFor({ state: 'visible', timeout: 10000 });
-    await page.locator('text=Nuclides Appearing in Results').scrollIntoViewIfNeeded();
+    await resultNuclidesSection(page).waitFor({ state: 'visible', timeout: 10000 });
+    await resultNuclidesSection(page).scrollIntoViewIfNeeded();
     await page.waitForTimeout(500);
 
     // Pin the first available nuclide from default H+C,O results
-    const nuclideCards = page.locator('text=Nuclides Appearing in Results').locator('..').locator('div[class*="cursor-pointer"]');
+    const nuclideCards = resultNuclideCards(page);
     const firstNuclideCard = nuclideCards.first();
 
     await firstNuclideCard.click();
@@ -690,16 +693,16 @@ test.describe('Fusion Query Page', () => {
     await page.waitForTimeout(500); // Wait for state update
 
     // Scroll back down to nuclides section to verify unpinning
-    await page.locator('text=/Nuclides.*in Results/').scrollIntoViewIfNeeded();
+    await resultNuclidesSection(page).scrollIntoViewIfNeeded();
 
     // Verify Nitrogen element details card is visible (indicates pinned)
     await expect(page.getByText(/Atomic Number.*7/).first()).toBeVisible();
 
     // Re-query nuclide cards after heading changed (now shows "Nuclides of N in Results")
-    const updatedNuclideCards = page.locator('text=/Nuclides.*in Results/').locator('..').locator('div[class*="cursor-pointer"]');
+    const updatedNuclideCards = resultNuclideCards(page);
 
     // Verify no nuclides are pinned (mutually exclusive - element pin cleared nuclide pin)
-    const pinnedNuclides = updatedNuclideCards.locator('.ring-2.ring-blue-400');
+    const pinnedNuclides = updatedNuclideCards.and(page.locator('[aria-pressed="true"]'));
     await expect(pinnedNuclides).toHaveCount(0);
   });
 
@@ -715,12 +718,11 @@ test.describe('Fusion Query Page', () => {
     );
 
     // Wait for nuclides section to be visible
-    await page.locator('text=Nuclides Appearing in Results').waitFor({ state: 'visible', timeout: 10000 });
-    await page.locator('text=Nuclides Appearing in Results').scrollIntoViewIfNeeded();
+    await resultNuclidesSection(page).waitFor({ state: 'visible', timeout: 10000 });
+    await resultNuclidesSection(page).scrollIntoViewIfNeeded();
 
     // Find and click the D-2 nuclide card
-    const nuclideCards = page.locator('text=Nuclides Appearing in Results').locator('..').locator('div[class*="cursor-pointer"]');
-    const d2Card = nuclideCards.filter({ hasText: 'D-2' }).first();
+    const d2Card = await getResultNuclideCard(page, 'D-2');
     await d2Card.click();
 
     // Verify D-2 is pinned
@@ -763,12 +765,11 @@ test.describe('Fusion Query Page', () => {
     );
 
     // Wait for nuclides section to be visible
-    await page.locator('text=Nuclides Appearing in Results').waitFor({ state: 'visible', timeout: 10000 });
-    await page.locator('text=Nuclides Appearing in Results').scrollIntoViewIfNeeded();
+    await resultNuclidesSection(page).waitFor({ state: 'visible', timeout: 10000 });
+    await resultNuclidesSection(page).scrollIntoViewIfNeeded();
 
     // Verify T-3 appears in the nuclides list (this is the main regression check)
-    const nuclideCards = page.locator('text=Nuclides Appearing in Results').locator('..').locator('div[class*="cursor-pointer"]');
-    const t3Card = nuclideCards.filter({ hasText: 'T-3' }).first();
+    const t3Card = await getResultNuclideCard(page, 'T-3');
     await expect(t3Card).toBeVisible();
 
     // Verify T-3 has radioactive indicator

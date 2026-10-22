@@ -3,7 +3,8 @@ import {
   waitForDatabaseReady,
   acceptMeteredWarningIfPresent,
   acceptPrivacyConsent,
-  waitForReactionResults
+  waitForReactionResults,
+  resultNuclideCards
 } from '../fixtures/test-helpers';
 
 test.describe('Heatmap Metrics Calculation', () => {
@@ -65,9 +66,7 @@ test.describe('Heatmap Metrics Calculation', () => {
     await waitForReactionResults(page, 'fusion');
 
     // Count how many unique nuclides appear in results
-    const nuclideCards = page.locator('text=Nuclides Appearing in Results')
-      .locator('..')
-      .locator('div[class*="cursor-pointer"]');
+    const nuclideCards = resultNuclideCards(page);
 
     const count = await nuclideCards.count();
 
@@ -139,7 +138,7 @@ test.describe('Heatmap Metrics Calculation', () => {
 
     // Get initial nuclide count
     const initialText = await page.locator('h3:has-text("Nuclides Appearing in Results")').textContent();
-    const initialMatch = initialText?.match(/\((\d+)\)/);
+    const initialMatch = initialText?.match(/\((\d+) nuclides?/);
     const initialCount = initialMatch ? parseInt(initialMatch[1]) : 0;
 
     expect(initialCount).toBeGreaterThan(0);
@@ -173,7 +172,7 @@ test.describe('Heatmap Metrics Calculation', () => {
     await page.waitForTimeout(500);
 
     // Verify nuclides are filtered
-    const filteredText = await page.locator('h3:has-text("Nuclides")').textContent();
+    const filteredText = await page.getByTestId('result-nuclides-element-heading').textContent();
     expect(filteredText).toContain('Nuclides of C in Results');
 
     // Extract filtered count
@@ -216,7 +215,7 @@ test.describe('Heatmap Metrics Calculation', () => {
     await expect(carbonButton).toBeVisible();
 
     // Verify the element is pinned (look for the filter message)
-    const nuclidesHeader = await page.locator('h3:has-text("Nuclides")').textContent();
+    const nuclidesHeader = await page.getByTestId('result-nuclides-element-heading').textContent();
     expect(nuclidesHeader).toContain('Nuclides of C in Results');
   });
 

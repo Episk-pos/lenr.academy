@@ -4,7 +4,10 @@ import {
   acceptMeteredWarningIfPresent,
   acceptPrivacyConsent,
   waitForReactionResults,
-  verifyBothDetailsCards
+  verifyBothDetailsCards,
+  resultNuclidesSection,
+  resultNuclideCards,
+  getResultNuclideCard
 } from '../fixtures/test-helpers';
 
 test.describe('Fission Query Page', () => {
@@ -178,9 +181,9 @@ test.describe('Fission Query Page', () => {
     }
 
     // Pin a Zirconium nuclide first
-    await page.locator('text=Nuclides Appearing in Results').scrollIntoViewIfNeeded();
-    const zrNuclideCard = page.locator('div[class*="cursor-pointer"]').filter({ hasText: 'Zr-94' }).first();
-    await zrNuclideCard.scrollIntoViewIfNeeded();
+    await resultNuclidesSection(page).scrollIntoViewIfNeeded();
+    // Cards are shown per element; select the Zr chip so Zr-94 is displayed
+    const zrNuclideCard = await getResultNuclideCard(page, 'Zr-94');
     await zrNuclideCard.click();
     await page.waitForTimeout(300);
 
@@ -197,14 +200,14 @@ test.describe('Fission Query Page', () => {
     await expect(caButton).toHaveClass(/ring-2.*ring-blue/);
 
     // Scroll back down to nuclides section to verify Zr nuclide was unpinned
-    await page.locator('text=/Nuclides.*in Results/').scrollIntoViewIfNeeded();
+    await resultNuclidesSection(page).scrollIntoViewIfNeeded();
 
     // Verify nuclides are filtered by Calcium (not showing all)
     await expect(page.getByText(/Nuclides of Ca in Results/)).toBeVisible();
 
     // The Zr nuclide should no longer be visible in the nuclides list (filtered to Ca only)
     // So we verify by checking that no Zr nuclides are shown
-    const zrNuclides = page.locator('div[class*="cursor-pointer"]').filter({ hasText: /Zr-/ });
+    const zrNuclides = resultNuclideCards(page).filter({ hasText: /Zr-/ });
     await expect(zrNuclides).toHaveCount(0);
   });
 
@@ -256,7 +259,7 @@ test.describe('Fission Query Page', () => {
     await expect(page.getByText(/Nuclides of Ca in Results/)).toBeVisible();
 
     // Now click a Calcium nuclide from the filtered nuclides list
-    const caNuclideCard = page.locator('text=/Nuclides.*in Results/').locator('..').locator('div[class*="cursor-pointer"]').first();
+    const caNuclideCard = resultNuclideCards(page).first();
     await caNuclideCard.click();
     await page.waitForTimeout(300);
 
@@ -343,7 +346,7 @@ test.describe('Fission Query Page', () => {
     await waitForReactionResults(page, 'fission');
 
     // Click a nuclide card from "Nuclides Appearing in Results"
-    const nuclideCard = page.locator('text=Nuclides Appearing in Results').locator('..').locator('div[class*="cursor-pointer"]').first();
+    const nuclideCard = resultNuclideCards(page).first();
     await nuclideCard.click();
 
     // Verify nuclide is pinned
@@ -387,7 +390,7 @@ test.describe('Fission Query Page', () => {
     await waitForReactionResults(page, 'fission');
 
     // Wait for Nuclides section to be visible (should show filtered by Ca)
-    await page.locator('text=/Nuclides.*in Results/').waitFor({ state: 'visible', timeout: 10000 });
+    await resultNuclidesSection(page).waitFor({ state: 'visible', timeout: 10000 });
 
     // Wait for URL initialization
     await page.waitForTimeout(1000);
@@ -398,7 +401,7 @@ test.describe('Fission Query Page', () => {
     await expect(page.getByText(/Nuclides of Ca in Results/)).toBeVisible();
 
     // Find the Ca-48 nuclide card
-    const ca48Card = page.locator('div.cursor-pointer:has-text("Ca-48")').first();
+    const ca48Card = await getResultNuclideCard(page, 'Ca-48');
     await expect(ca48Card).toBeVisible();
 
     // Verify nuclide is NOT pinned (no blue ring) - mutually exclusive behavior
@@ -414,7 +417,7 @@ test.describe('Fission Query Page', () => {
     await waitForReactionResults(page, 'fission');
 
     // No cards should be pinned
-    const pinnedCards = page.locator('div[class*="ring-2 ring-blue-400"]');
+    const pinnedCards = resultNuclidesSection(page).locator('[data-testid="isotope-card"][aria-pressed="true"]');
     await expect(pinnedCards).toHaveCount(0);
   });
 
@@ -430,16 +433,16 @@ test.describe('Fission Query Page', () => {
     await waitForReactionResults(page, 'fission');
 
     // Scroll to and wait for nuclides section to be visible
-    await page.locator('text=Nuclides Appearing in Results').waitFor({ state: 'visible', timeout: 10000 });
-    await page.locator('text=Nuclides Appearing in Results').scrollIntoViewIfNeeded();
+    await resultNuclidesSection(page).waitFor({ state: 'visible', timeout: 10000 });
+    await resultNuclidesSection(page).scrollIntoViewIfNeeded();
     await page.waitForTimeout(500);
 
     // Pin a nuclide (use first available instead of assuming Ca-48 exists)
-    const nuclideCards = page.locator('text=Nuclides Appearing in Results').locator('..').locator('div[class*="cursor-pointer"]');
+    const nuclideCards = resultNuclideCards(page);
     const firstNuclideCard = nuclideCards.first();
 
     // Get nuclide text for verification
-    const nuclideText = await firstNuclideCard.locator('span.font-semibold').first().textContent();
+    const nuclideText = await firstNuclideCard.getAttribute('data-nuclide');
     const elementSymbol = nuclideText?.split('-')[0] || '';
 
     await firstNuclideCard.click();
@@ -466,8 +469,8 @@ test.describe('Fission Query Page', () => {
     await expect(page.getByText(/Nuclides of Cr in Results/)).toBeVisible();
 
     // Verify first nuclide is NO LONGER pinned (mutually exclusive behavior)
-    const pinnedNuclideCheck = page.locator('div[class*="ring-2"][class*="ring-blue-400"]').first();
-    await expect(pinnedNuclideCheck).not.toBeVisible();
+    const pinnedNuclideCheck = resultNuclidesSection(page).locator('[data-testid="isotope-card"][aria-pressed="true"]');
+    await expect(pinnedNuclideCheck).toHaveCount(0);
   });
 
   test('should have clickable links to element-data page for nuclides in results table', async ({ page }) => {

@@ -11,6 +11,7 @@ import ElementDetailsCard from '../components/ElementDetailsCard'
 import PeriodicTableSelector from '../components/PeriodicTableSelector'
 import PeriodicTable from '../components/PeriodicTable'
 import NuclideDetailsCard from '../components/NuclideDetailsCard'
+import ResultNuclidesByElement from '../components/ResultNuclidesByElement'
 import DatabaseLoadingCard from '../components/DatabaseLoadingCard'
 import { VirtualizedList } from '../components/VirtualizedList'
 import LimitSelector from '../components/LimitSelector'
@@ -120,10 +121,9 @@ export default function FusionQuery() {
   const resizeStartHeight = useRef<number>(0)
 
   const updateFusionViewportHeight = useCallback(() => {
-    if (!tableContainerRef.current) return
-    const rect = tableContainerRef.current.getBoundingClientRect()
-    const padding = 120
-    const available = Math.max(220, window.innerHeight - rect.top - padding)
+    // Default to ~65% of the viewport (min 480px), independent of where the
+    // table sits on the page — it is usually far below the fold.
+    const available = Math.max(480, Math.round(window.innerHeight * 0.65))
     setFusionViewportHeight(available)
   }, [])
 
@@ -209,13 +209,43 @@ export default function FusionQuery() {
     return reaction.E1 === element || reaction.E2 === element || reaction.E === element
   }, [])
 
-  // Filter nuclides to only show those from the pinned element
-  const filteredNuclides = useMemo(() => {
-    if (pinnedElement && highlightedElement) {
-      return nuclides.filter(nuc => nuc.E === highlightedElement)
+  // Toggle pinning of an element (heatmap periodic table and element chips)
+  const handleElementPinToggle = useCallback((symbol: string) => {
+    if (pinnedElement && highlightedElement === symbol) {
+      // Unpinning element
+      setPinnedElement(false)
+      setHighlightedElement(null)
+    } else {
+      // Pinning element - clear nuclide pinning (mutually exclusive)
+      setPinnedElement(true)
+      setHighlightedElement(symbol)
+      setPinnedNuclide(false)
+      setHighlightedNuclide(null)
     }
-    return nuclides
-  }, [nuclides, pinnedElement, highlightedElement])
+  }, [pinnedElement, highlightedElement])
+
+  // Toggle pinning of a nuclide card from "Nuclides Appearing in Results"
+  const handleNuclideSelect = useCallback((nuc: Nuclide) => {
+    const nuclideId = `${nuc.E}-${nuc.A}`
+    if (pinnedNuclide && highlightedNuclide === nuclideId) {
+      // Unpinning nuclide - also unpin element if it's pinned
+      setPinnedNuclide(false)
+      setHighlightedNuclide(null)
+      if (pinnedElement) {
+        setPinnedElement(false)
+        setHighlightedElement(null)
+      }
+    } else {
+      // Pinning nuclide
+      setPinnedNuclide(true)
+      setHighlightedNuclide(nuclideId)
+      // Only clear element pinning if the nuclide is from a different element
+      if (pinnedElement && highlightedElement !== nuc.E) {
+        setPinnedElement(false)
+        setHighlightedElement(null)
+      }
+    }
+  }, [pinnedNuclide, highlightedNuclide, pinnedElement, highlightedElement])
 
   // Filter reactions to only show those containing the pinned nuclide or element (mutually exclusive)
   const filteredResults = useMemo(() => {
@@ -242,8 +272,8 @@ export default function FusionQuery() {
     }
     const preferred = filteredResults.length * fusionEstimatedRowHeight
     const min = Math.max(fusionEstimatedRowHeight * Math.min(filteredResults.length, 4), 260)
-    const max = 640
-    return Math.min(max, Math.max(min, preferred))
+    // No upper cap: the drag handle may expand the table to its full content height
+    return Math.max(min, preferred)
   }, [fusionCompactRowHeight, fusionEstimatedRowHeight, filteredResults.length])
 
   // Calculate actual height for filtered results
@@ -941,19 +971,7 @@ export default function FusionQuery() {
                 <PeriodicTable
                   availableElements={resultElements}
                   selectedElement={highlightedElement}
-                  onElementClick={(symbol) => {
-                    if (pinnedElement && highlightedElement === symbol) {
-                      // Unpinning element
-                      setPinnedElement(false)
-                      setHighlightedElement(null)
-                    } else {
-                      // Pinning element - clear nuclide pinning (mutually exclusive)
-                      setPinnedElement(true)
-                      setHighlightedElement(symbol)
-                      setPinnedNuclide(false)
-                      setHighlightedNuclide(null)
-                    }
-                  }}
+                  onElementClick={handleElementPinToggle}
                   heatmapData={heatmapMetrics[heatmapMode]}
                   heatmapMode={heatmapMode}
                   showHeatmap={showHeatmap}
@@ -1483,68 +1501,16 @@ export default function FusionQuery() {
           </div>
 
           {/* Nuclides Summary */}
-          <div className="card p-4 sm:p-6">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-              {pinnedElement && highlightedElement ? (
-                <>{t('reactions.nuclidesOfElement', { element: highlightedElement, filtered: filteredNuclides.length, total: nuclides.length })}</>
-              ) : (
-                <>{t('reactions.nuclidesSummary', { count: filteredNuclides.length })}</>
-              )}
-            </h3>
-            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-2">
-              {filteredNuclides.map(nuc => {
-                const nuclideId = `${nuc.E}-${nuc.A}`
-                const isActive = highlightedNuclide === nuclideId
-                const isPinned = pinnedNuclide && highlightedNuclide === nuclideId
-                const isDesaturated = highlightedNuclide && highlightedNuclide !== nuclideId
-                const nuclideIsRadioactive = radioactiveNuclides.has(`${nuc.Z}-${nuc.A}`)
-
-                return (
-                <div
-                  key={nuc.id}
-                  className={`px-3 py-2 rounded border cursor-pointer transition-all duration-200 ${
-                    isPinned ? 'bg-blue-100 dark:bg-blue-900/50 border-blue-400 dark:border-blue-600 ring-2 ring-blue-400' :
-                    isActive ? 'bg-blue-50 dark:bg-blue-900/30 border-blue-300 dark:border-blue-700' :
-                    isDesaturated ? 'bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 opacity-40' :
-                    'bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700'
-                  }`}
-                  onMouseEnter={() => !pinnedNuclide && setHighlightedNuclide(nuclideId)}
-                  onMouseLeave={() => !pinnedNuclide && setHighlightedNuclide(null)}
-                  onClick={() => {
-                    if (pinnedNuclide && highlightedNuclide === nuclideId) {
-                      // Unpinning nuclide - also unpin element if it's pinned
-                      setPinnedNuclide(false)
-                      setHighlightedNuclide(null)
-                      if (pinnedElement) {
-                        setPinnedElement(false)
-                        setHighlightedElement(null)
-                      }
-                    } else {
-                      // Pinning nuclide
-                      setPinnedNuclide(true)
-                      setHighlightedNuclide(nuclideId)
-                      // Only clear element pinning if the nuclide is from a different element
-                      if (pinnedElement && highlightedElement !== nuc.E) {
-                        setPinnedElement(false)
-                        setHighlightedElement(null)
-                      }
-                    }
-                  }}
-                >
-                  <div className="flex items-center justify-between gap-1">
-                    <span className="font-semibold text-sm text-gray-900 dark:text-gray-100">{nuc.E}-{nuc.A}</span>
-                    {nuclideIsRadioactive && (
-                      <span title={t('reactions.radioactive')}>
-                        <Radiation className="w-3 h-3 text-amber-600 dark:text-amber-400 flex-shrink-0" />
-                      </span>
-                    )}
-                  </div>
-                  <div className="text-xs text-gray-500 dark:text-gray-400">Z={nuc.Z}</div>
-                </div>
-                )
-              })}
-            </div>
-          </div>
+          <ResultNuclidesByElement
+            nuclides={nuclides}
+            radioactiveNuclides={radioactiveNuclides}
+            pinnedElement={pinnedElement ? highlightedElement : null}
+            highlightedNuclide={highlightedNuclide}
+            pinnedNuclide={pinnedNuclide}
+            onElementSelect={handleElementPinToggle}
+            onNuclideHover={setHighlightedNuclide}
+            onNuclideSelect={handleNuclideSelect}
+          />
 
           {/* Details Section */}
           {selectedNuclideDetails ? (

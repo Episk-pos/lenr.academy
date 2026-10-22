@@ -5,7 +5,10 @@ import {
   acceptPrivacyConsent,
   dismissChangelogIfPresent,
   waitForReactionResults,
-  verifyBothDetailsCards
+  verifyBothDetailsCards,
+  resultNuclidesSection,
+  resultNuclideCards,
+  getResultNuclideCard
 } from '../fixtures/test-helpers';
 
 test.describe('Two-to-Two Query Page', () => {
@@ -219,10 +222,10 @@ test.describe('Two-to-Two Query Page', () => {
     await resultsHeading.scrollIntoViewIfNeeded();
 
     // Wait for nuclides section to be visible
-    await page.locator('text=Nuclides Appearing in Results').waitFor({ state: 'visible', timeout: 10000 });
+    await resultNuclidesSection(page).waitFor({ state: 'visible', timeout: 10000 });
 
     // Pin the first nuclide
-    const nuclideCards = page.locator('text=Nuclides Appearing in Results').locator('..').locator('div[class*="cursor-pointer"]');
+    const nuclideCards = resultNuclideCards(page);
     const firstNuclideCard = nuclideCards.first();
     await firstNuclideCard.click();
 
@@ -248,10 +251,10 @@ test.describe('Two-to-Two Query Page', () => {
     await resultsHeading.scrollIntoViewIfNeeded();
 
     // Wait for Nuclides section to be visible
-    await page.locator('text=Nuclides Appearing in Results').waitFor({ state: 'visible', timeout: 10000 });
+    await resultNuclidesSection(page).waitFor({ state: 'visible', timeout: 10000 });
 
     // Click a nuclide card from "Nuclides Appearing in Results"
-    const nuclideCard = page.locator('text=Nuclides Appearing in Results').locator('..').locator('div[class*="cursor-pointer"]').first();
+    const nuclideCard = resultNuclideCards(page).first();
     await nuclideCard.click();
 
     // Verify nuclide is pinned
@@ -266,7 +269,7 @@ test.describe('Two-to-Two Query Page', () => {
     await waitForReactionResults(page, 'twotwo');
 
     // Click a nuclide card from "Nuclides Appearing in Results"
-    const nuclideCard = page.locator('text=Nuclides Appearing in Results').locator('..').locator('div[class*="cursor-pointer"]').first();
+    const nuclideCard = resultNuclideCards(page).first();
     await nuclideCard.click();
 
     // Verify nuclide is pinned
@@ -291,20 +294,20 @@ test.describe('Two-to-Two Query Page', () => {
     await resultsHeading.scrollIntoViewIfNeeded();
 
     // Wait for "Nuclides Appearing in Results" section to be visible
-    await page.locator('text=Nuclides Appearing in Results').waitFor({ state: 'visible', timeout: 10000 });
+    await resultNuclidesSection(page).waitFor({ state: 'visible', timeout: 10000 });
 
     // Scroll section into view
-    await page.locator('text=Nuclides Appearing in Results').scrollIntoViewIfNeeded();
+    await resultNuclidesSection(page).scrollIntoViewIfNeeded();
 
     // Wait for nuclide cards to populate
-    const nuclideCards = page.locator('text=Nuclides Appearing in Results').locator('..').locator('div[class*="cursor-pointer"]');
+    const nuclideCards = resultNuclideCards(page);
     await nuclideCards.first().waitFor({ state: 'visible', timeout: 10000 });
 
     // Wait for URL initialization
     await page.waitForTimeout(1000);
 
     // Find the He-4 nuclide card
-    const he4Card = nuclideCards.filter({ hasText: 'He-4' }).first();
+    const he4Card = await getResultNuclideCard(page, 'He-4');
 
     // Verify He-4 is pinned
     await expect(he4Card).toBeVisible();
@@ -320,7 +323,7 @@ test.describe('Two-to-Two Query Page', () => {
     await waitForReactionResults(page, 'twotwo');
 
     // No cards should be pinned
-    const pinnedCards = page.locator('div[class*="ring-2 ring-blue-400"]');
+    const pinnedCards = resultNuclidesSection(page).locator('[data-testid="isotope-card"][aria-pressed="true"]');
     await expect(pinnedCards).toHaveCount(0);
   });
 
@@ -336,10 +339,10 @@ test.describe('Two-to-Two Query Page', () => {
     await resultsHeading.scrollIntoViewIfNeeded();
 
     // Wait for Nuclides section to be visible
-    await page.locator('text=Nuclides Appearing in Results').waitFor({ state: 'visible', timeout: 10000 });
+    await resultNuclidesSection(page).waitFor({ state: 'visible', timeout: 10000 });
 
     // Pin the first nuclide that appears in results
-    const nuclideCards = page.locator('text=Nuclides Appearing in Results').locator('..').locator('div[class*="cursor-pointer"]');
+    const nuclideCards = resultNuclideCards(page);
     const firstNuclideCard = nuclideCards.first();
     await firstNuclideCard.click();
 
@@ -365,12 +368,11 @@ test.describe('Two-to-Two Query Page', () => {
     );
 
     // Wait for nuclides section to be visible
-    await page.locator('text=Nuclides Appearing in Results').waitFor({ state: 'visible', timeout: 10000 });
-    await page.locator('text=Nuclides Appearing in Results').scrollIntoViewIfNeeded();
+    await resultNuclidesSection(page).waitFor({ state: 'visible', timeout: 10000 });
+    await resultNuclidesSection(page).scrollIntoViewIfNeeded();
 
     // Find and click the D-2 nuclide card
-    const nuclideCards = page.locator('text=Nuclides Appearing in Results').locator('..').locator('div[class*="cursor-pointer"]');
-    const d2Card = nuclideCards.filter({ hasText: 'D-2' }).first();
+    const d2Card = await getResultNuclideCard(page, 'D-2');
     await d2Card.click();
 
     // Verify D-2 is pinned
