@@ -14,6 +14,7 @@ import ChangelogModal from './ChangelogModal'
 import LanguageSwitcher from './LanguageSwitcher'
 import LanguageSelectionModal from './LanguageSelectionModal'
 import { getVersionInfo, getVersionTooltip, getGitHubReleaseUrl } from '../utils/version'
+import { useFirstVisitPrompts } from '../hooks/useFirstVisitPrompts'
 import { fetchReleaseNotes, type ReleaseNotes } from '../services/changelog'
 
 interface LayoutProps {
@@ -46,6 +47,8 @@ export default function Layout({ children }: LayoutProps) {
   const location = useLocation()
   const { sidebarOpen, setSidebarOpen, mobileHeaderHidden } = useLayout()
   const { isFirstVisit } = useLanguage()
+  // Language modal first; privacy banner waits until it is resolved
+  const { isLanguageModalOpen, closeLanguageModal, privacyBannerDeferred } = useFirstVisitPrompts(isFirstVisit)
   const [desktopSidebarCollapsed, setDesktopSidebarCollapsed] = useState(() => {
     const saved = localStorage.getItem('desktopSidebarCollapsed')
     return saved ? JSON.parse(saved) : false
@@ -58,7 +61,6 @@ export default function Layout({ children }: LayoutProps) {
   const [changelogTargetTag, setChangelogTargetTag] = useState<string | null>(null)
   const [changelogVersionLabel, setChangelogVersionLabel] = useState<string>('')
   const [fetchedTag, setFetchedTag] = useState<string | null>(null)
-  const [isLanguageModalOpen, setIsLanguageModalOpen] = useState(false)
   const { theme, toggleTheme } = useTheme()
   const versionInfo = getVersionInfo()
   const currentVersionKey = versionInfo.fullVersion
@@ -191,13 +193,6 @@ export default function Layout({ children }: LayoutProps) {
     }
   }, [CHANGELOG_SEEN_KEY, currentDisplayVersion, currentVersionKey, openChangelog, releaseTag, shouldBypassAutoChangelog, versionInfo.isRelease])
 
-  // Show language selection modal on first visit
-  useEffect(() => {
-    if (isFirstVisit) {
-      setIsLanguageModalOpen(true)
-    }
-  }, [isFirstVisit])
-
   return (
     <div
       className="min-h-screen bg-gray-50 dark:bg-gray-900"
@@ -220,7 +215,7 @@ export default function Layout({ children }: LayoutProps) {
           <div className="flex items-center justify-between p-4 border-b dark:border-gray-700">
             <div className="flex items-center gap-2">
               <Atom className="w-6 h-6 text-primary-600" />
-              <span className="text-lg font-bold dark:text-white">{t('brand.appShortName')}</span>
+              <span className="text-lg font-bold whitespace-nowrap dark:text-white">{t('brand.appShortName')}</span>
             </div>
             <button onClick={() => setSidebarOpen(false)} className="dark:text-gray-300" aria-label={t('navigation.closeMenu')}>
               <X className="w-6 h-6" />
@@ -310,11 +305,10 @@ export default function Layout({ children }: LayoutProps) {
             )}
           </button>
 
-          <div className={`flex items-center py-6 border-b dark:border-gray-700 overflow-hidden transition-all duration-300 ${desktopSidebarCollapsed ? 'px-4 justify-center' : 'px-7 justify-start gap-2'}`}>
+          <div className={`flex items-center py-6 border-b dark:border-gray-700 overflow-hidden transition-all duration-300 ${desktopSidebarCollapsed ? 'px-4 justify-center' : 'px-5 justify-start gap-2'}`}>
             <Atom className={`text-primary-600 flex-shrink-0 transition-all duration-300 ${desktopSidebarCollapsed ? 'w-6 h-6' : 'w-8 h-8'}`} />
             <div className={`whitespace-nowrap transition-all duration-150 overflow-hidden ${desktopSidebarCollapsed ? 'opacity-0 w-0 delay-0' : 'opacity-100 w-auto delay-150'}`}>
-              <h1 className="text-xl font-bold text-gray-900 dark:text-white">{t('brand.appName')}</h1>
-              <p className="text-xs text-gray-500 dark:text-gray-400">{t('brand.appSubtitle')}</p>
+              <p className="text-xl font-bold text-gray-900 dark:text-white whitespace-nowrap">{t('brand.appName')}</p>
             </div>
           </div>
           <nav className="flex-1 min-h-0 overflow-y-auto p-4">
@@ -413,9 +407,9 @@ export default function Layout({ children }: LayoutProps) {
           >
             <Menu className="h-6 w-6" />
           </button>
-          <div className="flex items-center gap-2 flex-1">
-            <Atom className="w-6 h-6 text-primary-600" />
-            <span className="text-lg font-bold dark:text-white">{t('brand.appName')}</span>
+          <div className="flex items-center gap-2 flex-1 min-w-0">
+            <Atom className="w-6 h-6 text-primary-600 flex-shrink-0" />
+            <span className="text-lg font-bold whitespace-nowrap dark:text-white">{t('brand.appName')}</span>
           </div>
           <LanguageSwitcher compact position="below" />
           <button
@@ -449,7 +443,7 @@ export default function Layout({ children }: LayoutProps) {
               openChangelog(targetTag, label)
             }}
           />
-          <PrivacyBanner className="rounded-lg overflow-hidden" />
+          <PrivacyBanner className="rounded-lg overflow-hidden" deferred={privacyBannerDeferred} />
         </div>
       </div>
 
@@ -465,7 +459,7 @@ export default function Layout({ children }: LayoutProps) {
 
       <LanguageSelectionModal
         isOpen={isLanguageModalOpen}
-        onClose={() => setIsLanguageModalOpen(false)}
+        onClose={closeLanguageModal}
       />
     </div>
   )

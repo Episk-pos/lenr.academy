@@ -16,7 +16,7 @@ export default defineConfig({
       includeAssets: ['**/*.{png,svg,ico,wasm}'],
       manifest: {
         name: 'LENR Academy',
-        short_name: 'LENR',
+        short_name: 'LENR Academy',
         description: 'Interactive tools for exploring Low Energy Nuclear Reactions and cold fusion transmutation pathways',
         theme_color: '#3b82f6',
         background_color: '#ffffff',

@@ -718,12 +718,11 @@ test.describe('Element Data - Mobile', () => {
     await tabMenuButton.click();
     await page.waitForTimeout(300);
 
-    // Sidebar should open (check for sidebar content)
-    const sidebar = page.locator('text=Nanosoft').first();
-    await expect(sidebar).toBeVisible();
+    // Sidebar should open (its close-menu button is only rendered visibly when open)
+    const closeButton = page.getByRole('button', { name: /Close menu/i });
+    await expect(closeButton).toBeVisible();
 
     // Close sidebar
-    const closeButton = page.getByRole('button', { name: /Close menu/i });
     await closeButton.click();
     await page.waitForTimeout(300);
 

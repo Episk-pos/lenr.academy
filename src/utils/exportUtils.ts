@@ -62,7 +62,7 @@ export function exportToJSON(
     metadata: {
       version: appVersion,
       exportedAt: new Date().toISOString(),
-      source: 'LENR Academy - Nanosoft Suite',
+      source: 'LENR Academy',
     },
   }
 
@@ -227,7 +227,7 @@ export async function exportToPDF(
       doc.setFontSize(7)
       doc.setTextColor(150, 150, 150)
       doc.text(
-        'LENR Academy - Nanosoft Suite | Based on work by Dr. Alexander Parkhomov',
+        'LENR Academy | Based on work by Dr. Alexander Parkhomov',
         14,
         pageHeight - 8
       )

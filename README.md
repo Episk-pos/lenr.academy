@@ -1,4 +1,4 @@
-# LENR Academy - Nanosoft Suite
+# LENR Academy
 
 [![E2E Tests](https://github.com/Episk-pos/lenr.academy/actions/workflows/e2e-main.yml/badge.svg)](https://github.com/Episk-pos/lenr.academy/actions/workflows/e2e-main.yml)
 [![Deploy to Production](https://github.com/Episk-pos/lenr.academy/actions/workflows/deploy.yml/badge.svg)](https://github.com/Episk-pos/lenr.academy/actions/workflows/deploy.yml)

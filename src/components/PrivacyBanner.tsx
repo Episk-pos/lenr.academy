@@ -8,9 +8,14 @@ const EXIT_ANIMATION_MS = 250
 
 interface PrivacyBannerProps {
   className?: string
+  /**
+   * When true, the banner stays hidden (e.g. while the first-visit language
+   * modal is open). The stored consent is checked once this becomes false.
+   */
+  deferred?: boolean
 }
 
-export default function PrivacyBanner({ className = '' }: PrivacyBannerProps) {
+export default function PrivacyBanner({ className = '', deferred = false }: PrivacyBannerProps) {
   const { t } = useTranslation()
   const [isVisible, setIsVisible] = useState(false)
   const [isRendered, setIsRendered] = useState(false)
@@ -18,13 +23,17 @@ export default function PrivacyBanner({ className = '' }: PrivacyBannerProps) {
   const exitTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   useEffect(() => {
+    if (deferred) {
+      setIsVisible(false)
+      return
+    }
     // Check if user has already made a choice
     const consent = localStorage.getItem(ANALYTICS_CONSENT_KEY)
     if (consent === null) {
       // No choice made yet, show banner
       setIsVisible(true)
     }
-  }, [])
+  }, [deferred])
 
   useEffect(() => {
     if (isVisible) {

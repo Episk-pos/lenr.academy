@@ -1,4 +1,4 @@
-# Nanosoft Suite - Implementation Guide
+# LENR Academy - Implementation Guide
 
 ## What's Been Built (Phase 1-2)
 

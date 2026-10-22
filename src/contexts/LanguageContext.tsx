@@ -1,4 +1,4 @@
-import { createContext, useContext, ReactNode, useEffect, useState, useCallback } from 'react'
+import { createContext, useContext, ReactNode, useState, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { SupportedLanguage } from '../i18n/config'
 import { SUPPORTED_LANGUAGES, DEFAULT_LANGUAGE } from '../i18n/config'
@@ -22,15 +22,16 @@ interface LanguageProviderProps {
 
 export function LanguageProvider({ children }: LanguageProviderProps) {
   const { i18n } = useTranslation()
-  const [isFirstVisit, setIsFirstVisit] = useState(false)
-
-  // Check if this is the first visit (no language preference saved)
-  useEffect(() => {
-    const hasSelectedLanguage = localStorage.getItem(LANGUAGE_SELECTED_KEY)
-    if (!hasSelectedLanguage) {
-      setIsFirstVisit(true)
+  // Read synchronously so the very first render already knows whether the
+  // language prompt is pending (lets other first-visit prompts wait for it
+  // without a flash).
+  const [isFirstVisit, setIsFirstVisit] = useState(() => {
+    try {
+      return !localStorage.getItem(LANGUAGE_SELECTED_KEY)
+    } catch {
+      return false
     }
-  }, [])
+  })
 
   const setLanguage = useCallback((lang: SupportedLanguage) => {
     i18n.changeLanguage(lang)

@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import { ChevronDown, X, Radiation } from 'lucide-react'
 import type { Element } from '../types'
@@ -168,6 +168,25 @@ export default function PeriodicTableSelector({
   const { db } = useDatabase()
   const [isOpen, setIsOpen] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
+  // Below the sm breakpoint the grid scrolls horizontally inside a bottom sheet;
+  // track whether more columns remain to the right to show the fade affordance.
+  const gridScrollRef = useRef<HTMLDivElement>(null)
+  const [canScrollRight, setCanScrollRight] = useState(false)
+  const [isGridScrollable, setIsGridScrollable] = useState(false)
+
+  const updateScrollAffordance = useCallback(() => {
+    const el = gridScrollRef.current
+    if (!el) return
+    setIsGridScrollable(el.scrollWidth > el.clientWidth + 1)
+    setCanScrollRight(el.scrollLeft + el.clientWidth < el.scrollWidth - 1)
+  }, [])
+
+  useEffect(() => {
+    if (!isOpen) return
+    updateScrollAffordance()
+    window.addEventListener('resize', updateScrollAffordance)
+    return () => window.removeEventListener('resize', updateScrollAffordance)
+  }, [isOpen, updateScrollAffordance])
 
   // Nuclide picker modal state
   const [nuclidePicker, setNuclidePicker] = useState<{ element: Element; isOpen: boolean } | null>(null)
@@ -457,71 +476,113 @@ const allElementNames: Record<number, string> = {
 
       {/* Periodic Table Dropdown */}
       {isOpen && (
-        <div 
+        <div
           data-testid="periodic-table-dropdown"
+          role="dialog"
+          aria-label={t('query.selectElements')}
           className={`
-            fixed sm:absolute z-50
-            inset-x-4 top-20 sm:inset-x-auto sm:top-auto sm:mt-2
-            max-h-[calc(100vh-6rem)] sm:max-h-none overflow-y-auto sm:overflow-visible
-            bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-lg p-4
-            w-auto sm:w-full sm:min-w-[650px] lg:min-w-[800px]
+            fixed sm:absolute z-[60] sm:z-50
+            inset-x-0 bottom-0 sm:inset-x-auto sm:bottom-auto sm:mt-2
+            max-h-[85vh] sm:max-h-none overflow-y-auto sm:overflow-visible
+            bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600
+            rounded-t-xl sm:rounded-lg shadow-[0_-8px_24px_rgba(0,0,0,0.2)] sm:shadow-lg p-4
+            pb-[max(1rem,env(safe-area-inset-bottom))] sm:pb-4
+            w-full sm:min-w-[650px] lg:min-w-[800px]
             ${align === 'right' ? 'sm:right-0' : align === 'center' ? 'sm:left-1/2 sm:-translate-x-1/2' : ''}
           `}>
-          <div className="mb-3 flex justify-between items-center">
+          {/* Bottom-sheet grab handle (mobile only) */}
+          <div className="sm:hidden mx-auto mb-3 h-1 w-10 rounded-full bg-gray-300 dark:bg-gray-600" aria-hidden="true" />
+          <div className="mb-3 flex justify-between items-center gap-2">
             <h3 className="font-semibold text-gray-900 dark:text-white">{t('query.selectElements')}</h3>
-            {selectedElements.length > 0 && (
+            <div className="flex items-center gap-3">
+              {selectedElements.length > 0 && (
+                <button
+                  onClick={clearSelection}
+                  className="text-sm text-primary-600 dark:text-primary-400 hover:text-primary-800 dark:hover:text-primary-300"
+                >
+                  {t('common.clear')}
+                </button>
+              )}
               <button
-                onClick={clearSelection}
-                className="text-sm text-primary-600 dark:text-primary-400 hover:text-primary-800 dark:hover:text-primary-300"
+                type="button"
+                onClick={() => setIsOpen(false)}
+                className="sm:hidden p-1 rounded-md text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
+                aria-label={t('common.close')}
               >
-                {t('common.clear')}
+                <X className="w-5 h-5" />
               </button>
+            </div>
+          </div>
+
+          {isGridScrollable && (
+            <p className="sm:hidden mb-2 text-xs text-gray-500 dark:text-gray-400">{t('periodicSelector.scrollHint')}</p>
+          )}
+
+          {/* Horizontally scrollable grid on narrow screens; unchanged layout from sm up */}
+          <div className="relative">
+            <div
+              ref={gridScrollRef}
+              onScroll={updateScrollAffordance}
+              className="overflow-x-auto sm:overflow-visible"
+              data-testid="periodic-table-scroll"
+            >
+              <div className="min-w-[540px] sm:min-w-0">
+
+                {/* Main periodic table (periods 1-7, excluding lanthanides/actinides) */}
+                <div className="relative mb-4">
+                  <div className="periodic-row">
+                    {[1, 2, 3, 4, 5, 6, 7].map(period =>
+                      [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18].map(group => {
+                        // Groups 3-12 of periods 1-3 have no elements; renderCell fills them with
+                        // empty spacers, except for the D/T and particle tiles placed in period 1.
+                        // Skip lanthanide/actinide positions
+                        if ((period === 6 || period === 7) && group === 3) {
+                          return (
+                            <div
+                              key={`${period}-${group}`}
+                              className="periodic-cell-placeholder text-xs text-gray-500 dark:text-gray-400 flex items-center justify-center"
+                            >
+                              {period === 6 ? '57-71' : '89-103'}
+                            </div>
+                          )
+                        }
+
+                        return renderCell(period, group)
+                      })
+                    )}
+                  </div>
+                </div>
+
+                {/* Lanthanides */}
+                <div className="mb-2">
+                  <div className="text-xs text-gray-600 dark:text-gray-400 mb-1 font-medium">{t('periodicSelector.lanthanides')}</div>
+                  <div className="periodic-row">
+                    {[3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17].map(group =>
+                      renderCell(8, group)
+                    )}
+                  </div>
+                </div>
+
+                {/* Actinides */}
+                <div>
+                  <div className="text-xs text-gray-600 dark:text-gray-400 mb-1 font-medium">{t('periodicSelector.actinides')}</div>
+                  <div className="periodic-row">
+                    {[3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17].map(group =>
+                      renderCell(9, group)
+                    )}
+                  </div>
+                </div>
+
+              </div>
+            </div>
+            {/* Fade edge signalling more columns to the right (mobile only) */}
+            {canScrollRight && (
+              <div
+                className="sm:hidden pointer-events-none absolute inset-y-0 right-0 w-10 bg-gradient-to-l from-white dark:from-gray-800 to-transparent"
+                aria-hidden="true"
+                data-testid="periodic-table-scroll-fade"
+              />
             )}
-          </div>
-
-          {/* Main periodic table (periods 1-7, excluding lanthanides/actinides) */}
-          <div className="relative mb-4">
-            <div className="periodic-row">
-              {[1, 2, 3, 4, 5, 6, 7].map(period =>
-                [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18].map(group => {
-                  // Groups 3-12 of periods 1-3 have no elements; renderCell fills them with
-                  // empty spacers, except for the D/T and particle tiles placed in period 1.
-                  // Skip lanthanide/actinide positions
-                  if ((period === 6 || period === 7) && group === 3) {
-                    return (
-                      <div
-                        key={`${period}-${group}`}
-                        className="periodic-cell-placeholder text-xs text-gray-500 dark:text-gray-400 flex items-center justify-center"
-                      >
-                        {period === 6 ? '57-71' : '89-103'}
-                      </div>
-                    )
-                  }
-
-                  return renderCell(period, group)
-                })
-              )}
-            </div>
-          </div>
-
-          {/* Lanthanides */}
-          <div className="mb-2">
-            <div className="text-xs text-gray-600 dark:text-gray-400 mb-1 font-medium">{t('periodicSelector.lanthanides')}</div>
-            <div className="periodic-row">
-              {[3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17].map(group =>
-                renderCell(8, group)
-              )}
-            </div>
-          </div>
-
-          {/* Actinides */}
-          <div>
-            <div className="text-xs text-gray-600 dark:text-gray-400 mb-1 font-medium">{t('periodicSelector.actinides')}</div>
-            <div className="periodic-row">
-              {[3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17].map(group =>
-                renderCell(9, group)
-              )}
-            </div>
           </div>
 
           {/* Legend */}
