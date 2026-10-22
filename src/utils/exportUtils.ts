@@ -259,8 +259,9 @@ function setTextColor(doc: JsPDF, color: Color | undefined) {
  * Text drawing that sends Devanagari runs through the canvas shaper (see
  * ./pdfShaping.ts) and everything else through doc.text(). If the shaper is
  * missing or throws, the run falls back to unshaped doc.text().
+ * Exported for tests only.
  */
-function createTextRenderer(
+export function createTextRenderer(
   doc: JsPDF,
   shaping: typeof import('./pdfShaping'),
   shaper: TextShaper | null,
@@ -274,47 +275,92 @@ function createTextRenderer(
     console.warn('PDF export: canvas shaping failed, using unshaped text.', err)
   }
   const shapedAdvance = (fontSize: number) => fontSize * PT_TO_MM * shaping.SHAPED_LINE_HEIGHT_EM
+  const validated = new Set<string>()
 
-  /** Place a rendered line with its baseline at y; x is the anchor for `align`. */
-  const placeImage = (img: ShapedImage, line: string, x: number, y: number, align: Align) => {
-    const left = align === 'right' ? x - img.textWidth : align === 'center' ? x - img.textWidth / 2 : x
-    doc.addImage(img.dataUrl, 'PNG', left - img.padLeft, y - img.ascent, img.width, img.height, img.key)
-    if (invisibleLayer) doc.text(line, left, y, { renderingMode: 'invisible' })
+  /**
+   * Rasterise every line up front and make sure jsPDF can decode each image,
+   * so nothing is drawn unless the whole run can be drawn (no half-shaped,
+   * half-fallback duplicates). Throws if any line fails.
+   */
+  const renderLines = (lines: string[], fontSize: number, color: string): ShapedImage[] => {
+    const images = lines.map((line) => shaper!.render(line, fontSize, color))
+    for (const img of images) {
+      if (validated.has(img.key)) continue
+      doc.getImageProperties(img.dataUrl) // throws if jsPDF cannot decode it
+      validated.add(img.key)
+    }
+    return images
   }
 
   /**
-   * Draw `text` with its first baseline at y, wrapping at maxWidth.
-   * Returns the extra height taken by wrapped lines (mm).
+   * Place a rendered line with its baseline at y; x is the anchor for `align`.
+   * `scale` shrinks the image (and the invisible text) to fit a cell.
+   */
+  const placeImage = (img: ShapedImage, line: string, x: number, y: number, align: Align, fontSize: number, scale = 1) => {
+    const textWidth = img.textWidth * scale
+    const left = align === 'right' ? x - textWidth : align === 'center' ? x - textWidth / 2 : x
+    doc.addImage(img.dataUrl, 'PNG', left - img.padLeft * scale, y - img.ascent * scale, img.width * scale, img.height * scale, img.key)
+    if (invisibleLayer) {
+      doc.setFontSize(fontSize * scale)
+      doc.text(line, left, y, { renderingMode: 'invisible' })
+      doc.setFontSize(fontSize)
+    }
+  }
+
+  /** Draw already-validated images; an unexpected failure here only warns (no fallback, so no duplicates). */
+  const placeAll = (place: () => void) => {
+    try {
+      place()
+    } catch (err) {
+      warnOnce(err)
+    }
+  }
+
+  /**
+   * Draw `text` wrapped at maxWidth. With `anchor: 'top'` (default) y is the
+   * first baseline; with `anchor: 'bottom'` y is the last baseline, so wrapped
+   * text grows upward. Returns the extra height taken by wrapped lines (mm).
    */
   const drawText = (
     text: string,
     x: number,
     y: number,
-    opts: { fontSize: number; color: Rgb; align?: Align; maxWidth?: number },
+    opts: { fontSize: number; color: Rgb; align?: Align; maxWidth?: number; anchor?: 'top' | 'bottom' },
   ): number => {
     const align = opts.align ?? 'left'
     doc.setFontSize(opts.fontSize)
+    const firstBaseline = (lineCount: number, advance: number) =>
+      opts.anchor === 'bottom' ? y - (lineCount - 1) * advance : y
+
     if (shaper && shaping.needsCanvasShaping(text)) {
+      let layout: { lines: string[]; images: ShapedImage[] } | null = null
       try {
         const lines = opts.maxWidth ? shaper.wrap(text, opts.fontSize, opts.maxWidth) : [text]
-        const images = lines.map((line) => shaper.render(line, opts.fontSize, cssColor(opts.color)))
-        const advance = shapedAdvance(opts.fontSize)
-        images.forEach((img, i) => placeImage(img, lines[i], x, y + i * advance, align))
-        return (lines.length - 1) * advance
+        layout = { lines, images: renderLines(lines, opts.fontSize, cssColor(opts.color)) }
       } catch (err) {
         warnOnce(err)
+      }
+      if (layout) {
+        const { lines, images } = layout
+        const advance = shapedAdvance(opts.fontSize)
+        const y0 = firstBaseline(lines.length, advance)
+        placeAll(() => images.forEach((img, i) => placeImage(img, lines[i], x, y0 + i * advance, align, opts.fontSize)))
+        return (lines.length - 1) * advance
       }
     }
     doc.setTextColor(...opts.color)
     const lines: string[] = opts.maxWidth ? doc.splitTextToSize(text, opts.maxWidth) : [text]
     const advance = opts.fontSize * PT_TO_MM * TEXT_LINE_HEIGHT_EM
-    lines.forEach((line, i) => doc.text(line, x, y + i * advance, { align }))
+    const y0 = firstBaseline(lines.length, advance)
+    lines.forEach((line, i) => doc.text(line, x, y0 + i * advance, { align }))
     return (lines.length - 1) * advance
   }
 
   // autotable hooks: Devanagari cells are blanked during parsing (so jsPDF does
   // not draw unshaped glyphs), sized to fit the shaped text, then drawn as images.
-  const shapedCells = new WeakMap<object, string>()
+  // The lines wrapped at parse time are the ones the reserved height was
+  // computed for, and are reused when drawing.
+  const shapedCells = new WeakMap<object, { text: string; lines: string[] }>()
 
   const didParseCell = (data: CellHookData) => {
     if (!shaper) return
@@ -323,14 +369,16 @@ function createTextRenderer(
     const { styles } = data.cell
     try {
       const lines = shaper.wrap(text, styles.fontSize, MAX_SHAPED_CELL_WIDTH)
-      shaper.render(lines[0], styles.fontSize, cssColor(styles.textColor)) // fail here, not mid-draw
+      renderLines(lines, styles.fontSize, cssColor(styles.textColor)) // fail here, not mid-draw (cached)
       const width = Math.max(...lines.map((line) => shaper.measure(line, styles.fontSize)))
+      // The min width makes the column at least as wide as the widest wrapped line,
+      // so the same lines fit when drawn and the reserved height matches.
       styles.minCellWidth = Math.max(styles.minCellWidth || 0, width + data.cell.padding('horizontal'))
       styles.minCellHeight = Math.max(
         styles.minCellHeight || 0,
         lines.length * shapedAdvance(styles.fontSize) + data.cell.padding('vertical'),
       )
-      shapedCells.set(data.cell, text)
+      shapedCells.set(data.cell, { text, lines })
       data.cell.text = ['']
     } catch (err) {
       warnOnce(err)
@@ -338,8 +386,8 @@ function createTextRenderer(
   }
 
   const didDrawCell = (data: CellHookData) => {
-    const text = shapedCells.get(data.cell)
-    if (text === undefined || !shaper) return
+    const shaped = shapedCells.get(data.cell)
+    if (shaped === undefined || !shaper) return
     const { cell } = data
     const fontSize = cell.styles.fontSize
     const innerWidth = cell.width - cell.padding('horizontal')
@@ -352,23 +400,38 @@ function createTextRenderer(
         ? cell.x + cell.padding('left') + innerWidth / 2
         : cell.x + cell.padding('left')
     doc.setFontSize(fontSize)
+
+    let layout: { lines: string[]; images: ShapedImage[]; widest: number } | null = null
     try {
-      const lines = shaper.wrap(text, fontSize, innerWidth)
-      const images = lines.map((line) => shaper.render(line, fontSize, cssColor(cell.styles.textColor)))
-      const advance = shapedAdvance(fontSize)
-      const blockHeight = lines.length * advance
-      const top = cell.styles.valign === 'middle'
-        ? innerTop + (innerHeight - blockHeight) / 2
-        : cell.styles.valign === 'bottom'
-          ? innerTop + innerHeight - blockHeight
-          : innerTop
-      const baseline = fontSize * PT_TO_MM * shaping.SHAPED_BASELINE_EM
-      images.forEach((img, i) => placeImage(img, lines[i], x, top + i * advance + baseline, align))
+      const fits = (lines: string[]) => Math.max(...lines.map((l) => shaper.measure(l, fontSize))) <= innerWidth + 0.01
+      // Column narrower than requested (e.g. a colSpan header or an overfull table): rewrap.
+      const lines = fits(shaped.lines) ? shaped.lines : shaper.wrap(shaped.text, fontSize, innerWidth)
+      const images = renderLines(lines, fontSize, cssColor(cell.styles.textColor))
+      layout = { lines, images, widest: Math.max(...images.map((img) => img.textWidth)) }
     } catch (err) {
       warnOnce(err)
-      setTextColor(doc, cell.styles.textColor)
-      doc.text(text, x, innerTop + fontSize * PT_TO_MM, { align, maxWidth: innerWidth })
     }
+
+    if (!layout) {
+      setTextColor(doc, cell.styles.textColor)
+      doc.text(shaped.text, x, innerTop + fontSize * PT_TO_MM, { align, maxWidth: innerWidth })
+      return
+    }
+
+    const { lines, images, widest } = layout
+    const advance = shapedAdvance(fontSize)
+    // Never overflow the cell: shrink uniformly if the block is too tall or a word too wide
+    const scale = Math.min(1, innerHeight / (lines.length * advance), widest > 0 ? innerWidth / widest : 1)
+    const blockHeight = lines.length * advance * scale
+    const top = cell.styles.valign === 'middle'
+      ? innerTop + (innerHeight - blockHeight) / 2
+      : cell.styles.valign === 'bottom'
+        ? innerTop + innerHeight - blockHeight
+        : innerTop
+    const baseline = fontSize * PT_TO_MM * shaping.SHAPED_BASELINE_EM * scale
+    placeAll(() =>
+      images.forEach((img, i) => placeImage(img, lines[i], x, top + i * advance * scale + baseline, align, fontSize, scale)),
+    )
   }
 
   return { drawText, didParseCell, didDrawCell }
@@ -486,6 +549,8 @@ export async function exportToPDF(
     alternateRowStyles: {
       fillColor: [245, 247, 250],
     },
+    // Shaped (Devanagari) rows can be taller than autotable's estimate; never split a row
+    rowPageBreak: 'avoid',
     didParseCell: renderer.didParseCell,
     didDrawCell: renderer.didDrawCell,
   })
@@ -496,8 +561,9 @@ export async function exportToPDF(
   for (let page = 1; page <= pageCount; page++) {
     doc.setPage(page)
     doc.setFont(applied.font, 'normal')
-    renderer.drawText(strings.footer, 14, pageHeight - 8, { fontSize: 7, color: [150, 150, 150], maxWidth: maxTextWidth - 40 })
-    renderer.drawText(pageLabel(page, pageCount), pageWidth - 14, pageHeight - 8, { fontSize: 7, color: [150, 150, 150], align: 'right' })
+    // Bottom-anchored: a wrapped footer grows upward instead of off the page
+    renderer.drawText(strings.footer, 14, pageHeight - 8, { fontSize: 7, color: [150, 150, 150], maxWidth: maxTextWidth - 40, anchor: 'bottom' })
+    renderer.drawText(pageLabel(page, pageCount), pageWidth - 14, pageHeight - 8, { fontSize: 7, color: [150, 150, 150], align: 'right', anchor: 'bottom' })
   }
 
   const date = new Date().toISOString().split('T')[0]

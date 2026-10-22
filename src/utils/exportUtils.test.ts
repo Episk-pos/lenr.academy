@@ -1,18 +1,23 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
-import { exportToJSON, exportToPDF } from './exportUtils'
+import { createTextRenderer, exportToJSON, exportToPDF } from './exportUtils'
 import { clearPdfFontCache } from './pdfFonts'
-import { clearShapingFontCache } from './pdfShaping'
+import * as shaping from './pdfShaping'
+import { clearShapingFontCache, type ShapedImage, type TextShaper } from './pdfShaping'
 import i18n from '../i18n/config'
 
 // Under Vitest, jspdf resolves to its Node build, whose save() writes to disk.
 // Capture saves instead, and record every text/image call (autotable draws
 // cells through doc.text, so this sees table content too).
 const savedFiles = vi.hoisted(() => [] as string[])
+type Box = { x: number; y: number; width: number; height: number }
 const pdfCalls = vi.hoisted(() => ({
-  text: [] as { text: string; invisible: boolean }[],
-  images: [] as { alias: string | undefined }[],
+  text: [] as { text: string; invisible: boolean; y: number }[],
+  images: [] as { alias: string | undefined; x: number; y: number; w: number; h: number; cell: Box | null }[],
+  /** Cell currently being drawn by autotable's didDrawCell hook, if any */
+  cell: null as Box | null,
+  tableOptions: [] as Record<string, unknown>[],
 }))
 vi.mock('jspdf', async (importOriginal) => {
   const actual = await importOriginal<typeof import('jspdf')>()
@@ -30,18 +35,43 @@ vi.mock('jspdf', async (importOriginal) => {
           | { renderingMode?: string }
           | undefined
         for (const line of [value].flat()) {
-          pdfCalls.text.push({ text: line, invisible: options?.renderingMode === 'invisible' })
+          pdfCalls.text.push({ text: line, invisible: options?.renderingMode === 'invisible', y: rest[1] as number })
         }
         return text(value, ...rest)
       }) as unknown as typeof this.text
       const addImage = this.addImage.bind(this) as unknown as Passthrough
       this.addImage = ((...args: unknown[]) => {
-        pdfCalls.images.push({ alias: args[6] as string | undefined })
+        const [x, y, w, h] = args.slice(2, 6) as number[]
+        pdfCalls.images.push({ alias: args[6] as string | undefined, x, y, w, h, cell: pdfCalls.cell })
         return addImage(...args)
       }) as unknown as typeof this.addImage
     }
   }
   return { ...actual, jsPDF: TestJsPDF, default: TestJsPDF }
+})
+// Record the autotable options and which cell each didDrawCell call is drawing
+vi.mock('jspdf-autotable', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('jspdf-autotable')>()
+  type Options = Parameters<typeof actual.default>[1]
+  const wrapped = (doc: Parameters<typeof actual.default>[0], options: Options) => {
+    pdfCalls.tableOptions.push(options as Record<string, unknown>)
+    const didDrawCell = options.didDrawCell
+    return actual.default(doc, {
+      ...options,
+      didDrawCell: didDrawCell
+        ? (data) => {
+            const { x, y, width, height } = data.cell
+            pdfCalls.cell = { x, y, width, height }
+            try {
+              return didDrawCell(data)
+            } finally {
+              pdfCalls.cell = null
+            }
+          }
+        : undefined,
+    })
+  }
+  return { ...actual, default: wrapped, autoTable: wrapped }
 })
 
 describe('exportUtils', () => {
@@ -164,6 +194,7 @@ describe('exportUtils', () => {
       savedFiles.length = 0
       pdfCalls.text.length = 0
       pdfCalls.images.length = 0
+      pdfCalls.tableOptions.length = 0
       clearPdfFontCache()
       clearShapingFontCache()
       vi.spyOn(console, 'warn').mockImplementation(() => {})
@@ -236,7 +267,7 @@ describe('exportUtils', () => {
       const PNG = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg=='
 
       /** Fake FontFace + 2D canvas so the canvas shaping path can run under jsdom. */
-      function mockCanvas(opts: { toDataURL?: () => string; fontLoad?: () => Promise<unknown> } = {}) {
+      function mockCanvas(opts: { toDataURL?: () => string; fontLoad?: () => Promise<unknown>; pxPerChar?: number } = {}) {
         const fillText = vi.fn()
         class FakeFontFace {
           constructor(public family: string, public source: unknown) {}
@@ -250,7 +281,7 @@ describe('exportUtils', () => {
           font: '',
           fillStyle: '',
           textBaseline: '',
-          measureText: (s: string) => ({ width: s.length * 6 }),
+          measureText: (s: string) => ({ width: s.length * (opts.pxPerChar ?? 6) }),
           fillText,
           clearRect: vi.fn(),
         }
@@ -333,6 +364,141 @@ describe('exportUtils', () => {
         const invisible = pdfCalls.text.filter((c) => c.invisible).map((c) => c.text)
         expect(invisible).toContain(i18n.t('reactions.none'))
         expect(savedFiles).toHaveLength(1)
+      })
+
+      it('never splits a row across pages', async () => {
+        await i18n.changeLanguage('hi')
+        vi.stubGlobal('fetch', fontFetch())
+        mockCanvas()
+        await exportToPDF(reactions, meta)
+        expect(pdfCalls.tableOptions).toHaveLength(1)
+        expect(pdfCalls.tableOptions[0]).toMatchObject({ rowPageBreak: 'avoid' })
+      })
+
+      // Body cells get the min width they ask for; colSpan headers do not (autotable
+      // ignores their min width), so a long single-word group label must shrink to fit.
+      it.each([
+        ['plain labels', 30, undefined],
+        ['wide glyphs', 80, undefined],
+        ['long colSpan header', 30, 'अभिक्रिया'.repeat(5)],
+      ])('keeps shaped cell images inside their cells (%s)', async (_name, pxPerChar, input1Label) => {
+        await i18n.changeLanguage('hi')
+        const original = i18n.t('reactions.input1')
+        if (input1Label) i18n.addResource('hi', 'translation', 'reactions.input1', input1Label)
+        try {
+          vi.stubGlobal('fetch', fontFetch())
+          mockCanvas({ pxPerChar })
+          await exportToPDF(reactions, meta)
+        } finally {
+          i18n.addResource('hi', 'translation', 'reactions.input1', original)
+        }
+
+        const cellImages = pdfCalls.images.filter((img) => img.cell)
+        expect(cellImages.length).toBeGreaterThan(0)
+        const eps = 0.01
+        for (const { x, y, w, h, cell } of cellImages) {
+          expect(x).toBeGreaterThanOrEqual(cell!.x - eps)
+          expect(x + w).toBeLessThanOrEqual(cell!.x + cell!.width + eps)
+          expect(y).toBeGreaterThanOrEqual(cell!.y - eps)
+          expect(y + h).toBeLessThanOrEqual(cell!.y + cell!.height + eps)
+        }
+      })
+
+      it('shrinks shaped text to fit when the drawn cell is smaller than the reserved size', async () => {
+        const { jsPDF } = await import('jspdf')
+        const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' })
+        const MM_PER_CHAR = 2
+        const fakeShaper: TextShaper = {
+          measure: (text) => text.length * MM_PER_CHAR,
+          wrap: (text, _size, maxWidth) => {
+            const lines: string[] = []
+            for (const word of text.split(' ')) {
+              const last = lines[lines.length - 1]
+              if (last !== undefined && (last.length + 1 + word.length) * MM_PER_CHAR <= maxWidth) lines[lines.length - 1] = `${last} ${word}`
+              else lines.push(word)
+            }
+            return lines
+          },
+          render: (text): ShapedImage => ({
+            dataUrl: PNG, key: `k:${text}`, textWidth: text.length * MM_PER_CHAR,
+            width: text.length * MM_PER_CHAR + 0.4, height: 4, ascent: 3, padLeft: 0.2,
+          }),
+        }
+        const renderer = createTextRenderer(doc, shaping, fakeShaper, false)
+        const padding = (name: string) => (name === 'horizontal' || name === 'vertical' ? 3 : 1.5)
+        const cell = {
+          text: ['कखगघङचछ जझञटठडढ'], // two 7-char words, 14 mm each
+          styles: { fontSize: 7, textColor: [0, 0, 0], minCellWidth: 0, minCellHeight: 0, halign: 'left', valign: 'top' },
+          padding, x: 10, y: 20, width: 0, height: 0,
+        }
+        renderer.didParseCell({ cell } as never)
+        expect(cell.text).toEqual([''])
+        expect(cell.styles.minCellWidth).toBeGreaterThanOrEqual(14 * 2 + 1 + 3) // one line fits within the 40 mm cap
+
+        // autotable gives the cell less than it asked for: half the width and height
+        cell.width = cell.styles.minCellWidth / 2
+        cell.height = cell.styles.minCellHeight / 2
+        renderer.didDrawCell({ cell } as never)
+
+        const images = pdfCalls.images.filter((img) => img.alias?.startsWith('k:'))
+        expect(images.length).toBeGreaterThan(0)
+        for (const { x, y, w, h } of images) {
+          expect(x).toBeGreaterThanOrEqual(cell.x)
+          expect(x + w).toBeLessThanOrEqual(cell.x + cell.width + 0.01)
+          expect(y).toBeGreaterThanOrEqual(cell.y - 0.01)
+          expect(y + h).toBeLessThanOrEqual(cell.y + cell.height + 0.01)
+        }
+      })
+
+      it('draws nothing as an image when any line of a wrapped run fails (no duplicate fallback)', async () => {
+        await i18n.changeLanguage('hi')
+        vi.stubGlobal('fetch', fontFetch())
+        let calls = 0
+        // Only the first rendered line (of the wrapped title) is a decodable PNG
+        mockCanvas({ pxPerChar: 200, toDataURL: () => (calls++ === 0 ? PNG : 'data:image/png;base64,AAAA') })
+
+        await exportToPDF(reactions, meta)
+
+        expect(calls).toBeGreaterThan(1)
+        expect(pdfCalls.images).toEqual([])
+        const visible = visibleText().join(' ')
+        for (const word of i18n.t('reactions.fusionTitle').split(' ')) expect(visible).toContain(word)
+        expect(savedFiles).toHaveLength(1)
+      })
+
+      describe('footer stays on the page when it wraps', () => {
+        const PAGE_HEIGHT = 210 // A4 landscape, mm
+        const FOOTER_BASELINE = PAGE_HEIGHT - 8
+
+        it('shaped (hi)', async () => {
+          await i18n.changeLanguage('hi')
+          vi.stubGlobal('fetch', fontFetch())
+          mockCanvas({ pxPerChar: 60 })
+
+          await exportToPDF(reactions, meta)
+
+          const footerImages = pdfCalls.images.filter((img) => !img.cell && img.y > PAGE_HEIGHT / 2)
+          expect(footerImages.length).toBeGreaterThan(2) // footer wrapped + page number
+          for (const img of footerImages) expect(img.y + img.h).toBeLessThanOrEqual(PAGE_HEIGHT)
+          const footerText = pdfCalls.text.filter((c) => c.invisible && c.y > PAGE_HEIGHT / 2)
+          expect(Math.max(...footerText.map((c) => c.y))).toBeCloseTo(FOOTER_BASELINE)
+        })
+
+        it('text (de)', async () => {
+          await i18n.changeLanguage('de')
+          const original = i18n.t('export.pdf.footer')
+          i18n.addResource('de', 'translation', 'export.pdf.footer', `{{brand}} · {{url}} | ${'Sehr langer Fußzeilentext '.repeat(20)}`)
+          try {
+            vi.stubGlobal('fetch', fontFetch())
+            await exportToPDF(reactions, meta)
+          } finally {
+            i18n.addResource('de', 'translation', 'export.pdf.footer', original)
+          }
+          const footerLines = pdfCalls.text.filter((c) => c.text.includes('Fußzeilentext'))
+          expect(footerLines.length).toBeGreaterThan(1)
+          expect(Math.max(...footerLines.map((c) => c.y))).toBeCloseTo(FOOTER_BASELINE)
+          for (const c of footerLines) expect(c.y).toBeLessThanOrEqual(FOOTER_BASELINE + 0.01)
+        })
       })
 
       it('falls back to unshaped text when the shaping font fails to load', async () => {
