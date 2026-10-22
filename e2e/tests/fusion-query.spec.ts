@@ -392,7 +392,7 @@ test.describe('Fusion Query Page', () => {
     const updatedNuclideCards = resultNuclideCards(page);
 
     // Verify no nuclides are pinned (mutually exclusive - element pin cleared nuclide pin)
-    const pinnedNuclides = updatedNuclideCards.and(page.locator('[aria-pressed=\"true\"]'));
+    const pinnedNuclides = updatedNuclideCards.and(page.locator('[aria-pressed="true"]'));
     await expect(pinnedNuclides).toHaveCount(0);
 
     // Test C: Pin a nuclide from a DIFFERENT element - should clear element pin (mutual exclusivity across elements)
@@ -702,7 +702,7 @@ test.describe('Fusion Query Page', () => {
     const updatedNuclideCards = resultNuclideCards(page);
 
     // Verify no nuclides are pinned (mutually exclusive - element pin cleared nuclide pin)
-    const pinnedNuclides = updatedNuclideCards.and(page.locator('[aria-pressed=\"true\"]'));
+    const pinnedNuclides = updatedNuclideCards.and(page.locator('[aria-pressed="true"]'));
     await expect(pinnedNuclides).toHaveCount(0);
   });
 
@@ -722,7 +722,6 @@ test.describe('Fusion Query Page', () => {
     await resultNuclidesSection(page).scrollIntoViewIfNeeded();
 
     // Find and click the D-2 nuclide card
-    const nuclideCards = resultNuclideCards(page);
     const d2Card = await getResultNuclideCard(page, 'D-2');
     await d2Card.click();
 
@@ -770,7 +769,6 @@ test.describe('Fusion Query Page', () => {
     await resultNuclidesSection(page).scrollIntoViewIfNeeded();
 
     // Verify T-3 appears in the nuclides list (this is the main regression check)
-    const nuclideCards = resultNuclideCards(page);
     const t3Card = await getResultNuclideCard(page, 'T-3');
     await expect(t3Card).toBeVisible();
 

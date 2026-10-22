@@ -74,7 +74,9 @@ export default function ResultNuclidesByElement({
     return groups.find(g => g.E === preferred) ?? groups[0] ?? null
   }, [groups, pinnedElement, pinnedNuclideElement])
 
-  const isDefaultDisplay = displayedGroup !== null && displayedGroup.E !== pinnedElement
+  // Only the implicit "lightest element" fallback shows the hint (nothing pinned at all)
+  const isDefaultDisplay =
+    displayedGroup !== null && pinnedElement === null && pinnedNuclideElement === null
 
   if (groups.length === 0) return null
 

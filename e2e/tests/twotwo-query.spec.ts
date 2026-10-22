@@ -372,7 +372,6 @@ test.describe('Two-to-Two Query Page', () => {
     await resultNuclidesSection(page).scrollIntoViewIfNeeded();
 
     // Find and click the D-2 nuclide card
-    const nuclideCards = resultNuclideCards(page);
     const d2Card = await getResultNuclideCard(page, 'D-2');
     await d2Card.click();
 
