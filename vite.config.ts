@@ -88,6 +88,22 @@ export default defineConfig({
               networkTimeoutSeconds: 3,
             },
           },
+          {
+            // PDF export fonts (public/fonts/pdf, fetched on demand, NOT precached):
+            // cache after first use so PDF export keeps working offline
+            urlPattern: /\/fonts\/pdf\/[^/]+\.ttf$/,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'pdf-fonts',
+              expiration: {
+                maxAgeSeconds: 60 * 60 * 24 * 90, // 90 days
+                maxEntries: 8,
+              },
+              cacheableResponse: {
+                statuses: [0, 200],
+              },
+            },
+          },
         ],
 
         // Clean up old caches

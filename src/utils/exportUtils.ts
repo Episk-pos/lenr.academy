@@ -3,7 +3,9 @@
  * CSV export is already implemented inline in each query page.
  */
 
+import i18n from 'i18next'
 import type { QueryFilter, ReactionType } from '../types'
+import { showTransientNotice } from './transientNotice'
 
 interface ExportMetadata {
   queryType: ReactionType
@@ -159,7 +161,11 @@ function formatFilterSummary(filter: QueryFilter, queryType: ReactionType): stri
 }
 
 /**
- * Export query results as PDF with table
+ * Export query results as PDF with table.
+ *
+ * Text outside Latin-1 (e.g. "→", Cyrillic, CJK) needs an embedded Unicode
+ * font; see ./pdfFonts.ts for script detection, lazy font loading and the
+ * shaping limitations for Devanagari/Arabic.
  */
 export async function exportToPDF(
   reactions: any[],
@@ -167,32 +173,66 @@ export async function exportToPDF(
 ) {
   if (reactions.length === 0) return
 
-  // Dynamic import to avoid loading jsPDF until needed (~100KB)
-  const { default: jsPDF } = await import('jspdf')
-  const { default: autoTable } = await import('jspdf-autotable')
+  // Dynamic import to avoid loading jsPDF (and the font helpers) until needed (~100KB)
+  const [{ default: jsPDF }, { default: autoTable }, pdfFonts] = await Promise.all([
+    import('jspdf'),
+    import('jspdf-autotable'),
+    import('./pdfFonts'),
+  ])
 
   const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' })
   const pageWidth = doc.internal.pageSize.getWidth()
 
+  // Collect every string up front so the font can be chosen from the actual content
+  const { headers, mapRow } = getColumnsForType(metadata.queryType)
+  const filterLines = formatFilterSummary(metadata.filter, metadata.queryType)
+  let strings = {
+    brand: 'LENR Academy',
+    title: getReactionTitle(metadata.queryType),
+    filterText: `Query Parameters: ${filterLines.join(' | ')}`,
+    summary: `${metadata.rowCount} of ${metadata.totalCount} results | Exported ${new Date().toLocaleDateString()}`,
+    footer: 'LENR Academy | Based on work by Dr. Alexander Parkhomov',
+  }
+  let head: string[] = headers
+  let body = reactions.map(mapRow)
+  // Apply a string fix-up to every piece of text that goes into the PDF
+  const transform = (fix: (s: string) => string) => {
+    strings = Object.fromEntries(Object.entries(strings).map(([k, v]) => [k, fix(v)])) as typeof strings
+    head = head.map(fix)
+    body = body.map((row) => row.map((cell) => (typeof cell === 'string' ? fix(cell) : cell)))
+  }
+  transform(pdfFonts.normalizePdfText)
+
+  const allText = [
+    ...Object.values(strings),
+    ...head,
+    ...body.flatMap((row) => row.map((cell) => (cell == null ? '' : String(cell)))),
+  ]
+  const applied = await pdfFonts.applyPdfFont(doc, allText, i18n.language)
+
+  if (applied.fallback) {
+    // Keep the export usable: swap symbols for ASCII where possible and tell the user
+    transform(pdfFonts.toLatin1Fallback)
+    showTransientNotice(i18n.t('reactions.pdfFontFallback'))
+  }
+
   // Header
   doc.setFontSize(18)
   doc.setTextColor(30, 64, 175) // primary blue
-  doc.text('LENR Academy', 14, 15)
+  doc.text(strings.brand, 14, 15)
 
   doc.setFontSize(14)
   doc.setTextColor(0, 0, 0)
-  doc.text(getReactionTitle(metadata.queryType), 14, 24)
+  doc.text(strings.title, 14, 24)
 
   // Query parameters - use splitTextToSize to prevent overflow
   doc.setFontSize(9)
   doc.setTextColor(100, 100, 100)
-  const filterLines = formatFilterSummary(metadata.filter, metadata.queryType)
-  const filterText = `Query Parameters: ${filterLines.join(' | ')}`
   const maxTextWidth = pageWidth - 28 // 14mm margin each side
-  const wrappedFilterLines: string[] = doc.splitTextToSize(filterText, maxTextWidth)
+  const wrappedFilterLines: string[] = doc.splitTextToSize(strings.filterText, maxTextWidth)
   doc.text(wrappedFilterLines, 14, 31)
   const filterEndY = 31 + (wrappedFilterLines.length - 1) * 4
-  doc.text(`${metadata.rowCount} of ${metadata.totalCount} results | Exported ${new Date().toLocaleDateString()}`, 14, filterEndY + 5)
+  doc.text(strings.summary, 14, filterEndY + 5)
 
   // Divider line
   const dividerY = filterEndY + 8
@@ -200,15 +240,13 @@ export async function exportToPDF(
   doc.line(14, dividerY, pageWidth - 14, dividerY)
 
   // Results table
-  const { headers, mapRow } = getColumnsForType(metadata.queryType)
-  const body = reactions.map(mapRow)
-
   autoTable(doc, {
-    head: [headers],
+    head: [head],
     body,
     startY: dividerY + 3,
     margin: { left: 14, right: 14 },
     styles: {
+      font: applied.font,
       fontSize: 7,
       cellPadding: 1.5,
     },
@@ -224,13 +262,10 @@ export async function exportToPDF(
     didDrawPage: () => {
       // Footer on each page
       const pageHeight = doc.internal.pageSize.getHeight()
+      doc.setFont(applied.font, 'normal')
       doc.setFontSize(7)
       doc.setTextColor(150, 150, 150)
-      doc.text(
-        'LENR Academy | Based on work by Dr. Alexander Parkhomov',
-        14,
-        pageHeight - 8
-      )
+      doc.text(strings.footer, 14, pageHeight - 8)
       doc.text(
         `Page ${doc.getCurrentPageInfo().pageNumber}`,
         pageWidth - 14,
@@ -242,4 +277,5 @@ export async function exportToPDF(
 
   const date = new Date().toISOString().split('T')[0]
   doc.save(`${metadata.queryType}_reactions_${date}.pdf`)
+  return { font: applied.font, fallback: applied.fallback }
 }

@@ -412,6 +412,7 @@
     "linkCopied": "Lien copie !",
     "exportJson": "Exporter JSON",
     "exportPdf": "Exporter PDF",
+    "pdfFontFallback": "Impossible de charger la police du PDF. Certains caractères risquent de ne pas s'afficher correctement.",
     "inputs": "Entrées",
     "output": "Sortie",
     "outputs": "Sorties",

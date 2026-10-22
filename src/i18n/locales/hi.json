@@ -411,6 +411,7 @@
     "linkCopied": "लिंक कॉपी हो गया!",
     "exportJson": "JSON निर्यात करें",
     "exportPdf": "PDF निर्यात करें",
+    "pdfFontFallback": "PDF फ़ॉन्ट लोड नहीं हो सका। कुछ वर्ण सही ढंग से प्रदर्शित नहीं हो सकते हैं।",
     "inputs": "इनपुट",
     "output": "आउटपुट",
     "outputs": "आउटपुट",

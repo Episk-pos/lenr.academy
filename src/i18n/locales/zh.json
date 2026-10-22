@@ -411,6 +411,7 @@
     "linkCopied": "链接已复制!",
     "exportJson": "导出JSON",
     "exportPdf": "导出PDF",
+    "pdfFontFallback": "无法加载 PDF 字体。部分字符可能无法正确显示。",
     "inputs": "输入",
     "output": "输出",
     "outputs": "输出",
