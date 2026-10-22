@@ -445,7 +445,12 @@
     "mayBeSlow": "（遅くなる可能性があります）",
     "showAllInTable": "テーブルですべて表示 →",
     "alreadyShowingAll": "すでにすべての結果を表示中",
-    "runQueryToView": "{{type}}反応を表示するにはクエリを実行してください。",
+    "runQueryToView": "{{type}}を表示するにはクエリを実行してください。",
+    "runQueryType": {
+      "fusion": "核融合反応",
+      "fission": "核分裂反応",
+      "twoToTwo": "2対2反応"
+    },
     "noMatchingReactions": "選択したフィルターに一致する反応がありません。",
     "elementExistsInFull": "元素{{element}}は完全なデータセットには存在しますが、制限された結果には含まれていません。",
     "nuclidesHeading": "結果に出現する核種",
@@ -723,7 +728,8 @@
       "minFrequency": "最小頻度: {{count}}×",
       "showOnlyFeedback": "フィードバックループのみ表示",
       "showing": "{{total}}個の経路のうち{{shown}}個を表示",
-      "topNByFrequency": "{{weighted}}頻度で上位{{n}}個",
+      "topNByFrequency": "頻度で上位{{n}}個",
+      "topNByWeightedFrequency": "重み付け頻度で上位{{n}}個",
       "weightedView": "重み付けビュー",
       "filtersApplied": "適用中のフィルタ",
       "feedbackLoopsOnly": "フィードバックループのみ（{{count}}件一致）",

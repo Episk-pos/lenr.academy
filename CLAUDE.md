@@ -394,7 +394,7 @@ Every PR is automatically reviewed by the [greptile](https://greptile.com/) bot.
 
 1. **Theme-aware inline styles**: Any inline `style={{}}` with colors must use `theme === 'dark'` ternaries. Legend swatches, color indicators, and background colors are all caught. Use the `useTheme()` hook.
 2. **Dark mode in SVG/Canvas**: Charts, diagrams, and visualizations need full dark mode support — backgrounds, text, borders, and tooltips must all adapt.
-3. **i18n completeness**: All user-visible strings must use `t()` from `useTranslation()` via react-i18next. There are 7 locales (en, de, es, fr, ja, ru, zh) — add translation keys to all of them. English is the fallback.
+3. **i18n completeness**: All user-visible strings must use `t()` from `useTranslation()` via react-i18next. There are 13 locales (en, de, es, fr, ja, ru, zh, it, pt, uk, pl, ko, hi) — add translation keys to all of them (`src/i18n/locales.test.ts` enforces key and placeholder parity). English is the fallback.
 
 **Efficient workflow**: Read ALL greptile comments before starting fixes (they follow patterns). Fix all instances in one commit, then reply to each comment with: "Fixed in `abc1234`. All N instances now use theme-aware colors."
 

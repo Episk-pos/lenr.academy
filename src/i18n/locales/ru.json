@@ -445,7 +445,12 @@
     "mayBeSlow": "(может быть медленно)",
     "showAllInTable": "Показать всё в таблице →",
     "alreadyShowingAll": "Уже показаны все результаты",
-    "runQueryToView": "Выполните запрос для просмотра реакций {{type}}.",
+    "runQueryToView": "Выполните запрос для просмотра {{type}}.",
+    "runQueryType": {
+      "fusion": "реакций синтеза",
+      "fission": "реакций деления",
+      "twoToTwo": "реакций два-в-два"
+    },
     "noMatchingReactions": "Нет реакций, соответствующих выбранному фильтру.",
     "elementExistsInFull": "Элемент {{element}} существует в полном наборе данных, но не в ограниченных результатах.",
     "nuclidesHeading": "Нуклиды, появляющиеся в результатах",
@@ -727,7 +732,8 @@
       "minFrequency": "Минимальная частота: {{count}}×",
       "showOnlyFeedback": "Показывать только циклы обратной связи",
       "showing": "Показано {{shown}} из {{total}} путей",
-      "topNByFrequency": "топ {{n}} по {{weighted}}частоте",
+      "topNByFrequency": "топ {{n}} по частоте",
+      "topNByWeightedFrequency": "топ {{n}} по взвешенной частоте",
       "weightedView": "Взвешенный вид",
       "filtersApplied": "Применённые фильтры",
       "feedbackLoopsOnly": "Только циклы обратной связи ({{count}} совпадений)",

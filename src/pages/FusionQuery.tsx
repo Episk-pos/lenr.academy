@@ -1058,7 +1058,7 @@ export default function FusionQuery() {
 
                 {filteredResults.length === 0 ? (
                   <div className="p-6 text-center text-sm text-gray-500 dark:text-gray-400">
-                    {results.length === 0 ? t('reactions.runQueryToView', { type: 'fusion' }) : (
+                    {results.length === 0 ? t('reactions.runQueryToView', { type: t('reactions.runQueryType.fusion') }) : (
                       // Enhanced empty state for pinned elements in limited results
                       useAllResultsForHeatmap && pinnedElement && highlightedElement && (filter.limit ?? 0) > 0 && totalCount > (filter.limit ?? 0) ? (
                         <div className="space-y-3">

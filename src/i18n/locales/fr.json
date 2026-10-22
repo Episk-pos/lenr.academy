@@ -445,7 +445,12 @@
     "mayBeSlow": "(peut être lent)",
     "showAllInTable": "Tout afficher dans le tableau →",
     "alreadyShowingAll": "Tous les résultats sont déjà affichés",
-    "runQueryToView": "Exécutez une requête pour afficher les réactions {{type}}.",
+    "runQueryToView": "Exécutez une requête pour afficher {{type}}.",
+    "runQueryType": {
+      "fusion": "les réactions de fusion",
+      "fission": "les réactions de fission",
+      "twoToTwo": "les réactions deux-à-deux"
+    },
     "noMatchingReactions": "Aucune réaction ne correspond au filtre sélectionné.",
     "elementExistsInFull": "L'élément {{element}} existe dans l'ensemble de données complet mais pas dans les résultats limités.",
     "nuclidesHeading": "Nucléides apparaissant dans les résultats",
@@ -723,7 +728,8 @@
       "minFrequency": "Fréquence minimale : {{count}}×",
       "showOnlyFeedback": "Afficher uniquement les boucles de rétroaction",
       "showing": "Affichage de {{shown}} sur {{total}} voies",
-      "topNByFrequency": "top {{n}} par {{weighted}}fréquence",
+      "topNByFrequency": "top {{n}} par fréquence",
+      "topNByWeightedFrequency": "top {{n}} par fréquence pondérée",
       "weightedView": "Vue pondérée",
       "filtersApplied": "Filtres appliqués",
       "feedbackLoopsOnly": "Boucles de rétroaction uniquement ({{count}} correspondances)",

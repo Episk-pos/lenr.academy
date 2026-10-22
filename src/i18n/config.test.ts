@@ -4,12 +4,15 @@ import type { SupportedLanguage } from './config';
 
 describe('i18n config', () => {
   describe('SUPPORTED_LANGUAGES', () => {
-    it('contains exactly 7 languages', () => {
-      expect(Object.keys(SUPPORTED_LANGUAGES)).toHaveLength(7);
+    it('contains exactly 13 languages', () => {
+      expect(Object.keys(SUPPORTED_LANGUAGES)).toHaveLength(13);
     });
 
     it('includes all expected language codes', () => {
-      const expected: SupportedLanguage[] = ['en', 'ru', 'ja', 'zh', 'de', 'fr', 'es'];
+      const expected: SupportedLanguage[] = [
+        'en', 'ru', 'ja', 'zh', 'de', 'fr', 'es',
+        'it', 'pt', 'uk', 'pl', 'ko', 'hi',
+      ];
       expected.forEach((lang) => {
         expect(SUPPORTED_LANGUAGES).toHaveProperty(lang);
       });
@@ -41,6 +44,12 @@ describe('i18n config', () => {
       expect(getMappedLanguage('de')).toBe('de');
       expect(getMappedLanguage('fr')).toBe('fr');
       expect(getMappedLanguage('es')).toBe('es');
+      expect(getMappedLanguage('it')).toBe('it');
+      expect(getMappedLanguage('pt')).toBe('pt');
+      expect(getMappedLanguage('uk')).toBe('uk');
+      expect(getMappedLanguage('pl')).toBe('pl');
+      expect(getMappedLanguage('ko')).toBe('ko');
+      expect(getMappedLanguage('hi')).toBe('hi');
     });
 
     it('maps regional variants to base languages', () => {
@@ -57,11 +66,19 @@ describe('i18n config', () => {
       expect(getMappedLanguage('zh-TW')).toBe('zh');
       expect(getMappedLanguage('ja-JP')).toBe('ja');
       expect(getMappedLanguage('ru-RU')).toBe('ru');
+      expect(getMappedLanguage('it-IT')).toBe('it');
+      expect(getMappedLanguage('it-CH')).toBe('it');
+      expect(getMappedLanguage('pt-BR')).toBe('pt');
+      expect(getMappedLanguage('pt-PT')).toBe('pt');
+      expect(getMappedLanguage('uk-UA')).toBe('uk');
+      expect(getMappedLanguage('pl-PL')).toBe('pl');
+      expect(getMappedLanguage('ko-KR')).toBe('ko');
+      expect(getMappedLanguage('hi-IN')).toBe('hi');
     });
 
     it('falls back to default language for unknown codes', () => {
-      expect(getMappedLanguage('ko')).toBe('en');
-      expect(getMappedLanguage('pt')).toBe('en');
+      expect(getMappedLanguage('nl')).toBe('en');
+      expect(getMappedLanguage('sv-SE')).toBe('en');
       expect(getMappedLanguage('xx-XX')).toBe('en');
       expect(getMappedLanguage('')).toBe('en');
     });

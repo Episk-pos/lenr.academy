@@ -445,7 +445,12 @@
     "mayBeSlow": "（可能较慢）",
     "showAllInTable": "在表格中显示全部 →",
     "alreadyShowingAll": "已显示全部结果",
-    "runQueryToView": "运行查询以查看{{type}}反应。",
+    "runQueryToView": "运行查询以查看{{type}}。",
+    "runQueryType": {
+      "fusion": "聚变反应",
+      "fission": "裂变反应",
+      "twoToTwo": "二对二反应"
+    },
     "noMatchingReactions": "没有符合所选筛选条件的反应。",
     "elementExistsInFull": "元素 {{element}} 存在于完整数据集中，但不在有限结果中。",
     "nuclidesHeading": "结果中出现的核素",
@@ -723,7 +728,8 @@
       "minFrequency": "最小频率: {{count}}×",
       "showOnlyFeedback": "仅显示反馈循环",
       "showing": "显示 {{total}} 条路径中的 {{shown}} 条",
-      "topNByFrequency": "按{{weighted}}频率排名前 {{n}} 条",
+      "topNByFrequency": "按频率排名前 {{n}} 条",
+      "topNByWeightedFrequency": "按加权频率排名前 {{n}} 条",
       "weightedView": "加权视图",
       "filtersApplied": "已应用筛选器",
       "feedbackLoopsOnly": "仅反馈循环（{{count}} 条匹配）",

@@ -632,7 +632,7 @@ export default function CascadeSankeyDiagram({ pathways, fuelNuclides = [], useW
         <p>
           {t('cascades.sankey.showing', { shown: filteredPathways.length, total: totalPathways })}
           {beforeTopNLimit > safeTopN && (
-            <span className="text-gray-500"> ({t('cascades.sankey.topNByFrequency', { n: safeTopN, weighted: useWeighted ? t('cascades.sankey.weighted') + ' ' : '' })})</span>
+            <span className="text-gray-500"> ({t(useWeighted ? 'cascades.sankey.topNByWeightedFrequency' : 'cascades.sankey.topNByFrequency', { n: safeTopN })})</span>
           )}
           {useWeighted && (
             <span className="ml-2 text-purple-600 dark:text-purple-400 font-medium">
