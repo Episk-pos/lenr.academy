@@ -380,7 +380,9 @@
     "radiationTypeLegend": "辐射类型图例",
     "notAvailableInDatabase": "数据库中不可用",
     "electricalConductivity": "电导率",
-    "valueYears": "{{value}} 年"
+    "valueYears": "{{value}} 年",
+    "longLived": "长寿命",
+    "longLivedTooltip": "半衰期超过 10 亿年：在人类时间尺度上实际上是稳定的，但仍具有放射性。"
   },
   "reactions": {
     "reaction": "反应",

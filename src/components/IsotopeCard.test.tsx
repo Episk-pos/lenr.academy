@@ -39,6 +39,22 @@ describe('IsotopeCard', () => {
     expect(screen.getByTestId('isotope-card-half-life')).toHaveTextContent('12.33Y')
   })
 
+  it('shows a neutral Long-lived pill (with tooltip) instead of Stable for long-lived radioactive nuclides', () => {
+    render(<IsotopeCard E="U" A={238} Z={92} nBorF="b" stable longLived radioactive halfLife="4.5e+9Y" />)
+    const pill = screen.getByTestId('isotope-card-long-lived')
+    expect(pill).toHaveTextContent('elements.longLived')
+    expect(pill).toHaveAttribute('title', 'elements.longLivedTooltip')
+    expect(pill.className).not.toContain('green')
+    expect(screen.queryByText('elements.stableNuclide')).not.toBeInTheDocument()
+    expect(screen.getByTestId('isotope-card-radioactive')).toBeInTheDocument()
+  })
+
+  it('keeps the Stable pill for truly stable nuclides', () => {
+    render(<IsotopeCard E="Ba" A={137} Z={56} nBorF="f" stable />)
+    expect(screen.getByText('elements.stableNuclide')).toBeInTheDocument()
+    expect(screen.queryByTestId('isotope-card-long-lived')).not.toBeInTheDocument()
+  })
+
   it('shows radioactive badge only when requested', () => {
     const { rerender } = render(<IsotopeCard E="Co" A={60} Z={27} nBorF="b" />)
     expect(screen.queryByTestId('isotope-card-radioactive')).not.toBeInTheDocument()

@@ -382,7 +382,9 @@
     "radiationTypeLegend": "Legenda rodzajów promieniowania",
     "notAvailableInDatabase": "Niedostępne w bazie danych",
     "electricalConductivity": "Przewodność elektryczna",
-    "valueYears": "{{value}} lat"
+    "valueYears": "{{value}} lat",
+    "longLived": "Długożyciowy",
+    "longLivedTooltip": "Okres półtrwania powyżej 1 miliarda lat: praktycznie stabilny w ludzkiej skali czasu, ale nadal promieniotwórczy."
   },
   "reactions": {
     "reaction": "Reakcja",

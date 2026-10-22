@@ -381,7 +381,9 @@
     "radiationTypeLegend": "Leyenda de tipos de radiación",
     "notAvailableInDatabase": "No disponible en la base de datos",
     "electricalConductivity": "Conductividad eléctrica",
-    "valueYears": "{{value}} años"
+    "valueYears": "{{value}} años",
+    "longLived": "Larga vida",
+    "longLivedTooltip": "Vida media superior a 1000 millones de años: prácticamente estable en escalas de tiempo humanas, pero aún radiactivo."
   },
   "reactions": {
     "reaction": "Reacción",

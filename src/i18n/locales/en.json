@@ -380,7 +380,9 @@
     "radiationTypeLegend": "Radiation Type Legend",
     "notAvailableInDatabase": "Not available in database",
     "electricalConductivity": "Electrical Conductivity",
-    "valueYears": "{{value}} years"
+    "valueYears": "{{value}} years",
+    "longLived": "Long-lived",
+    "longLivedTooltip": "Half-life over 1 billion years: effectively stable on human timescales, but still radioactive."
   },
   "reactions": {
     "reaction": "Reaction",

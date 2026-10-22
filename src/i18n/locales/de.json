@@ -380,7 +380,9 @@
     "radiationTypeLegend": "Strahlungsart-Legende",
     "notAvailableInDatabase": "In der Datenbank nicht verfügbar",
     "electricalConductivity": "Elektrische Leitfähigkeit",
-    "valueYears": "{{value}} Jahre"
+    "valueYears": "{{value}} Jahre",
+    "longLived": "Langlebig",
+    "longLivedTooltip": "Halbwertszeit über 1 Milliarde Jahre: auf menschlichen Zeitskalen praktisch stabil, aber dennoch radioaktiv."
   },
   "reactions": {
     "reaction": "Reaktion",

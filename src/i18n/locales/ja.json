@@ -380,7 +380,9 @@
     "radiationTypeLegend": "放射線タイプ凡例",
     "notAvailableInDatabase": "データベースで利用できません",
     "electricalConductivity": "電気伝導率",
-    "valueYears": "{{value}}年"
+    "valueYears": "{{value}}年",
+    "longLived": "長寿命",
+    "longLivedTooltip": "半減期が10億年を超える核種：人間の時間尺度では実質的に安定ですが、放射性です。"
   },
   "reactions": {
     "reaction": "反応",

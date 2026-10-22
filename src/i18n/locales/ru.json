@@ -382,7 +382,9 @@
     "radiationTypeLegend": "Легенда типов излучения",
     "notAvailableInDatabase": "Нет в базе данных",
     "electricalConductivity": "Электропроводность",
-    "valueYears": "{{value}} лет"
+    "valueYears": "{{value}} лет",
+    "longLived": "Долгоживущий",
+    "longLivedTooltip": "Период полураспада более 1 миллиарда лет: практически стабилен в человеческих масштабах времени, но всё же радиоактивен."
   },
   "reactions": {
     "reaction": "Реакция",

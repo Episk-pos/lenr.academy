@@ -382,7 +382,9 @@
     "radiationTypeLegend": "Легенда типів випромінювання",
     "notAvailableInDatabase": "Немає в базі даних",
     "electricalConductivity": "Електропровідність",
-    "valueYears": "{{value}} років"
+    "valueYears": "{{value}} років",
+    "longLived": "Довгоживучий",
+    "longLivedTooltip": "Період напіврозпаду понад 1 мільярд років: практично стабільний у людських масштабах часу, але все ж радіоактивний."
   },
   "reactions": {
     "reaction": "Реакція",

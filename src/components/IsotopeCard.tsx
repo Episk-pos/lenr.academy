@@ -23,6 +23,11 @@ export interface IsotopeCardProps {
   /** Whether the nuclide is considered stable (LHL > 9) */
   stable?: boolean
   /**
+   * Radioactive but with a half-life over 1 billion years (e.g. U-238, K-40).
+   * Shows a neutral "Long-lived" pill instead of the green "Stable" one.
+   */
+  longLived?: boolean
+  /**
    * When provided, the card renders in the "limited data" (RadioNuclides-only)
    * variant: amber styling with decay-mode and half-life pills.
    */
@@ -52,6 +57,7 @@ export default function IsotopeCard({
   Z,
   nBorF,
   stable = false,
+  longLived = false,
   limitedData,
   radioactive = false,
   halfLife = null,
@@ -104,7 +110,17 @@ export default function IsotopeCard({
                     {nBorF === 'b' ? 'B' : 'F'}
                   </span>
                 )}
-                {stable && (
+                {longLived ? (
+                  <span
+                    data-testid="isotope-card-long-lived"
+                    title={t('elements.longLivedTooltip')}
+                    className={`px-1.5 py-0.5 rounded-full text-xs ${
+                      selected ? 'bg-slate-600 text-slate-100' : 'bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200'
+                    }`}
+                  >
+                    {t('elements.longLived')}
+                  </span>
+                ) : stable && (
                   <span className={`px-1.5 py-0.5 rounded-full text-xs ${
                     selected ? 'bg-green-600 text-green-100' : 'bg-green-100 dark:bg-green-900/50 text-green-700 dark:text-green-300'
                   }`}>

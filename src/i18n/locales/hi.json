@@ -380,7 +380,9 @@
     "radiationTypeLegend": "विकिरण प्रकार संकेत-सूची",
     "notAvailableInDatabase": "डेटाबेस में उपलब्ध नहीं",
     "electricalConductivity": "विद्युत चालकता",
-    "valueYears": "{{value}} वर्ष"
+    "valueYears": "{{value}} वर्ष",
+    "longLived": "दीर्घजीवी",
+    "longLivedTooltip": "अर्ध-आयु 1 अरब वर्ष से अधिक: मानवीय समय-पैमाने पर व्यावहारिक रूप से स्थिर, फिर भी रेडियोधर्मी।"
   },
   "reactions": {
     "reaction": "अभिक्रिया",

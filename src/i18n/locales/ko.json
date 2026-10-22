@@ -380,7 +380,9 @@
     "radiationTypeLegend": "방사선 유형 범례",
     "notAvailableInDatabase": "데이터베이스에 없음",
     "electricalConductivity": "전기 전도도",
-    "valueYears": "{{value}}년"
+    "valueYears": "{{value}}년",
+    "longLived": "장수명",
+    "longLivedTooltip": "반감기가 10억 년을 넘는 핵종: 인간의 시간 척도에서는 사실상 안정적이지만 여전히 방사성입니다."
   },
   "reactions": {
     "reaction": "반응",

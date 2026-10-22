@@ -1599,7 +1599,16 @@ export default function ShowElementData() {
 
         return (
           <div className="flex items-center gap-2">
-            {isStable ? (
+            {isStable && isRadioactive ? (
+              // Radioactive with half-life > 1e9 y (U-238, K-40): not "Stable"
+              <span
+                data-testid="nuclide-long-lived"
+                title={t('elements.longLivedTooltip')}
+                className="px-2 py-1 rounded-full text-xs bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200"
+              >
+                {t('elements.longLived')}
+              </span>
+            ) : isStable ? (
               <span className="px-2 py-1 rounded-full text-xs bg-green-100 dark:bg-green-900/50 text-green-700 dark:text-green-300">
                 {t('elements.stable')}
               </span>
@@ -2051,6 +2060,7 @@ export default function ShowElementData() {
                           Z={Z}
                           nBorF={displayNuclide.type === 'full' ? displayNuclide.data.nBorF : undefined}
                           stable={isStable}
+                          longLived={isFull && isStable && fullHalfLife !== undefined}
                           radioactive={isFull && fullHalfLife !== undefined}
                           halfLife={isFull ? halfLifeStr : null}
                           limitedData={displayNuclide.type === 'full' ? undefined : {
