@@ -7,6 +7,9 @@ test.describe('Tables In Detail Page', () => {
   test.beforeEach(async ({ page }) => {
     await acceptPrivacyConsent(page);
     await page.goto('/tables');
+    // Column badges are read from the loaded database via PRAGMA table_info,
+    // so wait for the first badge (the DB may still be downloading in a fresh context)
+    await expect(page.locator('.card code').first()).toBeVisible({ timeout: 90000 });
   });
 
   test('should display page title and description', async ({ page }) => {
@@ -15,8 +18,8 @@ test.describe('Tables In Detail Page', () => {
     await expect(page.getByText(/Database schema|field descriptions/i)).toBeVisible();
   });
 
-  test('should display all five database table cards', async ({ page }) => {
-    const tableNames = ['FusionAll', 'FissionAll', 'TwoToTwoAll', 'NuclidesPlus', 'ElementsPlus'];
+  test('should display all database table cards', async ({ page }) => {
+    const tableNames = ['FusionAll', 'FissionAll', 'TwoToTwoAll', 'NuclidesPlus', 'ElementPropertiesPlus', 'AtomicRadii', 'RadioNuclides', 'ElementsPlus'];
 
     for (const name of tableNames) {
       await expect(page.getByRole('heading', { name, level: 3 })).toBeVisible();
@@ -59,12 +62,21 @@ test.describe('Tables In Detail Page', () => {
     }
   });
 
-  test('should show field badges for ElementsPlus table', async ({ page }) => {
+  test('should show field badges for ElementsPlus view', async ({ page }) => {
     const elementsCard = page.locator('.card', { has: page.getByRole('heading', { name: 'ElementsPlus', level: 3 }) });
-    const expectedFields = ['EName', 'Period', 'Group', 'AWeight', 'Melting', 'Boiling'];
+    const expectedFields = ['Z', 'E', 'EName'];
 
     for (const field of expectedFields) {
       await expect(elementsCard.locator('code', { hasText: field }).first()).toBeVisible();
+    }
+  });
+
+  test('should show field badges for ElementPropertiesPlus table', async ({ page }) => {
+    const propsCard = page.locator('.card', { has: page.getByRole('heading', { name: 'ElementPropertiesPlus', level: 3 }) });
+    const expectedFields = ['EName', 'P', 'G', 'AWeight', 'Melting', 'Boiling', 'STPDensity'];
+
+    for (const field of expectedFields) {
+      await expect(propsCard.locator('code', { hasText: field }).first()).toBeVisible();
     }
   });
 
