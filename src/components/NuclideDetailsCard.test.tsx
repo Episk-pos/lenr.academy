@@ -6,6 +6,7 @@ import en from '../i18n/locales/en.json'
 import { mockReactI18next } from '../test-utils/i18nMock'
 import { createRadioNuclidesFixtureDb } from '../test-utils/radioNuclidesFixture'
 import type { Nuclide } from '../types'
+import { getRadioactiveNuclides, getNuclideHalfLives } from '../services/queryService'
 
 vi.mock('react-i18next', () => mockReactI18next)
 
@@ -55,6 +56,11 @@ const caesium135: Nuclide = {
 const uranium238: Nuclide = {
   id: 291, Z: 92, A: 238, E: 'U', BE: 1801.6362241555, AMU: 238.050786996, nBorF: 'b', aBorF: 'b',
   logHalfLife: 9.6504, SUS: 'UPN', RDM: 'A or SF or 2 B-', DEMeV: 4.27,
+}
+
+const tantalum180: Nuclide = {
+  id: 250, Z: 73, A: 180, E: 'Ta', BE: 1444.6182093481, AMU: 179.947468392, nBorF: 'b', aBorF: 'f',
+  logHalfLife: 15, SUS: 'SPN', DEMeV: 0, SP: '9-',
 }
 
 function renderCard(nuclide: Nuclide) {
@@ -129,5 +135,40 @@ describe('NuclideDetailsCard', () => {
 
     expect(screen.getByTestId('nuclide-spin')).toHaveTextContent('1+')
     expect(screen.getByText('0.8574 μₙ')).toBeInTheDocument()
+  })
+
+  describe('radioactivity predicate is consistent across the app', () => {
+    // Ba-137 and Ta-180 only have isomer / non-matching rows; U-238 is long-lived but radioactive
+    const cases: Array<[string, Nuclide, boolean]> = [
+      ['Ba-137', barium137, false],
+      ['U-238', uranium238, true],
+      ['Co-60', cobalt60, true],
+      ['T-3', tritium, true],
+      ['Ta-180', tantalum180, false],
+    ]
+
+    it.each(cases)('%s: query-page/Nuclides-table set, isotope grid and nuclide card agree', (_, nuclide, expected) => {
+      const key = `${nuclide.Z}-${nuclide.A}`
+
+      // (a) getRadioactiveNuclides — Nuclides table + Fusion/Fission/TwoToTwo (worker delegates to it)
+      const radioactiveSet = getRadioactiveNuclides(fixture.db!, [nuclide])
+      expect(radioactiveSet.has(key)).toBe(expected)
+
+      // (b) ShowElementData isotope grid: radioactive = ground-state half-life found
+      const gridHalfLives = getNuclideHalfLives(fixture.db!, [
+        { Z: nuclide.Z, A: nuclide.A, logHalfLife: nuclide.logHalfLife ?? null },
+      ])
+      expect(gridHalfLives.has(key)).toBe(expected)
+
+      // (c) NuclideDetailsCard header badge
+      const { unmount } = renderCard(nuclide)
+      expect(screen.queryByTitle(en.reactions.radioactive) !== null).toBe(expected)
+      unmount()
+    })
+
+    it('batch call over all fixture nuclides returns exactly the radioactive ones', () => {
+      const set = getRadioactiveNuclides(fixture.db!, cases.map(([, n]) => n))
+      expect([...set].sort()).toEqual(['1-3', '27-60', '92-238'])
+    })
   })
 })

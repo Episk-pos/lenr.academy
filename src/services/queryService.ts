@@ -171,30 +171,20 @@ export function getFusionSqlPreview(filter: QueryFilter): string {
 /**
  * Get Set of radioactive nuclides from a list of nuclides
  * Returns Set of "Z-A" format (e.g., "26-56") for O(1) lookup
- * Single batch SQL query instead of individual queries per nuclide
+ *
+ * Single source of truth for "is this nuclide radioactive?": a nuclide is
+ * radioactive iff it has a ground-state RadioNuclides row matching its
+ * NuclidesPlus LHL (see getNuclideHalfLives). Long-lived nuclides such as
+ * U-238 or K-40 are radioactive; stable nuclides that only have isomer rows
+ * (Ba-137m, Ta-180, Nb-93m, ...) are not. Nuclides without an LHL (not in
+ * NuclidesPlus) count as radioactive if they have any RadioNuclides row.
+ * Single batched SQL query.
  */
-export function getRadioactiveNuclides(db: Database, nuclides: Nuclide[]): Set<string> {
-  if (nuclides.length === 0) return new Set();
-
-  // Build WHERE clause for all nuclides
-  const conditions = nuclides.map(n => `(Z = ${n.Z} AND A = ${n.A})`).join(' OR ');
-
-  const sql = `
-    SELECT DISTINCT Z, A
-    FROM RadioNuclides
-    WHERE ${conditions}
-  `;
-
-  const results = db.exec(sql);
-  const radioactive = new Set<string>();
-
-  if (results.length > 0) {
-    results[0].values.forEach((row: any[]) => {
-      radioactive.add(`${row[0]}-${row[1]}`);
-    });
-  }
-
-  return radioactive;
+export function getRadioactiveNuclides(
+  db: Database,
+  nuclides: Array<Pick<Nuclide, 'Z' | 'A'> & { logHalfLife?: number | null }>
+): Set<string> {
+  return new Set(getNuclideHalfLives(db, nuclides).keys());
 }
 
 /**
@@ -853,11 +843,17 @@ export const STABLE_LHL_SENTINEL = 50;
  * Returns a Map keyed by "Z-A" (e.g. "1-3").
  */
 export function getNuclideHalfLives(
-  db: Database,
+  db: Pick<Database, 'exec'>,
   nuclides: Array<{ Z: number; A: number; logHalfLife?: number | null }>
 ): Map<string, NuclideHalfLife> {
   const halfLives = new Map<string, NuclideHalfLife>();
-  const lookups = nuclides.filter(
+  // Dedupe by Z-A (query pages pass every nuclide seen in the results)
+  const unique = new Map<string, { Z: number; A: number; logHalfLife?: number | null }>();
+  nuclides.forEach(n => {
+    const key = `${n.Z}-${n.A}`;
+    if (!unique.has(key)) unique.set(key, n);
+  });
+  const lookups = [...unique.values()].filter(
     n => typeof n.logHalfLife !== 'number' || n.logHalfLife < STABLE_LHL_SENTINEL
   );
   if (lookups.length === 0) return halfLives;

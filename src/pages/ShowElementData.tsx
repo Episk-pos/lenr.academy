@@ -2051,8 +2051,8 @@ export default function ShowElementData() {
                           Z={Z}
                           nBorF={displayNuclide.type === 'full' ? displayNuclide.data.nBorF : undefined}
                           stable={isStable}
-                          radioactive={isFull && !isStable && fullHalfLife !== undefined}
-                          halfLife={isFull && !isStable ? halfLifeStr : null}
+                          radioactive={isFull && fullHalfLife !== undefined}
+                          halfLife={isFull ? halfLifeStr : null}
                           limitedData={displayNuclide.type === 'full' ? undefined : {
                             decayMode: displayNuclide.data.RDM,
                             halfLife: halfLifeStr,

@@ -7,6 +7,7 @@
 
 import initSqlJs, { Database as SqlJsDatabase } from 'sql.js';
 import type { QueryFilter, Nuclide, Element } from '../types';
+import { getRadioactiveNuclides as getRadioactiveNuclideSet } from '../services/queryService';
 
 // Message types
 export interface QueryWorkerRequest {
@@ -263,23 +264,13 @@ function getUniqueElements(reactions: any[], type: string): Element[] {
 }
 
 /**
- * Get radioactive nuclides from a list of nuclides (batch query)
+ * Get radioactive nuclides from a list of nuclides (batch query).
+ * Delegates to the shared LHL-matching rule in queryService so the query pages
+ * agree with Show Element Data (U-238 radioactive; Ba-137 with only an isomer row not).
  */
 function getRadioactiveNuclides(nuclides: Nuclide[]): string[] {
   if (!db || nuclides.length === 0) return [];
-
-  const conditions = nuclides.map(n => `(Z = ${n.Z} AND A = ${n.A})`).join(' OR ');
-  const sql = `SELECT DISTINCT Z, A FROM RadioNuclides WHERE ${conditions}`;
-  const results = db.exec(sql);
-  const radioactive: string[] = [];
-
-  if (results.length > 0) {
-    results[0].values.forEach((row: any[]) => {
-      radioactive.push(`${row[0]}-${row[1]}`);
-    });
-  }
-
-  return radioactive;
+  return Array.from(getRadioactiveNuclideSet(db, nuclides));
 }
 
 /**
