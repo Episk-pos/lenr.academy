@@ -381,7 +381,9 @@
     "radiationTypeLegend": "Légende des types de rayonnement",
     "notAvailableInDatabase": "Non disponible dans la base de données",
     "electricalConductivity": "Conductivité électrique",
-    "valueYears": "{{value}} ans"
+    "valueYears": "{{value}} ans",
+    "longLived": "Longue durée de vie",
+    "longLivedTooltip": "Demi-vie supérieure à 1 milliard d'années : pratiquement stable à l'échelle humaine, mais toujours radioactif."
   },
   "reactions": {
     "reaction": "Réaction",
@@ -1039,7 +1041,8 @@
     "tipGroupByKeyword": "GROUP BY",
     "tipGroupByRest": "pour les agrégations",
     "tipStringsText": "Les chaînes littérales utilisent des guillemets simples :",
-    "tipStringsCode": "'H'"
+    "tipStringsCode": "'H'",
+    "runShortcutHint": "Appuyez sur Ctrl+Entrée (⌘+Entrée sur Mac) pour exécuter la requête."
   },
   "updates": {
     "appUpdateAvailable": "Mise à jour disponible : {{current}} → {{available}}",
@@ -1245,7 +1248,29 @@
       "cascades": "cascade",
       "mullerResonance": "résonance"
     },
-    "opensPage": "Ouvre : {{page}}"
+    "opensPage": "Ouvre : {{page}}",
+    "glossaryTerms": {
+      "nae": {
+        "term": "NAE (Nuclear Active Environment, environnement nucléaire actif)",
+        "definition": "Terme d'Edmund Storms désignant les sites nanométriques particuliers d'un matériau, comme les fissures, interstices ou reliefs de surface d'un hydrure métallique, où les LENR se produiraient, plutôt que dans l'ensemble du réseau cristallin."
+      },
+      "comptonWavelength": {
+        "term": "Longueur d'onde de Compton",
+        "definition": "λ = h/(mc) : la longueur d'onde d'un photon dont l'énergie est égale à l'énergie de masse au repos d'une particule. Pour l'électron Cₑ ≈ 2,426 pm et pour le proton Cₚ ≈ 1,321 fm ; leur rapport est le rapport de masse proton/électron, ≈ 1836,15."
+      },
+      "mullerResonance": {
+        "term": "Résonance de Muller",
+        "definition": "Modèle de Frithjof Muller dans lequel chaque élément possède des échelles de longueurs d'onde L = Z × C × 2ᴺ construites à partir des longueurs d'onde de Compton de l'électron (Cₑ) et du proton (Cₚ). Les éléments Z₁ et Z₂ résonnent lorsque Z₁ · Cₑ · 2ᴺ = Z₂ · Cₚ · 2^(N+ΔN), soit Z₁/Z₂ ≈ 2^ΔN / 1836,15. La résonance ne fixe que l'écart d'octaves ΔN ; l'octave absolue N est libre."
+      },
+      "catalyticCycle": {
+        "term": "Cycle catalytique",
+        "definition": "Séquence fermée de réactions dans laquelle un nucléide consommé lors d'une étape précoce est régénéré lors d'une étape ultérieure, de sorte qu'il agit comme catalyseur pendant que le combustible est converti en produits et en énergie. Le cycle CNO stellaire en est l'exemple classique : le C-12 est récupéré tandis que quatre protons deviennent de l'hélium-4."
+      },
+      "dimer": {
+        "term": "Dimère",
+        "definition": "Molécule formée de deux atomes ou unités identiques, comme H₂, N₂, O₂ et les halogènes diatomiques F₂, Cl₂, Br₂ et I₂. L'option « Permettre la formation de dimères » du simulateur de cascade s'applique à ces éléments naturellement diatomiques."
+      }
+    }
   },
   "mullerResonance": {
     "title": "Explorateur de Résonance Muller",

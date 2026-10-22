@@ -4,7 +4,7 @@ import { getRadiationTypeInfo } from '../constants/radiationTypes'
 import { X, ChevronDown, ChevronUp, ArrowRight, Radiation } from 'lucide-react'
 import type { Nuclide, DecayData, DecayChainResult } from '../types'
 import { useDatabase } from '../contexts/DatabaseContext'
-import { getRadioactiveDecayData, getElementSymbolByZ, getNuclideBySymbol } from '../services/queryService'
+import { getRadioactiveDecayData, getElementSymbolByZ, getNuclideBySymbol, getNuclideHalfLives, type NuclideHalfLife } from '../services/queryService'
 import { traceDecayChain } from '../services/decayChainService'
 import { useNavigate, Link } from 'react-router-dom'
 import { expandHalfLifeUnit } from '../utils/formatUtils'
@@ -82,6 +82,7 @@ export default function NuclideDetailsCard({ nuclide, onClose, compact = false }
   const { db } = useDatabase()
   const navigate = useNavigate()
   const [decayData, setDecayData] = useState<DecayData[]>([])
+  const [groundStateHalfLife, setGroundStateHalfLife] = useState<NuclideHalfLife | null>(null)
   const [showFullDecayTable, setShowFullDecayTable] = useState(false)
   const [decayChain, setDecayChain] = useState<DecayChainResult | null>(null)
   const [showDecayChain, setShowDecayChain] = useState(false)
@@ -91,12 +92,19 @@ export default function NuclideDetailsCard({ nuclide, onClose, compact = false }
   useEffect(() => {
     if (!nuclide || !db) {
       setDecayData([])
+      setGroundStateHalfLife(null)
       setDecayChain(null)
       return
     }
 
     const data = getRadioactiveDecayData(db, nuclide.Z, nuclide.A)
     setDecayData(data)
+
+    // Ground-state half-life: the RadioNuclides row whose LHL matches NuclidesPlus.LHL
+    // (skips isomer rows such as Co-60m or Ba-137m)
+    const lhl = typeof nuclide.logHalfLife === 'number' ? nuclide.logHalfLife : null
+    const halfLives = getNuclideHalfLives(db, [{ Z: nuclide.Z, A: nuclide.A, logHalfLife: lhl }])
+    setGroundStateHalfLife(halfLives.get(`${nuclide.Z}-${nuclide.A}`) ?? null)
 
     // Build decay chain if nuclide is radioactive
     if (data.length > 0) {
@@ -155,6 +163,27 @@ export default function NuclideDetailsCard({ nuclide, onClose, compact = false }
 
   if (!nuclide) return null
 
+  // Ground-state half-life in its natural units (e.g. T-3 12.33 years, Co-60
+  // 5.2714 years); falls back to 10^LHL years when no RadioNuclides row matches.
+  const primaryHalfLife = groundStateHalfLife && groundStateHalfLife.halfLife !== null && groundStateHalfLife.units !== null
+    ? { halfLife: groundStateHalfLife.halfLife, units: groundStateHalfLife.units }
+    : null
+  const isStableNuclide = typeof nuclide.logHalfLife === 'number' && nuclide.logHalfLife > 9
+  // Ground state actually decays (U-238, Co-60) — not merely an isomer listed under a stable Z/A (Ba-137m)
+  const isRadioactive = groundStateHalfLife !== null
+  // Never surface an isomer's mode (e.g. IT) as the primary decay of a stable nuclide
+  const primaryDecayMode = nuclide.RDM || (!isStableNuclide ? groundStateHalfLife?.decayMode : null) || null
+
+  const statusLabel =
+    nuclide.SUS === 'SPN' ? t('elementData.status.stablePrimordial') :
+    nuclide.SUS === 'SYN' ? t('elementData.status.synthetic') :
+    nuclide.SUS === 'UPN' ? t('elementData.status.unstablePrimordial') :
+    null
+
+  const magneticMoment = nuclide.MD !== null && nuclide.MD !== undefined && nuclide.MD !== '' && !isNaN(Number(nuclide.MD))
+    ? Number(nuclide.MD).toFixed(4)
+    : null
+
   // Pre-compute IAEA abundance comparison for this nuclide
   const iaeaAbundance = getIAEAAbundance(nuclide.E, nuclide.A)
   const iaeaDelta = iaeaAbundance !== null && typeof nuclide.pcaNCrust === 'number'
@@ -173,7 +202,7 @@ export default function NuclideDetailsCard({ nuclide, onClose, compact = false }
             >
               {nuclide.E}-{nuclide.A}
             </Link>
-            {decayData.length > 0 && (
+            {isRadioactive && (
               <span title={t('reactions.radioactive')}>
                 <Radiation className="w-5 h-5 text-amber-600 dark:text-amber-400" />
               </span>
@@ -216,6 +245,12 @@ export default function NuclideDetailsCard({ nuclide, onClose, compact = false }
               <dt className="text-gray-600 dark:text-gray-400 flex-shrink-0">{t('elements.neutronsN')}:</dt>
               <dd className="font-medium text-gray-900 dark:text-gray-100 text-right">{nuclide.A - nuclide.Z}</dd>
             </div>
+            {statusLabel && (
+              <div className="flex justify-between gap-2" data-testid="nuclide-classification">
+                <dt className="text-gray-600 dark:text-gray-400 flex-shrink-0">{t('elementData.classification')}:</dt>
+                <dd className="font-medium text-gray-900 dark:text-gray-100 text-right">{statusLabel}</dd>
+              </div>
+            )}
           </dl>
         </div>
 
@@ -246,6 +281,18 @@ export default function NuclideDetailsCard({ nuclide, onClose, compact = false }
                 </span>
               </dd>
             </div>
+            {nuclide.SP && (
+              <div className="flex justify-between gap-2" data-testid="nuclide-spin">
+                <dt className="text-gray-600 dark:text-gray-400 flex-shrink-0">{t('elementData.nuclearSpin')}:</dt>
+                <dd className="font-medium text-gray-900 dark:text-gray-100 text-right">{nuclide.SP}</dd>
+              </div>
+            )}
+            {magneticMoment !== null && (
+              <div className="flex justify-between gap-2">
+                <dt className="text-gray-600 dark:text-gray-400 flex-shrink-0">{t('elementData.magneticMoment')}:</dt>
+                <dd className="font-medium text-gray-900 dark:text-gray-100 text-right truncate">{magneticMoment} μₙ</dd>
+              </div>
+            )}
             <div className="mt-3 p-2 bg-gray-50 dark:bg-gray-800 rounded text-xs text-gray-600 dark:text-gray-400">
               {t('reactions.nuclear')}: {nuclide.nBorF === 'b' ? t('elements.evenA') : t('elements.oddA')}<br />
               {t('reactions.atomic')}: {nuclide.aBorF === 'b' ? t('elements.evenN') : t('elements.oddN')}
@@ -357,10 +404,24 @@ export default function NuclideDetailsCard({ nuclide, onClose, compact = false }
               </div>
               <div className="flex justify-between gap-2">
                 <dt className="text-gray-600 dark:text-gray-400 flex-shrink-0">{t('elements.halfLife')}:</dt>
-                <dd className="font-medium text-gray-900 dark:text-gray-100 text-right truncate">
-                  {t('elements.valueYears', { value: Math.pow(10, nuclide.logHalfLife).toExponential(2) })}
+                <dd className="font-medium text-gray-900 dark:text-gray-100 text-right truncate" data-testid="nuclide-half-life">
+                  {primaryHalfLife
+                    ? `${primaryHalfLife.halfLife >= 10000 ? primaryHalfLife.halfLife.toExponential(2) : primaryHalfLife.halfLife} ${expandHalfLifeUnit(primaryHalfLife.units)}`
+                    : t('elements.valueYears', { value: Math.pow(10, nuclide.logHalfLife).toExponential(2) })}
                 </dd>
               </div>
+              {primaryDecayMode && (
+                <div className="flex justify-between gap-2">
+                  <dt className="text-gray-600 dark:text-gray-400 flex-shrink-0">{t('elementData.primaryDecay')}:</dt>
+                  <dd className="font-medium text-gray-900 dark:text-gray-100 text-right truncate">{primaryDecayMode}</dd>
+                </div>
+              )}
+              {typeof nuclide.DEMeV === 'number' && nuclide.DEMeV > 0 && (
+                <div className="flex justify-between gap-2">
+                  <dt className="text-gray-600 dark:text-gray-400 flex-shrink-0">{t('elementData.decayEnergy')}:</dt>
+                  <dd className="font-medium text-gray-900 dark:text-gray-100 text-right truncate">{nuclide.DEMeV.toFixed(4)} MeV</dd>
+                </div>
+              )}
               <div className="mt-3 p-2 bg-amber-50 dark:bg-amber-900/20 rounded text-xs text-amber-700 dark:text-amber-300 break-words">
                 {nuclide.logHalfLife > 9 ? t('elements.stableOrLongLived') :
                  nuclide.logHalfLife > 0 ? t('elements.radioactiveDecay') :

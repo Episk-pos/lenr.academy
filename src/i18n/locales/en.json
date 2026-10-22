@@ -380,7 +380,9 @@
     "radiationTypeLegend": "Radiation Type Legend",
     "notAvailableInDatabase": "Not available in database",
     "electricalConductivity": "Electrical Conductivity",
-    "valueYears": "{{value}} years"
+    "valueYears": "{{value}} years",
+    "longLived": "Long-lived",
+    "longLivedTooltip": "Half-life over 1 billion years: effectively stable on human timescales, but still radioactive."
   },
   "reactions": {
     "reaction": "Reaction",
@@ -1038,7 +1040,8 @@
     "tipGroupByKeyword": "GROUP BY",
     "tipGroupByRest": "for aggregations",
     "tipStringsText": "String literals use single quotes:",
-    "tipStringsCode": "'H'"
+    "tipStringsCode": "'H'",
+    "runShortcutHint": "Press Ctrl+Enter (⌘+Enter on Mac) to run the query."
   },
   "updates": {
     "appUpdateAvailable": "App update available: {{current}} → {{available}}",
@@ -1243,7 +1246,29 @@
       "cascades": "cascade",
       "mullerResonance": "resonance"
     },
-    "opensPage": "Opens: {{page}}"
+    "opensPage": "Opens: {{page}}",
+    "glossaryTerms": {
+      "nae": {
+        "term": "NAE (Nuclear Active Environment)",
+        "definition": "Edmund Storms' term for the special nanoscale sites in a material, such as cracks, gaps or surface features in a metal hydride, where LENR are proposed to occur, rather than throughout the bulk lattice."
+      },
+      "comptonWavelength": {
+        "term": "Compton Wavelength",
+        "definition": "λ = h/(mc): the wavelength of a photon whose energy equals a particle's rest-mass energy. For the electron Cₑ ≈ 2.426 pm and for the proton Cₚ ≈ 1.321 fm; their ratio is the proton-to-electron mass ratio, ≈ 1836.15."
+      },
+      "mullerResonance": {
+        "term": "Muller Resonance",
+        "definition": "Frithjof Muller's model in which each element has wavelength ladders L = Z × C × 2ᴺ built from the electron (Cₑ) and proton (Cₚ) Compton wavelengths. Elements Z₁ and Z₂ resonate when Z₁ · Cₑ · 2ᴺ = Z₂ · Cₚ · 2^(N+ΔN), i.e. Z₁/Z₂ ≈ 2^ΔN / 1836.15. The resonance fixes only the octave gap ΔN; the absolute octave N is free."
+      },
+      "catalyticCycle": {
+        "term": "Catalytic Cycle",
+        "definition": "A closed sequence of reactions in which a nuclide consumed in an early step is regenerated in a later one, so it acts as a catalyst while fuel is converted into products and energy. The stellar CNO cycle is the classic example: C-12 is recovered while four protons become helium-4."
+      },
+      "dimer": {
+        "term": "Dimer",
+        "definition": "A molecule made of two identical atoms or units, such as H₂, N₂, O₂ and the diatomic halogens F₂, Cl₂, Br₂ and I₂. The cascade simulator's \"Allow Dimer Formation\" option applies to these naturally diatomic elements."
+      }
+    }
   },
   "mullerResonance": {
     "title": "Muller Resonance Explorer",

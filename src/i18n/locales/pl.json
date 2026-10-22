@@ -382,7 +382,9 @@
     "radiationTypeLegend": "Legenda rodzajów promieniowania",
     "notAvailableInDatabase": "Niedostępne w bazie danych",
     "electricalConductivity": "Przewodność elektryczna",
-    "valueYears": "{{value}} lat"
+    "valueYears": "{{value}} lat",
+    "longLived": "Długożyciowy",
+    "longLivedTooltip": "Okres półtrwania powyżej 1 miliarda lat: praktycznie stabilny w ludzkiej skali czasu, ale nadal promieniotwórczy."
   },
   "reactions": {
     "reaction": "Reakcja",
@@ -1044,7 +1046,8 @@
     "tipGroupByKeyword": "GROUP BY",
     "tipGroupByRest": "do agregacji",
     "tipStringsText": "Literały tekstowe zapisuj w apostrofach:",
-    "tipStringsCode": "'H'"
+    "tipStringsCode": "'H'",
+    "runShortcutHint": "Naciśnij Ctrl+Enter (⌘+Enter na Macu), aby wykonać zapytanie."
   },
   "updates": {
     "appUpdateAvailable": "Dostępna aktualizacja aplikacji: {{current}} → {{available}}",
@@ -1251,7 +1254,29 @@
       "cascades": "kaskada",
       "mullerResonance": "rezonans"
     },
-    "opensPage": "Otwiera: {{page}}"
+    "opensPage": "Otwiera: {{page}}",
+    "glossaryTerms": {
+      "nae": {
+        "term": "NAE (Nuclear Active Environment, środowisko aktywne jądrowo)",
+        "definition": "Termin Edmunda Stormsa oznaczający szczególne nanoskalowe miejsca w materiale, takie jak pęknięcia, szczeliny czy struktury powierzchniowe wodorku metalu, w których mają zachodzić reakcje LENR – zamiast w całej sieci krystalicznej."
+      },
+      "comptonWavelength": {
+        "term": "Komptonowska długość fali",
+        "definition": "λ = h/(mc): długość fali fotonu, którego energia jest równa energii spoczynkowej cząstki. Dla elektronu Cₑ ≈ 2,426 pm, a dla protonu Cₚ ≈ 1,321 fm; ich stosunek jest równy stosunkowi mas protonu i elektronu, ≈ 1836,15."
+      },
+      "mullerResonance": {
+        "term": "Rezonans Mullera",
+        "definition": "Model Frithjofa Mullera, w którym każdy pierwiastek ma drabiny długości fal L = Z × C × 2ᴺ zbudowane z komptonowskich długości fal elektronu (Cₑ) i protonu (Cₚ). Pierwiastki Z₁ i Z₂ rezonują, gdy Z₁ · Cₑ · 2ᴺ = Z₂ · Cₚ · 2^(N+ΔN), czyli Z₁/Z₂ ≈ 2^ΔN / 1836,15. Rezonans ustala jedynie różnicę oktaw ΔN; bezwzględna oktawa N jest dowolna."
+      },
+      "catalyticCycle": {
+        "term": "Cykl katalityczny",
+        "definition": "Zamknięta sekwencja reakcji, w której nuklid zużyty na wczesnym etapie zostaje odtworzony na późniejszym, dzięki czemu działa jak katalizator, podczas gdy paliwo jest przekształcane w produkty i energię. Klasycznym przykładem jest gwiazdowy cykl CNO: C-12 zostaje odzyskany, a cztery protony stają się helem-4."
+      },
+      "dimer": {
+        "term": "Dimer",
+        "definition": "Cząsteczka złożona z dwóch identycznych atomów lub jednostek, np. H₂, N₂, O₂ oraz dwuatomowe halogeny F₂, Cl₂, Br₂ i I₂. Opcja symulatora kaskad „Zezwalaj na tworzenie dimerów” dotyczy tych naturalnie dwuatomowych pierwiastków."
+      }
+    }
   },
   "mullerResonance": {
     "title": "Eksplorator rezonansów Mullera",

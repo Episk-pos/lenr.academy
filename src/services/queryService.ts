@@ -171,30 +171,20 @@ export function getFusionSqlPreview(filter: QueryFilter): string {
 /**
  * Get Set of radioactive nuclides from a list of nuclides
  * Returns Set of "Z-A" format (e.g., "26-56") for O(1) lookup
- * Single batch SQL query instead of individual queries per nuclide
+ *
+ * Single source of truth for "is this nuclide radioactive?": a nuclide is
+ * radioactive iff it has a ground-state RadioNuclides row matching its
+ * NuclidesPlus LHL (see getNuclideHalfLives). Long-lived nuclides such as
+ * U-238 or K-40 are radioactive; stable nuclides that only have isomer rows
+ * (Ba-137m, Ta-180, Nb-93m, ...) are not. Nuclides without an LHL (not in
+ * NuclidesPlus) count as radioactive if they have any RadioNuclides row.
+ * Single batched SQL query.
  */
-export function getRadioactiveNuclides(db: Database, nuclides: Nuclide[]): Set<string> {
-  if (nuclides.length === 0) return new Set();
-
-  // Build WHERE clause for all nuclides
-  const conditions = nuclides.map(n => `(Z = ${n.Z} AND A = ${n.A})`).join(' OR ');
-
-  const sql = `
-    SELECT DISTINCT Z, A
-    FROM RadioNuclides
-    WHERE ${conditions}
-  `;
-
-  const results = db.exec(sql);
-  const radioactive = new Set<string>();
-
-  if (results.length > 0) {
-    results[0].values.forEach((row: any[]) => {
-      radioactive.add(`${row[0]}-${row[1]}`);
-    });
-  }
-
-  return radioactive;
+export function getRadioactiveNuclides(
+  db: Database,
+  nuclides: Array<Pick<Nuclide, 'Z' | 'A'> & { logHalfLife?: number | null }>
+): Set<string> {
+  return new Set(getNuclideHalfLives(db, nuclides).keys());
 }
 
 /**
@@ -819,6 +809,109 @@ export function getRadioactiveDecayData(db: Database, Z: number, A: number): Dec
 }
 
 /**
+ * Ground-state half-life record for a nuclide from RadioNuclides
+ */
+export interface NuclideHalfLife {
+  halfLife: number | null;
+  units: string | null;
+  logHalfLife: number | null;
+  decayMode: string | null;
+}
+
+/** Max |RadioNuclides.LHL - NuclidesPlus.LHL| for a row to count as the same (ground) state */
+export const HALF_LIFE_LHL_TOLERANCE = 0.05;
+
+/** NuclidesPlus uses LHL = 50 as a sentinel for "stable" (no measured half-life) */
+export const STABLE_LHL_SENTINEL = 50;
+
+/**
+ * Batch-look up the ground-state half-life of each nuclide in RadioNuclides.
+ *
+ * Matches on (Z, A) rather than the element symbol: NuclidesPlus stores the
+ * hydrogen isotopes as 'H', 'D' and 'T', but RadioNuclides lists tritium under
+ * 'H' (Z=1, A=3), so a symbol-keyed lookup silently misses it.
+ *
+ * RadioNuclides mixes ground-state and isomer rows under the same Z/A (e.g.
+ * Co-60 5.27 y alongside Co-60m 10.5 min; Ba-137m under stable Ba-137), so
+ * "most intense row" is not reliable:
+ * - When `logHalfLife` (NuclidesPlus.LHL) is given, only the row whose LHL is
+ *   closest to it, within HALF_LIFE_LHL_TOLERANCE, is used. Stable nuclides
+ *   (LHL sentinel 50) and nuclides with no matching row are omitted.
+ * - When `logHalfLife` is null/undefined (nuclide absent from NuclidesPlus),
+ *   the highest-intensity RadioNuclides row is used.
+ *
+ * Returns a Map keyed by "Z-A" (e.g. "1-3").
+ */
+export function getNuclideHalfLives(
+  db: Pick<Database, 'exec'>,
+  nuclides: Array<{ Z: number; A: number; logHalfLife?: number | null }>
+): Map<string, NuclideHalfLife> {
+  const halfLives = new Map<string, NuclideHalfLife>();
+  // Dedupe by Z-A (query pages pass every nuclide seen in the results)
+  const unique = new Map<string, { Z: number; A: number; logHalfLife?: number | null }>();
+  nuclides.forEach(n => {
+    const key = `${n.Z}-${n.A}`;
+    if (!unique.has(key)) unique.set(key, n);
+  });
+  const lookups = [...unique.values()].filter(
+    n => typeof n.logHalfLife !== 'number' || n.logHalfLife < STABLE_LHL_SENTINEL
+  );
+  if (lookups.length === 0) return halfLives;
+
+  const conditions = lookups.map(() => '(Z = ? AND A = ?)').join(' OR ');
+  const params = lookups.flatMap(n => [n.Z, n.A]);
+  const sql = `
+    SELECT Z, A, HL, Units, LHL, RDM
+    FROM RadioNuclides
+    WHERE ${conditions}
+    ORDER BY Z, A, RI DESC
+  `;
+  const results = db.exec(sql, params);
+  if (results.length === 0) return halfLives;
+
+  // Group rows (already intensity-ordered) by Z-A
+  const rowsByKey = new Map<string, NuclideHalfLife[]>();
+  results[0].values.forEach((row) => {
+    const key = `${row[0]}-${row[1]}`;
+    const rows = rowsByKey.get(key) ?? [];
+    rows.push({
+      halfLife: row[2] as number | null,
+      units: row[3] as string | null,
+      logHalfLife: row[4] as number | null,
+      decayMode: row[5] as string | null,
+    });
+    rowsByKey.set(key, rows);
+  });
+
+  lookups.forEach(n => {
+    const key = `${n.Z}-${n.A}`;
+    const rows = rowsByKey.get(key);
+    if (!rows || rows.length === 0) return;
+
+    if (typeof n.logHalfLife !== 'number') {
+      halfLives.set(key, rows[0]);
+      return;
+    }
+
+    const target = n.logHalfLife;
+    let best: NuclideHalfLife | null = null;
+    let bestDelta = Infinity;
+    for (const r of rows) {
+      if (typeof r.logHalfLife !== 'number') continue;
+      const delta = Math.abs(r.logHalfLife - target);
+      // Strict < keeps the higher-intensity row on ties
+      if (delta <= HALF_LIFE_LHL_TOLERANCE && delta < bestDelta) {
+        best = r;
+        bestDelta = delta;
+      }
+    }
+    if (best) halfLives.set(key, best);
+  });
+
+  return halfLives;
+}
+
+/**
  * Check if an isotope is radioactive (has decay data)
  */
 export function isRadioactive(db: Database, Z: number, A: number): boolean {
@@ -908,6 +1001,9 @@ export function getElementSymbolByZ(db: Database, Z: number): string | null {
 export function getRadioactiveNuclideData(db: Database, E: string, A: number): import('../types').RadioactiveNuclideData | null {
   // First, check if this isotope exists in RadioNuclides
   // Map database columns (HL, LHL) to TypeScript properties (halfLife, logHalfLife)
+  // RadioNuclides stores hydrogen isotopes under 'H' (e.g. tritium is H-3), whereas
+  // NuclidesPlus uses the distinct symbols 'D' and 'T' — normalise before matching.
+  const lookupSymbol = E === 'D' || E === 'T' ? 'H' : E;
   const checkSql = `
     SELECT Z, RDM, HL, Units, LHL
     FROM RadioNuclides
@@ -915,7 +1011,7 @@ export function getRadioactiveNuclideData(db: Database, E: string, A: number): i
     ORDER BY RI DESC
     LIMIT 1
   `;
-  const checkResults = db.exec(checkSql, [E, A]);
+  const checkResults = db.exec(checkSql, [lookupSymbol, A]);
 
   if (checkResults.length === 0 || checkResults[0].values.length === 0) {
     return null;

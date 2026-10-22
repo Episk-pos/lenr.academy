@@ -380,7 +380,9 @@
     "radiationTypeLegend": "Strahlungsart-Legende",
     "notAvailableInDatabase": "In der Datenbank nicht verfügbar",
     "electricalConductivity": "Elektrische Leitfähigkeit",
-    "valueYears": "{{value}} Jahre"
+    "valueYears": "{{value}} Jahre",
+    "longLived": "Langlebig",
+    "longLivedTooltip": "Halbwertszeit über 1 Milliarde Jahre: auf menschlichen Zeitskalen praktisch stabil, aber dennoch radioaktiv."
   },
   "reactions": {
     "reaction": "Reaktion",
@@ -1038,7 +1040,8 @@
     "tipGroupByKeyword": "GROUP BY",
     "tipGroupByRest": "für Aggregationen",
     "tipStringsText": "Zeichenketten-Literale verwenden einfache Anführungszeichen:",
-    "tipStringsCode": "'H'"
+    "tipStringsCode": "'H'",
+    "runShortcutHint": "Drücken Sie Strg+Enter (⌘+Enter auf dem Mac), um die Abfrage auszuführen."
   },
   "updates": {
     "appUpdateAvailable": "App-Update verfügbar: {{current}} → {{available}}",
@@ -1243,7 +1246,29 @@
       "cascades": "Kaskade",
       "mullerResonance": "Resonanz"
     },
-    "opensPage": "Öffnet: {{page}}"
+    "opensPage": "Öffnet: {{page}}",
+    "glossaryTerms": {
+      "nae": {
+        "term": "NAE (Nuclear Active Environment, nuklear aktive Umgebung)",
+        "definition": "Begriff von Edmund Storms für spezielle nanoskalige Stellen in einem Material, etwa Risse, Spalten oder Oberflächenstrukturen in einem Metallhydrid, an denen LENR stattfinden sollen – und nicht im gesamten Kristallgitter."
+      },
+      "comptonWavelength": {
+        "term": "Compton-Wellenlänge",
+        "definition": "λ = h/(mc): die Wellenlänge eines Photons, dessen Energie der Ruheenergie eines Teilchens entspricht. Für das Elektron gilt Cₑ ≈ 2,426 pm, für das Proton Cₚ ≈ 1,321 fm; ihr Verhältnis ist das Proton-Elektron-Massenverhältnis, ≈ 1836,15."
+      },
+      "mullerResonance": {
+        "term": "Muller-Resonanz",
+        "definition": "Modell von Frithjof Muller, in dem jedes Element Wellenlängenleitern L = Z × C × 2ᴺ aus den Compton-Wellenlängen von Elektron (Cₑ) und Proton (Cₚ) besitzt. Die Elemente Z₁ und Z₂ resonieren, wenn Z₁ · Cₑ · 2ᴺ = Z₂ · Cₚ · 2^(N+ΔN) gilt, also Z₁/Z₂ ≈ 2^ΔN / 1836,15. Die Resonanz legt nur den Oktavabstand ΔN fest; die absolute Oktave N ist frei."
+      },
+      "catalyticCycle": {
+        "term": "Katalytischer Zyklus",
+        "definition": "Eine geschlossene Reaktionsfolge, in der ein in einem frühen Schritt verbrauchtes Nuklid in einem späteren Schritt zurückgebildet wird, sodass es als Katalysator wirkt, während Brennstoff in Produkte und Energie umgewandelt wird. Das klassische Beispiel ist der stellare CNO-Zyklus: C-12 wird zurückgewonnen, während vier Protonen zu Helium-4 werden."
+      },
+      "dimer": {
+        "term": "Dimer",
+        "definition": "Ein Molekül aus zwei identischen Atomen oder Einheiten, etwa H₂, N₂, O₂ und die zweiatomigen Halogene F₂, Cl₂, Br₂ und I₂. Die Option „Dimerbildung erlauben“ des Kaskadensimulators bezieht sich auf diese natürlich zweiatomigen Elemente."
+      }
+    }
   },
   "mullerResonance": {
     "title": "Muller-Resonanz-Explorer",

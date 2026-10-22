@@ -83,4 +83,22 @@ describe('Help', () => {
     // Glossary count uses i18n key "{{count}} terms"
     expect(screen.getByText(/terms$/)).toBeInTheDocument();
   });
+
+  it('renders the new LENR glossary entries', () => {
+    render(<Help />);
+    expect(screen.getByRole('heading', { name: en.help.glossaryTerms.nae.term })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: en.help.glossaryTerms.comptonWavelength.term })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: en.help.glossaryTerms.catalyticCycle.term })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: en.help.glossaryTerms.dimer.term })).toBeInTheDocument();
+    expect(screen.getByText(en.help.glossaryTerms.mullerResonance.definition)).toBeInTheDocument();
+  });
+
+  it('finds the NAE entry by searching its expansion', () => {
+    render(<Help />);
+    fireEvent.change(screen.getByLabelText(en.help.searchGlossary), {
+      target: { value: 'nuclear active' },
+    });
+    expect(screen.getByRole('heading', { name: en.help.glossaryTerms.nae.term })).toBeInTheDocument();
+    expect(screen.queryByRole('heading', { name: en.help.glossaryTerms.dimer.term })).not.toBeInTheDocument();
+  });
 });

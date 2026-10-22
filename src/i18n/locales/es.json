@@ -381,7 +381,9 @@
     "radiationTypeLegend": "Leyenda de tipos de radiación",
     "notAvailableInDatabase": "No disponible en la base de datos",
     "electricalConductivity": "Conductividad eléctrica",
-    "valueYears": "{{value}} años"
+    "valueYears": "{{value}} años",
+    "longLived": "Larga vida",
+    "longLivedTooltip": "Vida media superior a 1000 millones de años: prácticamente estable en escalas de tiempo humanas, pero aún radiactivo."
   },
   "reactions": {
     "reaction": "Reacción",
@@ -1039,7 +1041,8 @@
     "tipGroupByKeyword": "GROUP BY",
     "tipGroupByRest": "para agregaciones",
     "tipStringsText": "Los literales de cadena usan comillas simples:",
-    "tipStringsCode": "'H'"
+    "tipStringsCode": "'H'",
+    "runShortcutHint": "Pulse Ctrl+Enter (⌘+Enter en Mac) para ejecutar la consulta."
   },
   "updates": {
     "appUpdateAvailable": "Actualización disponible: {{current}} → {{available}}",
@@ -1245,7 +1248,29 @@
       "cascades": "cascada",
       "mullerResonance": "resonancia"
     },
-    "opensPage": "Abre: {{page}}"
+    "opensPage": "Abre: {{page}}",
+    "glossaryTerms": {
+      "nae": {
+        "term": "NAE (Nuclear Active Environment, entorno nuclear activo)",
+        "definition": "Término de Edmund Storms para los sitios especiales a escala nanométrica de un material, como grietas, huecos o rasgos superficiales en un hidruro metálico, donde se propone que ocurren las LENR, en lugar de en toda la red cristalina."
+      },
+      "comptonWavelength": {
+        "term": "Longitud de onda de Compton",
+        "definition": "λ = h/(mc): la longitud de onda de un fotón cuya energía es igual a la energía en reposo de una partícula. Para el electrón Cₑ ≈ 2,426 pm y para el protón Cₚ ≈ 1,321 fm; su cociente es la razón de masas protón-electrón, ≈ 1836,15."
+      },
+      "mullerResonance": {
+        "term": "Resonancia de Muller",
+        "definition": "Modelo de Frithjof Muller en el que cada elemento tiene escaleras de longitudes de onda L = Z × C × 2ᴺ construidas a partir de las longitudes de onda de Compton del electrón (Cₑ) y del protón (Cₚ). Los elementos Z₁ y Z₂ resuenan cuando Z₁ · Cₑ · 2ᴺ = Z₂ · Cₚ · 2^(N+ΔN), es decir, Z₁/Z₂ ≈ 2^ΔN / 1836,15. La resonancia solo fija la separación de octavas ΔN; la octava absoluta N es libre."
+      },
+      "catalyticCycle": {
+        "term": "Ciclo catalítico",
+        "definition": "Secuencia cerrada de reacciones en la que un núclido consumido en un paso temprano se regenera en uno posterior, de modo que actúa como catalizador mientras el combustible se convierte en productos y energía. El ciclo CNO estelar es el ejemplo clásico: el C-12 se recupera mientras cuatro protones se convierten en helio-4."
+      },
+      "dimer": {
+        "term": "Dímero",
+        "definition": "Molécula formada por dos átomos o unidades idénticos, como H₂, N₂, O₂ y los halógenos diatómicos F₂, Cl₂, Br₂ e I₂. La opción «Permitir formación de dímeros» del simulador de cascadas se aplica a estos elementos naturalmente diatómicos."
+      }
+    }
   },
   "mullerResonance": {
     "title": "Explorador de Resonancia Muller",

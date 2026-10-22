@@ -380,7 +380,9 @@
     "radiationTypeLegend": "방사선 유형 범례",
     "notAvailableInDatabase": "데이터베이스에 없음",
     "electricalConductivity": "전기 전도도",
-    "valueYears": "{{value}}년"
+    "valueYears": "{{value}}년",
+    "longLived": "장수명",
+    "longLivedTooltip": "반감기가 10억 년을 넘는 핵종: 인간의 시간 척도에서는 사실상 안정적이지만 여전히 방사성입니다."
   },
   "reactions": {
     "reaction": "반응",
@@ -1038,7 +1040,8 @@
     "tipGroupByKeyword": "GROUP BY",
     "tipGroupByRest": "사용",
     "tipStringsText": "문자열 리터럴은 작은따옴표를 사용합니다:",
-    "tipStringsCode": "'H'"
+    "tipStringsCode": "'H'",
+    "runShortcutHint": "Ctrl+Enter(Mac에서는 ⌘+Enter)를 눌러 쿼리를 실행합니다."
   },
   "updates": {
     "appUpdateAvailable": "앱 업데이트 가능: {{current}} → {{available}}",
@@ -1243,7 +1246,29 @@
       "cascades": "캐스케이드",
       "mullerResonance": "공명"
     },
-    "opensPage": "열리는 페이지: {{page}}"
+    "opensPage": "열리는 페이지: {{page}}",
+    "glossaryTerms": {
+      "nae": {
+        "term": "NAE (Nuclear Active Environment, 핵 활성 환경)",
+        "definition": "에드먼드 스톰스가 제안한 용어로, LENR이 결정 격자 전체가 아니라 금속 수소화물의 균열, 틈, 표면 구조 등 물질 내 특수한 나노 규모 부위에서 일어난다고 보는 개념입니다."
+      },
+      "comptonWavelength": {
+        "term": "콤프턴 파장",
+        "definition": "λ = h/(mc): 에너지가 입자의 정지 질량 에너지와 같은 광자의 파장입니다. 전자는 Cₑ ≈ 2.426 pm, 양성자는 Cₚ ≈ 1.321 fm이며, 둘의 비는 양성자-전자 질량비 ≈ 1836.15와 같습니다."
+      },
+      "mullerResonance": {
+        "term": "뮐러 공명",
+        "definition": "프리트요프 뮐러의 모델로, 각 원소는 전자(Cₑ)와 양성자(Cₚ)의 콤프턴 파장으로 만든 파장 사다리 L = Z × C × 2ᴺ를 가집니다. 원소 Z₁과 Z₂는 Z₁ · Cₑ · 2ᴺ = Z₂ · Cₚ · 2^(N+ΔN), 즉 Z₁/Z₂ ≈ 2^ΔN / 1836.15일 때 공명합니다. 공명은 옥타브 차이 ΔN만 고정하며, 절대 옥타브 N은 자유롭습니다."
+      },
+      "catalyticCycle": {
+        "term": "촉매 순환",
+        "definition": "초기 단계에서 소비된 핵종이 이후 단계에서 다시 생성되는 닫힌 반응 순서로, 그 핵종은 촉매로 작용하고 연료는 생성물과 에너지로 변환됩니다. 항성의 CNO 순환이 대표적인 예로, C-12는 회수되고 양성자 4개는 헬륨-4가 됩니다."
+      },
+      "dimer": {
+        "term": "이합체",
+        "definition": "H₂, N₂, O₂와 이원자 할로젠 F₂, Cl₂, Br₂, I₂처럼 동일한 원자나 단위 두 개로 이루어진 분자입니다. 캐스케이드 시뮬레이터의 \"이합체 형성 허용\" 옵션은 이러한 자연적으로 이원자인 원소에 적용됩니다."
+      }
+    }
   },
   "mullerResonance": {
     "title": "Muller 공명 탐색기",

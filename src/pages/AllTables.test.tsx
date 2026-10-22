@@ -241,4 +241,65 @@ describe('AllTables', () => {
     fireEvent.click(screen.getByText(en.allTables.executeQuery));
     expect(mockExec).not.toHaveBeenCalled();
   });
+
+  describe('SQL editor', () => {
+    const okResult = [{ columns: ['n'], values: [[1]] }];
+
+    it('renders a 6-row, monospace, vertically resizable textarea', () => {
+      render(<AllTables />);
+      const textarea = screen.getByPlaceholderText(en.allTables.queryPlaceholder);
+      expect(textarea).toHaveAttribute('rows', '6');
+      expect(textarea.className).toContain('font-mono');
+      expect(textarea.className).toContain('resize-y');
+      expect(textarea.className).toContain('h-auto');
+    });
+
+    it('shows the keyboard shortcut hint linked to the textarea', () => {
+      render(<AllTables />);
+      const hint = screen.getByTestId('sql-run-shortcut-hint');
+      expect(hint).toHaveTextContent(en.allTables.runShortcutHint);
+      const textarea = screen.getByPlaceholderText(en.allTables.queryPlaceholder);
+      expect(textarea).toHaveAttribute('aria-describedby', hint.id);
+    });
+
+    it('runs the query on Ctrl+Enter', () => {
+      mockExec.mockReturnValue(okResult);
+      render(<AllTables />);
+      const textarea = screen.getByPlaceholderText(en.allTables.queryPlaceholder);
+      fireEvent.change(textarea, { target: { value: 'SELECT 1 AS n' } });
+      fireEvent.keyDown(textarea, { key: 'Enter', ctrlKey: true });
+      expect(mockExec).toHaveBeenCalledWith('SELECT 1 AS n');
+    });
+
+    it('runs the query on Cmd+Enter (macOS)', () => {
+      mockExec.mockReturnValue(okResult);
+      render(<AllTables />);
+      const textarea = screen.getByPlaceholderText(en.allTables.queryPlaceholder);
+      fireEvent.keyDown(textarea, { key: 'Enter', metaKey: true });
+      expect(mockExec).toHaveBeenCalledTimes(1);
+    });
+
+    it('ignores Ctrl+Enter while an IME composition is in progress', () => {
+      render(<AllTables />);
+      const textarea = screen.getByPlaceholderText(en.allTables.queryPlaceholder);
+      fireEvent.keyDown(textarea, { key: 'Enter', ctrlKey: true, isComposing: true });
+      expect(mockExec).not.toHaveBeenCalled();
+    });
+
+    it('does not run the query on plain Enter (inserts a newline instead)', () => {
+      render(<AllTables />);
+      const textarea = screen.getByPlaceholderText(en.allTables.queryPlaceholder);
+      fireEvent.keyDown(textarea, { key: 'Enter' });
+      expect(mockExec).not.toHaveBeenCalled();
+    });
+
+    it('still enforces the read-only check on Ctrl+Enter', () => {
+      render(<AllTables />);
+      const textarea = screen.getByPlaceholderText(en.allTables.queryPlaceholder);
+      fireEvent.change(textarea, { target: { value: 'DROP TABLE FusionAll' } });
+      fireEvent.keyDown(textarea, { key: 'Enter', ctrlKey: true });
+      expect(mockExec).not.toHaveBeenCalled();
+      expect(screen.getByText(en.allTables.readOnlyError)).toBeInTheDocument();
+    });
+  });
 });
