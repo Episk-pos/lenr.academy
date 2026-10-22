@@ -1231,8 +1231,10 @@
     "filterByLab": "Фильтр по лаборатории-источнику",
     "noResults": "Ни одна трансмутация не соответствует текущим фильтрам.",
     "curatedFrom": "Подобрано из <1>обзора литературы LENR от HumanScholars</1>. {{count}} записей.",
-    "stepCount_one": "1 шаг",
-    "stepCount_other": "{{count}} шагов",
+    "stepCount_one": "{{count}} шаг",
+    "stepCount_few": "{{count}} шага",
+    "stepCount_many": "{{count}} шагов",
+    "stepCount_other": "{{count}} шага",
     "categories": {
       "solid-state": "Твёрдое состояние",
       "biological": "Биологический",

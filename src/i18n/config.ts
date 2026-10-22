@@ -78,6 +78,18 @@ const languageMap: Record<string, SupportedLanguage> = {
   'hi-IN': 'hi',
 }
 
+// Keep <html lang> in sync with the active language (screen readers, hyphenation,
+// and script-appropriate font fallback). Registered before init so the initial
+// languageChanged event emitted during init is captured too.
+i18n.on('languageChanged', (lng) => {
+  if (typeof document !== 'undefined' && lng) {
+    document.documentElement.lang = lng
+  }
+})
+
+// Region-coded browser languages (pt-BR, zh-TW, ko-KR, ...) need no explicit
+// mapping: with supportedLngs set, i18next's getBestMatchFromCodes falls back to
+// the language-only code (see detection.test.ts).
 i18n
   .use(LanguageDetector)
   .use(initReactI18next)

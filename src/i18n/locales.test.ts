@@ -1,4 +1,5 @@
 import { describe, it, expect } from 'vitest';
+import { createInstance } from 'i18next';
 import en from './locales/en.json';
 import de from './locales/de.json';
 import es from './locales/es.json';
@@ -162,4 +163,18 @@ describe('i18n locale consistency', () => {
       });
     });
   }
+});
+
+describe('Russian plural forms', () => {
+  it('renders transmutations.stepCount with correct one/few/many forms', async () => {
+    const i18n = createInstance();
+    await i18n.init({ lng: 'ru', resources: { ru: { translation: ru } } });
+    const render = (count: number) => i18n.t('transmutations.stepCount', { count });
+    expect(render(1)).toBe('1 шаг');
+    expect(render(21)).toBe('21 шаг');
+    expect(render(2)).toBe('2 шага');
+    expect(render(24)).toBe('24 шага');
+    expect(render(5)).toBe('5 шагов');
+    expect(render(11)).toBe('11 шагов');
+  });
 });
