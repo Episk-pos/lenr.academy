@@ -4,6 +4,8 @@ import { useNavigate } from 'react-router-dom'
 import { Search, BookOpen, Beaker, ArrowRight } from 'lucide-react'
 import { GLOSSARY, GLOSSARY_CATEGORIES, GlossaryEntry } from '../data/glossary'
 import { EXAMPLE_QUERIES, ExampleQuery } from '../data/exampleQueries'
+import PageHeader from '../components/PageHeader'
+import { PAGE_ICONS } from '../constants/pageIcons'
 
 const EXAMPLE_TYPE_KEYS: Record<ExampleQuery['queryType'], string> = {
   fusion: 'fusion',
@@ -13,6 +15,20 @@ const EXAMPLE_TYPE_KEYS: Record<ExampleQuery['queryType'], string> = {
   cascades: 'cascades',
   'muller-resonance': 'mullerResonance',
 }
+
+/** Sidebar nav label for the page each example opens */
+const EXAMPLE_PAGE_NAME_KEYS: Record<ExampleQuery['queryType'], string> = {
+  fusion: 'navigation.fusionReactions',
+  fission: 'navigation.fissionReactions',
+  twotwo: 'navigation.twoToTwoReactions',
+  'element-data': 'navigation.showElementData',
+  cascades: 'navigation.cascades',
+  'muller-resonance': 'navigation.mullerResonance',
+}
+
+// Two columns keep rows balanced; with an odd count the last card spans both
+// columns instead of sitting alone in a half-empty row.
+const LAST_EXAMPLE_SPANS = EXAMPLE_QUERIES.length % 2 === 1
 
 export default function Help() {
   const { t } = useTranslation()
@@ -85,14 +101,12 @@ export default function Help() {
 
   return (
     <div className="max-w-5xl mx-auto">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-          {t('help.title')}
-        </h1>
-        <p className="text-gray-600 dark:text-gray-400">
-          {t('help.subtitle')}
-        </p>
-      </div>
+      <PageHeader
+        icon={PAGE_ICONS.help}
+        title={t('help.title')}
+        subtitle={t('help.subtitle')}
+        className="mb-8"
+      />
 
       {/* Example Queries Section */}
       <section className="mb-10">
@@ -106,11 +120,13 @@ export default function Help() {
           {t('help.exampleQueriesDescription')}
         </p>
 
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
+        <div className="grid sm:grid-cols-2 gap-3" data-testid="help-example-grid">
           {EXAMPLE_QUERIES.map((query, index) => (
             <button
               key={index}
-              className="card p-4 hover:border-primary-300 dark:hover:border-primary-600 focus:border-primary-300 dark:focus:border-primary-600 focus:ring-2 focus:ring-primary-500 focus:outline-none transition-colors cursor-pointer group text-left"
+              className={`card p-4 hover:border-primary-300 dark:hover:border-primary-600 focus:border-primary-300 dark:focus:border-primary-600 focus:ring-2 focus:ring-primary-500 focus:outline-none transition-colors cursor-pointer group text-left flex flex-col ${
+                LAST_EXAMPLE_SPANS && index === EXAMPLE_QUERIES.length - 1 ? 'sm:col-span-2' : ''
+              }`}
               onClick={() => handleTryQuery(query)}
             >
               <div className="flex items-start justify-between mb-1">
@@ -124,9 +140,17 @@ export default function Help() {
               <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">
                 {t(`help.examples.${query.key}.description`, { defaultValue: query.description })}
               </p>
-              <span className="text-xs text-primary-600 dark:text-primary-400 flex items-center gap-1 opacity-0 group-hover:opacity-100 group-focus:opacity-100 transition-opacity">
-                {t('help.tryQuery')} <ArrowRight className="w-3 h-3" />
-              </span>
+              <div className="mt-auto flex items-center justify-between gap-2">
+                <span
+                  className="text-xs text-gray-500 dark:text-gray-400"
+                  data-testid="example-opens-page"
+                >
+                  {t('help.opensPage', { page: t(EXAMPLE_PAGE_NAME_KEYS[query.queryType]) })}
+                </span>
+                <span className="text-xs text-primary-600 dark:text-primary-400 flex items-center gap-1 opacity-0 group-hover:opacity-100 group-focus:opacity-100 transition-opacity">
+                  {t('help.tryQuery')} <ArrowRight className="w-3 h-3" />
+                </span>
+              </div>
             </button>
           ))}
         </div>

@@ -29,7 +29,8 @@
     "selectAll": "全选",
     "expand": "展开",
     "collapse": "收起",
-    "unknownError": "发生未知错误"
+    "unknownError": "发生未知错误",
+    "aboutThisTool": "关于此工具"
   },
   "brand": {
     "appName": "Nanosoft Suite",
@@ -1221,7 +1222,8 @@
       "elementData": "元素",
       "cascades": "级联",
       "mullerResonance": "共振"
-    }
+    },
+    "opensPage": "打开：{{page}}"
   },
   "mullerResonance": {
     "title": "穆勒共振探索器",

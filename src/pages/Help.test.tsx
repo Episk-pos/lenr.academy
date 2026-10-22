@@ -61,6 +61,23 @@ describe('Help', () => {
     }
   });
 
+  it('labels each example card with the page it opens', () => {
+    render(<Help />);
+    const labels = screen.getAllByTestId('example-opens-page');
+    expect(labels.length).toBeGreaterThan(0);
+    expect(labels.some(l => l.textContent === `Opens: ${en.navigation.fusionReactions}`)).toBe(true);
+  });
+
+  it('uses a two-column example grid without a lone trailing card', () => {
+    render(<Help />);
+    const grid = screen.getByTestId('help-example-grid');
+    expect(grid.className).not.toMatch(/grid-cols-3/);
+    const cards = Array.from(grid.children);
+    if (cards.length % 2 === 1) {
+      expect(cards[cards.length - 1].className).toMatch(/sm:col-span-2/);
+    }
+  });
+
   it('shows glossary count', () => {
     render(<Help />);
     // Glossary count uses i18n key "{{count}} terms"

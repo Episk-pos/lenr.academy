@@ -1,6 +1,7 @@
 import { ReactNode, useEffect, useCallback, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
-import { Menu, X, Atom, Moon, Sun, ChevronLeft, ChevronRight, Home as HomeIcon, GitMerge, Scissors, ArrowLeftRight, FlaskConical, Table, TableProperties, Shield, Workflow, RefreshCw, HelpCircle, Waves, Beaker } from 'lucide-react'
+import { Menu, X, Atom, Moon, Sun, ChevronLeft, ChevronRight, type LucideIcon } from 'lucide-react'
+import { PAGE_ICONS } from '../constants/pageIcons'
 import { useTranslation, Trans } from 'react-i18next'
 import { useTheme } from '../contexts/ThemeContext'
 import { useLayout } from '../contexts/LayoutContext'
@@ -22,22 +23,22 @@ interface LayoutProps {
 interface NavigationItem {
   nameKey: string
   path: string
-  icon: typeof HomeIcon
+  icon: LucideIcon
 }
 
 const navigationItems: NavigationItem[] = [
-  { nameKey: 'navigation.home', path: '/', icon: HomeIcon },
-  { nameKey: 'navigation.showElementData', path: '/element-data', icon: FlaskConical },
-  { nameKey: 'navigation.fusionReactions', path: '/fusion', icon: GitMerge },
-  { nameKey: 'navigation.fissionReactions', path: '/fission', icon: Scissors },
-  { nameKey: 'navigation.twoToTwoReactions', path: '/twotwo', icon: ArrowLeftRight },
-  { nameKey: 'navigation.cascades', path: '/cascades', icon: Workflow },
-  { nameKey: 'navigation.cycleDiscovery', path: '/cycles', icon: RefreshCw },
-  { nameKey: 'navigation.tablesInDetail', path: '/tables', icon: Table },
-  { nameKey: 'navigation.allTables', path: '/all-tables', icon: TableProperties },
-  { nameKey: 'navigation.mullerResonance', path: '/muller-resonance', icon: Waves },
-  { nameKey: 'navigation.transmutations', path: '/transmutations', icon: Beaker },
-  { nameKey: 'navigation.help', path: '/help', icon: HelpCircle },
+  { nameKey: 'navigation.home', path: '/', icon: PAGE_ICONS.home },
+  { nameKey: 'navigation.showElementData', path: '/element-data', icon: PAGE_ICONS.elementData },
+  { nameKey: 'navigation.fusionReactions', path: '/fusion', icon: PAGE_ICONS.fusion },
+  { nameKey: 'navigation.fissionReactions', path: '/fission', icon: PAGE_ICONS.fission },
+  { nameKey: 'navigation.twoToTwoReactions', path: '/twotwo', icon: PAGE_ICONS.twoToTwo },
+  { nameKey: 'navigation.cascades', path: '/cascades', icon: PAGE_ICONS.cascades },
+  { nameKey: 'navigation.cycleDiscovery', path: '/cycles', icon: PAGE_ICONS.cycles },
+  { nameKey: 'navigation.tablesInDetail', path: '/tables', icon: PAGE_ICONS.tablesInDetail },
+  { nameKey: 'navigation.allTables', path: '/all-tables', icon: PAGE_ICONS.allTables },
+  { nameKey: 'navigation.mullerResonance', path: '/muller-resonance', icon: PAGE_ICONS.mullerResonance },
+  { nameKey: 'navigation.transmutations', path: '/transmutations', icon: PAGE_ICONS.transmutations },
+  { nameKey: 'navigation.help', path: '/help', icon: PAGE_ICONS.help },
 ]
 
 export default function Layout({ children }: LayoutProps) {
@@ -251,7 +252,7 @@ export default function Layout({ children }: LayoutProps) {
               onClick={() => setSidebarOpen(false)}
               className="flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors mb-3"
             >
-              <Shield className="w-4 h-4" />
+              <PAGE_ICONS.privacy className="w-4 h-4" />
               <span>{t('navigation.privacySettings')}</span>
             </Link>
             <div className="text-xs text-gray-500 dark:text-gray-400 px-3">
@@ -363,7 +364,7 @@ export default function Layout({ children }: LayoutProps) {
               title={desktopSidebarCollapsed ? t('navigation.privacySettings') : undefined}
             >
               <div className={`flex items-center transition-all duration-300 ${desktopSidebarCollapsed ? 'gap-0' : 'gap-2'}`}>
-                <Shield className="w-4 h-4 flex-shrink-0" />
+                <PAGE_ICONS.privacy className="w-4 h-4 flex-shrink-0" />
                 <span className={`whitespace-nowrap transition-all duration-150 overflow-hidden ${desktopSidebarCollapsed ? 'opacity-0 w-0 delay-0' : 'opacity-100 w-auto delay-150'}`}>{t('navigation.privacySettings')}</span>
               </div>
             </Link>

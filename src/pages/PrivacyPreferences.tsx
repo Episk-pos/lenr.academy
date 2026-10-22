@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react'
 import { Shield, CheckCircle, XCircle, RefreshCw, Bug } from 'lucide-react'
 import { useTranslation, Trans } from 'react-i18next'
 import { loadUmamiScript } from '../utils/analytics'
+import PageHeader from '../components/PageHeader'
+import { PAGE_ICONS } from '../constants/pageIcons'
 
 const ANALYTICS_CONSENT_KEY = 'lenr-analytics-consent'
 const ERROR_REPORTING_CONSENT_KEY = 'lenr-error-reporting-consent'
@@ -60,17 +62,11 @@ export default function PrivacyPreferences() {
 
   return (
     <div className="max-w-4xl mx-auto">
-      <div className="mb-6">
-        <div className="flex items-center gap-3 mb-2">
-          <Shield className="w-8 h-8 text-primary-600" />
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-            {t('privacyPage.title')}
-          </h1>
-        </div>
-        <p className="text-gray-600 dark:text-gray-400">
-          {t('privacyPage.subtitle')}
-        </p>
-      </div>
+      <PageHeader
+        icon={PAGE_ICONS.privacy}
+        title={t('privacyPage.title')}
+        subtitle={t('privacyPage.subtitle')}
+      />
 
       {/* Reload Message - shown when error reporting changes require reload */}
       {showReloadMessage && (

@@ -29,7 +29,8 @@
     "selectAll": "Alle auswählen",
     "expand": "Erweitern",
     "collapse": "Einklappen",
-    "unknownError": "Unbekannter Fehler aufgetreten"
+    "unknownError": "Unbekannter Fehler aufgetreten",
+    "aboutThisTool": "Über dieses Werkzeug"
   },
   "brand": {
     "appName": "Nanosoft Suite",
@@ -1221,7 +1222,8 @@
       "elementData": "Element",
       "cascades": "Kaskade",
       "mullerResonance": "Resonanz"
-    }
+    },
+    "opensPage": "Öffnet: {{page}}"
   },
   "mullerResonance": {
     "title": "Muller-Resonanz-Explorer",

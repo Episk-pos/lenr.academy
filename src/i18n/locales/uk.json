@@ -29,7 +29,8 @@
     "selectAll": "Вибрати все",
     "expand": "Розгорнути",
     "collapse": "Згорнути",
-    "unknownError": "Сталася невідома помилка"
+    "unknownError": "Сталася невідома помилка",
+    "aboutThisTool": "Про цей інструмент"
   },
   "brand": {
     "appName": "Nanosoft Suite",
@@ -1229,7 +1230,8 @@
       "elementData": "елемент",
       "cascades": "каскад",
       "mullerResonance": "резонанс"
-    }
+    },
+    "opensPage": "Відкриває: {{page}}"
   },
   "mullerResonance": {
     "title": "Оглядач резонансу Мюллера",

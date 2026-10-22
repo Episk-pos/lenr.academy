@@ -29,7 +29,8 @@
     "selectAll": "Выбрать все",
     "expand": "Развернуть",
     "collapse": "Свернуть",
-    "unknownError": "Произошла неизвестная ошибка"
+    "unknownError": "Произошла неизвестная ошибка",
+    "aboutThisTool": "Об этом инструменте"
   },
   "brand": {
     "appName": "Nanosoft Suite",
@@ -1229,7 +1230,8 @@
       "elementData": "элемент",
       "cascades": "каскад",
       "mullerResonance": "резонанс"
-    }
+    },
+    "opensPage": "Открывает: {{page}}"
   },
   "mullerResonance": {
     "title": "Исследователь резонанса Мюллера",

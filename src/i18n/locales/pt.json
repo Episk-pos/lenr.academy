@@ -29,7 +29,8 @@
     "selectAll": "Selecionar Tudo",
     "expand": "Expandir",
     "collapse": "Recolher",
-    "unknownError": "Ocorreu um erro desconhecido"
+    "unknownError": "Ocorreu um erro desconhecido",
+    "aboutThisTool": "Sobre esta ferramenta"
   },
   "brand": {
     "appName": "Nanosoft Suite",
@@ -1223,7 +1224,8 @@
       "elementData": "elemento",
       "cascades": "cascata",
       "mullerResonance": "ressonância"
-    }
+    },
+    "opensPage": "Abre: {{page}}"
   },
   "mullerResonance": {
     "title": "Explorador de Ressonância de Muller",

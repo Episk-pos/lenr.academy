@@ -77,16 +77,19 @@ test.describe('Catalytic Cycle Discovery UX', () => {
       page.getByRole('heading', { name: 'Catalytic Cycle Discovery' })
     ).toBeVisible()
 
-    // Info banner contains "How it works:" bold prefix plus CNO example text.
-    const infoBanner = page.locator('.card').filter({
-      has: page.getByText(/how it works/i),
-    }).first()
-    await expect(infoBanner).toBeVisible()
-    await expect(infoBanner).toContainText('CNO cycle')
-    await expect(infoBanner).toContainText('C-12')
+    // Collapsible "About this tool" section merges the "How it works" intro
+    // and the "How Catalytic Cycles Work" steps. Collapsed by default.
+    const aboutSection = page.getByTestId('cycle-discovery-about')
+    await expect(aboutSection).toBeVisible()
+    const aboutToggle = page.getByTestId('cycle-discovery-about-toggle')
+    await expect(aboutToggle).toHaveAttribute('aria-expanded', 'false')
+    await aboutToggle.click()
+    await expect(aboutToggle).toHaveAttribute('aria-expanded', 'true')
 
-    // Empty-state section visible before any search.
-    await expect(page.getByText('How Catalytic Cycles Work')).toBeVisible()
+    await expect(aboutSection).toContainText(/how it works/i)
+    await expect(aboutSection).toContainText('CNO cycle')
+    await expect(aboutSection).toContainText('C-12')
+    await expect(aboutSection.getByText('How Catalytic Cycles Work')).toBeVisible()
   })
 
   // -------------------------------------------------------------------------

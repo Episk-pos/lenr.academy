@@ -29,7 +29,8 @@
     "selectAll": "सभी चुनें",
     "expand": "फैलाएँ",
     "collapse": "समेटें",
-    "unknownError": "अज्ञात त्रुटि हुई"
+    "unknownError": "अज्ञात त्रुटि हुई",
+    "aboutThisTool": "इस टूल के बारे में"
   },
   "brand": {
     "appName": "Nanosoft Suite",
@@ -1221,7 +1222,8 @@
       "elementData": "तत्व",
       "cascades": "कैस्केड",
       "mullerResonance": "अनुनाद"
-    }
+    },
+    "opensPage": "खुलता है: {{page}}"
   },
   "mullerResonance": {
     "title": "Muller अनुनाद एक्सप्लोरर",
