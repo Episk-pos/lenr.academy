@@ -45,6 +45,8 @@ import { expandHalfLifeUnit, normalizeElementSymbol, formatDensity, formatSpecif
 import { filterDataBySearch, SearchMetadata } from '../utils/searchUtils'
 import { getRadiationTypeInfo, localizeRadiationTypeInfo } from '../constants/radiationTypes'
 import { SPECIAL_PARTICLE_IDS, SPECIAL_PARTICLES_BY_ID } from '../constants/specialParticles'
+import PageHeader from '../components/PageHeader'
+import { PAGE_ICONS } from '../constants/pageIcons'
 
 // Comprehensive decay mode information. name/description are the English source
 // strings; the UI translates them via the decayModes.<code>.name|description keys.
@@ -1668,10 +1670,12 @@ export default function ShowElementData() {
           isTabsStuck ? 'max-h-0 opacity-0 -translate-y-4 mb-0' : 'max-h-32 opacity-100 translate-y-0'
         }`}
       >
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">{t('navigation.showElementData')}</h1>
-        <p className="text-gray-600 dark:text-gray-400">
-          {t('elementData.subtitle')}
-        </p>
+        <PageHeader
+          icon={PAGE_ICONS.elementData}
+          title={t('navigation.showElementData')}
+          subtitle={t('elementData.subtitle')}
+          className=""
+        />
       </div>
 
       <TabNavigation

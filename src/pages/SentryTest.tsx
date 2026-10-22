@@ -1,5 +1,7 @@
 import * as Sentry from '@sentry/react'
 import { useState } from 'react'
+import PageHeader from '../components/PageHeader'
+import { PAGE_ICONS } from '../constants/pageIcons'
 
 function SentryTest() {
   const [testResults, setTestResults] = useState<string[]>([])
@@ -81,12 +83,11 @@ function SentryTest() {
   return (
     <div className="max-w-4xl mx-auto p-6">
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-8">
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-          Sentry Testing Page
-        </h1>
-        <p className="text-gray-600 dark:text-gray-400 mb-6">
-          Test Sentry error tracking and performance monitoring
-        </p>
+        <PageHeader
+          icon={PAGE_ICONS.sentryTest}
+          title="Sentry Testing Page"
+          subtitle="Test Sentry error tracking and performance monitoring"
+        />
 
         {/* Configuration Info */}
         <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4 mb-6">

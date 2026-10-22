@@ -3,6 +3,8 @@ import { Play, BookOpen, Download, Loader, AlertCircle } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { useDatabase } from '../contexts/DatabaseContext'
 import DatabaseLoadingCard from '../components/DatabaseLoadingCard'
+import PageHeader from '../components/PageHeader'
+import { PAGE_ICONS } from '../constants/pageIcons'
 
 export default function AllTables() {
   const { t } = useTranslation()
@@ -100,10 +102,11 @@ export default function AllTables() {
 
   return (
     <div className="max-w-7xl mx-auto">
-      <div className="mb-6">
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">{t('allTables.title')}</h1>
-        <p className="text-gray-600 dark:text-gray-400">{t('allTables.description')}</p>
-      </div>
+      <PageHeader
+        icon={PAGE_ICONS.allTables}
+        title={t('allTables.title')}
+        subtitle={t('allTables.description')}
+      />
 
       <div className="card p-6 mb-6">
         <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">{t('allTables.sqlEditor')}</h2>

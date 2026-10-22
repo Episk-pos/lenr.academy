@@ -94,7 +94,9 @@ vi.mock('../services/queryService', () => ({
   calculateHeatmapMetrics: vi.fn(() => null),
 }));
 
-vi.mock('lucide-react', () => ({
+vi.mock('lucide-react', async (importOriginal) => ({
+  // Keep real icons for anything not stubbed below (e.g. PAGE_ICONS used by PageHeader)
+  ...(await importOriginal<typeof import('lucide-react')>()),
   Download: () => <svg data-testid="download-icon" />,
   FileJson: () => <svg data-testid="file-json-icon" />,
   FileText: () => <svg data-testid="file-text-icon" />,

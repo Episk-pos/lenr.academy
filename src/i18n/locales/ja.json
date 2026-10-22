@@ -29,7 +29,8 @@
     "selectAll": "すべて選択",
     "expand": "展開",
     "collapse": "折りたたむ",
-    "unknownError": "不明なエラーが発生しました"
+    "unknownError": "不明なエラーが発生しました",
+    "aboutThisTool": "このツールについて"
   },
   "brand": {
     "appName": "Nanosoft Suite",
@@ -1221,7 +1222,8 @@
       "elementData": "元素",
       "cascades": "カスケード",
       "mullerResonance": "共鳴"
-    }
+    },
+    "opensPage": "開くページ：{{page}}"
   },
   "mullerResonance": {
     "title": "ミュラー共鳴エクスプローラー",

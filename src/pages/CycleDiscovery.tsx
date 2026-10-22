@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
-import { AlertCircle, XCircle, CheckCircle, RefreshCw } from 'lucide-react'
+import { XCircle, CheckCircle } from 'lucide-react'
 import { useDatabase } from '../contexts/DatabaseContext'
 import { useQueryState } from '../contexts/QueryStateContext'
 import { useCycleDiscoveryWorker } from '../hooks/useCycleDiscoveryWorker'
@@ -13,6 +13,9 @@ import type {
   CycleDiscoveryResults,
   DiscoveredCycle,
 } from '../types'
+import PageHeader from '../components/PageHeader'
+import AboutToolSection from '../components/AboutToolSection'
+import { PAGE_ICONS } from '../constants/pageIcons'
 
 const DEFAULT_PARAMS: CycleDiscoveryParameters = {
   minFusionMeV: 1.0,
@@ -141,30 +144,32 @@ export default function CycleDiscovery() {
   return (
     <div className="max-w-6xl mx-auto">
       {/* Page header */}
-      <div className="mb-6">
-        <div className="flex items-center gap-3 mb-2">
-          <RefreshCw className="w-8 h-8 text-primary-600" />
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-            {t('cycleDiscovery.pageTitle')}
-          </h1>
-        </div>
-        <p className="text-gray-600 dark:text-gray-400">
-          {t('cycleDiscovery.pageDescription')}
-        </p>
-      </div>
+      <PageHeader
+        icon={PAGE_ICONS.cycles}
+        title={t('cycleDiscovery.pageTitle')}
+        subtitle={t('cycleDiscovery.pageDescription')}
+      />
 
       {!selectedCycle && (
         <>
-          {/* Info banner */}
-          <div className="card p-6 mb-6 bg-blue-50 dark:bg-blue-900/20">
-            <div className="flex items-start gap-3">
-              <AlertCircle className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
-              <div className="text-sm text-gray-700 dark:text-gray-300">
-                <strong>{t('cycleDiscovery.howItWorksTitle')}:</strong>{' '}
-                {t('cycleDiscovery.howItWorksDescription')}
-              </div>
+          {/* About this tool (collapsible) */}
+          <AboutToolSection data-testid="cycle-discovery-about">
+            <p>
+              <strong>{t('cycleDiscovery.howItWorksTitle')}:</strong>{' '}
+              {t('cycleDiscovery.howItWorksDescription')}
+            </p>
+            <div>
+              <h3 className="font-semibold text-gray-900 dark:text-white mb-2">
+                {t('cycleDiscovery.howCyclesWork')}
+              </h3>
+              <ol className="space-y-2 list-decimal list-inside">
+                <li>{t('cycleDiscovery.howStep1')}</li>
+                <li>{t('cycleDiscovery.howStep2')}</li>
+                <li>{t('cycleDiscovery.howStep3')}</li>
+                <li>{t('cycleDiscovery.howStep4')}</li>
+              </ol>
             </div>
-          </div>
+          </AboutToolSection>
 
           {/* Search form */}
           <div className="mb-6">
@@ -264,21 +269,7 @@ export default function CycleDiscovery() {
             onRunSimulation={handleRunSimulation}
           />
         </div>
-      ) : (
-        !isRunning && (
-          <div className="card p-6 bg-blue-50 dark:bg-blue-900/30">
-            <h3 className="font-semibold text-gray-900 dark:text-white mb-2">
-              {t('cycleDiscovery.howCyclesWork')}
-            </h3>
-            <ol className="text-sm text-gray-700 dark:text-gray-300 space-y-2 list-decimal list-inside">
-              <li>{t('cycleDiscovery.howStep1')}</li>
-              <li>{t('cycleDiscovery.howStep2')}</li>
-              <li>{t('cycleDiscovery.howStep3')}</li>
-              <li>{t('cycleDiscovery.howStep4')}</li>
-            </ol>
-          </div>
-        )
-      )}
+      ) : null}
     </div>
   )
 }

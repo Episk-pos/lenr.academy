@@ -15,6 +15,9 @@ import { getAllElements } from '../services/queryService'
 import { createEqualProportions } from '../services/proportionService'
 import { getMaterialById } from '../constants/materials'
 import type { CascadeResults, Element, WeightedNuclide, ProportionFormat } from '../types'
+import PageHeader from '../components/PageHeader'
+import AboutToolSection from '../components/AboutToolSection'
+import { PAGE_ICONS } from '../constants/pageIcons'
 
 // Parse URL search params into cascade state (returns null fields when param is absent)
 function parseUrlParams(searchParams: URLSearchParams) {
@@ -399,19 +402,27 @@ export default function CascadesAll() {
 
   return (
     <div className="max-w-7xl mx-auto">
-      <div className="mb-6">
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">{t('cascades.simulationTitle')}</h1>
-        <p className="text-gray-600 dark:text-gray-400">{t('cascades.simulationDescription')}</p>
-      </div>
+      <PageHeader
+        icon={PAGE_ICONS.cascades}
+        title={t('cascades.simulationTitle')}
+        subtitle={t('cascades.simulationDescription')}
+      />
 
-      <div className="card p-6 mb-6 bg-blue-50 dark:bg-blue-900/20">
-        <div className="flex items-start gap-3">
-          <AlertCircle className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
-          <div className="text-sm text-gray-700 dark:text-gray-300">
-            <strong>{t('cascades.databaseLimitsTitle')}:</strong> {t('cascades.databaseLimitsDescription')}
-          </div>
+      <AboutToolSection data-testid="cascades-about">
+        <div>
+          <h3 className="font-semibold text-gray-900 dark:text-white mb-2">{t('cascades.howCascadesWork')}</h3>
+          <ol className="space-y-2 list-decimal list-inside">
+            <li>{t('cascades.howStep1')}</li>
+            <li>{t('cascades.howStep2')}</li>
+            <li>{t('cascades.howStep3')}</li>
+            <li>{t('cascades.howStep4')}</li>
+            <li>{t('cascades.howStep5')}</li>
+          </ol>
         </div>
-      </div>
+        <p>
+          <strong>{t('cascades.databaseLimitsTitle')}:</strong> {t('cascades.databaseLimitsDescription')}
+        </p>
+      </AboutToolSection>
 
       <div className="card p-6 mb-6">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
@@ -758,19 +769,6 @@ export default function CascadesAll() {
               </div>
             </div>
           )}
-        </div>
-      )}
-
-      {!results && (
-        <div className="card p-6 mt-6 bg-blue-50 dark:bg-blue-900/30">
-          <h3 className="font-semibold text-gray-900 dark:text-white mb-2">{t('cascades.howCascadesWork')}</h3>
-          <ol className="text-sm text-gray-700 dark:text-gray-300 space-y-2 list-decimal list-inside">
-            <li>{t('cascades.howStep1')}</li>
-            <li>{t('cascades.howStep2')}</li>
-            <li>{t('cascades.howStep3')}</li>
-            <li>{t('cascades.howStep4')}</li>
-            <li>{t('cascades.howStep5')}</li>
-          </ol>
         </div>
       )}
 

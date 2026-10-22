@@ -23,6 +23,8 @@ import { useBosonFermionVisibility } from '../hooks/useBosonFermionVisibility'
 import { exportToJSON, exportToPDF } from '../utils/exportUtils'
 import { useQueryHistory } from '../hooks/useQueryHistory'
 import QueryHistoryPanel from '../components/QueryHistoryPanel'
+import PageHeader from '../components/PageHeader'
+import { PAGE_ICONS } from '../constants/pageIcons'
 import EnergyHistogram from '../components/EnergyHistogram'
 import ReactionNetworkGraph from '../components/ReactionNetworkGraph'
 import CitationBadge from '../components/CitationBadge'
@@ -661,10 +663,12 @@ export default function FusionQuery() {
   return (
     <div className="max-w-7xl mx-auto">
       <div className="mb-6 flex items-start justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">{t('reactions.fusionTitle')}</h1>
-          <p className="text-gray-600 dark:text-gray-400">{t('reactions.fusionDescription')}</p>
-        </div>
+        <PageHeader
+          icon={PAGE_ICONS.fusion}
+          title={t('reactions.fusionTitle')}
+          subtitle={t('reactions.fusionDescription')}
+          className=""
+        />
         <QueryHistoryPanel
           history={history}
           currentQueryType="fusion"

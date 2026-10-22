@@ -26,6 +26,8 @@ import {
   type NAEPrediction,
 } from '../services/mullerResonanceService'
 import { NAE_GAP_MIN, NAE_GAP_MAX } from '../constants/naeConstants'
+import PageHeader from '../components/PageHeader'
+import { PAGE_ICONS } from '../constants/pageIcons'
 
 const THRESHOLD_OPTIONS = [0.1, 0.5, 1.0, 2.0, 5.0, 10.0]
 
@@ -406,13 +408,12 @@ export default function MullerResonance() {
   return (
     <div className="max-w-7xl mx-auto">
       {/* Header */}
+      <PageHeader
+        icon={PAGE_ICONS.mullerResonance}
+        title={t('mullerResonance.title')}
+        subtitle={t('mullerResonance.description')}
+      />
       <div className="card p-6 mb-6">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
-          {t('mullerResonance.title')}
-        </h1>
-        <p className="text-gray-600 dark:text-gray-400 mb-4">
-          {t('mullerResonance.description')}
-        </p>
         <div className="p-4 rounded-lg bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
           <p className="font-mono text-lg text-center text-gray-900 dark:text-white mb-2">
             L = Z &times; C<sub>e</sub> &times; 2<sup>N</sup>

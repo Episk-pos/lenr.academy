@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom'
 import { Trans, useTranslation } from 'react-i18next'
 import {
   AlertTriangle,
-  FlaskConical,
   Search,
   BookOpen,
   Loader2,
@@ -23,6 +22,8 @@ import {
 } from '../services/transmutationPathwayService'
 import TransmutationArrow from '../components/TransmutationArrow'
 import NuclideEquation from '../components/NuclideEquation'
+import PageHeader from '../components/PageHeader'
+import { PAGE_ICONS } from '../constants/pageIcons'
 
 const CATEGORY_KEYS: TransmutationCategory[] = [
   'solid-state',
@@ -181,25 +182,17 @@ export default function Transmutations() {
   return (
     <div className="max-w-5xl mx-auto">
       {/* Header */}
-      <div className="mb-6">
-        <div className="flex items-center gap-2 mb-2">
-          <FlaskConical className="w-6 h-6 text-primary-600" />
-          <h1
-            data-testid="transmutations-heading"
-            className="text-3xl font-bold text-gray-900 dark:text-white"
-          >
-            {t('transmutations.title', {
-              defaultValue: 'Transmutation Pathway Explorer',
-            })}
-          </h1>
-        </div>
-        <p className="text-gray-600 dark:text-gray-400">
-          {t('transmutations.subtitle', {
-            defaultValue:
-              'Documented LENR transmutation claims from primary sources, paired with candidate two-step pathways from the Parkhomov reaction database.',
-          })}
-        </p>
-      </div>
+      <PageHeader
+        icon={PAGE_ICONS.transmutations}
+        titleTestId="transmutations-heading"
+        title={t('transmutations.title', {
+          defaultValue: 'Transmutation Pathway Explorer',
+        })}
+        subtitle={t('transmutations.subtitle', {
+          defaultValue:
+            'Documented LENR transmutation claims from primary sources, paired with candidate two-step pathways from the Parkhomov reaction database.',
+        })}
+      />
 
       {/* Disclaimer banner */}
       <div

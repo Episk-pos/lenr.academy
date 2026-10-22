@@ -29,7 +29,8 @@
     "selectAll": "Zaznacz wszystko",
     "expand": "Rozwiń",
     "collapse": "Zwiń",
-    "unknownError": "Wystąpił nieznany błąd"
+    "unknownError": "Wystąpił nieznany błąd",
+    "aboutThisTool": "O tym narzędziu"
   },
   "brand": {
     "appName": "Nanosoft Suite",
@@ -1229,7 +1230,8 @@
       "elementData": "pierwiastek",
       "cascades": "kaskada",
       "mullerResonance": "rezonans"
-    }
+    },
+    "opensPage": "Otwiera: {{page}}"
   },
   "mullerResonance": {
     "title": "Eksplorator rezonansów Mullera",
