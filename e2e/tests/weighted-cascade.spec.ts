@@ -2,6 +2,7 @@ import { test, expect } from '@playwright/test';
 import {
   waitForDatabaseReady,
   acceptMeteredWarningIfPresent,
+  acceptPrivacyConsent,
   setLanguagePreference
 } from '../fixtures/test-helpers';
 
@@ -9,6 +10,8 @@ test.describe('Weighted Cascade (Issue #96)', () => {
   test.beforeEach(async ({ page }) => {
     // Set language preference to avoid language selection modal
     await setLanguagePreference(page, 'en');
+    // Dismiss the analytics banner so it can't cover the Run button
+    await acceptPrivacyConsent(page);
     // Navigate to cascades page
     await page.goto('/cascades');
     await acceptMeteredWarningIfPresent(page);
