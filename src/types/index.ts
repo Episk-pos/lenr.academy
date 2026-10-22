@@ -1,4 +1,4 @@
-// Core data types for Nanosoft nuclear transmutation tables
+// Core data types for the LENR Academy nuclear transmutation tables (Parkhomov data, originally published via the Nanosoft Package)
 
 export type NeutrinoType = 'none' | 'left' | 'right' | 'left-right' | 'any';
 export type BosonFermionType = 'b' | 'f';

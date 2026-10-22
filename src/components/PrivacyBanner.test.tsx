@@ -75,6 +75,24 @@ describe('PrivacyBanner', () => {
     expect(localStorage.getItem(ANALYTICS_CONSENT_KEY)).toBe('declined');
   });
 
+  it('stays hidden while deferred and appears once no longer deferred', async () => {
+    const { rerender } = render(<PrivacyBanner deferred />);
+    await act(async () => { vi.advanceTimersByTime(16); });
+    expect(screen.queryByTestId('analytics-banner')).not.toBeInTheDocument();
+
+    rerender(<PrivacyBanner deferred={false} />);
+    await act(async () => { vi.advanceTimersByTime(16); });
+    expect(screen.getByTestId('analytics-banner')).toBeInTheDocument();
+  });
+
+  it('does not appear after deferral ends when consent already stored', async () => {
+    localStorage.setItem(ANALYTICS_CONSENT_KEY, 'declined');
+    const { rerender } = render(<PrivacyBanner deferred />);
+    rerender(<PrivacyBanner deferred={false} />);
+    await act(async () => { vi.advanceTimersByTime(16); });
+    expect(screen.queryByTestId('analytics-banner')).not.toBeInTheDocument();
+  });
+
   it('hides banner after accept with exit animation', async () => {
     render(<PrivacyBanner />);
     await act(async () => { vi.advanceTimersByTime(16); });

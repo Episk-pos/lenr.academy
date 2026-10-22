@@ -72,7 +72,7 @@ test.describe('Catalytic Cycle Discovery UX', () => {
     await navigateToPage(page, 'Cycle Discovery')
     await expect(page).toHaveURL('/cycles')
 
-    // Two h1s on page (sidebar "Nanosoft Suite" + page title) — match by name.
+    // Two h1s on page (sidebar "LENR Academy" + page title) — match by name.
     await expect(
       page.getByRole('heading', { name: 'Catalytic Cycle Discovery' })
     ).toBeVisible()

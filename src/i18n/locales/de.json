@@ -32,9 +32,8 @@
     "unknownError": "Unbekannter Fehler aufgetreten"
   },
   "brand": {
-    "appName": "Nanosoft Suite",
-    "appSubtitle": "LENR Academy",
-    "appShortName": "Nanosoft"
+    "appName": "LENR Academy",
+    "appShortName": "LENR Academy"
   },
   "navigation": {
     "home": "Startseite",
@@ -133,7 +132,7 @@
   "home": {
     "title": "LENR Academy",
     "subtitle": "Erkunden Sie Niedrigenergie-Kerntransmutationsreaktionen, modellieren Sie Kaskadenprozesse, visualisieren Sie Zerfallsketten und untersuchen Sie Resonanzphänomene — alles in Ihrem Browser",
-    "basedOn": "Basierend auf den <parkhomovLink>Parkhomov-Tabellen</parkhomovLink> und dem ursprünglichen <nanosoftLink>Nanosoft-Paket</nanosoftLink> von R.W. Greenyer & P.W. Power",
+    "basedOn": "Eine moderne Neuimplementierung des ursprünglichen <nanosoftLink>Nanosoft-Pakets</nanosoftLink> von R.W. Greenyer & P.W. Power, basierend auf den <parkhomovLink>Parkhomov-Tabellen</parkhomovLink>",
     "queryReactions": {
       "title": "Kernreaktionen abfragen",
       "description": "Durchsuchen Sie Tausende exothermer Fusions-, Spaltungs- und Zwei-zu-Zwei-Transmutationsreaktionen aus den Parkhomov-Tabellen",
@@ -1556,7 +1555,8 @@
     "clearAll": "Alle löschen",
     "removeItem": "{{item}} entfernen",
     "lanthanides": "Lanthanoide (57-71)",
-    "actinides": "Actinoide (89-103)"
+    "actinides": "Actinoide (89-103)",
+    "scrollHint": "Seitlich wischen, um alle Spalten zu sehen"
   },
   "limitSelector": {
     "resultLimit": "Ergebnislimit",

@@ -32,9 +32,8 @@
     "unknownError": "Une erreur inconnue s'est produite"
   },
   "brand": {
-    "appName": "Nanosoft Suite",
-    "appSubtitle": "LENR Academy",
-    "appShortName": "Nanosoft"
+    "appName": "LENR Academy",
+    "appShortName": "LENR Academy"
   },
   "navigation": {
     "home": "Accueil",
@@ -133,7 +132,7 @@
   "home": {
     "title": "LENR Academy",
     "subtitle": "Explorez les réactions de transmutation nucléaire à basse énergie, modélisez les processus en cascade, visualisez les chaînes de désintégration et étudiez les phénomènes de résonance — le tout dans votre navigateur",
-    "basedOn": "Construit sur les <parkhomovLink>Tables de Parkhomov</parkhomovLink> et le <nanosoftLink>Package Nanosoft</nanosoftLink> original de R.W. Greenyer & P.W. Power",
+    "basedOn": "Une réimplémentation moderne du <nanosoftLink>Package Nanosoft</nanosoftLink> original de R.W. Greenyer & P.W. Power, construite sur les <parkhomovLink>Tables de Parkhomov</parkhomovLink>",
     "queryReactions": {
       "title": "Rechercher des réactions nucléaires",
       "description": "Parcourez des milliers de réactions exothermiques de fusion, fission et transmutation deux-à-deux issues des Tables de Parkhomov",
@@ -1560,7 +1559,8 @@
     "clearAll": "Tout effacer",
     "removeItem": "Retirer {{item}}",
     "lanthanides": "Lanthanides (57-71)",
-    "actinides": "Actinides (89-103)"
+    "actinides": "Actinides (89-103)",
+    "scrollHint": "Faites défiler horizontalement pour voir toutes les colonnes"
   },
   "limitSelector": {
     "resultLimit": "Limite de résultats",

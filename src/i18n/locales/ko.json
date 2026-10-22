@@ -32,9 +32,8 @@
     "unknownError": "알 수 없는 오류가 발생했습니다"
   },
   "brand": {
-    "appName": "Nanosoft Suite",
-    "appSubtitle": "LENR Academy",
-    "appShortName": "Nanosoft"
+    "appName": "LENR Academy",
+    "appShortName": "LENR Academy"
   },
   "navigation": {
     "home": "홈",
@@ -133,7 +132,7 @@
   "home": {
     "title": "LENR Academy",
     "subtitle": "저에너지 핵변환 반응을 탐색하고, 캐스케이드 과정을 모델링하고, 붕괴 사슬을 시각화하고, 공명 현상을 연구하세요 — 모두 브라우저에서 가능합니다",
-    "basedOn": "<parkhomovLink>Parkhomov 표</parkhomovLink>와 R.W. Greenyer & P.W. Power의 원본 <nanosoftLink>Nanosoft Package</nanosoftLink>를 기반으로 제작되었습니다",
+    "basedOn": "R.W. Greenyer & P.W. Power의 원본 <nanosoftLink>Nanosoft Package</nanosoftLink>를 현대적으로 재구현한 것으로, <parkhomovLink>Parkhomov 표</parkhomovLink>를 기반으로 합니다",
     "queryReactions": {
       "title": "핵반응 조회",
       "description": "Parkhomov 표에서 수천 개의 발열 핵융합, 핵분열 및 2-대-2 핵변환 반응을 검색하세요",
@@ -1556,7 +1555,8 @@
     "clearAll": "모두 지우기",
     "removeItem": "{{item}} 제거",
     "lanthanides": "란타넘족 (57-71)",
-    "actinides": "악티늄족 (89-103)"
+    "actinides": "악티늄족 (89-103)",
+    "scrollHint": "옆으로 스와이프하여 모든 열을 확인하세요"
   },
   "limitSelector": {
     "resultLimit": "결과 제한",

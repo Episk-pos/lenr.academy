@@ -32,9 +32,8 @@
     "unknownError": "发生未知错误"
   },
   "brand": {
-    "appName": "Nanosoft Suite",
-    "appSubtitle": "LENR Academy",
-    "appShortName": "Nanosoft"
+    "appName": "LENR Academy",
+    "appShortName": "LENR Academy"
   },
   "navigation": {
     "home": "主页",
@@ -133,7 +132,7 @@
   "home": {
     "title": "LENR Academy",
     "subtitle": "探索低能核嬗变反应、模拟级联过程、可视化衰变链并研究共振现象 — 一切尽在浏览器中",
-    "basedOn": "基于<parkhomovLink>帕尔霍莫夫表</parkhomovLink>和R.W. Greenyer & P.W. Power的原始<nanosoftLink>Nanosoft软件包</nanosoftLink>构建",
+    "basedOn": "R.W. Greenyer & P.W. Power 原始<nanosoftLink>Nanosoft软件包</nanosoftLink>的现代重新实现，基于<parkhomovLink>帕尔霍莫夫表</parkhomovLink>构建",
     "queryReactions": {
       "title": "查询核反应",
       "description": "从帕尔霍莫夫表中搜索数千种放热聚变、裂变和二对二嬗变反应",
@@ -1556,7 +1555,8 @@
     "clearAll": "全部清除",
     "removeItem": "移除 {{item}}",
     "lanthanides": "镧系元素（57-71）",
-    "actinides": "锕系元素（89-103）"
+    "actinides": "锕系元素（89-103）",
+    "scrollHint": "左右滑动以查看所有列"
   },
   "limitSelector": {
     "resultLimit": "结果上限",

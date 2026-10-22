@@ -32,9 +32,8 @@
     "unknownError": "अज्ञात त्रुटि हुई"
   },
   "brand": {
-    "appName": "Nanosoft Suite",
-    "appSubtitle": "LENR Academy",
-    "appShortName": "Nanosoft"
+    "appName": "LENR Academy",
+    "appShortName": "LENR Academy"
   },
   "navigation": {
     "home": "होम",
@@ -133,7 +132,7 @@
   "home": {
     "title": "LENR Academy",
     "subtitle": "निम्न-ऊर्जा नाभिकीय तत्वांतरण अभिक्रियाओं का अन्वेषण करें, कैस्केड प्रक्रियाओं का मॉडल बनाएँ, क्षय शृंखलाओं को देखें और अनुनाद परिघटनाओं की जाँच करें — सब कुछ आपके ब्राउज़र में",
-    "basedOn": "<parkhomovLink>Parkhomov Tables</parkhomovLink> और R.W. Greenyer व P.W. Power के मूल <nanosoftLink>Nanosoft Package</nanosoftLink> पर आधारित",
+    "basedOn": "R.W. Greenyer व P.W. Power के मूल <nanosoftLink>Nanosoft Package</nanosoftLink> का एक आधुनिक पुनर्कार्यान्वयन, जो <parkhomovLink>Parkhomov Tables</parkhomovLink> पर आधारित है",
     "queryReactions": {
       "title": "नाभिकीय अभिक्रियाएँ खोजें",
       "description": "Parkhomov Tables से हज़ारों ऊष्माक्षेपी संलयन, विखंडन और दो-से-दो तत्वांतरण अभिक्रियाएँ खोजें",
@@ -1556,7 +1555,8 @@
     "clearAll": "सभी साफ़ करें",
     "removeItem": "{{item}} हटाएँ",
     "lanthanides": "लैंथेनाइड (57-71)",
-    "actinides": "ऐक्टिनाइड (89-103)"
+    "actinides": "ऐक्टिनाइड (89-103)",
+    "scrollHint": "सभी कॉलम देखने के लिए बगल में स्वाइप करें"
   },
   "limitSelector": {
     "resultLimit": "परिणाम सीमा",
