@@ -21,6 +21,7 @@ describe('i18n browser language detection', () => {
   beforeEach(() => {
     localStorage.clear();
     document.documentElement.lang = '';
+    document.documentElement.dir = '';
   });
 
   afterEach(() => {
@@ -33,6 +34,8 @@ describe('i18n browser language detection', () => {
     ['uk-UA', 'uk'],
     ['ko-KR', 'ko'],
     ['hi-IN', 'hi'],
+    ['ar-SA', 'ar'],
+    ['ar-EG', 'ar'],
     ['it-CH', 'it'],
     ['pl-PL', 'pl'],
     ['zh-TW', 'zh'],
@@ -75,6 +78,32 @@ describe('i18n browser language detection', () => {
       expect(document.documentElement.lang).toBe('uk');
       await i18n.changeLanguage('ko');
       expect(document.documentElement.lang).toBe('ko');
+    });
+  });
+
+  describe('<html dir> sync', () => {
+    it('sets dir="ltr" for left-to-right languages on init', async () => {
+      await initWithBrowserLanguages(['en-US']);
+      expect(document.documentElement.dir).toBe('ltr');
+    });
+
+    it('sets dir="rtl" and lang="ar" on init for an Arabic browser', async () => {
+      await initWithBrowserLanguages(['ar-EG']);
+      expect(document.documentElement.lang).toBe('ar');
+      expect(document.documentElement.dir).toBe('rtl');
+    });
+
+    it('switches to rtl for Arabic and back to ltr', async () => {
+      const i18n = await initWithBrowserLanguages(['en-US']);
+      await i18n.changeLanguage('ar');
+      expect(document.documentElement.lang).toBe('ar');
+      expect(document.documentElement.dir).toBe('rtl');
+      await i18n.changeLanguage('en');
+      expect(document.documentElement.lang).toBe('en');
+      expect(document.documentElement.dir).toBe('ltr');
+      await i18n.changeLanguage('ar');
+      await i18n.changeLanguage('ja');
+      expect(document.documentElement.dir).toBe('ltr');
     });
   });
 });

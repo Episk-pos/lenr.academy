@@ -219,6 +219,7 @@ function NuclideBadge({
 
   return (
     <span
+      dir="ltr"
       className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold transition-all duration-150 cursor-default ${
         colorClass || variantClasses[variant]
       } ${isHighlighted ? 'ring-2 ring-offset-1 ring-primary-500 dark:ring-primary-400 scale-110 z-10' : ''} ${
@@ -501,6 +502,7 @@ function CycleLoopDiagram({
 
   return (
     <svg
+      direction="ltr"
       viewBox={`0 0 ${svgW} ${svgH}`}
       className="w-full max-w-3xl mx-auto"
       style={{ maxHeight: 600 }}
@@ -1107,13 +1109,13 @@ function EnhancedStepList({
                       {t('cycleDiscovery.feedbackLabel')}
                     </span>
                   )}
-                  <span className="text-sm font-mono font-medium text-green-700 dark:text-green-400 ml-auto">
+                  <span className="text-sm font-mono font-medium text-green-700 dark:text-green-400 ms-auto">
                     {reaction.MeV >= 0 ? '+' : ''}{reaction.MeV.toFixed(2)} MeV
                   </span>
                 </div>
 
-                {/* Reaction equation with flow annotations */}
-                <div className="flex flex-wrap items-center gap-1.5">
+                {/* Reaction equation with flow annotations (physics notation: always LTR) */}
+                <div className="flex flex-wrap items-center gap-1.5" dir="ltr">
                   {/* Inputs */}
                   {reaction.inputs.map((n, i) => {
                     const key = nKey(n)
@@ -1361,9 +1363,9 @@ function NetCycleSummary({
 
         {/* Arrow + cycle symbol */}
         <div className="flex items-center justify-center gap-2 text-amber-600 dark:text-amber-400 flex-shrink-0">
-          <ArrowRight className="w-5 h-5" />
+          <ArrowRight className="w-5 h-5 rtl:-scale-x-100" />
           <RefreshCw className="w-6 h-6" />
-          <ArrowRight className="w-5 h-5" />
+          <ArrowRight className="w-5 h-5 rtl:-scale-x-100" />
         </div>
 
         {/* CATALYST RECOVERED — the species regenerated each iteration */}
@@ -1504,13 +1506,13 @@ export default function CycleVisualization({
                 className="p-1.5 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-400 transition-colors"
                 title={t('common.back')}
               >
-                <ArrowLeft className="w-5 h-5" />
+                <ArrowLeft className="w-5 h-5 rtl:-scale-x-100" />
               </button>
               <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
                 {t('cycleDiscovery.cycleDetail')}
               </h2>
               {typeof totalCount === 'number' && totalCount > 1 && (
-                <div className="flex items-center gap-1 ml-2">
+                <div className="flex items-center gap-1 ms-2">
                   <button
                     onClick={onPrev}
                     disabled={!onPrev}
@@ -1518,7 +1520,7 @@ export default function CycleVisualization({
                     title={t('common.previous')}
                     aria-label={t('common.previous')}
                   >
-                    <ChevronLeft className="w-5 h-5" />
+                    <ChevronLeft className="w-5 h-5 rtl:-scale-x-100" />
                   </button>
                   <span className="text-sm text-gray-500 dark:text-gray-400 tabular-nums min-w-[3.5rem] text-center">
                     {(currentIndex ?? 0) + 1} / {totalCount}
@@ -1530,13 +1532,13 @@ export default function CycleVisualization({
                     title={t('common.next')}
                     aria-label={t('common.next')}
                   >
-                    <ChevronRight className="w-5 h-5" />
+                    <ChevronRight className="w-5 h-5 rtl:-scale-x-100" />
                   </button>
                 </div>
               )}
             </div>
-            <div className="flex flex-wrap items-center gap-1 ml-10">
-              <span className="text-sm text-gray-500 dark:text-gray-400 mr-1">
+            <div className="flex flex-wrap items-center gap-1 ms-10">
+              <span className="text-sm text-gray-500 dark:text-gray-400 me-1">
                 {t('cycleDiscovery.fuelLabel')}:
               </span>
               {cycle.fuelNuclides.map((n, i) => (
@@ -1555,7 +1557,7 @@ export default function CycleVisualization({
             onClick={() => onRunSimulation(cycle)}
             className="btn btn-primary px-5 py-2.5"
           >
-            <Play className="w-4 h-4 mr-2 inline" />
+            <Play className="w-4 h-4 me-2 inline" />
             {t('cycleDiscovery.runFullCascade')}
           </button>
         </div>

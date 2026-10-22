@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import en from '../i18n/locales/en.json';
 import { mockReactI18next } from '../test-utils/i18nMock';
@@ -72,5 +72,45 @@ describe('LanguageSwitcher', () => {
     render(<LanguageSwitcher compact />);
     // In compact mode, language name is not shown (only Globe icon)
     expect(screen.queryByText('English')).not.toBeInTheDocument();
+  });
+
+  describe('dropdown position', () => {
+    function openWithTriggerAt(left: number, width: number, position: 'above' | 'below') {
+      render(<LanguageSwitcher compact position={position} />);
+      const button = screen.getByLabelText(en.language.changeLanguage);
+      vi.spyOn(button, 'getBoundingClientRect').mockReturnValue({
+        left, right: left + width, width, top: 10, bottom: 50, height: 40, x: left, y: 10, toJSON: () => ({}),
+      } as DOMRect);
+      fireEvent.click(button);
+      return screen.getByText(en.language.selectLanguage).parentElement!.parentElement as HTMLElement;
+    }
+
+    beforeEach(() => {
+      vi.spyOn(window, 'innerWidth', 'get').mockReturnValue(375);
+    });
+
+    afterEach(() => {
+      document.documentElement.dir = '';
+      vi.restoreAllMocks();
+    });
+
+    it('LTR below: aligns the menu to the trigger right edge', () => {
+      document.documentElement.dir = 'ltr';
+      const menu = openWithTriggerAt(280, 40, 'below');
+      expect(menu.style.left).toBe('120px');
+    });
+
+    it('RTL below: mirrors to the trigger left edge instead of clipping off-screen', () => {
+      document.documentElement.dir = 'rtl';
+      const menu = openWithTriggerAt(55, 40, 'below');
+      expect(menu.style.left).toBe('55px');
+    });
+
+    it('RTL above: clamps inside the viewport', () => {
+      document.documentElement.dir = 'rtl';
+      // rect.right - width = 44 - 200 = -156 -> clamped to the 8px margin
+      const menu = openWithTriggerAt(4, 40, 'above');
+      expect(menu.style.left).toBe('8px');
+    });
   });
 });

@@ -827,7 +827,7 @@ export default function CascadeNetworkDiagram({
           </button>
 
           {/* Playback Speed */}
-          <div className="ml-4 flex items-center gap-2">
+          <div className="ms-4 flex items-center gap-2">
             <Gauge className="w-4 h-4 text-gray-500 dark:text-gray-400" />
             <select
               value={playbackSpeed}
@@ -844,7 +844,7 @@ export default function CascadeNetworkDiagram({
           {/* Restart Button */}
           <button
             onClick={handleRestart}
-            className="ml-auto px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg shadow-sm transition-colors flex items-center gap-2"
+            className="ms-auto px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg shadow-sm transition-colors flex items-center gap-2"
             title={t('cascades.network.restartTooltip')}
           >
             <Play className="w-4 h-4" />
@@ -877,6 +877,7 @@ export default function CascadeNetworkDiagram({
       {/* Network Graph Container */}
       <div
         ref={containerRef}
+        dir="ltr"
         style={{ width, height }}
         className="rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 relative overflow-hidden"
       >

@@ -477,7 +477,7 @@ export default function ReactionNetworkGraph({ reactions, reactionType }: Reacti
         </div>
         <button
           onClick={() => setExpanded(!expanded)}
-          className="btn btn-secondary p-2 ml-4"
+          className="btn btn-secondary p-2 ms-4"
         >
           <ChevronDown className={`w-5 h-5 transition-transform duration-200 ${expanded ? 'rotate-180' : ''}`} />
         </button>
@@ -490,13 +490,13 @@ export default function ReactionNetworkGraph({ reactions, reactionType }: Reacti
               <span>{t('networkGraph.tooManyReactions', { count: MAX_REACTIONS_DEFAULT })}</span>
               <button
                 onClick={() => setLimitResults(false)}
-                className="ml-3 underline hover:no-underline text-xs"
+                className="ms-3 underline hover:no-underline text-xs"
               >
                 {t('networkGraph.showAll')}
               </button>
             </div>
           )}
-          <div className="overflow-auto rounded-lg border border-gray-200 dark:border-gray-700">
+          <div className="overflow-auto rounded-lg border border-gray-200 dark:border-gray-700" dir="ltr">
             <svg
               ref={svgRef}
               width="100%"
@@ -514,7 +514,7 @@ export default function ReactionNetworkGraph({ reactions, reactionType }: Reacti
               <span className="inline-block w-3 h-0.5 rounded" style={{ backgroundColor: isDark ? '#f87171' : '#dc2626' }} />
               {t('networkGraph.endothermic')}
             </span>
-            <span className="ml-auto">{t('networkGraph.instructions')}</span>
+            <span className="ms-auto">{t('networkGraph.instructions')}</span>
           </div>
         </div>
       </div>

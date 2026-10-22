@@ -362,7 +362,7 @@ export default function RussellChart3D({ onElementClick }: RussellChart3DProps) 
   const isDark = theme === 'dark'
 
   return (
-    <div className="relative">
+    <div className="relative" dir="ltr">
       <div
         className="w-full rounded-lg overflow-hidden"
         style={{

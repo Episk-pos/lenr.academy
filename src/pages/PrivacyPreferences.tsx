@@ -166,7 +166,7 @@ export default function PrivacyPreferences() {
             >
               <div className="flex items-start gap-3">
                 <CheckCircle className={`w-5 h-5 mt-0.5 ${errorReportingEnabled ? 'text-primary-600' : 'text-gray-400'}`} />
-                <div className="text-left">
+                <div className="text-start">
                   <p className={`font-medium mb-1 ${errorReportingEnabled ? 'text-primary-700 dark:text-primary-400' : 'text-gray-900 dark:text-white'}`}>
                     {t('privacyPage.errorReporting.enable')}
                   </p>
@@ -188,7 +188,7 @@ export default function PrivacyPreferences() {
             >
               <div className="flex items-start gap-3">
                 <XCircle className={`w-5 h-5 mt-0.5 ${errorReportingDisabled ? 'text-gray-600' : 'text-gray-400'}`} />
-                <div className="text-left">
+                <div className="text-start">
                   <p className={`font-medium mb-1 ${errorReportingDisabled ? 'text-gray-700 dark:text-gray-300' : 'text-gray-900 dark:text-white'}`}>
                     {t('privacyPage.errorReporting.disable')}
                   </p>
@@ -291,7 +291,7 @@ export default function PrivacyPreferences() {
             >
               <div className="flex items-start gap-3">
                 <CheckCircle className={`w-5 h-5 mt-0.5 ${isEnabled ? 'text-primary-600' : 'text-gray-400'}`} />
-                <div className="text-left">
+                <div className="text-start">
                   <p className={`font-medium mb-1 ${isEnabled ? 'text-primary-700 dark:text-primary-400' : 'text-gray-900 dark:text-white'}`}>
                     {t('privacyPage.analytics.enable')}
                   </p>
@@ -313,7 +313,7 @@ export default function PrivacyPreferences() {
             >
               <div className="flex items-start gap-3">
                 <XCircle className={`w-5 h-5 mt-0.5 ${isDisabled ? 'text-gray-600' : 'text-gray-400'}`} />
-                <div className="text-left">
+                <div className="text-start">
                   <p className={`font-medium mb-1 ${isDisabled ? 'text-gray-700 dark:text-gray-300' : 'text-gray-900 dark:text-white'}`}>
                     {t('privacyPage.analytics.disable')}
                   </p>

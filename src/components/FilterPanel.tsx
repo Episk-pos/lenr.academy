@@ -385,7 +385,7 @@ export default function FilterPanel({
           <h3 className="font-semibold text-gray-900 dark:text-gray-100 truncate">
             {t('query.filters')}
             {activeFilterCount > 0 && (
-              <span className="ml-2 px-2 py-0.5 text-xs rounded-full bg-primary-100 text-primary-700 dark:bg-primary-900/30 dark:text-primary-300">
+              <span className="ms-2 px-2 py-0.5 text-xs rounded-full bg-primary-100 text-primary-700 dark:bg-primary-900/30 dark:text-primary-300">
                 {activeFilterCount}
               </span>
             )}
@@ -414,18 +414,18 @@ export default function FilterPanel({
       {/* Search and Export (always visible) */}
       <div className="flex flex-col sm:flex-row gap-3 mb-4">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+          <Search className="absolute start-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
           <input
             type="text"
             placeholder={searchPlaceholder ?? t('filterPanel.searchPlaceholder')}
             value={searchTerm}
             onChange={(e) => onSearchChange(e.target.value)}
-            className="input pl-10 pr-10 w-full"
+            className="input ps-10 pe-10 w-full"
           />
           {searchTerm && (
             <button
               onClick={() => onSearchChange('')}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+              className="absolute end-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
               aria-label={t('filterPanel.clearSearch')}
               title={t('filterPanel.clearSearch')}
             >
@@ -463,7 +463,7 @@ export default function FilterPanel({
               {/* Custom dropdown button */}
               <button
                 onClick={() => setIsPresetDropdownOpen(!isPresetDropdownOpen)}
-                className="w-full px-3 py-2 text-sm text-left flex items-center justify-between gap-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg hover:border-gray-400 dark:hover:border-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-600 transition-colors"
+                className="w-full px-3 py-2 text-sm text-start flex items-center justify-between gap-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg hover:border-gray-400 dark:hover:border-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-600 transition-colors"
               >
                 <span className="truncate text-gray-900 dark:text-gray-100">
                   {activePresetId
@@ -477,7 +477,7 @@ export default function FilterPanel({
 
               {/* Custom dropdown menu */}
               {isPresetDropdownOpen && (
-                <div className="absolute top-full left-0 mt-1 min-w-full w-max max-w-md bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-lg z-50 max-h-80 overflow-y-auto">
+                <div className="absolute top-full start-0 mt-1 min-w-full w-max max-w-md bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-lg z-50 max-h-80 overflow-y-auto">
                   {/* Built-in presets */}
                   <div className="px-3 py-2 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 sticky top-0">
                     {t('filterPanel.builtInPresets')}
@@ -489,7 +489,7 @@ export default function FilterPanel({
                         handlePresetSelect(preset.id)
                         setIsPresetDropdownOpen(false)
                       }}
-                      className={`w-full px-3 py-2 text-left text-sm hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors ${
+                      className={`w-full px-3 py-2 text-start text-sm hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors ${
                         activePresetId === preset.id
                           ? 'bg-primary-50 dark:bg-primary-900/20 text-primary-700 dark:text-primary-300'
                           : 'text-gray-900 dark:text-gray-100'
@@ -519,7 +519,7 @@ export default function FilterPanel({
                               handlePresetSelect(preset.id)
                               setIsPresetDropdownOpen(false)
                             }}
-                            className={`flex-1 text-left text-sm px-3 py-2 ${
+                            className={`flex-1 text-start text-sm px-3 py-2 ${
                               activePresetId === preset.id
                                 ? 'text-primary-700 dark:text-primary-300'
                                 : 'text-gray-900 dark:text-gray-100'
@@ -534,7 +534,7 @@ export default function FilterPanel({
                                 handleDeletePreset(preset.id, e)
                                 setIsPresetDropdownOpen(false)
                               }}
-                              className="p-1.5 mr-2 rounded hover:bg-red-100 dark:hover:bg-red-900/30 text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 transition-colors shrink-0"
+                              className="p-1.5 me-2 rounded hover:bg-red-100 dark:hover:bg-red-900/30 text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 transition-colors shrink-0"
                               title={t('filterPanel.deletePresetTitle')}
                               aria-label={t('filterPanel.deletePreset')}
                             >

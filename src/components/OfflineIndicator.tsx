@@ -92,7 +92,7 @@ export default function OfflineIndicator() {
     return (
       <>
         <div
-          className="fixed top-0 left-0 right-0 z-50 bg-green-600 text-white shadow-lg transition-all duration-300"
+          className="fixed top-0 start-0 end-0 z-50 bg-green-600 text-white shadow-lg transition-all duration-300"
           role="status"
           aria-live="polite"
           data-testid="offline-reconnected"
@@ -136,7 +136,7 @@ export default function OfflineIndicator() {
     return (
       <>
         <div
-          className="fixed top-0 left-0 right-0 z-50 bg-orange-600 text-white shadow-lg transition-all duration-300 ease-in-out overflow-hidden"
+          className="fixed top-0 start-0 end-0 z-50 bg-orange-600 text-white shadow-lg transition-all duration-300 ease-in-out overflow-hidden"
           role="alert"
           aria-live="assertive"
           data-testid="offline-indicator"

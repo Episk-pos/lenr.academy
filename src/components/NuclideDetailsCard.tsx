@@ -231,24 +231,24 @@ export default function NuclideDetailsCard({ nuclide, onClose, compact = false }
           <dl className="space-y-2 text-sm">
             <div className="flex justify-between gap-2">
               <dt className="text-gray-600 dark:text-gray-400 flex-shrink-0">{t('elements.element')}:</dt>
-              <dd className="font-medium text-gray-900 dark:text-gray-100 text-right">{nuclide.E}</dd>
+              <dd className="font-medium text-gray-900 dark:text-gray-100 text-end">{nuclide.E}</dd>
             </div>
             <div className="flex justify-between gap-2">
               <dt className="text-gray-600 dark:text-gray-400 flex-shrink-0">{t('elements.protonsZ')}:</dt>
-              <dd className="font-medium text-gray-900 dark:text-gray-100 text-right">{nuclide.Z}</dd>
+              <dd className="font-medium text-gray-900 dark:text-gray-100 text-end">{nuclide.Z}</dd>
             </div>
             <div className="flex justify-between gap-2">
               <dt className="text-gray-600 dark:text-gray-400 flex-shrink-0">{t('elements.massNumberA')}:</dt>
-              <dd className="font-medium text-gray-900 dark:text-gray-100 text-right">{nuclide.A}</dd>
+              <dd className="font-medium text-gray-900 dark:text-gray-100 text-end">{nuclide.A}</dd>
             </div>
             <div className="flex justify-between gap-2">
               <dt className="text-gray-600 dark:text-gray-400 flex-shrink-0">{t('elements.neutronsN')}:</dt>
-              <dd className="font-medium text-gray-900 dark:text-gray-100 text-right">{nuclide.A - nuclide.Z}</dd>
+              <dd className="font-medium text-gray-900 dark:text-gray-100 text-end">{nuclide.A - nuclide.Z}</dd>
             </div>
             {statusLabel && (
               <div className="flex justify-between gap-2" data-testid="nuclide-classification">
                 <dt className="text-gray-600 dark:text-gray-400 flex-shrink-0">{t('elementData.classification')}:</dt>
-                <dd className="font-medium text-gray-900 dark:text-gray-100 text-right">{statusLabel}</dd>
+                <dd className="font-medium text-gray-900 dark:text-gray-100 text-end">{statusLabel}</dd>
               </div>
             )}
           </dl>
@@ -284,13 +284,13 @@ export default function NuclideDetailsCard({ nuclide, onClose, compact = false }
             {nuclide.SP && (
               <div className="flex justify-between gap-2" data-testid="nuclide-spin">
                 <dt className="text-gray-600 dark:text-gray-400 flex-shrink-0">{t('elementData.nuclearSpin')}:</dt>
-                <dd className="font-medium text-gray-900 dark:text-gray-100 text-right">{nuclide.SP}</dd>
+                <dd className="font-medium text-gray-900 dark:text-gray-100 text-end">{nuclide.SP}</dd>
               </div>
             )}
             {magneticMoment !== null && (
               <div className="flex justify-between gap-2">
                 <dt className="text-gray-600 dark:text-gray-400 flex-shrink-0">{t('elementData.magneticMoment')}:</dt>
-                <dd className="font-medium text-gray-900 dark:text-gray-100 text-right truncate">{magneticMoment} μₙ</dd>
+                <dd className="font-medium text-gray-900 dark:text-gray-100 text-end truncate">{magneticMoment} μₙ</dd>
               </div>
             )}
             <div className="mt-3 p-2 bg-gray-50 dark:bg-gray-800 rounded text-xs text-gray-600 dark:text-gray-400">
@@ -307,19 +307,19 @@ export default function NuclideDetailsCard({ nuclide, onClose, compact = false }
           <dl className="space-y-2 text-sm overflow-hidden">
             <div className="flex justify-between gap-2">
               <dt className="text-gray-600 dark:text-gray-400 flex-shrink-0">{t('elements.bindingEnergy')}:</dt>
-              <dd className="font-medium text-gray-900 dark:text-gray-100 text-right truncate">
+              <dd className="font-medium text-gray-900 dark:text-gray-100 text-end truncate">
                 {nuclide.BE.toFixed(3)} MeV
               </dd>
             </div>
             <div className="flex justify-between gap-2">
               <dt className="text-gray-600 dark:text-gray-400 flex-shrink-0">{t('elements.bePerNucleon')}:</dt>
-              <dd className="font-medium text-gray-900 dark:text-gray-100 text-right truncate">
+              <dd className="font-medium text-gray-900 dark:text-gray-100 text-end truncate">
                 {(nuclide.BE / nuclide.A).toFixed(3)} MeV
               </dd>
             </div>
             <div className="flex justify-between gap-2">
               <dt className="text-gray-600 dark:text-gray-400 flex-shrink-0">{t('elements.atomicMass')}:</dt>
-              <dd className="font-medium text-gray-900 dark:text-gray-100 text-right truncate">
+              <dd className="font-medium text-gray-900 dark:text-gray-100 text-end truncate">
                 {nuclide.AMU.toFixed(6)} amu
               </dd>
             </div>
@@ -335,7 +335,7 @@ export default function NuclideDetailsCard({ nuclide, onClose, compact = false }
               {typeof nuclide.pcaNCrust === 'number' && !isNaN(nuclide.pcaNCrust) && (
                 <div className="flex justify-between gap-2">
                   <dt className="text-gray-600 dark:text-gray-400 flex-shrink-0">{t('elements.isotopicPercent')}:</dt>
-                  <dd className="font-medium text-gray-900 dark:text-gray-100 text-right truncate">
+                  <dd className="font-medium text-gray-900 dark:text-gray-100 text-end truncate">
                     {nuclide.pcaNCrust.toFixed(2)}%
                   </dd>
                 </div>
@@ -343,7 +343,7 @@ export default function NuclideDetailsCard({ nuclide, onClose, compact = false }
               {typeof nuclide.pcaNCrust === 'number' && iaeaAbundance !== null && (
                 <div className="flex justify-between gap-2">
                   <dt className="text-gray-600 dark:text-gray-400 flex-shrink-0">{t('elements.isotopicPercent')} (IAEA):</dt>
-                  <dd className="font-medium text-gray-900 dark:text-gray-100 text-right truncate" title={iaeaDelta !== null ? `Δ${iaeaDelta >= 0 ? '+' : ''}${iaeaDelta.toFixed(4)}` : undefined}>
+                  <dd className="font-medium text-gray-900 dark:text-gray-100 text-end truncate" title={iaeaDelta !== null ? `Δ${iaeaDelta >= 0 ? '+' : ''}${iaeaDelta.toFixed(4)}` : undefined}>
                     {iaeaAbundance.toFixed(4)}%
                   </dd>
                 </div>
@@ -351,16 +351,16 @@ export default function NuclideDetailsCard({ nuclide, onClose, compact = false }
               {typeof nuclide.pcaNCrust !== 'number' && iaeaAbundance !== null && (
                 <div className="flex justify-between gap-2">
                   <dt className="text-gray-600 dark:text-gray-400 flex-shrink-0">{t('elements.isotopicPercent')}:</dt>
-                  <dd className="font-medium text-gray-900 dark:text-gray-100 text-right truncate">
+                  <dd className="font-medium text-gray-900 dark:text-gray-100 text-end truncate">
                     {iaeaAbundance.toFixed(4)}%
-                    <span className="ml-1 text-xs text-gray-400 dark:text-gray-500">(IAEA)</span>
+                    <span className="ms-1 text-xs text-gray-400 dark:text-gray-500">(IAEA)</span>
                   </dd>
                 </div>
               )}
               {typeof nuclide.ppmNCrust === 'number' && !isNaN(nuclide.ppmNCrust) && (
                 <div className="flex justify-between gap-2">
                   <dt className="text-gray-600 dark:text-gray-400 flex-shrink-0">{t('elements.earthsCrust')}:</dt>
-                  <dd className="font-medium text-gray-900 dark:text-gray-100 text-right truncate">
+                  <dd className="font-medium text-gray-900 dark:text-gray-100 text-end truncate">
                     {nuclide.ppmNCrust >= 1000
                       ? `${(nuclide.ppmNCrust / 1000).toFixed(2)} g/kg`
                       : nuclide.ppmNCrust >= 1
@@ -373,7 +373,7 @@ export default function NuclideDetailsCard({ nuclide, onClose, compact = false }
               {typeof nuclide.ppmNSolar === 'number' && !isNaN(nuclide.ppmNSolar) && (
                 <div className="flex justify-between gap-2">
                   <dt className="text-gray-600 dark:text-gray-400 flex-shrink-0">{t('elements.solarSystem')}:</dt>
-                  <dd className="font-medium text-gray-900 dark:text-gray-100 text-right truncate">
+                  <dd className="font-medium text-gray-900 dark:text-gray-100 text-end truncate">
                     {nuclide.ppmNSolar >= 1000
                       ? `${(nuclide.ppmNSolar / 1000).toFixed(2)} g/kg`
                       : nuclide.ppmNSolar >= 1
@@ -398,13 +398,13 @@ export default function NuclideDetailsCard({ nuclide, onClose, compact = false }
             <dl className="space-y-2 text-sm overflow-hidden">
               <div className="flex justify-between gap-2">
                 <dt className="text-gray-600 dark:text-gray-400 flex-shrink-0">{t('elements.logHalfLifeYears')}:</dt>
-                <dd className="font-medium text-gray-900 dark:text-gray-100 text-right truncate">
+                <dd className="font-medium text-gray-900 dark:text-gray-100 text-end truncate">
                   {t('elements.valueYears', { value: nuclide.logHalfLife.toFixed(2) })}
                 </dd>
               </div>
               <div className="flex justify-between gap-2">
                 <dt className="text-gray-600 dark:text-gray-400 flex-shrink-0">{t('elements.halfLife')}:</dt>
-                <dd className="font-medium text-gray-900 dark:text-gray-100 text-right truncate" data-testid="nuclide-half-life">
+                <dd className="font-medium text-gray-900 dark:text-gray-100 text-end truncate" data-testid="nuclide-half-life">
                   {primaryHalfLife
                     ? `${primaryHalfLife.halfLife >= 10000 ? primaryHalfLife.halfLife.toExponential(2) : primaryHalfLife.halfLife} ${expandHalfLifeUnit(primaryHalfLife.units)}`
                     : t('elements.valueYears', { value: Math.pow(10, nuclide.logHalfLife).toExponential(2) })}
@@ -413,13 +413,13 @@ export default function NuclideDetailsCard({ nuclide, onClose, compact = false }
               {primaryDecayMode && (
                 <div className="flex justify-between gap-2">
                   <dt className="text-gray-600 dark:text-gray-400 flex-shrink-0">{t('elementData.primaryDecay')}:</dt>
-                  <dd className="font-medium text-gray-900 dark:text-gray-100 text-right truncate">{primaryDecayMode}</dd>
+                  <dd className="font-medium text-gray-900 dark:text-gray-100 text-end truncate">{primaryDecayMode}</dd>
                 </div>
               )}
               {typeof nuclide.DEMeV === 'number' && nuclide.DEMeV > 0 && (
                 <div className="flex justify-between gap-2">
                   <dt className="text-gray-600 dark:text-gray-400 flex-shrink-0">{t('elementData.decayEnergy')}:</dt>
-                  <dd className="font-medium text-gray-900 dark:text-gray-100 text-right truncate">{nuclide.DEMeV.toFixed(4)} MeV</dd>
+                  <dd className="font-medium text-gray-900 dark:text-gray-100 text-end truncate">{nuclide.DEMeV.toFixed(4)} MeV</dd>
                 </div>
               )}
               <div className="mt-3 p-2 bg-amber-50 dark:bg-amber-900/20 rounded text-xs text-amber-700 dark:text-amber-300 break-words">
@@ -444,11 +444,11 @@ export default function NuclideDetailsCard({ nuclide, onClose, compact = false }
             <table className="w-full text-xs border border-gray-200 dark:border-gray-700">
                   <thead className="bg-gray-50 dark:bg-gray-800">
                     <tr>
-                      <th className="pl-3 pr-2 sm:pl-6 sm:pr-3 py-2 text-left font-medium text-gray-700 dark:text-gray-300">{t('elements.decayMode')}</th>
-                      <th className="px-2 sm:px-3 py-2 text-left font-medium text-gray-700 dark:text-gray-300">{t('elements.radiationType')}</th>
-                      <th className="px-2 sm:px-3 py-2 text-right font-medium text-gray-700 dark:text-gray-300">{t('reactions.energyMeV')}</th>
-                      <th className="px-2 sm:px-3 py-2 text-right font-medium text-gray-700 dark:text-gray-300">{t('elements.intensityPercent')}</th>
-                      <th className="pl-2 pr-3 sm:pl-3 sm:pr-6 py-2 text-left font-medium text-gray-700 dark:text-gray-300">{t('elements.halfLife')}</th>
+                      <th className="ps-3 pe-2 sm:ps-6 sm:pe-3 py-2 text-start font-medium text-gray-700 dark:text-gray-300">{t('elements.decayMode')}</th>
+                      <th className="px-2 sm:px-3 py-2 text-start font-medium text-gray-700 dark:text-gray-300">{t('elements.radiationType')}</th>
+                      <th className="px-2 sm:px-3 py-2 text-end font-medium text-gray-700 dark:text-gray-300">{t('reactions.energyMeV')}</th>
+                      <th className="px-2 sm:px-3 py-2 text-end font-medium text-gray-700 dark:text-gray-300">{t('elements.intensityPercent')}</th>
+                      <th className="ps-2 pe-3 sm:ps-3 sm:pe-6 py-2 text-start font-medium text-gray-700 dark:text-gray-300">{t('elements.halfLife')}</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
@@ -461,8 +461,9 @@ export default function NuclideDetailsCard({ nuclide, onClose, compact = false }
 
                       return (
                         <tr key={idx} className="hover:bg-gray-50 dark:hover:bg-gray-800/50">
-                          <td className="pl-3 pr-2 sm:pl-6 sm:pr-3 py-2">
+                          <td className="ps-3 pe-2 sm:ps-6 sm:pe-3 py-2">
                             <button
+                              dir="ltr"
                               onClick={() => handleDecayClick(decay.decayMode)}
                               disabled={!hasDaughter}
                               className={`px-2 py-1 rounded-full text-xs font-medium ${style.bg} ${style.text} ${
@@ -480,13 +481,13 @@ export default function NuclideDetailsCard({ nuclide, onClose, compact = false }
                             </button>
                           </td>
                           <td className="px-2 sm:px-3 py-2 text-gray-900 dark:text-gray-100">{decay.radiationType}</td>
-                          <td className="px-2 sm:px-3 py-2 text-right text-gray-900 dark:text-gray-100">
+                          <td className="px-2 sm:px-3 py-2 text-end text-gray-900 dark:text-gray-100">
                             {decay.energyKeV !== null ? (decay.energyKeV / 1000).toFixed(2) : '—'}
                           </td>
-                          <td className="px-2 sm:px-3 py-2 text-right text-gray-900 dark:text-gray-100">
+                          <td className="px-2 sm:px-3 py-2 text-end text-gray-900 dark:text-gray-100">
                             {decay.intensity !== null ? decay.intensity.toFixed(1) : '—'}
                           </td>
-                          <td className="pl-2 pr-3 sm:pl-3 sm:pr-6 py-2 text-gray-900 dark:text-gray-100">
+                          <td className="ps-2 pe-3 sm:ps-3 sm:pe-6 py-2 text-gray-900 dark:text-gray-100">
                             {decay.halfLife !== null && decay.halfLifeUnits !== null
                               ? decay.halfLife >= 10000
                                 ? `${decay.halfLife.toExponential(2)} ${expandHalfLifeUnit(decay.halfLifeUnits)}`
@@ -534,8 +535,9 @@ export default function NuclideDetailsCard({ nuclide, onClose, compact = false }
 
                       return (
                         <tr key={idx + 4} className="hover:bg-gray-50 dark:hover:bg-gray-800/50 bg-gray-50/30 dark:bg-gray-800/20">
-                          <td className="pl-3 pr-2 sm:pl-6 sm:pr-3 py-2">
+                          <td className="ps-3 pe-2 sm:ps-6 sm:pe-3 py-2">
                             <button
+                              dir="ltr"
                               onClick={() => handleDecayClick(decay.decayMode)}
                               disabled={!hasDaughter}
                               className={`px-2 py-1 rounded-full text-xs font-medium ${style.bg} ${style.text} ${
@@ -553,13 +555,13 @@ export default function NuclideDetailsCard({ nuclide, onClose, compact = false }
                             </button>
                           </td>
                           <td className="px-2 sm:px-3 py-2 text-gray-900 dark:text-gray-100">{decay.radiationType}</td>
-                          <td className="px-2 sm:px-3 py-2 text-right text-gray-900 dark:text-gray-100">
+                          <td className="px-2 sm:px-3 py-2 text-end text-gray-900 dark:text-gray-100">
                             {decay.energyKeV !== null ? (decay.energyKeV / 1000).toFixed(2) : '—'}
                           </td>
-                          <td className="px-2 sm:px-3 py-2 text-right text-gray-900 dark:text-gray-100">
+                          <td className="px-2 sm:px-3 py-2 text-end text-gray-900 dark:text-gray-100">
                             {decay.intensity !== null ? decay.intensity.toFixed(1) : '—'}
                           </td>
-                          <td className="pl-2 pr-3 sm:pl-3 sm:pr-6 py-2 text-gray-900 dark:text-gray-100">
+                          <td className="ps-2 pe-3 sm:ps-3 sm:pe-6 py-2 text-gray-900 dark:text-gray-100">
                             {decay.halfLife !== null && decay.halfLifeUnits !== null
                               ? decay.halfLife >= 10000
                                 ? `${decay.halfLife.toExponential(2)} ${expandHalfLifeUnit(decay.halfLifeUnits)}`
@@ -697,11 +699,11 @@ export default function NuclideDetailsCard({ nuclide, onClose, compact = false }
             <table className="w-full text-xs border border-gray-200 dark:border-gray-700">
                   <thead className="bg-gray-50 dark:bg-gray-800">
                     <tr>
-                      <th className="pl-3 pr-2 sm:pl-6 sm:pr-3 py-2 text-left font-medium text-gray-700 dark:text-gray-300">{t('elements.decayMode')}</th>
-                      <th className="px-2 sm:px-3 py-2 text-left font-medium text-gray-700 dark:text-gray-300">{t('elements.radiationType')}</th>
-                      <th className="px-2 sm:px-3 py-2 text-right font-medium text-gray-700 dark:text-gray-300">{t('reactions.energyMeV')}</th>
-                      <th className="px-2 sm:px-3 py-2 text-right font-medium text-gray-700 dark:text-gray-300">{t('elements.intensityPercent')}</th>
-                      <th className="pl-2 pr-3 sm:pl-3 sm:pr-6 py-2 text-left font-medium text-gray-700 dark:text-gray-300">{t('elements.halfLife')}</th>
+                      <th className="ps-3 pe-2 sm:ps-6 sm:pe-3 py-2 text-start font-medium text-gray-700 dark:text-gray-300">{t('elements.decayMode')}</th>
+                      <th className="px-2 sm:px-3 py-2 text-start font-medium text-gray-700 dark:text-gray-300">{t('elements.radiationType')}</th>
+                      <th className="px-2 sm:px-3 py-2 text-end font-medium text-gray-700 dark:text-gray-300">{t('reactions.energyMeV')}</th>
+                      <th className="px-2 sm:px-3 py-2 text-end font-medium text-gray-700 dark:text-gray-300">{t('elements.intensityPercent')}</th>
+                      <th className="ps-2 pe-3 sm:ps-3 sm:pe-6 py-2 text-start font-medium text-gray-700 dark:text-gray-300">{t('elements.halfLife')}</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
@@ -714,8 +716,9 @@ export default function NuclideDetailsCard({ nuclide, onClose, compact = false }
 
                       return (
                         <tr key={idx} className="hover:bg-gray-50 dark:hover:bg-gray-800/50">
-                          <td className="pl-3 pr-2 sm:pl-6 sm:pr-3 py-2">
+                          <td className="ps-3 pe-2 sm:ps-6 sm:pe-3 py-2">
                             <button
+                              dir="ltr"
                               onClick={() => handleDecayClick(decay.decayMode)}
                               disabled={!hasDaughter}
                               className={`px-2 py-1 rounded-full text-xs font-medium ${style.bg} ${style.text} ${
@@ -733,13 +736,13 @@ export default function NuclideDetailsCard({ nuclide, onClose, compact = false }
                             </button>
                           </td>
                           <td className="px-2 sm:px-3 py-2 text-gray-900 dark:text-gray-100">{decay.radiationType}</td>
-                          <td className="px-2 sm:px-3 py-2 text-right text-gray-900 dark:text-gray-100">
+                          <td className="px-2 sm:px-3 py-2 text-end text-gray-900 dark:text-gray-100">
                             {decay.energyKeV !== null ? (decay.energyKeV / 1000).toFixed(2) : '—'}
                           </td>
-                          <td className="px-2 sm:px-3 py-2 text-right text-gray-900 dark:text-gray-100">
+                          <td className="px-2 sm:px-3 py-2 text-end text-gray-900 dark:text-gray-100">
                             {decay.intensity !== null ? decay.intensity.toFixed(1) : '—'}
                           </td>
-                          <td className="pl-2 pr-3 sm:pl-3 sm:pr-6 py-2 text-gray-900 dark:text-gray-100">
+                          <td className="ps-2 pe-3 sm:ps-3 sm:pe-6 py-2 text-gray-900 dark:text-gray-100">
                             {decay.halfLife !== null && decay.halfLifeUnits !== null
                               ? decay.halfLife >= 10000
                                 ? `${decay.halfLife.toExponential(2)} ${expandHalfLifeUnit(decay.halfLifeUnits)}`
@@ -787,8 +790,9 @@ export default function NuclideDetailsCard({ nuclide, onClose, compact = false }
 
                       return (
                         <tr key={idx + 4} className="hover:bg-gray-50 dark:hover:bg-gray-800/50 bg-gray-50/30 dark:bg-gray-800/20">
-                          <td className="pl-3 pr-2 sm:pl-6 sm:pr-3 py-2">
+                          <td className="ps-3 pe-2 sm:ps-6 sm:pe-3 py-2">
                             <button
+                              dir="ltr"
                               onClick={() => handleDecayClick(decay.decayMode)}
                               disabled={!hasDaughter}
                               className={`px-2 py-1 rounded-full text-xs font-medium ${style.bg} ${style.text} ${
@@ -806,13 +810,13 @@ export default function NuclideDetailsCard({ nuclide, onClose, compact = false }
                             </button>
                           </td>
                           <td className="px-2 sm:px-3 py-2 text-gray-900 dark:text-gray-100">{decay.radiationType}</td>
-                          <td className="px-2 sm:px-3 py-2 text-right text-gray-900 dark:text-gray-100">
+                          <td className="px-2 sm:px-3 py-2 text-end text-gray-900 dark:text-gray-100">
                             {decay.energyKeV !== null ? (decay.energyKeV / 1000).toFixed(2) : '—'}
                           </td>
-                          <td className="px-2 sm:px-3 py-2 text-right text-gray-900 dark:text-gray-100">
+                          <td className="px-2 sm:px-3 py-2 text-end text-gray-900 dark:text-gray-100">
                             {decay.intensity !== null ? decay.intensity.toFixed(1) : '—'}
                           </td>
-                          <td className="pl-2 pr-3 sm:pl-3 sm:pr-6 py-2 text-gray-900 dark:text-gray-100">
+                          <td className="ps-2 pe-3 sm:ps-3 sm:pe-6 py-2 text-gray-900 dark:text-gray-100">
                             {decay.halfLife !== null && decay.halfLifeUnits !== null
                               ? decay.halfLife >= 10000
                                 ? `${decay.halfLife.toExponential(2)} ${expandHalfLifeUnit(decay.halfLifeUnits)}`

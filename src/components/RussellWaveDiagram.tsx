@@ -186,7 +186,7 @@ export default function RussellWaveDiagram({ onElementClick }: RussellWaveDiagra
   const baselineY = MARGIN.top + CHART_H
 
   return (
-    <div className="russell-wave-container relative">
+    <div className="russell-wave-container relative" dir="ltr">
       <div className="overflow-x-auto">
         <svg
           width={SVG_W}

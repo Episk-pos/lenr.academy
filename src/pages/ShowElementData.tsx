@@ -1745,7 +1745,7 @@ export default function ShowElementData() {
             <div className="card mt-6">
               <button
                 onClick={() => setSegreExpanded(!segreExpanded)}
-                className="w-full flex items-center justify-between p-4 text-left hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors rounded-lg"
+                className="w-full flex items-center justify-between p-4 text-start hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors rounded-lg"
               >
                 <div>
                   <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300">
@@ -1975,7 +1975,7 @@ export default function ShowElementData() {
                                 href={href}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="ml-1.5 inline-flex items-center gap-0.5 text-primary-600 dark:text-primary-400 hover:underline text-xs whitespace-nowrap"
+                                className="ms-1.5 inline-flex items-center gap-0.5 text-primary-600 dark:text-primary-400 hover:underline text-xs whitespace-nowrap"
                               >
                                 {t('elementData.viewSource')}
                                 <ExternalLink className="w-3 h-3" />
@@ -2002,7 +2002,7 @@ export default function ShowElementData() {
                       <span className="text-sm text-gray-700 dark:text-gray-300">
                         {t('elements.includeLimitedData')}
                         {allIsotopesAreLimitedData && (
-                          <span className="ml-1 text-xs text-gray-500 dark:text-gray-400">{t('elementData.required')}</span>
+                          <span className="ms-1 text-xs text-gray-500 dark:text-gray-400">{t('elementData.required')}</span>
                         )}
                       </span>
                       <button
@@ -2021,7 +2021,7 @@ export default function ShowElementData() {
                       >
                         <span
                           className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                            showLimitedDataNuclides && hasLimitedDataNuclides ? 'translate-x-6' : 'translate-x-1'
+                            showLimitedDataNuclides && hasLimitedDataNuclides ? 'translate-x-6 rtl:-translate-x-6' : 'translate-x-1 rtl:-translate-x-1'
                           }`}
                         />
                       </button>
@@ -2256,7 +2256,7 @@ export default function ShowElementData() {
                       borderColor: theme === 'dark' ? RUSSELL_COLORS.predicted.dark : RUSSELL_COLORS.predicted.light,
                     }}
                   />
-                  <span className="absolute -top-0.5 -right-0.5 text-[8px]" style={{ color: theme === 'dark' ? RUSSELL_COLORS.predicted.dark : RUSSELL_COLORS.predicted.light }}>
+                  <span className="absolute -top-0.5 -end-0.5 text-[8px]" style={{ color: theme === 'dark' ? RUSSELL_COLORS.predicted.dark : RUSSELL_COLORS.predicted.light }}>
                     ★
                   </span>
                 </div>

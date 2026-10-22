@@ -71,7 +71,10 @@ BASE_CODEPOINTS = (
 # A few symbols taken from Noto Sans Symbols 2 (Noto Sans has none of them).
 # Whole blocks would add ~90 KiB to every font, so only the common ones plus
 # any symbol from these blocks that a locale file uses (see main()).
-SYMBOL_BLOCKS = rng(0x25A0, 0x25FF) | rng(0x2600, 0x26FF) | rng(0x2700, 0x27BF)
+SYMBOL_BLOCKS = (
+    rng(0x2300, 0x23FF)      # Miscellaneous Technical (e.g. ⌘ in the SQL run-shortcut hint)
+    | rng(0x25A0, 0x25FF) | rng(0x2600, 0x26FF) | rng(0x2700, 0x27BF)
+)
 SYMBOL_CODEPOINTS = {
     0x25A0, 0x25A1, 0x25B2, 0x25B3, 0x25BC, 0x25BD, 0x25C6, 0x25C7, 0x25CB, 0x25CF,  # ■□▲△▼▽◆◇○●
     0x2605, 0x2606, 0x26A0, 0x26A1,                                                  # ★☆⚠⚡
@@ -164,7 +167,8 @@ TARGETS: list[tuple[str, str | None, set[int]]] = [
         # Presentation forms: jsPDF's processArabic() shapes text by mapping
         # letters to these code points, so they MUST stay in the cmap.
         | rng(0xFB50, 0xFDFF) | rng(0xFE70, 0xFEFF)
-        | {0x200C, 0x200D, 0x200E, 0x200F},
+        | {0x200C, 0x200D, 0x200E, 0x200F}
+        | locale_chars("ar"),
     ),
 ]
 

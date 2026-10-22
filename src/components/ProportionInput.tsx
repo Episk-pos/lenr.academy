@@ -225,7 +225,7 @@ export default function ProportionInput({
           >
             <Info className="w-4 h-4 text-gray-400 dark:text-gray-500" />
             {showTooltip && (
-              <div className="absolute left-0 top-6 z-50 w-64 p-2 text-xs text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700">
+              <div className="absolute start-0 top-6 z-50 w-64 p-2 text-xs text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700">
                 {getFormatHelpText(format)}
               </div>
             )}
@@ -316,7 +316,7 @@ export default function ProportionInput({
                   data-testid={`${testId}-input-${nuclideId}`}
                 />
                 {format === 'percentage' && (
-                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-gray-400">
+                  <span className="absolute end-3 top-1/2 -translate-y-1/2 text-sm text-gray-400">
                     %
                   </span>
                 )}
@@ -331,7 +331,7 @@ export default function ProportionInput({
               </div>
 
               {/* Normalized percentage */}
-              <div className="w-20 text-right text-sm text-gray-500 dark:text-gray-400 font-mono">
+              <div className="w-20 text-end text-sm text-gray-500 dark:text-gray-400 font-mono">
                 {formatProportion(proportion)}
               </div>
             </div>
@@ -367,7 +367,7 @@ export default function ProportionInput({
         >
           {format === 'percentage' ? `${total.toFixed(2)}%` : total.toFixed(2)}
           {format === 'percentage' && Math.abs(total - 100) >= 0.01 && (
-            <span className="text-xs text-gray-500 dark:text-gray-400 ml-1">
+            <span className="text-xs text-gray-500 dark:text-gray-400 ms-1">
               {t('proportions.willBeNormalized')}
             </span>
           )}

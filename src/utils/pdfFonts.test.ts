@@ -266,7 +266,7 @@ describe('shipped font files', () => {
 
   // If this fails after editing a locale file, rebuild the fonts:
   //   bash scripts/fetch-pdf-fonts.sh
-  it.each(['en', 'de', 'es', 'fr', 'it', 'pt', 'pl', 'ru', 'uk', 'ja', 'zh', 'ko', 'hi'])(
+  it.each(['en', 'de', 'es', 'fr', 'it', 'pt', 'pl', 'ru', 'uk', 'ja', 'zh', 'ko', 'hi', 'ar'])(
     'the font selected for %s covers every character in its locale file',
     (locale) => {
       const strings = localeStrings(locale)

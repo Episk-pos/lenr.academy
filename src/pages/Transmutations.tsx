@@ -396,10 +396,10 @@ function TransmutationCard({
       </div>
 
       {/* ZONE B — Citation block */}
-      <div className="mb-4 rounded-md border border-gray-200 dark:border-gray-700 border-l-4 border-l-primary-200 dark:border-l-primary-800 bg-gray-50 dark:bg-gray-800/50 p-3">
+      <div className="mb-4 rounded-md border border-gray-200 dark:border-gray-700 border-s-4 border-s-primary-200 dark:border-s-primary-800 bg-gray-50 dark:bg-gray-800/50 p-3">
         <div className="flex flex-wrap items-start justify-between gap-2">
           <p className="text-sm text-gray-800 dark:text-gray-200 min-w-0">
-            <BookOpen className="inline-block w-3.5 h-3.5 mr-1.5 -mt-0.5 text-gray-400 dark:text-gray-500" />
+            <BookOpen className="inline-block w-3.5 h-3.5 me-1.5 -mt-0.5 text-gray-400 dark:text-gray-500" />
             {translatedSource}
           </p>
           <div className="flex items-center gap-2 flex-shrink-0">
@@ -481,7 +481,7 @@ function TransmutationCard({
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-end gap-2">
         {!hasResults && !hasError && (
           <p
-            className="text-xs text-gray-500 dark:text-gray-400 sm:mr-auto"
+            className="text-xs text-gray-500 dark:text-gray-400 sm:me-auto"
             data-testid={`pathway-hint-${transmutation.id}`}
           >
             {t('transmutations.pathwayResultsHint', {

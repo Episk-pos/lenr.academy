@@ -116,7 +116,7 @@ export default function TabNavigation({ tabs, activeTab, onTabChange, className 
         {isMobile && isStuck && onMenuClick && (
           <button
             onClick={onMenuClick}
-            className="p-3 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 border-r border-gray-200 dark:border-gray-700 transition-all duration-200"
+            className="p-3 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 border-e border-gray-200 dark:border-gray-700 transition-all duration-200"
             aria-label={t('navigation.openMenu')}
             data-testid="tab-navigation-menu-button"
           >
@@ -124,7 +124,7 @@ export default function TabNavigation({ tabs, activeTab, onTabChange, className 
           </button>
         )}
 
-        <nav className="-mb-px flex flex-1 space-x-2 sm:space-x-4 md:space-x-8 px-2 sm:px-4 md:px-6 overflow-x-auto" aria-label={t('sortableTable.tabs')} role="tablist">
+        <nav className="-mb-px flex flex-1 gap-2 sm:gap-4 md:gap-8 px-2 sm:px-4 md:px-6 overflow-x-auto" aria-label={t('sortableTable.tabs')} role="tablist">
         {tabs.map((tab) => {
           const isActive = activeTab === tab.id
 
@@ -155,7 +155,7 @@ export default function TabNavigation({ tabs, activeTab, onTabChange, className 
               {tab.label}
               {tab.count !== undefined && (
                 <span className={`
-                  ml-2 py-0.5 px-2 rounded-full text-xs
+                  ms-2 py-0.5 px-2 rounded-full text-xs
                   ${isActive
                     ? 'bg-primary-100 text-primary-600 dark:bg-primary-900/30 dark:text-primary-400'
                     : 'bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400'

@@ -885,7 +885,7 @@ export default function TwoToTwoQuery() {
                  </button>
             </div>
           </div>
-          <code className="text-[10px] sm:text-xs text-gray-600 dark:text-gray-400 block font-mono break-all">
+          <code dir="ltr" className="text-[10px] sm:text-xs text-gray-600 dark:text-gray-400 block font-mono break-all">
             {[
               'SELECT * FROM TwoToTwoAll',
               (selectedElement1.length > 0 || selectedElement2.length > 0 || selectedOutputElement3.length > 0 || selectedOutputElement4.length > 0 || filter.minMeV !== undefined || filter.maxMeV !== undefined || (filter.neutrinoType && filter.neutrinoType !== 'any')) && ' WHERE ',
@@ -927,7 +927,7 @@ export default function TwoToTwoQuery() {
               </div>
               <button
                 onClick={() => setShowHeatmap(!showHeatmap)}
-                className="btn btn-secondary p-2 ml-4"
+                className="btn btn-secondary p-2 ms-4"
                 title={showHeatmap ? t('reactions.collapsePeriodicTable') : t('reactions.expandPeriodicTable')}
                 aria-label={showHeatmap ? t('reactions.collapsePeriodicTable') : t('reactions.expandPeriodicTable')}
               >
@@ -937,26 +937,25 @@ export default function TwoToTwoQuery() {
 
             <div className={`transition-all duration-300 ease-in-out overflow-hidden ${showHeatmap ? 'max-h-[2000px] opacity-100' : 'max-h-0 opacity-0'}`}>
               <div className="pt-4">
-                {/* Metric Selector and Explanation */}
-                <div className="flex flex-col md:flex-row gap-4 mb-4">
-                  <div className="flex flex-col gap-1 md:min-w-[140px]">
-                    <label htmlFor="heatmap-metric-selector" className="text-xs font-medium text-gray-700 dark:text-gray-300">
-                      {t('reactions.metric')}:
-                    </label>
-                    <select
-                      id="heatmap-metric-selector"
-                      value={heatmapMode}
-                      onChange={(e) => setHeatmapMode(e.target.value as HeatmapMode)}
-                      className="input px-3 py-2 text-sm"
-                      aria-label={t('reactions.selectHeatmapMetric')}
-                    >
-                      <option value="frequency">{t('reactions.frequency')}</option>
-                      <option value="energy">{t('reactions.energy')}</option>
-                      <option value="diversity">{t('reactions.diversity')}</option>
-                    </select>
-                  </div>
-
-                  <div className="flex-1 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-md border border-blue-200 dark:border-blue-800">
+                {/* Metric selector and explanation. The label sits on its own row so the
+                    select and the explanation box share a row and their tops line up;
+                    below md everything stacks. */}
+                <div className="grid grid-cols-1 md:grid-cols-[minmax(140px,max-content)_minmax(0,1fr)] gap-x-4 gap-y-1 mb-4">
+                  <label htmlFor="heatmap-metric-selector" className="text-xs font-medium text-gray-700 dark:text-gray-300 md:col-start-1 md:row-start-1">
+                    {t('reactions.metric')}:
+                  </label>
+                  <select
+                    id="heatmap-metric-selector"
+                    value={heatmapMode}
+                    onChange={(e) => setHeatmapMode(e.target.value as HeatmapMode)}
+                    className="input px-3 py-2 text-sm md:col-start-1 md:row-start-2"
+                    aria-label={t('reactions.selectHeatmapMetric')}
+                  >
+                    <option value="frequency">{t('reactions.frequency')}</option>
+                    <option value="energy">{t('reactions.energy')}</option>
+                    <option value="diversity">{t('reactions.diversity')}</option>
+                  </select>
+                  <div className="mt-3 md:mt-0 md:col-start-2 md:row-start-2 flex items-center min-h-10 px-3 py-2 bg-blue-50 dark:bg-blue-900/20 rounded-md border border-blue-200 dark:border-blue-800">
                     <p className="text-sm text-blue-900 dark:text-blue-100">
                       {heatmapMode === 'frequency' && t('reactions.frequencyDescription', { total: useAllResultsForHeatmap ? totalCount.toLocaleString() : results.length.toLocaleString() })}
                       {heatmapMode === 'energy' && t('reactions.energyDescription')}
@@ -970,7 +969,8 @@ export default function TwoToTwoQuery() {
                   <div className="flex flex-col md:flex-row md:items-center gap-2 md:gap-3">
                     <div className="flex items-center gap-3 flex-1 min-w-0">
                       <span className="text-xs font-medium text-gray-700 dark:text-gray-300 whitespace-nowrap">{t('reactions.elementRole')}:</span>
-                      <div className="flex items-center gap-2 flex-1 min-w-0">
+                      {/* Input -> output colour scale is a fixed left-to-right gradient */}
+                      <div className="flex items-center gap-2 flex-1 min-w-0" dir="ltr">
                         <span className="text-[10px] sm:text-xs text-gray-600 dark:text-gray-400 whitespace-nowrap">{t('reactions.input')}</span>
                         <div className="flex-1 min-w-[60px] h-4 rounded" style={{
                           background: 'linear-gradient(to right, rgb(37, 99, 235), rgb(29, 131, 155), rgb(22, 163, 74))'
@@ -978,7 +978,7 @@ export default function TwoToTwoQuery() {
                         <span className="text-[10px] sm:text-xs text-gray-600 dark:text-gray-400 whitespace-nowrap">{t('reactions.output')}</span>
                       </div>
                     </div>
-                    <span className="text-xs text-gray-500 dark:text-gray-400 text-center md:text-left md:whitespace-nowrap">• {t('reactions.intensityShowsMetric')}</span>
+                    <span className="text-xs text-gray-500 dark:text-gray-400 text-center md:text-start md:whitespace-nowrap">• {t('reactions.intensityShowsMetric')}</span>
                   </div>
                 </div>
 
@@ -1028,7 +1028,7 @@ export default function TwoToTwoQuery() {
                       >
                         <span
                           className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                            useAllResultsForHeatmap ? 'translate-x-6' : 'translate-x-1'
+                            useAllResultsForHeatmap ? 'translate-x-6 rtl:-translate-x-6' : 'translate-x-1 rtl:-translate-x-1'
                           }`}
                         />
                       </button>
@@ -1097,7 +1097,7 @@ export default function TwoToTwoQuery() {
                   className="btn btn-secondary px-4 py-2 text-sm"
                   title={showBosonFermion ? t('reactions.hideBFTypes') : t('reactions.showBFTypes')}
                 >
-                  {showBosonFermion ? <EyeOff className="w-4 h-4 mr-2 inline" /> : <Eye className="w-4 h-4 mr-2 inline" />}
+                  {showBosonFermion ? <EyeOff className="w-4 h-4 me-2 inline" /> : <Eye className="w-4 h-4 me-2 inline" />}
                   {showBosonFermion ? t('reactions.hideBFTypes') : t('reactions.showBFTypes')}
                 </button>
                 <ShareQueryButton />
@@ -1121,7 +1121,7 @@ export default function TwoToTwoQuery() {
               <div className="w-fit min-w-full border border-gray-200 dark:border-gray-700 rounded-b-none rounded-t-none sm:rounded-t-lg" >
                 <div
                   className="sticky top-0 z-[5]"
-                  style={{ paddingRight: twoTwoHeaderPadding }}
+                  style={{ paddingInlineEnd: twoTwoHeaderPadding }}
                 >
                   <ReactionTableHeader
                     gridTemplateColumns={twoTwoColumnTemplate}
@@ -1167,7 +1167,7 @@ export default function TwoToTwoQuery() {
                     )}
                   </div>
                 ) : filteredResults.length <= SMALL_RESULT_THRESHOLD ? (
-                  <div style={{ paddingRight: twoTwoHeaderPadding }}>
+                  <div style={{ paddingInlineEnd: twoTwoHeaderPadding }}>
                     {filteredResults.map((reaction, index) => {
                         const activeNuclide = pinnedNuclide ? highlightedNuclide : highlightedNuclide
                         const nuclideMatch = !activeNuclide || reactionContainsNuclide(reaction, activeNuclide)
@@ -1353,7 +1353,7 @@ export default function TwoToTwoQuery() {
                       })}
                   </div>
                 ) : (
-                  <div style={{ paddingRight: twoTwoHeaderPadding }}>
+                  <div style={{ paddingInlineEnd: twoTwoHeaderPadding }}>
                     <VirtualizedList
                       items={filteredResults}
                       estimatedRowHeight={twoTwoEstimatedRowHeight}

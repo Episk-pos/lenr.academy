@@ -14,7 +14,8 @@ import {
  * - Language selection modal on first visit
  * - Language switcher in the header
  * - Translation persistence across page reloads
- * - Multiple language support (en, de, es, fr, ja, ru, zh, it, pt, uk, pl, ko, hi)
+ * - Multiple language support (en, de, es, fr, ja, ru, zh, it, pt, uk, pl, ko, hi, ar)
+ * - Right-to-left layout direction for Arabic
  * - Cascade simulation tab translations
  */
 
@@ -395,7 +396,8 @@ test.describe('All Supported Languages', () => {
     { code: 'uk', name: 'Українська', navItem: /Головна|Реакції синтезу/ },
     { code: 'pl', name: 'Polski', navItem: /Strona główna|Reakcje syntezy/ },
     { code: 'ko', name: '한국어', navItem: /홈|핵융합 반응/ },
-    { code: 'hi', name: 'हिन्दी', navItem: /होम|संलयन/ }
+    { code: 'hi', name: 'हिन्दी', navItem: /होम|संलयन/ },
+    { code: 'ar', name: 'العربية', navItem: /الرئيسية|الاندماج/ }
   ];
 
   for (const lang of languages) {
@@ -411,6 +413,27 @@ test.describe('All Supported Languages', () => {
       await expect(page.getByRole('link', { name: lang.navItem }).first()).toBeVisible({ timeout: 5000 });
     });
   }
+});
+
+test.describe('Right-to-left layout', () => {
+  test('sets dir="rtl" for Arabic and restores ltr when switching back', async ({ page }) => {
+    await setLanguagePreference(page, 'ar');
+    await acceptPrivacyConsent(page);
+    await page.goto('/');
+    await acceptMeteredWarningIfPresent(page);
+    await waitForDatabaseReady(page);
+
+    await expect(page.locator('html')).toHaveAttribute('dir', 'rtl');
+    await expect(page.locator('html')).toHaveAttribute('lang', 'ar');
+
+    await setLanguagePreference(page, 'en');
+    await page.reload();
+    await acceptMeteredWarningIfPresent(page);
+    await waitForDatabaseReady(page);
+
+    await expect(page.locator('html')).toHaveAttribute('dir', 'ltr');
+    await expect(page.locator('html')).toHaveAttribute('lang', 'en');
+  });
 });
 
 test.describe('Mobile Language Dropdown Positioning', () => {
@@ -529,7 +552,7 @@ test.describe('Desktop Language Dropdown Positioning', () => {
   test('should open language dropdown above the button in expanded sidebar', async ({ page }) => {
     // Find the language switcher in the desktop sidebar
     // The sidebar uses hidden lg:fixed lg:flex classes
-    const languageSwitcher = page.locator('button').filter({ hasText: /English|日本語|中文|Deutsch|Français|Español|Русский|Italiano|Português|Українська|Polski|한국어|हिन्दी/ }).first();
+    const languageSwitcher = page.locator('button').filter({ hasText: /English|日本語|中文|Deutsch|Français|Español|Русский|Italiano|Português|Українська|Polski|한국어|हिन्दी|العربية/ }).first();
     await expect(languageSwitcher).toBeVisible();
 
     // Get button position before clicking
@@ -598,7 +621,7 @@ test.describe('Desktop Language Dropdown Positioning', () => {
 
   test('should keep dropdown visible within viewport on desktop', async ({ page }) => {
     // Find and click the language switcher
-    const languageSwitcher = page.locator('button').filter({ hasText: /English|日本語|中文|Deutsch|Français|Español|Русский|Italiano|Português|Українська|Polski|한국어|हिन्दी/ }).first();
+    const languageSwitcher = page.locator('button').filter({ hasText: /English|日本語|中文|Deutsch|Français|Español|Русский|Italiano|Português|Українська|Polski|한국어|हिन्दी|العربية/ }).first();
     await expect(languageSwitcher).toBeVisible();
     await languageSwitcher.click();
 

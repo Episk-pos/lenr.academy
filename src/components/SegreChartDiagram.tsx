@@ -99,7 +99,7 @@ export default function SegreChartDiagram({ nuclides, onNuclideClick }: SegreCha
   const valleyColor = isDark ? 'rgba(250, 204, 21, 0.5)' : 'rgba(202, 138, 4, 0.5)'
 
   return (
-    <div className="segre-chart-container relative">
+    <div className="segre-chart-container relative" dir="ltr">
       <TransformWrapper
         initialScale={1}
         minScale={0.2}

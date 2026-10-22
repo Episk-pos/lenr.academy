@@ -117,7 +117,7 @@ export default function EnergyHistogram({ reactions }: EnergyHistogramProps) {
         </div>
         <button
           onClick={() => setExpanded(!expanded)}
-          className="btn btn-secondary p-2 ml-4"
+          className="btn btn-secondary p-2 ms-4"
           title={expanded ? t('histogram.collapse') : t('histogram.expand')}
           aria-label={expanded ? t('histogram.collapse') : t('histogram.expand')}
         >
@@ -128,38 +128,40 @@ export default function EnergyHistogram({ reactions }: EnergyHistogramProps) {
       <div className={`transition-all duration-300 ease-in-out overflow-hidden ${expanded ? 'max-h-[800px] opacity-100' : 'max-h-0 opacity-0'}`}>
         <div className="pt-4">
           {/* Chart */}
-          <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={bins} margin={{ top: 5, right: 20, left: 10, bottom: 25 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke={gridColor} />
-              <XAxis
-                dataKey="label"
-                tick={{ style: { fill: axisColor }, fontSize: 12 }}
-                label={{ value: t('histogram.xAxisLabel'), position: 'insideBottom', offset: -15, style: { fill: axisColor } }}
-              />
-              <YAxis
-                tick={{ style: { fill: axisColor }, fontSize: 12 }}
-                label={{ value: t('histogram.yAxisLabel'), angle: -90, position: 'insideLeft', offset: 5, style: { fill: axisColor } }}
-              />
-              <Tooltip
-                contentStyle={{
-                  backgroundColor: tooltipBg,
-                  border: `1px solid ${tooltipBorder}`,
-                  borderRadius: '0.375rem',
-                  color: isDark ? '#f3f4f6' : '#1f2937',
-                }}
-                labelStyle={{ color: isDark ? '#f3f4f6' : '#1f2937' }}
-                itemStyle={{ color: isDark ? '#d1d5db' : '#374151' }}
-                cursor={{ fill: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)' }}
-                formatter={(value: number) => [value, t('histogram.reactions')]}
-                labelFormatter={(label: string) => `${label} MeV`}
-              />
-              <Bar dataKey="count" radius={[2, 2, 0, 0]}>
-                {bins.map((bin, index) => (
-                  <Cell key={index} fill={bin.rangeStart < 0 ? '#ef4444' : '#10b981'} />
-                ))}
-              </Bar>
-            </BarChart>
-          </ResponsiveContainer>
+          <div dir="ltr">
+            <ResponsiveContainer width="100%" height={300}>
+              <BarChart data={bins} margin={{ top: 5, right: 20, left: 10, bottom: 25 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke={gridColor} />
+                <XAxis
+                  dataKey="label"
+                  tick={{ style: { fill: axisColor }, fontSize: 12 }}
+                  label={{ value: t('histogram.xAxisLabel'), position: 'insideBottom', offset: -15, style: { fill: axisColor } }}
+                />
+                <YAxis
+                  tick={{ style: { fill: axisColor }, fontSize: 12 }}
+                  label={{ value: t('histogram.yAxisLabel'), angle: -90, position: 'insideLeft', offset: 5, style: { fill: axisColor } }}
+                />
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor: tooltipBg,
+                    border: `1px solid ${tooltipBorder}`,
+                    borderRadius: '0.375rem',
+                    color: isDark ? '#f3f4f6' : '#1f2937',
+                  }}
+                  labelStyle={{ color: isDark ? '#f3f4f6' : '#1f2937' }}
+                  itemStyle={{ color: isDark ? '#d1d5db' : '#374151' }}
+                  cursor={{ fill: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)' }}
+                  formatter={(value: number) => [value, t('histogram.reactions')]}
+                  labelFormatter={(label: string) => `${label} MeV`}
+                />
+                <Bar dataKey="count" radius={[2, 2, 0, 0]}>
+                  {bins.map((bin, index) => (
+                    <Cell key={index} fill={bin.rangeStart < 0 ? '#ef4444' : '#10b981'} />
+                  ))}
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
 
           {/* Statistics */}
           {stats && (

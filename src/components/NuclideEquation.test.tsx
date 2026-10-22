@@ -121,7 +121,7 @@ describe('documented transmutation mechanisms', () => {
       { default: { transmutations: { entries: Record<string, { hypothesizedMechanism?: string }> } } }
     >
     const mathOf = (s: string) => parseMechanism(s).filter(seg => seg.type === 'math').map(seg => seg.value)
-    expect(Object.keys(locales).length).toBe(13)
+    expect(Object.keys(locales).length).toBe(14)
     for (const [file, mod] of Object.entries(locales)) {
       for (const entry of DOCUMENTED_TRANSMUTATIONS) {
         if (!entry.hypothesizedMechanism) continue

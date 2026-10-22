@@ -73,9 +73,10 @@ export interface DetailsRailProps {
 /**
  * Hosts the query-page details panel.
  *
- * - ≥1280px: a sticky right-hand rail that scrolls independently.
- * - <1280px: a slide-in modal drawer from the right, opened automatically on
- *   pin or via a floating "Details" button. Closing the drawer never unpins.
+ * - ≥1280px: a sticky inline-end rail that scrolls independently.
+ * - <1280px: a slide-in modal drawer from the inline-end edge (right in LTR,
+ *   left in RTL), opened automatically on pin or via a floating "Details"
+ *   button. Closing the drawer never unpins.
  *
  * The page lays this out as the second child of a `xl:flex` row; in drawer
  * mode the component renders nothing in flow.
@@ -201,9 +202,9 @@ export default function DetailsRail({ pinKey, children }: DetailsRailProps) {
           aria-haspopup="dialog"
           title={t('reactions.showDetails')}
           data-testid="details-drawer-trigger"
-          className="fixed bottom-4 right-4 z-40 inline-flex items-center gap-2 rounded-full bg-blue-600 px-4 py-2.5 text-sm font-medium text-white shadow-lg transition-colors hover:bg-blue-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 dark:bg-blue-500 dark:hover:bg-blue-400 dark:focus-visible:ring-offset-gray-900"
+          className="fixed bottom-4 end-4 z-40 inline-flex items-center gap-2 rounded-full bg-blue-600 px-4 py-2.5 text-sm font-medium text-white shadow-lg transition-colors hover:bg-blue-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 dark:bg-blue-500 dark:hover:bg-blue-400 dark:focus-visible:ring-offset-gray-900"
         >
-          <PanelRight className="w-4 h-4" aria-hidden="true" />
+          <PanelRight className="w-4 h-4 rtl:-scale-x-100" aria-hidden="true" />
           {t('reactions.details')}
         </button>
       )}
@@ -222,7 +223,7 @@ export default function DetailsRail({ pinKey, children }: DetailsRailProps) {
             aria-modal="true"
             aria-labelledby={headingId}
             data-testid="details-drawer"
-            className="absolute inset-y-0 right-0 flex w-full max-w-md flex-col bg-gray-50 dark:bg-gray-900 border-l border-gray-200 dark:border-gray-700 shadow-xl motion-safe:animate-slide-in-right"
+            className="absolute inset-y-0 end-0 flex w-full max-w-md flex-col bg-gray-50 dark:bg-gray-900 border-s border-gray-200 dark:border-gray-700 shadow-xl motion-safe:animate-slide-in-right rtl:motion-safe:animate-slide-in-left"
           >
             <div className="flex items-center justify-between gap-2 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 py-3">
               <h2 id={headingId} className="text-lg font-semibold text-gray-900 dark:text-white">

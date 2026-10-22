@@ -218,7 +218,7 @@ export default function MaterialsCatalog({
         >
           {/* Header */}
           <div className="flex items-start justify-between p-3 sm:p-4 border-b border-gray-200 dark:border-gray-700">
-            <div className="min-w-0 flex-1 pr-2">
+            <div className="min-w-0 flex-1 pe-2">
               <h2 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white">
                 {t('cascades.materialsCatalog')}
               </h2>
@@ -239,13 +239,13 @@ export default function MaterialsCatalog({
           <div className="p-3 sm:p-4 bg-gray-50 dark:bg-gray-900/50 border-b border-gray-200 dark:border-gray-700">
             <div className="flex flex-col xs:flex-row gap-2 xs:gap-3 mb-3">
               <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                <Search className="absolute start-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                 <input
                   type="text"
                   placeholder={t('cascades.searchMaterials')}
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  className="w-full ps-10 pe-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500"
                   data-testid="materials-search-input"
                 />
               </div>
@@ -320,7 +320,7 @@ export default function MaterialsCatalog({
                       {getMaterialName(t, material)}
                       <button
                         onClick={() => handleRemoveFromBlend(material.id)}
-                        className="text-gray-400 hover:text-red-500 ml-1"
+                        className="text-gray-400 hover:text-red-500 ms-1"
                         title={t('cascades.removeFromBlend')}
                       >
                         <X className="w-3.5 h-3.5" />
@@ -374,7 +374,7 @@ export default function MaterialsCatalog({
           <div className="flex flex-1 overflow-hidden min-h-0">
             {/* Materials List - hidden on mobile when material is selected */}
             <div className={`
-              w-full sm:w-1/2 sm:border-r border-gray-200 dark:border-gray-700 overflow-y-auto
+              w-full sm:w-1/2 sm:border-e border-gray-200 dark:border-gray-700 overflow-y-auto
               ${selectedMaterial ? 'hidden sm:block' : 'block'}
             `}>
               {filteredMaterials.length === 0 ? (
@@ -392,11 +392,11 @@ export default function MaterialsCatalog({
                         key={material.id}
                         onClick={() => setSelectedMaterial(material)}
                         className={`
-                          w-full p-3 sm:p-4 text-left hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors
+                          w-full p-3 sm:p-4 text-start hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors
                           ${selectedMaterial?.id === material.id
-                            ? 'bg-primary-50 dark:bg-primary-900/20 border-l-4 border-primary-500'
+                            ? 'bg-primary-50 dark:bg-primary-900/20 border-s-4 border-primary-500'
                             : inBlend
-                              ? 'bg-green-50 dark:bg-green-900/20 border-l-4 border-green-500'
+                              ? 'bg-green-50 dark:bg-green-900/20 border-s-4 border-green-500'
                               : ''
                           }
                         `}
@@ -431,7 +431,7 @@ export default function MaterialsCatalog({
                               ))}
                             </div>
                           </div>
-                          <div className="flex items-center gap-2 flex-shrink-0 ml-2">
+                          <div className="flex items-center gap-2 flex-shrink-0 ms-2">
                             {material.isCustom && (
                               <button
                                 onClick={(e) => handleDeleteCustom(material.id, e)}
@@ -441,7 +441,7 @@ export default function MaterialsCatalog({
                                 <Trash2 className="w-4 h-4" />
                               </button>
                             )}
-                            <ChevronRight className="w-5 h-5 text-gray-400" />
+                            <ChevronRight className="w-5 h-5 text-gray-400 rtl:-scale-x-100" />
                           </div>
                         </div>
                       </button>
@@ -461,9 +461,9 @@ export default function MaterialsCatalog({
                   {/* Back button - mobile only */}
                   <button
                     onClick={() => setSelectedMaterial(null)}
-                    className="sm:hidden flex items-center gap-1 text-sm text-primary-600 dark:text-primary-400 mb-3 -ml-1"
+                    className="sm:hidden flex items-center gap-1 text-sm text-primary-600 dark:text-primary-400 mb-3 -ms-1"
                   >
-                    <ChevronLeft className="w-4 h-4" />
+                    <ChevronLeft className="w-4 h-4 rtl:-scale-x-100" />
                     {t('cascades.backToList')}
                   </button>
 
@@ -525,10 +525,10 @@ export default function MaterialsCatalog({
                       <table className="w-full text-sm">
                         <thead className="bg-gray-50 dark:bg-gray-800 sticky top-0">
                           <tr>
-                            <th className="text-left px-3 py-2 text-gray-600 dark:text-gray-400">
+                            <th className="text-start px-3 py-2 text-gray-600 dark:text-gray-400">
                               {t('cascades.nuclide')}
                             </th>
-                            <th className="text-right px-3 py-2 text-gray-600 dark:text-gray-400">
+                            <th className="text-end px-3 py-2 text-gray-600 dark:text-gray-400">
                               {t('cascades.proportion')}
                             </th>
                           </tr>
@@ -539,7 +539,7 @@ export default function MaterialsCatalog({
                               <td className="px-3 py-2 font-mono text-gray-900 dark:text-white">
                                 {comp.nuclideId}
                               </td>
-                              <td className="px-3 py-2 text-right text-gray-600 dark:text-gray-400">
+                              <td className="px-3 py-2 text-end text-gray-600 dark:text-gray-400">
                                 {formatProportion(comp.proportion)}
                               </td>
                             </tr>

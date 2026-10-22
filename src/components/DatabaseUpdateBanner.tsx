@@ -74,7 +74,7 @@ export default function DatabaseUpdateBanner({ className = '' }: DatabaseUpdateB
         <div className="max-w-7xl mx-auto px-4 py-3 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between flex-wrap">
             <div className="flex items-center flex-1">
-              <CheckCircle className="w-5 h-5 mr-3 flex-shrink-0" />
+              <CheckCircle className="w-5 h-5 me-3 flex-shrink-0" />
               <p className="text-sm font-medium">
                 {t('updates.databaseUpdateReady', { version: availableVersion })}
               </p>
@@ -84,7 +84,7 @@ export default function DatabaseUpdateBanner({ className = '' }: DatabaseUpdateB
                 onClick={reloadWithNewVersion}
                 className="px-4 py-2 bg-white text-green-600 rounded-md text-sm font-medium hover:bg-green-50 transition-colors"
               >
-                <RefreshCw className="w-4 h-4 inline mr-1" />
+                <RefreshCw className="w-4 h-4 inline me-1" />
                 {t('updates.refreshNow')}
               </button>
               <button
@@ -118,7 +118,7 @@ export default function DatabaseUpdateBanner({ className = '' }: DatabaseUpdateB
           <div className="flex items-center justify-between flex-wrap">
             <div className="flex-1 min-w-0">
               <div className="flex items-center mb-2">
-                <Download className="w-5 h-5 mr-3 flex-shrink-0 animate-bounce" />
+                <Download className="w-5 h-5 me-3 flex-shrink-0 animate-bounce" />
                 <p className="text-sm font-medium">
                   {t('updates.downloadingUpdate')}
                 </p>
@@ -142,7 +142,7 @@ export default function DatabaseUpdateBanner({ className = '' }: DatabaseUpdateB
 
             <button
               onClick={() => setDismissed(true)}
-              className="ml-4 text-white hover:text-blue-100 transition-colors"
+              className="ms-4 text-white hover:text-blue-100 transition-colors"
               aria-label={t('common.close')}
             >
               <X className="w-5 h-5" />
@@ -165,7 +165,7 @@ export default function DatabaseUpdateBanner({ className = '' }: DatabaseUpdateB
         <div className="max-w-7xl mx-auto px-4 py-3 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between flex-wrap">
             <div className="flex items-center flex-1">
-              <Download className="w-5 h-5 mr-3 flex-shrink-0" />
+              <Download className="w-5 h-5 me-3 flex-shrink-0" />
               <p className="text-sm font-medium">
                 {t('updates.databaseUpdateAvailable', { current: currentVersion, available: availableVersion })}
               </p>
@@ -175,7 +175,7 @@ export default function DatabaseUpdateBanner({ className = '' }: DatabaseUpdateB
                 onClick={startBackgroundUpdate}
                 className="px-4 py-2 bg-white text-yellow-600 rounded-md text-sm font-medium hover:bg-yellow-50 transition-colors"
               >
-                <Download className="w-4 h-4 inline mr-1" />
+                <Download className="w-4 h-4 inline me-1" />
                 {t('updates.downloadUpdate')}
               </button>
               <button

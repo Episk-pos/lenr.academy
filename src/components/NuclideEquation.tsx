@@ -29,6 +29,7 @@ export default function NuclideEquation({
   if (displayMode) {
     return (
       <div
+        dir="ltr"
         className={className}
         // KaTeX output is trusted — derived from a fixed parser over our own
         // data, no user input.
@@ -39,6 +40,7 @@ export default function NuclideEquation({
 
   return (
     <span
+      dir="ltr"
       className={className}
       dangerouslySetInnerHTML={{ __html: html }}
     />

@@ -205,7 +205,8 @@ export default function Layout({ children }: LayoutProps) {
       <div className={`fixed inset-0 z-50 lg:hidden ${sidebarOpen ? 'block' : 'hidden'}`}>
         <div className="fixed inset-0 bg-gray-600 bg-opacity-75" onClick={() => setSidebarOpen(false)} />
         <div
-          className="fixed left-0 flex w-64 flex-col bg-white dark:bg-gray-800 overflow-hidden"
+          data-testid="mobile-sidebar"
+          className="fixed start-0 flex w-64 flex-col bg-white dark:bg-gray-800 overflow-hidden"
           style={{
             top: 'var(--offline-banner-height, 0px)',
             bottom: 0,
@@ -284,24 +285,25 @@ export default function Layout({ children }: LayoutProps) {
 
       {/* Desktop sidebar */}
       <div
-        className={`hidden lg:fixed lg:flex lg:flex-col transition-all duration-300 ${desktopSidebarCollapsed ? 'lg:w-16' : 'lg:w-64'}`}
+        data-testid="desktop-sidebar"
+        className={`hidden lg:fixed lg:start-0 lg:flex lg:flex-col transition-all duration-300 ${desktopSidebarCollapsed ? 'lg:w-16' : 'lg:w-64'}`}
         style={{
           top: 'var(--offline-banner-height, 0px)',
           bottom: 0,
           transition: 'top 300ms ease-out, width 300ms'
         }}
       >
-        <div className="flex flex-col flex-grow min-h-0 border-r border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 relative">
+        <div className="flex flex-col flex-grow min-h-0 border-e border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 relative">
           {/* Collapse toggle button */}
           <button
             onClick={() => setDesktopSidebarCollapsed(!desktopSidebarCollapsed)}
-            className="absolute -right-3 top-20 z-10 w-6 h-6 rounded-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 flex items-center justify-center hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+            className="absolute -end-3 top-20 z-10 w-6 h-6 rounded-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 flex items-center justify-center hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
             title={desktopSidebarCollapsed ? t('sidebar.expand') : t('sidebar.collapse')}
           >
             {desktopSidebarCollapsed ? (
-              <ChevronRight className="w-4 h-4 text-gray-600 dark:text-gray-400" />
+              <ChevronRight className="w-4 h-4 text-gray-600 dark:text-gray-400 rtl:rotate-180" />
             ) : (
-              <ChevronLeft className="w-4 h-4 text-gray-600 dark:text-gray-400" />
+              <ChevronLeft className="w-4 h-4 text-gray-600 dark:text-gray-400 rtl:rotate-180" />
             )}
           </button>
 
@@ -326,7 +328,7 @@ export default function Layout({ children }: LayoutProps) {
                   title={desktopSidebarCollapsed ? t(item.nameKey) : undefined}
                 >
                   <Icon className="flex-shrink-0 w-5 h-5" />
-                  <span className={`whitespace-nowrap transition-all duration-150 overflow-hidden ${desktopSidebarCollapsed ? 'opacity-0 w-0 ml-0 delay-0' : 'opacity-100 w-auto ml-0 delay-150'}`}>{t(item.nameKey)}</span>
+                  <span className={`whitespace-nowrap transition-all duration-150 overflow-hidden ${desktopSidebarCollapsed ? 'opacity-0 w-0 ms-0 delay-0' : 'opacity-100 w-auto ms-0 delay-150'}`}>{t(item.nameKey)}</span>
                 </Link>
               )
             })}
@@ -395,7 +397,7 @@ export default function Layout({ children }: LayoutProps) {
       </div>
 
       {/* Main content */}
-      <div className={`transition-all duration-300 ${desktopSidebarCollapsed ? 'lg:pl-16' : 'lg:pl-64'}`}>
+      <div className={`transition-all duration-300 ${desktopSidebarCollapsed ? 'lg:ps-16' : 'lg:ps-64'}`}>
         {/* Mobile header - hides when tabs stick */}
         <div className={`sticky top-0 z-10 flex h-16 shrink-0 items-center gap-x-4 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 lg:hidden transition-all duration-300 ${
           mobileHeaderHidden ? 'opacity-0 -translate-y-full pointer-events-none' : 'opacity-100 translate-y-0'
@@ -427,7 +429,7 @@ export default function Layout({ children }: LayoutProps) {
       </div>
 
       {/* Global Banners */}
-      <div className="fixed bottom-0 left-0 right-0 z-50 pointer-events-none">
+      <div className="fixed bottom-0 start-0 end-0 z-50 pointer-events-none">
         <div className="flex flex-col gap-3 px-4 sm:px-6 lg:px-8 pb-3 sm:pb-5 pointer-events-auto">
           {!appUpdateVisible && <DatabaseUpdateBanner className="rounded-lg overflow-hidden" />}
           <AppUpdateBanner

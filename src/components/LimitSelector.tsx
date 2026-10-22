@@ -111,7 +111,7 @@ export default function LimitSelector({ value, onChange, id }: LimitSelectorProp
           <button
             id={id}
             type="button"
-            className="input flex items-center justify-between w-full text-left"
+            className="input flex items-center justify-between w-full text-start"
             onClick={() => setIsOpen(!isOpen)}
             data-testid="limit-selector-button"
           >
@@ -120,12 +120,12 @@ export default function LimitSelector({ value, onChange, id }: LimitSelectorProp
           </button>
           
           {isOpen && (
-            <div className="absolute left-0 right-0 z-[9999] mt-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md shadow-lg min-w-[120px] overflow-visible">
+            <div className="absolute start-0 end-0 z-[9999] mt-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md shadow-lg min-w-[120px] overflow-visible">
               {limitOptions.map((option) => (
                 <button
                   key={option.value ?? 'null'}
                   type="button"
-                  className={`w-full px-4 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors ${
+                  className={`w-full px-4 py-2 text-start hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors ${
                     value === option.value ? 'bg-primary-50 dark:bg-primary-900/20 text-primary-700 dark:text-primary-300' : ''
                   }`}
                   onClick={() => handleOptionSelect(option.value)}

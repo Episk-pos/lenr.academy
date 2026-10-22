@@ -488,7 +488,7 @@ const allElementNames: Record<number, string> = {
             rounded-t-xl sm:rounded-lg shadow-[0_-8px_24px_rgba(0,0,0,0.2)] sm:shadow-lg p-4
             pb-[max(1rem,env(safe-area-inset-bottom))] sm:pb-4
             w-full sm:min-w-[650px] lg:min-w-[800px]
-            ${align === 'right' ? 'sm:right-0' : align === 'center' ? 'sm:left-1/2 sm:-translate-x-1/2' : ''}
+            ${align === 'right' ? 'sm:end-0' : align === 'center' ? 'sm:left-1/2 sm:-translate-x-1/2' : ''}
           `}>
           {/* Bottom-sheet grab handle (mobile only) */}
           <div className="sm:hidden mx-auto mb-3 h-1 w-10 rounded-full bg-gray-300 dark:bg-gray-600" aria-hidden="true" />
@@ -519,7 +519,7 @@ const allElementNames: Record<number, string> = {
           )}
 
           {/* Horizontally scrollable grid on narrow screens; unchanged layout from sm up */}
-          <div className="relative">
+          <div className="relative" dir="ltr">
             <div
               ref={gridScrollRef}
               onScroll={updateScrollAffordance}

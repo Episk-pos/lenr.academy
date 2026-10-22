@@ -88,10 +88,10 @@ export default function ChangelogModal({
       />
     ),
     ul: ({ node: _, ...props }) => (
-      <ul {...props} className="list-disc pl-5 space-y-1" />
+      <ul {...props} className="list-disc ps-5 space-y-1" />
     ),
     ol: ({ node: _, ...props }) => (
-      <ol {...props} className="list-decimal pl-5 space-y-1" />
+      <ol {...props} className="list-decimal ps-5 space-y-1" />
     ),
   }
 

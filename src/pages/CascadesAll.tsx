@@ -466,8 +466,8 @@ export default function CascadesAll() {
                 <div className={`w-10 h-6 rounded-full transition-colors ${
                   useWeightedMode ? 'bg-primary-600' : 'bg-gray-300 dark:bg-gray-600'
                 }`}>
-                  <div className={`absolute top-1 left-1 w-4 h-4 rounded-full bg-white transition-transform ${
-                    useWeightedMode ? 'translate-x-4' : ''
+                  <div className={`absolute top-1 start-1 w-4 h-4 rounded-full bg-white transition-transform ${
+                    useWeightedMode ? 'translate-x-4 rtl:-translate-x-4' : ''
                   }`} />
                 </div>
               </div>
@@ -654,11 +654,11 @@ export default function CascadesAll() {
                   type="checkbox"
                   checked={params.feedbackBosons}
                   onChange={(e) => setParams({...params, feedbackBosons: e.target.checked})}
-                  className="mr-2"
+                  className="me-2"
                 />
                 <span className="text-sm">{t('cascades.feedbackBosons')}</span>
               </label>
-              <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5 ml-6">
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5 ms-6">
                 {t('cascades.feedbackBosonsHint')}
               </p>
             </div>
@@ -668,11 +668,11 @@ export default function CascadesAll() {
                   type="checkbox"
                   checked={params.feedbackFermions}
                   onChange={(e) => setParams({...params, feedbackFermions: e.target.checked})}
-                  className="mr-2"
+                  className="me-2"
                 />
                 <span className="text-sm">{t('cascades.feedbackFermions')}</span>
               </label>
-              <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5 ml-6">
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5 ms-6">
                 {t('cascades.feedbackFermionsHint')}
               </p>
             </div>
@@ -682,11 +682,11 @@ export default function CascadesAll() {
                   type="checkbox"
                   checked={params.allowDimers}
                   onChange={(e) => setParams({...params, allowDimers: e.target.checked})}
-                  className="mr-2"
+                  className="me-2"
                 />
                 <span className="text-sm">{t('cascades.allowDimers')}</span>
               </label>
-              <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5 ml-6">
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5 ms-6">
                 {t('cascades.allowDimersHint')}
               </p>
             </div>
@@ -696,12 +696,12 @@ export default function CascadesAll() {
                   type="checkbox"
                   checked={params.excludeMelted}
                   onChange={(e) => setParams({...params, excludeMelted: e.target.checked})}
-                  className="mr-2"
+                  className="me-2"
                   data-testid="cascade-exclude-melted"
                 />
                 <span className="text-sm">{t('cascades.excludeMelted', { temperature: Number.isFinite(params.temperature) ? params.temperature : '?' })}</span>
               </label>
-              <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5 ml-6">
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5 ms-6">
                 {t('cascades.excludeMeltedHint')}
               </p>
             </div>
@@ -711,12 +711,12 @@ export default function CascadesAll() {
                   type="checkbox"
                   checked={params.excludeBoiledOff}
                   onChange={(e) => setParams({...params, excludeBoiledOff: e.target.checked})}
-                  className="mr-2"
+                  className="me-2"
                   data-testid="cascade-exclude-boiled-off"
                 />
                 <span className="text-sm">{t('cascades.excludeBoiledOff', { temperature: Number.isFinite(params.temperature) ? params.temperature : '?' })}</span>
               </label>
-              <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5 ml-6">
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5 ms-6">
                 {t('cascades.excludeBoiledOffHint')}
               </p>
             </div>
@@ -733,12 +733,12 @@ export default function CascadesAll() {
           >
             {isRunning ? (
               <>
-                <Loader2 className="w-5 h-5 mr-2 inline animate-spin" />
+                <Loader2 className="w-5 h-5 me-2 inline animate-spin" />
                 {t('cascades.running')}
               </>
             ) : (
               <>
-                <Play className="w-5 h-5 mr-2 inline" />
+                <Play className="w-5 h-5 me-2 inline" />
                 {t('cascades.runSimulation')}
               </>
             )}

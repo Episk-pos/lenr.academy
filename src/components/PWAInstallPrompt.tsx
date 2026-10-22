@@ -107,7 +107,7 @@ export default function PWAInstallPrompt() {
   return (
     <>
       <div
-        className="fixed bottom-4 left-4 right-4 md:left-auto md:right-4 md:max-w-md z-40 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-xl"
+        className="fixed bottom-4 start-4 end-4 md:start-auto md:end-4 md:max-w-md z-40 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-xl"
         role="dialog"
         aria-label={t('pwa.installPromptLabel')}
         data-testid="pwa-install-prompt"

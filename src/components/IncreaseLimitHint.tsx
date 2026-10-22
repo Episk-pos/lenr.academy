@@ -28,11 +28,11 @@ export default function IncreaseLimitHint({ onExpand, targetId }: IncreaseLimitH
 
   return (
     <>
-      <span className="ml-2" aria-hidden="true">•</span>
+      <span className="ms-2" aria-hidden="true">•</span>
       <button
         type="button"
         onClick={handleClick}
-        className="ml-1 text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 underline underline-offset-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 rounded-sm"
+        className="ms-1 text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 underline underline-offset-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 rounded-sm"
         data-testid="increase-limit-button"
       >
         {t('reactions.increaseLimit')}
