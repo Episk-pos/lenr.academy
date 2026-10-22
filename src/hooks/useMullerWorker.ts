@@ -17,7 +17,7 @@ export interface UseMullerWorkerReturn {
   naePredictions: NAEPrediction[]
   reactionCounts: Map<number, number>
   isInitialized: boolean
-  // Selection results
+  // Selection results (ΔN + mismatch only; band placement happens on the main thread)
   pairs: MullerResonancePair[]
   overlaps: ReactionOverlap[]
   // Loading states

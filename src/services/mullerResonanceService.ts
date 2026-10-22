@@ -5,13 +5,19 @@
  * where L is the resonance wavelength, Z is atomic number,
  * C is the Compton wavelength (electron or proton), and N is the octave number.
  *
- * When an element's electron resonance wavelength matches another element's
- * proton resonance wavelength at exact integer octave numbers, they share
- * a cross-particle resonance. Only ~0.2% of all element pairs match
- * to < 0.01%.
+ * Two elements share a cross-particle resonance when one element's electron
+ * ladder lines up with the other element's proton ladder:
  *
- * Example: Copper (Z=29) electrons at N=31 and Iron (Z=26) protons at N=42
- * both produce L = 151.1 mm — a match to 0.0008%.
+ *   Z1 · λe · 2^N = Z2 · λp · 2^(N + ΔN)   ⇔   Z1 / Z2 = 2^ΔN / (λe/λp)
+ *
+ * N cancels out of the condition, so if it holds at one octave it holds at
+ * every octave. A resonance therefore fixes only the octave GAP ΔN (and the
+ * mismatch %), never an absolute octave. Choosing a wavelength band is what
+ * selects which rung(s) of the ladder to display — see `placeInBand`.
+ *
+ * Example: Copper (Z=29) electrons and Iron (Z=26) protons match with
+ * ΔN = 11 to 0.0008%. At N = 31 / 42 that is L ≈ 151.1 mm; at N = 20 / 31 it
+ * is L ≈ 73.78 µm — the same resonance, different octaves.
  */
 
 import {
@@ -24,12 +30,15 @@ import {
 } from '../constants/naeConstants'
 
 // Fundamental constants
-const COMPTON_ELECTRON = 2.42631e-12 // meters
+export const COMPTON_ELECTRON = 2.42631e-12 // meters
 const ELECTRON_PROTON_MASS_RATIO = 1836.15267
 
-// Octave search range
+// Octave-gap (ΔN) search range
 const MIN_OCTAVE = 7
 const MAX_OCTAVE = 15
+
+// Safety cap on ladder length (a band spanning 2^200 is not meaningful)
+const MAX_LADDER_N = 200
 
 export interface MullerResonancePair {
   Z1: number
@@ -37,9 +46,7 @@ export interface MullerResonancePair {
   Z2: number
   E2: string
   mismatch: number // percentage
-  wavelength: number // meters
-  electronOctave: number
-  protonOctave: number
+  deltaN: number // proton octave − electron octave
   electronElement: 'Z1' | 'Z2'
 }
 
@@ -61,69 +68,162 @@ export interface ReactionOverlap {
   maxMeV: number
 }
 
-/**
- * Compute the best electron-proton resonance mismatch between two elements.
- * Returns the mismatch percentage and octave numbers.
- */
-export function computeMullerMismatch(
-  Z1: number,
-  Z2: number
-): { mismatch: number; electronOctave: number; protonOctave: number; wavelength: number; electronIsZ1: boolean } | null {
-  if (Z1 === 0 || Z2 === 0 || Z1 === Z2) return null
+/** Result of the octave-independent resonance test between two elements. */
+export interface MullerMatch {
+  deltaN: number
+  mismatchPct: number
+  /** true when Z1 contributes the electron ladder and Z2 the proton ladder */
+  electronIsZ1: boolean
+}
 
-  let best = 999
-  let bestElectronN = 0
-  let bestProtonN = 0
-  let bestWavelength = 0
+/** One rung of a resonance ladder: electron octave N, proton octave N+ΔN, wavelength. */
+export interface BandRung {
+  N: number
+  protonN: number
+  wavelength: number // meters (electron-side L = Z_e · λe · 2^N)
+}
+
+/**
+ * Find the best electron-proton resonance between two elements.
+ *
+ * Tests both orientations (Z1 electrons vs Z2 protons and vice versa) over
+ * ΔN ∈ [MIN_OCTAVE, MAX_OCTAVE] and returns the best octave gap and its
+ * mismatch. Returns null for invalid pairs or when the best mismatch > 100%.
+ */
+export function findResonance(Z1: number, Z2: number): MullerMatch | null {
+  if (Z1 <= 0 || Z2 <= 0 || Z1 === Z2) return null
+
+  let best = Infinity
+  let bestDeltaN = 0
   let bestElectronIsZ1 = true
 
-  // Check Z1 electron vs Z2 proton
   for (let dN = MIN_OCTAVE; dN <= MAX_OCTAVE; dN++) {
     const idealRatio = Math.pow(2, dN) / ELECTRON_PROTON_MASS_RATIO
-    const actualRatio = Z1 / Z2
-    const mm = Math.abs(actualRatio - idealRatio) / idealRatio * 100
+
+    // Z1 electron vs Z2 proton
+    const mm = Math.abs(Z1 / Z2 - idealRatio) / idealRatio * 100
     if (mm < best) {
       best = mm
-      // Find actual octave numbers that produce a reasonable wavelength
-      for (let N1 = 20; N1 <= 40; N1++) {
-        const L = Z1 * COMPTON_ELECTRON * Math.pow(2, N1)
-        if (L > 1e-6 && L < 10) {
-          bestElectronN = N1
-          bestProtonN = N1 + dN
-          bestWavelength = L
-          bestElectronIsZ1 = true
-          break
-        }
-      }
+      bestDeltaN = dN
+      bestElectronIsZ1 = true
     }
 
-    // Check Z2 electron vs Z1 proton
-    const reverseRatio = Z2 / Z1
-    const mmReverse = Math.abs(reverseRatio - idealRatio) / idealRatio * 100
+    // Z2 electron vs Z1 proton
+    const mmReverse = Math.abs(Z2 / Z1 - idealRatio) / idealRatio * 100
     if (mmReverse < best) {
       best = mmReverse
-      for (let N1 = 20; N1 <= 40; N1++) {
-        const L = Z2 * COMPTON_ELECTRON * Math.pow(2, N1)
-        if (L > 1e-6 && L < 10) {
-          bestElectronN = N1
-          bestProtonN = N1 + dN
-          bestWavelength = L
-          bestElectronIsZ1 = false
-          break
-        }
-      }
+      bestDeltaN = dN
+      bestElectronIsZ1 = false
     }
   }
 
   if (best > 100) return null
 
-  return {
-    mismatch: best,
-    electronOctave: bestElectronN,
-    protonOctave: bestProtonN,
-    wavelength: bestWavelength,
-    electronIsZ1: bestElectronIsZ1,
+  return { deltaN: bestDeltaN, mismatchPct: best, electronIsZ1: bestElectronIsZ1 }
+}
+
+/**
+ * Place a resonance into a wavelength band.
+ *
+ * Returns every rung {N, protonN, wavelength} with N an integer ≥ 0 and
+ * lambdaMin ≤ L ≤ lambdaMax, where L = zElectron · λe · 2^N. Consecutive
+ * rungs double in wavelength. Returns [] for an empty or invalid band.
+ */
+export function placeInBand(
+  match: Pick<MullerMatch, 'deltaN'>,
+  zElectron: number,
+  lambdaMin: number,
+  lambdaMax: number
+): BandRung[] {
+  if (
+    !(zElectron > 0) ||
+    !Number.isFinite(lambdaMin) ||
+    !Number.isFinite(lambdaMax) ||
+    lambdaMin <= 0 ||
+    lambdaMax < lambdaMin
+  ) {
+    return []
   }
+
+  const base = zElectron * COMPTON_ELECTRON
+  // Start one octave below the analytic estimate, then step up to absorb rounding.
+  let N = Math.max(0, Math.floor(Math.log2(lambdaMin / base)) - 1)
+  const rungs: BandRung[] = []
+
+  for (; N <= MAX_LADDER_N; N++) {
+    const L = base * Math.pow(2, N)
+    if (L > lambdaMax) break
+    if (L >= lambdaMin) {
+      rungs.push({ N, protonN: N + match.deltaN, wavelength: L })
+    }
+  }
+
+  return rungs
+}
+
+/** Z of the element contributing the electron ladder for a pair. */
+export function electronZ(pair: Pick<MullerResonancePair, 'Z1' | 'Z2' | 'electronElement'>): number {
+  return pair.electronElement === 'Z1' ? pair.Z1 : pair.Z2
+}
+
+// ============================================================================
+// Wavelength band selection (URL state)
+// ============================================================================
+
+export type BandId = 'none' | 'um' | 'mm' | 'cm-m' | 'custom'
+
+export interface BandSelection {
+  band: BandId
+  min: number // meters (ignored when band === 'none')
+  max: number // meters
+}
+
+export const BAND_PRESETS: Record<Exclude<BandId, 'none' | 'custom'>, { min: number; max: number }> = {
+  um: { min: 1e-6, max: 1e-3 },
+  mm: { min: 1e-3, max: 1 },
+  'cm-m': { min: 1e-2, max: 10 },
+}
+
+/** Default custom range when bmin/bmax are missing or invalid (1 mm – 1 m). */
+export const DEFAULT_CUSTOM_BAND = { min: 1e-3, max: 1 }
+
+/**
+ * Parse band selection from URL search params:
+ *   band=um|mm|cm-m|custom, bmin=<meters>, bmax=<meters> (custom only).
+ * Unknown/missing band → 'none' (ratio only).
+ */
+export function parseBandParams(params: URLSearchParams): BandSelection {
+  const band = params.get('band')
+  if (band === 'um' || band === 'mm' || band === 'cm-m') {
+    return { band, ...BAND_PRESETS[band] }
+  }
+  if (band === 'custom') {
+    const rawMin = params.get('bmin')
+    const rawMax = params.get('bmax')
+    let min = rawMin === null || rawMin === '' ? NaN : Number(rawMin)
+    let max = rawMax === null || rawMax === '' ? NaN : Number(rawMax)
+    const valid = (x: number) => Number.isFinite(x) && x > 0
+    if (!valid(min) || !valid(max)) {
+      return { band: 'custom', ...DEFAULT_CUSTOM_BAND }
+    }
+    if (min > max) [min, max] = [max, min]
+    return { band: 'custom', min, max }
+  }
+  return { band: 'none', min: 0, max: 0 }
+}
+
+/** Write band selection into URL search params (mutates and returns `params`). */
+export function writeBandParams(params: URLSearchParams, sel: BandSelection): URLSearchParams {
+  params.delete('band')
+  params.delete('bmin')
+  params.delete('bmax')
+  if (sel.band === 'none') return params
+  params.set('band', sel.band)
+  if (sel.band === 'custom') {
+    params.set('bmin', String(sel.min))
+    params.set('bmax', String(sel.max))
+  }
+  return params
 }
 
 /**
@@ -140,19 +240,17 @@ export function findResonantPartners(
   for (const el of elements) {
     if (el.Z === selectedZ || el.Z === 0) continue
 
-    const result = computeMullerMismatch(selectedZ, el.Z)
-    if (!result || result.mismatch >= threshold) continue
+    const match = findResonance(selectedZ, el.Z)
+    if (!match || match.mismatchPct >= threshold) continue
 
     pairs.push({
       Z1: selectedZ,
       E1: selectedSymbol,
       Z2: el.Z,
       E2: el.E,
-      mismatch: result.mismatch,
-      wavelength: result.wavelength,
-      electronOctave: result.electronOctave,
-      protonOctave: result.protonOctave,
-      electronElement: result.electronIsZ1 ? 'Z1' : 'Z2',
+      mismatch: match.mismatchPct,
+      deltaN: match.deltaN,
+      electronElement: match.electronIsZ1 ? 'Z1' : 'Z2',
     })
   }
 
@@ -176,10 +274,10 @@ export function computeAllPairMismatches(
       const z2 = elements[j].Z
       if (z1 === 0 || z2 === 0) continue
 
-      const result = computeMullerMismatch(z1, z2)
-      if (result) {
+      const match = findResonance(z1, z2)
+      if (match) {
         const key = `${Math.min(z1, z2)}-${Math.max(z1, z2)}`
-        map.set(key, result.mismatch)
+        map.set(key, match.mismatchPct)
       }
     }
   }
@@ -189,7 +287,7 @@ export function computeAllPairMismatches(
 
 /**
  * Compute the top global Muller-resonant pairs across all element combinations,
- * sorted by mismatch (best resonance first).
+ * sorted by mismatch (best resonance first). Z1/E1 is always the electron side.
  */
 export function computeTopGlobalPairs(
   elements: Array<{ Z: number; E: string }>,
@@ -203,17 +301,15 @@ export function computeTopGlobalPairs(
       const z2 = elements[j].Z
       if (z1 === 0 || z2 === 0) continue
 
-      const result = computeMullerMismatch(z1, z2)
-      if (result) {
+      const match = findResonance(z1, z2)
+      if (match) {
         pairs.push({
-          Z1: result.electronIsZ1 ? z1 : z2,
-          E1: result.electronIsZ1 ? elements[i].E : elements[j].E,
-          Z2: result.electronIsZ1 ? z2 : z1,
-          E2: result.electronIsZ1 ? elements[j].E : elements[i].E,
-          mismatch: result.mismatch,
-          wavelength: result.wavelength,
-          electronOctave: result.electronOctave,
-          protonOctave: result.protonOctave,
+          Z1: match.electronIsZ1 ? z1 : z2,
+          E1: match.electronIsZ1 ? elements[i].E : elements[j].E,
+          Z2: match.electronIsZ1 ? z2 : z1,
+          E2: match.electronIsZ1 ? elements[j].E : elements[i].E,
+          mismatch: match.mismatchPct,
+          deltaN: match.deltaN,
           electronElement: 'Z1',
         })
       }
@@ -304,7 +400,8 @@ export function formatWavelength(meters: number): string {
   if (meters >= 1) return `${meters.toFixed(2)} m`
   if (meters >= 0.001) return `${(meters * 1000).toFixed(2)} mm`
   if (meters >= 1e-6) return `${(meters * 1e6).toFixed(2)} μm`
-  return `${(meters * 1e9).toFixed(2)} nm`
+  if (meters >= 1e-9) return `${(meters * 1e9).toFixed(2)} nm`
+  return `${(meters * 1e12).toFixed(2)} pm`
 }
 
 /**

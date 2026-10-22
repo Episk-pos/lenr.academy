@@ -4,6 +4,10 @@
  * Runs Muller resonance computations in a background thread to keep the UI responsive.
  * Handles initialization (global pairs, NAE predictions, reaction counts),
  * element selection (finding resonant partners), and element clearing.
+ *
+ * Pairs carry only the octave-independent resonance (ΔN + mismatch). Placing a
+ * pair into a wavelength band (`placeInBand`) is cheap and runs on the main
+ * thread, so changing the band never round-trips through the worker.
  */
 
 import initSqlJs, { Database as SqlJsDatabase } from 'sql.js';
