@@ -40,6 +40,7 @@ function NuclideBadge({ nuclide }: { nuclide: { E: string; A: number } }) {
  * to indicate this row represents a closed cycle.
  */
 function CyclePreviewIcon({ steps }: { steps: number }) {
+  const { t } = useTranslation()
   // Cap visible dots at 8 to avoid clutter
   const n = Math.max(2, Math.min(8, steps))
   const cx = 12
@@ -58,7 +59,7 @@ function CyclePreviewIcon({ steps }: { steps: number }) {
     <svg
       viewBox="0 0 24 24"
       className="w-6 h-6 flex-shrink-0 text-amber-600 dark:text-amber-400"
-      aria-label={`Cycle with ${steps} steps`}
+      aria-label={t('cycleDiscovery.cycleIconLabel', { count: steps })}
     >
       {/* Background ring */}
       <circle

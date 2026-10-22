@@ -43,10 +43,11 @@ import RussellChart3D from '../components/RussellChart3D'
 import { RUSSELL_COLORS, getPredictedElements } from '../constants/russellElements'
 import { expandHalfLifeUnit, normalizeElementSymbol, formatDensity, formatSpecificHeat, densityToGPerCm3 } from '../utils/formatUtils'
 import { filterDataBySearch, SearchMetadata } from '../utils/searchUtils'
-import { RADIATION_TYPE_INFO } from '../constants/radiationTypes'
+import { getRadiationTypeInfo, localizeRadiationTypeInfo } from '../constants/radiationTypes'
 import { SPECIAL_PARTICLE_IDS, SPECIAL_PARTICLES_BY_ID } from '../constants/specialParticles'
 
-// Comprehensive decay mode information
+// Comprehensive decay mode information. name/description are the English source
+// strings; the UI translates them via the decayModes.<code>.name|description keys.
 const DECAY_MODE_INFO: Record<string, { name: string; description: string; url: string }> = {
   'A': { name: 'Alpha decay', description: 'emission of an alpha particle (2 protons + 2 neutrons)', url: 'https://en.wikipedia.org/wiki/Alpha_decay' },
   'B-': { name: 'Beta minus decay', description: 'neutron converts to proton, electron, and antineutrino', url: 'https://en.wikipedia.org/wiki/Beta_decay' },
@@ -66,8 +67,8 @@ function getDecayModeTooltip(mode: string, t: TFunction): JSX.Element {
   if (info) {
     return (
       <div>
-        <div className="font-semibold mb-1">{mode}: {info.name}</div>
-        <div className="mb-2">{info.description}</div>
+        <div className="font-semibold mb-1">{mode}: {t(`decayModes.${mode}.name`, { defaultValue: info.name })}</div>
+        <div className="mb-2">{t(`decayModes.${mode}.description`, { defaultValue: info.description })}</div>
         <a
           href={info.url}
           target="_blank"
@@ -85,7 +86,7 @@ function getDecayModeTooltip(mode: string, t: TFunction): JSX.Element {
 
 // Helper function to get radiation type tooltip content
 function getRadiationTypeTooltip(type: string, t: TFunction): JSX.Element {
-  const info = RADIATION_TYPE_INFO[type]
+  const info = getRadiationTypeInfo(type, t)
   if (info) {
     return (
       <div>
@@ -1388,7 +1389,7 @@ export default function ShowElementData() {
         type: 'badge-selector',
         colorScheme: 'purple',
         options: getUniqueDecayModes(db).map(m => ({ value: m, label: m })),
-        tooltipInfo: RADIATION_TYPE_INFO
+        tooltipInfo: localizeRadiationTypeInfo(t)
       },
       {
         key: 'radiationType',
@@ -1396,7 +1397,7 @@ export default function ShowElementData() {
         type: 'badge-selector',
         colorScheme: 'blue',
         options: getUniqueRadiationTypes(db).map(r => ({ value: r, label: r })),
-        tooltipInfo: RADIATION_TYPE_INFO
+        tooltipInfo: localizeRadiationTypeInfo(t)
       },
       {
         key: 'energy',

@@ -314,7 +314,7 @@ export default function CascadesAll() {
 
       setResults(cascadeResults)
     } catch (err) {
-      const message = err instanceof Error ? err.message : 'Unknown error occurred'
+      const message = err instanceof Error ? err.message : t('common.unknownError')
       setError(message)
       console.error('Cascade simulation error:', err)
     }

@@ -555,7 +555,7 @@ export default function FissionQuery() {
       }
     } catch (error) {
       console.error('Query failed:', error)
-      setQueryError(error instanceof Error ? error : new Error('Unknown error'))
+      setQueryError(error instanceof Error ? error : new Error(t('common.unknownError')))
     } finally {
       setIsQuerying(false)
     }

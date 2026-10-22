@@ -82,7 +82,7 @@ export default function CycleDiscovery() {
       setResults(discoveryResults)
     } catch (err) {
       const message =
-        err instanceof Error ? err.message : 'Unknown error occurred'
+        err instanceof Error ? err.message : t('common.unknownError')
       if (message !== 'Cycle discovery cancelled by user') {
         setError(message)
       }

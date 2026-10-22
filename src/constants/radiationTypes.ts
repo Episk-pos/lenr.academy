@@ -1,8 +1,20 @@
+import type { TFunction } from 'i18next'
+
+export interface RadiationTypeInfo {
+  name: string
+  description: string
+  url: string
+  category: string
+}
+
 /**
- * Comprehensive radiation type and decay mode information
+ * Comprehensive radiation type and decay mode information.
+ * `name` / `description` are the English source strings; UI code should use
+ * getRadiationTypeInfo() / localizeRadiationTypeInfo(), which translate them via
+ * the `radiationTypes.<code>.name|description` i18n keys.
  * Used across the application for tooltips, legends, and educational content
  */
-export const RADIATION_TYPE_INFO: Record<string, { name: string; description: string; url: string; category: string }> = {
+export const RADIATION_TYPE_INFO: Record<string, RadiationTypeInfo> = {
   // Primary decay modes
   'A': { name: 'Alpha particle', description: 'He-4 nucleus', url: 'https://en.wikipedia.org/wiki/Alpha_particle', category: 'primary' },
   'B-': { name: 'Beta minus', description: 'electron emission', url: 'https://en.wikipedia.org/wiki/Beta_decay', category: 'primary' },
@@ -33,4 +45,22 @@ export const RADIATION_TYPE_INFO: Record<string, { name: string; description: st
   // Auger electrons
   'E-AU-K': { name: 'K-shell Auger electron', description: 'atomic de-excitation from K shell', url: 'https://en.wikipedia.org/wiki/Auger_effect', category: 'electron' },
   'E-AU-L': { name: 'L-shell Auger electron', description: 'atomic de-excitation from L shell', url: 'https://en.wikipedia.org/wiki/Auger_effect', category: 'electron' },
+}
+
+/** Radiation type info with name/description translated into the active UI language */
+export function getRadiationTypeInfo(type: string, t: TFunction): RadiationTypeInfo | undefined {
+  const info = RADIATION_TYPE_INFO[type]
+  if (!info) return undefined
+  return {
+    ...info,
+    name: t(`radiationTypes.${type}.name`, { defaultValue: info.name }),
+    description: t(`radiationTypes.${type}.description`, { defaultValue: info.description }),
+  }
+}
+
+/** Whole RADIATION_TYPE_INFO table translated into the active UI language (for tooltip maps) */
+export function localizeRadiationTypeInfo(t: TFunction): Record<string, RadiationTypeInfo> {
+  return Object.fromEntries(
+    Object.keys(RADIATION_TYPE_INFO).map(type => [type, getRadiationTypeInfo(type, t) as RadiationTypeInfo])
+  )
 }

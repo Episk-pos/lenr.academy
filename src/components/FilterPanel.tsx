@@ -222,7 +222,7 @@ export default function FilterPanel({
   const handleDeletePreset = (presetId: string, event: React.MouseEvent) => {
     event.stopPropagation() // Prevent dropdown from closing
 
-    if (window.confirm('Are you sure you want to delete this preset?')) {
+    if (window.confirm(t('filterPanel.confirmDeletePreset'))) {
       if (onDeletePreset) {
         onDeletePreset(presetId)
       }

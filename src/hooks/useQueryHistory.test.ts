@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { renderHook, act } from '@testing-library/react'
-import { useQueryHistory } from './useQueryHistory'
+import { useQueryHistory, getQueryLabel } from './useQueryHistory'
+import { createTestI18n } from '../test-utils/i18nInstance'
 
 // Mock crypto.randomUUID with incrementing values
 let uuidCounter = 0
@@ -52,34 +53,35 @@ describe('useQueryHistory', () => {
       expect(result.current.history[0].resultCount).toBe(10)
     })
 
-    it('generates name with query type and elements', () => {
+    it('stores structured params and builds the label with query type and elements', async () => {
       const { result } = renderHook(() => useQueryHistory())
 
       act(() => {
         result.current.addToHistory('fusion', { element1List: ['H'], element2List: ['Li'] })
       })
 
-      expect(result.current.history[0].name).toBe('Fusion H + Li')
+      expect(result.current.history[0].name).toBeUndefined()
+      expect(getQueryLabel(result.current.history[0], (await createTestI18n('en')).t)).toBe('Fusion H + Li')
     })
 
-    it('generates name for two-to-two queries as 2→2', () => {
+    it('stores structured params and builds the label for two-to-two queries as 2→2', async () => {
       const { result } = renderHook(() => useQueryHistory())
 
       act(() => {
         result.current.addToHistory('twotwo', { element1List: ['D'], element2List: ['Ni'] })
       })
 
-      expect(result.current.history[0].name).toBe('2→2 D + Ni')
+      expect(getQueryLabel(result.current.history[0], (await createTestI18n('en')).t)).toBe('2→2 D + Ni')
     })
 
-    it('generates name with "All elements" when no elements specified', () => {
+    it('stores structured params and builds the label with "All elements" when no elements specified', async () => {
       const { result } = renderHook(() => useQueryHistory())
 
       act(() => {
         result.current.addToHistory('fusion', {})
       })
 
-      expect(result.current.history[0].name).toBe('Fusion All elements')
+      expect(getQueryLabel(result.current.history[0], (await createTestI18n('en')).t)).toBe('Fusion All elements')
     })
 
     it('moves duplicate query to top of history', () => {

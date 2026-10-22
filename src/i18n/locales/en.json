@@ -28,7 +28,8 @@
     "continue": "Continue",
     "selectAll": "Select All",
     "expand": "Expand",
-    "collapse": "Collapse"
+    "collapse": "Collapse",
+    "unknownError": "Unknown error occurred"
   },
   "brand": {
     "appName": "Nanosoft Suite",
@@ -1040,7 +1041,9 @@
     "downloadingUpdate": "Downloading database update in background...",
     "downloadUpdate": "Download Update",
     "noChangelogDetails": "No changelog details provided for this release.",
-    "latestRelease": "Latest Release"
+    "latestRelease": "Latest Release",
+    "releaseNotesUnavailable": "Detailed release notes are not available for this build.",
+    "releaseNotesLoadFailed": "Failed to load release notes."
   },
   "columnToggle": {
     "title": "Customize visible columns",
@@ -1148,7 +1151,9 @@
     "cycleClosesLabel": "Cycle closes — catalyst regenerated",
     "catalystCenterLabel": "Catalyst (recycled)",
     "byproductLabel": "byproduct",
-    "cycleAroundCatalyst": "← reactions cycle around catalyst →"
+    "cycleAroundCatalyst": "← reactions cycle around catalyst →",
+    "cycleIconLabel_one": "Cycle with {{count}} step",
+    "cycleIconLabel_other": "Cycle with {{count}} steps"
   },
   "help": {
     "title": "Help & Glossary",
@@ -1708,7 +1713,8 @@
     "saveFilterPreset": "Save Filter Preset",
     "presetName": "Preset Name",
     "presetNamePlaceholder": "e.g., My Custom Filter",
-    "searchPlaceholder": "Search..."
+    "searchPlaceholder": "Search...",
+    "confirmDeletePreset": "Are you sure you want to delete this preset?"
   },
   "pwa": {
     "installPromptLabel": "Install app prompt",
@@ -1836,5 +1842,133 @@
       "umamiIntro": "We use <strong>Umami Analytics</strong>, a privacy-friendly, open-source analytics platform that respects your privacy."
     },
     "default": "(default)"
+  },
+  "radiationTypes": {
+    "A": {
+      "name": "Alpha particle",
+      "description": "He-4 nucleus"
+    },
+    "B-": {
+      "name": "Beta minus",
+      "description": "electron emission"
+    },
+    "B+": {
+      "name": "Beta plus",
+      "description": "positron emission"
+    },
+    "B": {
+      "name": "Beta decay",
+      "description": "unspecified sign"
+    },
+    "EC": {
+      "name": "Electron capture",
+      "description": "orbital electron absorbed"
+    },
+    "IT": {
+      "name": "Isomeric transition",
+      "description": "excited state decay"
+    },
+    "G": {
+      "name": "Gamma ray",
+      "description": "high-energy photon"
+    },
+    "G-AN": {
+      "name": "Annihilation gamma",
+      "description": "positron annihilation"
+    },
+    "G-X-K": {
+      "name": "K-shell X-ray",
+      "description": "K shell transition"
+    },
+    "G-X-KA1": {
+      "name": "Kα1 X-ray",
+      "description": "K shell α1 transition"
+    },
+    "G-X-KA2": {
+      "name": "Kα2 X-ray",
+      "description": "K shell α2 transition"
+    },
+    "G-X-KB": {
+      "name": "Kβ X-ray",
+      "description": "K shell β transition"
+    },
+    "G-X-L": {
+      "name": "L-shell X-ray",
+      "description": "L shell transition"
+    },
+    "E-CE-K": {
+      "name": "K-shell conversion electron",
+      "description": "internal conversion from K shell"
+    },
+    "E-CE-L": {
+      "name": "L-shell conversion electron",
+      "description": "internal conversion from L shell"
+    },
+    "E-CE-M": {
+      "name": "M-shell conversion electron",
+      "description": "internal conversion from M shell"
+    },
+    "E-CE-M+": {
+      "name": "M+ shell conversion electron",
+      "description": "internal conversion from M+ shell"
+    },
+    "E-CE-MN+": {
+      "name": "MN+ shell conversion electron",
+      "description": "internal conversion from MN+ shell"
+    },
+    "E-CE-N+": {
+      "name": "N+ shell conversion electron",
+      "description": "internal conversion from N+ shell"
+    },
+    "E-AU-K": {
+      "name": "K-shell Auger electron",
+      "description": "atomic de-excitation from K shell"
+    },
+    "E-AU-L": {
+      "name": "L-shell Auger electron",
+      "description": "atomic de-excitation from L shell"
+    }
+  },
+  "decayModes": {
+    "A": {
+      "name": "Alpha decay",
+      "description": "emission of an alpha particle (2 protons + 2 neutrons)"
+    },
+    "B-": {
+      "name": "Beta minus decay",
+      "description": "neutron converts to proton, electron, and antineutrino"
+    },
+    "B+": {
+      "name": "Beta plus decay",
+      "description": "proton converts to neutron, positron, and neutrino"
+    },
+    "EC": {
+      "name": "Electron capture",
+      "description": "proton captures inner orbital electron, becomes neutron"
+    },
+    "IT": {
+      "name": "Isomeric transition",
+      "description": "excited nucleus releases energy without changing composition"
+    },
+    "SF": {
+      "name": "Spontaneous fission",
+      "description": "nucleus splits into lighter nuclei"
+    },
+    "N": {
+      "name": "Neutron emission",
+      "description": "nucleus emits one or more neutrons"
+    },
+    "P": {
+      "name": "Proton emission",
+      "description": "nucleus emits a proton"
+    },
+    "2N": {
+      "name": "Double neutron emission",
+      "description": "nucleus emits two neutrons"
+    },
+    "2P": {
+      "name": "Double proton emission",
+      "description": "nucleus emits two protons"
+    }
   }
 }

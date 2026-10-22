@@ -190,7 +190,7 @@ export default function MaterialsCatalog({
   // Handle delete custom material
   const handleDeleteCustom = (id: string, e: React.MouseEvent) => {
     e.stopPropagation();
-    if (confirm('Delete this custom material?')) {
+    if (confirm(t('cascades.deleteCustomMaterial'))) {
       deleteCustomMaterial(id);
       if (selectedMaterial?.id === id) {
         setSelectedMaterial(null);

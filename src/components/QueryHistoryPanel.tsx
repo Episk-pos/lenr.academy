@@ -117,6 +117,7 @@ export default function QueryHistoryPanel({
               <button
                 key={opt.value}
                 onClick={() => setFilterType(opt.value)}
+                aria-pressed={filterType === opt.value}
                 className={`px-2 py-0.5 text-xs rounded-full font-medium transition-colors ${
                   filterType === opt.value
                     ? 'bg-primary-100 text-primary-700 dark:bg-primary-900 dark:text-primary-300'

@@ -9,7 +9,8 @@ module.exports = {
   // react-hooks / @typescript-eslint / react-refresh are loaded only so that existing
   // eslint-disable comments for their rules resolve; none of their rules are enabled.
   plugins: ['i18next', 'react-hooks', '@typescript-eslint', 'react-refresh'],
-  ignorePatterns: ['dist', '**/*.test.ts', '**/*.test.tsx'],
+  // SentryTest is an unlinked developer-only diagnostics page (not user-facing)
+  ignorePatterns: ['dist', '**/*.test.ts', '**/*.test.tsx', 'src/pages/SentryTest.tsx'],
   rules: {
     'i18next/no-literal-string': [
       'warn',
@@ -54,6 +55,15 @@ module.exports = {
             'aria-hidden', 'aria-live', 'aria-controls', 'aria-describedby', 'aria-labelledby',
             'aria-haspopup', 'aria-current', 'aria-expanded', 'aria-pressed', 'aria-orientation',
             'aria-autocomplete', 'tabIndex', 'loading', 'decoding', 'referrerPolicy', 'crossOrigin',
+            'field', 'currentQueryType', 'reactionType', 'anchorX', 'anchorY',
+          ],
+        },
+        // Object keys whose values are identifiers/CSS, not UI text
+        'object-properties': {
+          exclude: [
+            '[A-Z_-]+', 'key', 'queryType', 'mode', 'position', 'cursor', 'height', 'width', 'overflow',
+            'borderRadius', 'stroke', 'fill', 'color', 'background(Color)?', 'border(Color)?',
+            'fusion', 'fission', 'twotwo', 'repository',
           ],
         },
       },

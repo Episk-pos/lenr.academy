@@ -127,7 +127,7 @@ export default function Layout({ children }: LayoutProps) {
       setChangelogNotes({
         tagName: changelogVersionLabel,
         name: changelogVersionLabel,
-        body: 'Detailed release notes are not available for this build.',
+        body: t('updates.releaseNotesUnavailable'),
         publishedAt: null,
         htmlUrl: RELEASES_URL,
       })
@@ -155,7 +155,7 @@ export default function Layout({ children }: LayoutProps) {
       })
       .catch((error) => {
         if (controller.signal.aborted) return
-        const message = error instanceof Error ? error.message : 'Failed to load release notes.'
+        const message = error instanceof Error ? error.message : t('updates.releaseNotesLoadFailed')
         setChangelogError(message)
         setChangelogNotes(null)
       })
@@ -166,7 +166,7 @@ export default function Layout({ children }: LayoutProps) {
       })
 
     return () => controller.abort()
-  }, [changelogTargetTag, changelogVersionLabel, fetchedTag, isChangelogOpen])
+  }, [changelogTargetTag, changelogVersionLabel, fetchedTag, isChangelogOpen, t])
 
   useEffect(() => {
     if (!currentVersionKey) return
