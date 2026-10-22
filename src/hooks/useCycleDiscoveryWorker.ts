@@ -1,5 +1,6 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { WorkerCancelledError } from './workerCancellation';
 import type { CycleDiscoveryParameters, CycleDiscoveryResults, CycleDiscoveryProgress } from '../types';
 import type {
   CycleDiscoveryRunRequest,
@@ -146,7 +147,7 @@ export function useCycleDiscoveryWorker(): UseCycleDiscoveryWorkerReturn {
       setError(tRef.current('errors.discoveryCancelled'));
 
       if (rejectRef.current) {
-        rejectRef.current(new Error(tRef.current('errors.discoveryCancelledByUser')));
+        rejectRef.current(new WorkerCancelledError(tRef.current('errors.discoveryCancelledByUser')));
         resolveRef.current = null;
         rejectRef.current = null;
       }

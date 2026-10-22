@@ -1,5 +1,6 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { WorkerCancelledError } from './workerCancellation';
 import type { CascadeParameters, CascadeResults } from '../types';
 import type {
   CascadeWorkerRequest,
@@ -154,7 +155,7 @@ export function useCascadeWorker(): UseCascadeWorkerReturn {
       setError(tRef.current('errors.simulationCancelled'));
 
       if (rejectRef.current) {
-        rejectRef.current(new Error(tRef.current('errors.simulationCancelledByUser')));
+        rejectRef.current(new WorkerCancelledError(tRef.current('errors.simulationCancelledByUser')));
         resolveRef.current = null;
         rejectRef.current = null;
       }

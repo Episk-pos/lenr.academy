@@ -13,6 +13,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
 import { useCascadeWorker } from './useCascadeWorker';
+import { isWorkerCancelled } from './workerCancellation';
 import type { CascadeParameters, CascadeResults } from '../types';
 import type { CascadeWorkerResponse } from '../workers/cascadeWorker';
 
@@ -390,6 +391,8 @@ describe('useCascadeWorker', () => {
 
       // Verify promise is rejected
       await expect(cascadePromise!).rejects.toThrow('Simulation cancelled by user');
+      // Cancellation is flagged independently of the translated message
+      expect(isWorkerCancelled(await cascadePromise!.catch((e: unknown) => e))).toBe(true);
     });
 
     it('should do nothing if not running', () => {

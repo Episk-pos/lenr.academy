@@ -1,7 +1,10 @@
 import { describe, it, expect, vi } from 'vitest'
-import { render, screen, fireEvent } from '@testing-library/react'
+import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
+import { I18nextProvider } from 'react-i18next'
 import CascadesAll from './CascadesAll'
+import { WorkerCancelledError } from '../hooks/workerCancellation'
+import { createTestI18n } from '../test-utils/i18nInstance'
 
 // Fake sql.js database: reports DB_NUCLIDES rows in NuclidesPlus
 const DB_NUCLIDES = 400
@@ -111,5 +114,28 @@ describe('CascadesAll — form copy', () => {
       expect(el).toBeInTheDocument()
       expect(runCascade).not.toHaveBeenCalled()
     })
+  })
+})
+
+describe('CascadesAll — cancellation in a non-English locale', () => {
+  it('does not show the translated cancel rejection as an error', async () => {
+    const de = await createTestI18n('de')
+    const cancelMsg = de.t('errors.simulationCancelledByUser')
+    expect(cancelMsg).not.toBe('Simulation cancelled by user')
+    runCascade.mockRejectedValueOnce(new WorkerCancelledError(cancelMsg))
+
+    render(
+      <I18nextProvider i18n={de}>
+        <MemoryRouter initialEntries={['/cascades']}>
+          <CascadesAll />
+        </MemoryRouter>
+      </I18nextProvider>
+    )
+    fireEvent.click(screen.getByRole('button', { name: new RegExp(de.t('cascades.runSimulation')) }))
+
+    await waitFor(() => expect(runCascade).toHaveBeenCalled())
+    await new Promise(r => setTimeout(r, 0))
+    expect(screen.queryByText(cancelMsg)).toBeNull()
+    expect(screen.queryByText(de.t('common.error'))).toBeNull()
   })
 })

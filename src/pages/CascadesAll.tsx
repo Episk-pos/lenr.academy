@@ -5,6 +5,7 @@ import { Play, Settings, AlertCircle, CheckCircle, XCircle, Loader2, Download, S
 import { useDatabase } from '../contexts/DatabaseContext'
 import { useQueryState } from '../contexts/QueryStateContext'
 import { useCascadeWorker } from '../hooks/useCascadeWorker'
+import { isWorkerCancelled } from '../hooks/workerCancellation'
 import CascadeProgressCard from '../components/CascadeProgressCard'
 import CascadeTabs from '../components/CascadeTabs'
 import PeriodicTableSelector from '../components/PeriodicTableSelector'
@@ -334,6 +335,9 @@ export default function CascadesAll() {
 
       setResults(cascadeResults)
     } catch (err) {
+      // User cancellation is flagged on the error (its message is translated);
+      // the hook already reports "Simulation cancelled" via its own error state.
+      if (isWorkerCancelled(err)) return
       const message = err instanceof Error ? err.message : t('common.unknownError')
       setError(message)
       console.error('Cascade simulation error:', err)
