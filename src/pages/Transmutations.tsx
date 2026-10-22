@@ -16,6 +16,7 @@ import {
   type TransmutationCategory,
 } from '../data/documentedTransmutations'
 import { getElementBySymbol } from '../services/queryService'
+import { parseMechanism } from '../components/nuclideEquation.utils'
 import {
   findPathways,
   formatPathway,
@@ -330,19 +331,6 @@ interface CardProps {
   onClearPathways: () => void
 }
 
-/**
- * Split a hypothesized-mechanism string into a leading prose description and
- * the equation that follows, using the first ":" as the delimiter. When no
- * ":" is present the entire string is treated as prose with no equation.
- */
-function splitMechanism(raw: string): { prose: string; equation: string | null } {
-  const idx = raw.indexOf(':')
-  if (idx === -1) return { prose: raw.trim(), equation: null }
-  const prose = raw.slice(0, idx).trim()
-  const equation = raw.slice(idx + 1).trim()
-  return { prose, equation: equation.length > 0 ? equation : null }
-}
-
 function TransmutationCard({
   transmutation,
   search,
@@ -386,8 +374,9 @@ function TransmutationCard({
         })
       : null
 
+  // Equations are marked explicitly with $...$ in the source/translations
   const mechanism = translatedHypothesis
-    ? splitMechanism(translatedHypothesis)
+    ? parseMechanism(translatedHypothesis)
     : null
 
   return (
@@ -476,18 +465,13 @@ function TransmutationCard({
                 defaultValue: 'Mechanism',
               })}
             </dt>
-            <dd className="text-gray-700 dark:text-gray-300">
-              {mechanism.prose && (
-                <span className="block sm:inline">{mechanism.prose}</span>
-              )}
-              {mechanism.equation && (
-                <>
-                  {mechanism.prose && <span className="hidden sm:inline">: </span>}
-                  <NuclideEquation
-                    input={mechanism.equation}
-                    className="font-mono"
-                  />
-                </>
+            <dd className="text-gray-700 dark:text-gray-300" data-testid={`mechanism-${transmutation.id}`}>
+              {mechanism.map((seg, i) =>
+                seg.type === 'math' ? (
+                  <NuclideEquation key={i} input={seg.value} className="font-mono" />
+                ) : (
+                  <span key={i}>{seg.value}</span>
+                )
               )}
             </dd>
           </>
@@ -501,7 +485,17 @@ function TransmutationCard({
       )}
 
       {/* ZONE D — CTA footer */}
-      <div className="flex flex-col sm:flex-row sm:justify-end gap-2">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-end gap-2">
+        {!hasResults && !hasError && (
+          <p
+            className="text-xs text-gray-500 dark:text-gray-400 sm:mr-auto"
+            data-testid={`pathway-hint-${transmutation.id}`}
+          >
+            {t('transmutations.pathwayResultsHint', {
+              defaultValue: 'Candidate pathways from the Parkhomov tables appear below this card.',
+            })}
+          </p>
+        )}
         <button
           type="button"
           onClick={onFindPathways}

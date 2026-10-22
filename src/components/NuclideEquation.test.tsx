@@ -10,7 +10,8 @@ vi.mock('katex', () => ({
 
 import { render } from '@testing-library/react'
 import NuclideEquation from './NuclideEquation'
-import { toLatex } from './nuclideEquation.utils'
+import { toLatex, parseMechanism } from './nuclideEquation.utils'
+import { DOCUMENTED_TRANSMUTATIONS } from '../data/documentedTransmutations'
 
 describe('toLatex', () => {
   it('converts a sequential alpha-capture equation (Iwamura Cs→Pr)', () => {
@@ -65,5 +66,69 @@ describe('<NuclideEquation />', () => {
       <NuclideEquation input="55Mn + d → 57Fe" displayMode />
     )
     expect(container.querySelector('div')).not.toBeNull()
+  })
+})
+
+describe('parseMechanism', () => {
+  it('extracts an equation in the middle of prose (Vysotskii Mn → Fe, no colon)', () => {
+    expect(
+      parseMechanism('Net reaction proposed as $55Mn + d → 57Fe$ via biologically-mediated low-energy fusion')
+    ).toEqual([
+      { type: 'text', value: 'Net reaction proposed as ' },
+      { type: 'math', value: '55Mn + d → 57Fe' },
+      { type: 'text', value: ' via biologically-mediated low-energy fusion' },
+    ])
+  })
+
+  it('extracts an equation at the start of the string (SPAWAR D + D)', () => {
+    expect(parseMechanism('$D + D → T + p$ reported; anomalous')).toEqual([
+      { type: 'math', value: 'D + D → T + p' },
+      { type: 'text', value: ' reported; anomalous' },
+    ])
+  })
+
+  it('handles an equation after a colon at the end of the string', () => {
+    expect(parseMechanism('Sequential alpha-capture: $133Cs + 2 × 4He → 141Pr$')).toEqual([
+      { type: 'text', value: 'Sequential alpha-capture: ' },
+      { type: 'math', value: '133Cs + 2 × 4He → 141Pr' },
+    ])
+  })
+
+  it('treats strings without delimiters as plain prose, even with a colon', () => {
+    expect(parseMechanism('Mechanism: unresolved')).toEqual([
+      { type: 'text', value: 'Mechanism: unresolved' },
+    ])
+  })
+
+  it('keeps an unmatched trailing $ as literal text', () => {
+    expect(parseMechanism('Cost $5 only')).toEqual([{ type: 'text', value: 'Cost $5 only' }])
+  })
+})
+
+describe('documented transmutation mechanisms', () => {
+  it('mark every equation explicitly so the Mn→Fe and D+D mechanisms render as math', () => {
+    const byId = Object.fromEntries(DOCUMENTED_TRANSMUTATIONS.map(e => [e.id, e]))
+    const math = (id: string) =>
+      parseMechanism(byId[id].hypothesizedMechanism ?? '').filter(s => s.type === 'math').map(s => s.value)
+    expect(math('vysotskii-mn-fe')).toEqual(['55Mn + d → 57Fe'])
+    expect(math('spawar-tritium')).toEqual(['D + D → T + p'])
+    expect(math('iwamura-cs-pr')).toEqual(['133Cs + 2 × 4He → 141Pr'])
+  })
+
+  it('keep the same math segments in every locale as in the source data', () => {
+    const locales = import.meta.glob('../i18n/locales/*.json', { eager: true }) as Record<
+      string,
+      { default: { transmutations: { entries: Record<string, { hypothesizedMechanism?: string }> } } }
+    >
+    const mathOf = (s: string) => parseMechanism(s).filter(seg => seg.type === 'math').map(seg => seg.value)
+    expect(Object.keys(locales).length).toBe(13)
+    for (const [file, mod] of Object.entries(locales)) {
+      for (const entry of DOCUMENTED_TRANSMUTATIONS) {
+        if (!entry.hypothesizedMechanism) continue
+        const translated = mod.default.transmutations.entries[entry.id]?.hypothesizedMechanism
+        expect(translated, `${file} ${entry.id}`).toBeDefined()
+        expect(mathOf(translated!), `${file} ${entry.id}`).toEqual(mathOf(entry.hypothesizedMechanism))
+      }
+    }
   })
 })

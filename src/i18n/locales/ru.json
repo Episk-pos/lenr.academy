@@ -128,7 +128,12 @@
     "tryAgain": "Пожалуйста, попробуйте снова",
     "contactSupport": "Если проблема сохраняется, обратитесь в поддержку",
     "reloadPage": "Перезагрузить страницу",
-    "goHome": "На главную"
+    "goHome": "На главную",
+    "workerError": "Произошла ошибка воркера",
+    "simulationCancelled": "Моделирование отменено",
+    "simulationCancelledByUser": "Моделирование отменено пользователем",
+    "discoveryCancelled": "Поиск отменён",
+    "discoveryCancelledByUser": "Поиск циклов отменён пользователем"
   },
   "home": {
     "title": "LENR Academy",
@@ -626,7 +631,7 @@
     "simulationTitle": "Каскадное моделирование",
     "simulationDescription": "Моделирование каскадных цепных реакций от начальных топливных нуклидов",
     "databaseLimitsTitle": "Ограничения базы данных",
-    "databaseLimitsDescription": "База данных содержит 324 нуклида из 92 элементов, с 3 921 реакциями синтеза и 1,2 млн реакций два-в-два. Диапазоны ползунков отражают эти ограничения. Настройки по умолчанию (5000 макс. нуклидов, 25 циклов) обеспечивают комплексные результаты. Время обработки от 30 секунд до 15 минут в зависимости от параметров.",
+    "databaseLimitsDescription": "База данных содержит 324 нуклида из 92 элементов, с 3 921 реакцией синтеза и 1,2 млн реакций два-в-два. Диапазоны ползунков отражают эти ограничения. По умолчанию лимит нуклидов равен числу нуклидов в базе данных (без ограничения), а каскад выполняется до 25 циклов.",
     "fuelNuclides": "Топливные нуклиды",
     "weighted": "Взвешенный",
     "weightedMode": "Взвешенный режим",
@@ -639,15 +644,29 @@
     "minFusionEnergy": "Минимальная энергия синтеза (МэВ)",
     "minTwoToTwoEnergy": "Минимальная энергия 2-2 (МэВ)",
     "maxNuclidesToPair": "Макс. нуклидов для спаривания",
-    "databaseNuclidesCount": "В базе данных 324 нуклида",
+    "databaseNuclidesCount": "Всего нуклидов в базе данных: {{total}}",
     "maxCascadeLoops": "Макс. циклов каскада",
     "recommendedLoops": "Рекомендуется: 10-50",
     "feedbackOptions": "Параметры обратной связи",
     "feedbackBosons": "Обратная связь бозонов",
     "feedbackFermions": "Обратная связь фермионов",
     "allowDimers": "Разрешить образование димеров (H, N, O, F, Cl, Br, I)",
-    "excludeMelted": "Исключить элементы ниже температуры плавления",
-    "excludeBoiledOff": "Исключить выкипевшие элементы",
+    "excludeMelted": "Исключить элементы, ещё твёрдые при {{temperature}} K (температура плавления выше температуры реактора)",
+    "excludeBoiledOff": "Исключить элементы, выкипевшие при {{temperature}} K (температура кипения ниже температуры реактора)",
+    "databaseNotLoaded": "База данных ещё не загружена. Пожалуйста, подождите...",
+    "selectAtLeastOneFuel": "Выберите хотя бы один нуклид топлива",
+    "temperatureHint": "Температура реактора в кельвинах; используется фильтрами по температуре плавления и кипения ниже.",
+    "minFusionEnergyHint": "Учитываются только реакции синтеза, выделяющие не меньше этой энергии.",
+    "minTwoToTwoEnergyHint": "Учитываются только реакции два-в-два, выделяющие не меньше этой энергии.",
+    "maxNuclidesHint": "Каскад останавливается, когда число различных активных нуклидов превышает это значение. Максимум равен числу нуклидов в базе данных, то есть без ограничения.",
+    "maxCascadeLoopsHint": "В каждом цикле активные нуклиды реагируют друг с другом, а подходящие продукты возвращаются обратно.",
+    "feedbackOptionsHint": "Выберите, какие продукты реакций возвращаются как реагенты в следующий цикл.",
+    "feedbackBosonsHint": "Возвращать продукты с чётным массовым числом (ядерные бозоны).",
+    "feedbackFermionsHint": "Возвращать продукты с нечётным массовым числом (ядерные фермионы).",
+    "allowDimersHint": "Если выключено, нуклиды этих элементов не могут реагировать с идентичным нуклидом (например, N-14 + N-14).",
+    "excludeMeltedHint": "Продукты этих элементов не возвращаются в следующий цикл.",
+    "excludeBoiledOffHint": "Считается, что продукты этих элементов покидают реактор, и они не возвращаются.",
+    "runTimeWarning": "Моделирование занимает от 30 секунд до 15 минут в зависимости от параметров.",
     "running": "Выполняется...",
     "runSimulation": "Запустить каскадное моделирование",
     "resetParameters": "Сбросить параметры",
@@ -1293,6 +1312,18 @@
     "about2": "Пример: электроны меди (Z=29) и протоны железа (Z=26) резонируют с разрывом октав ΔN = 11 с точностью 0,0008%, поскольку 29 × 1836,15 ≈ 26 × 2¹¹. Разрыв задаётся отношением масс электрона и протона (log₂(1836,15) ≈ 10,84). То же совпадение повторяется на каждой ступени лестницы: при N = 20 / 31 общая длина волны равна 73,78 мкм, при N = 31 / 42 — 151,10 мм, и каждая следующая октава удваивает её. Лишь 8 из 4186 возможных пар элементов совпадают с точностью < 0,01%.",
     "about3": "Показанные числа реакций взяты из таблиц экзотермических ядерных реакций д-ра Александра Пархомова. Статистический анализ не показывает значимой корреляции между резонансом Мюллера и плотностью реакций. Этот инструмент является исследовательским.",
     "disclaimer": "Примечание: Уравнение Мюллера даёт элегантную математику, но не имеет независимой экспериментальной проверки механизма резонанса. Этот инструмент представлен для исследования и генерации гипотез.",
+    "legend": {
+      "title": "Цветовая шкала",
+      "weaker": "Более слабый резонанс",
+      "stronger": "Более сильный резонанс (меньшее рассогласование)",
+      "uncoloured": "Неокрашенные элементы не имеют резонанса в текущем представлении.",
+      "naeWeaker": "В диапазоне NAE (слабее)",
+      "naeBest": "Лучшее совпадение с NAE",
+      "naeOutside": "Резонанс вне диапазона NAE",
+      "naeUncoloured": "Для неокрашенных элементов длина волны электронного резонанса не вычислена."
+    },
+    "noReactionsTitle": "В таблицах Пархомова нет реакций для этой пары",
+    "noReactionsFootnote": "Прочерк (-) означает, что в таблицах Пархомова нет реакций этого типа для данной пары. Многие резонансные пары включают элементы, отсутствующие в этих таблицах, поэтому прочерки встречаются часто.",
     "tabs": {
       "resonancePairs": "Резонансные пары",
       "naePredictions": "Прогнозы NAE"
@@ -1354,6 +1385,7 @@
     "filterAllSources": "Все источники",
     "filterByLab": "Фильтр по лаборатории-источнику",
     "noResults": "Ни одна трансмутация не соответствует текущим фильтрам.",
+    "pathwayResultsHint": "Возможные пути из таблиц Пархомова появятся под этой карточкой.",
     "curatedFrom": "Подобрано из <1>обзора литературы LENR от HumanScholars</1>. {{count}} записей.",
     "stepCount_one": "{{count}} шаг",
     "stepCount_few": "{{count}} шага",
@@ -1392,26 +1424,26 @@
       "iwamura-cs-pr": {
         "source": "Iwamura et al., Mitsubishi Heavy Industries (2002)",
         "setup": "Pd/CaO multilayer thin film with deuterium gas permeation",
-        "hypothesizedMechanism": "Sequential alpha-capture: 133Cs + 2 × 4He → 141Pr",
+        "hypothesizedMechanism": "Sequential alpha-capture: $133Cs + 2 × 4He → 141Pr$",
         "sourceTag": "JJAP 2002",
         "replicatedBy": "Toyota Central R&D (2013), Osaka University (2003)"
       },
       "iwamura-sr-mo": {
         "source": "Iwamura et al., Mitsubishi Heavy Industries (2002)",
         "setup": "Pd/CaO multilayer thin film with deuterium permeation",
-        "hypothesizedMechanism": "Sequential alpha-capture: 88Sr + 2 × 4He → 96Mo",
+        "hypothesizedMechanism": "Sequential alpha-capture: $88Sr + 2 × 4He → 96Mo$",
         "sourceTag": "JJAP 2002",
         "replicatedBy": "Toyota Central R&D (2013)"
       },
       "iwamura-ba-sm": {
         "source": "Iwamura et al., Mitsubishi Heavy Industries (2006)",
         "setup": "Pd/CaO multilayer thin film with deuterium permeation",
-        "hypothesizedMechanism": "Multi-step alpha-capture: 138Ba + 3 × 4He → 150Sm"
+        "hypothesizedMechanism": "Multi-step alpha-capture: $138Ba + 3 × 4He → 150Sm$"
       },
       "iwamura-w-pt": {
         "source": "Iwamura et al., Mitsubishi Heavy Industries (2007)",
         "setup": "Pd/CaO multilayer thin film with deuterium permeation",
-        "hypothesizedMechanism": "Sequential alpha-capture: 184W + 2 × 4He → 192Pt"
+        "hypothesizedMechanism": "Sequential alpha-capture: $184W + 2 × 4He → 192Pt$"
       },
       "vysotskii-cs-ba": {
         "source": "Vysotskii & Kornilova (Kiev State University, 2003)",
@@ -1422,7 +1454,7 @@
       "vysotskii-mn-fe": {
         "source": "Vysotskii & Kornilova (Kiev State University, 1996-2008)",
         "setup": "Iron-deficient microbial cultures supplemented with Mn-55 and D2O; Mössbauer spectroscopy of Fe-57 product",
-        "hypothesizedMechanism": "Net reaction proposed as 55Mn + d → 57Fe via biologically-mediated low-energy fusion"
+        "hypothesizedMechanism": "Net reaction proposed as $55Mn + d → 57Fe$ via biologically-mediated low-energy fusion"
       },
       "miley-multi-element": {
         "source": "Miley & Patterson (UIUC / CETI, 1996)",
@@ -1439,12 +1471,12 @@
       "savvatimova-pd-rh": {
         "source": "Savvatimova et al. (Luch, Russia, 1990s-2000s)",
         "setup": "Glow-discharge bombardment of Pd cathodes in deuterium plasma",
-        "hypothesizedMechanism": "Net loss of (p + 2n) reported; mechanism unresolved"
+        "hypothesizedMechanism": "Net loss of ($p + 2n$) reported; mechanism unresolved"
       },
       "spawar-tritium": {
         "source": "Mosier-Boss et al., SPAWAR Systems Center (2007-2009)",
         "setup": "Pd/D co-deposition on Au or Ag substrate; CR-39 detectors record charged-particle tracks; tritium accumulation measured",
-        "hypothesizedMechanism": "D + D → T + p reported; not strictly elemental transmutation but an anomalous nuclear process",
+        "hypothesizedMechanism": "$D + D → T + p$ reported; not strictly elemental transmutation but an anomalous nuclear process",
         "notes": "Included as a reference anomalous-nuclear-process claim. Net transmutation is D → T (neutron capture-like)."
       }
     }
@@ -1689,7 +1721,8 @@
       "description": "Эта ошибка обычно возникает, когда кэшированный файл базы данных повреждён. Чтобы исправить это, очистите кэш и заново скачайте базу данных.",
       "clearing": "Очистка кэша...",
       "clearAndReload": "Очистить кэш и перезагрузить",
-      "redownloadNote": "Примечание: файл базы данных размером {{size}}МБ будет скачан заново"
+      "redownloadNote": "Примечание: файл базы данных размером {{size}}МБ будет скачан заново",
+      "confirmClearCache": "Кэшированная база данных будет удалена, а страница перезагружена. База данных ({{size}} МБ) будет скачана заново. Продолжить?"
     },
     "searchSimilar": "Найти похожие проблемы",
     "searchFirstTitle": "Сначала поищите похожие проблемы, чтобы избежать дублирующихся отчётов",

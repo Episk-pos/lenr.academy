@@ -5,6 +5,7 @@ import { useDatabase } from '../contexts/DatabaseContext'
 import { hasOnlyRadioactiveIsotopes } from '../services/queryService'
 import { SPECIAL_PARTICLES, HYDROGEN_ISOTOPE_TILES } from '../constants/specialParticles'
 import { useTheme } from '../contexts/ThemeContext'
+import { heatmapColor } from '../utils/heatmapColor'
 
 interface PeriodicTableProps {
   availableElements: Element[]
@@ -176,13 +177,6 @@ const PARTICLES_BY_POSITION = SPECIAL_PARTICLES.reduce<Record<string, typeof SPE
 }, {})
 
 /**
- * Linear interpolation helper
- */
-function lerp(start: number, end: number, t: number): number {
-  return Math.round(start + (end - start) * t)
-}
-
-/**
  * Calculate heatmap background color for an element
  * Color indicates input vs output role: blue (pure input) → teal (balanced) → green (pure output)
  * Intensity indicates the metric value (frequency/energy/diversity)
@@ -210,31 +204,8 @@ function getHeatmapColor(
   const ratioData = inputOutputRatio?.get(symbol)
   const ratio = ratioData?.ratio ?? 0.5 // Default to balanced if no ratio data
 
-  // Tailwind color values for consistency
-  const blue = { r: 37, g: 99, b: 235 }  // blue-600
-  const green = { r: 22, g: 163, b: 74 } // green-600
-
-  // Blend colors based on input/output ratio
-  const baseR = lerp(blue.r, green.r, ratio)
-  const baseG = lerp(blue.g, green.g, ratio)
-  const baseB = lerp(blue.b, green.b, ratio)
-
-  // For dark mode, reduce saturation and add transparency
-  if (isDarkMode) {
-    // Darken the color and add transparency for dark mode
-    const r = Math.round(baseR * 0.6)
-    const g = Math.round(baseG * 0.6)
-    const b = Math.round(baseB * 0.6)
-    const alpha = 0.3 + (intensity * 0.5)  // 0.3 → 0.8 based on intensity
-    return `rgba(${r}, ${g}, ${b}, ${alpha})`
-  } else {
-    // Light mode: Blend with white based on inverse intensity (lighter = less intense)
-    const white = 255
-    const r = lerp(baseR, white, 1 - (intensity ** 0.7))
-    const g = lerp(baseG, white, 1 - (intensity ** 0.7))
-    const b = lerp(baseB, white, 1 - (intensity ** 0.7))
-    return `rgb(${r}, ${g}, ${b})`
-  }
+  // Shared scale (blue-600 → green-600, faded by intensity) so legends match
+  return heatmapColor(ratio, intensity, isDarkMode)
 }
 
 /**

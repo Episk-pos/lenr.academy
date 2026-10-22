@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useSearchParams } from 'react-router-dom'
-import { Play, Settings, AlertCircle, CheckCircle, XCircle, Loader2, Download, Scale, BookOpen } from 'lucide-react'
+import { Play, Settings, AlertCircle, CheckCircle, XCircle, Loader2, Download, Scale, BookOpen, Clock } from 'lucide-react'
 import { useDatabase } from '../contexts/DatabaseContext'
 import { useQueryState } from '../contexts/QueryStateContext'
 import { useCascadeWorker } from '../hooks/useCascadeWorker'
@@ -11,7 +11,8 @@ import PeriodicTableSelector from '../components/PeriodicTableSelector'
 import ProportionInput from '../components/ProportionInput'
 import MaterialsCatalog from '../components/MaterialsCatalog'
 import DatabaseLoadingCard from '../components/DatabaseLoadingCard'
-import { getAllElements } from '../services/queryService'
+import { FALLBACK_NUCLIDE_COUNT, MIN_MAX_NUCLIDES, clampMaxNuclides, deriveMaxNuclides, resolveNuclideCount } from '../utils/cascadeParams'
+import { getAllElements, getNuclideCount } from '../services/queryService'
 import { createEqualProportions } from '../services/proportionService'
 import { getMaterialById } from '../constants/materials'
 import type { CascadeResults, Element, WeightedNuclide, ProportionFormat } from '../types'
@@ -59,11 +60,13 @@ function parseUrlParams(searchParams: URLSearchParams) {
   }
 }
 
+// maxNuclides defaults to the database nuclide count (see utils/cascadeParams);
+// FALLBACK_NUCLIDE_COUNT is only used until the database reports its count.
 const DEFAULT_PARAMS = {
   temperature: 2400,
   minFusionMeV: 1.0,
   minTwoToTwoMeV: 1.0,
-  maxNuclides: 5000,
+  maxNuclides: FALLBACK_NUCLIDE_COUNT,
   maxLoops: 25,
   feedbackBosons: true,
   feedbackFermions: true,
@@ -86,6 +89,11 @@ export default function CascadesAll() {
 
   // Parse URL params once on mount
   const urlState = useRef(parseUrlParams(searchParams))
+
+  // Number of nuclides in the database; drives the Max Nuclides default and max
+  const [nuclideCount, setNuclideCount] = useState(FALLBACK_NUCLIDE_COUNT)
+  // True when maxNuclides came from the URL or restored state (clamp it, don't replace it)
+  const maxNuclidesExplicit = useRef(urlState.current?.maxNuclides !== undefined)
 
   const [params, setParams] = useState(() => {
     const u = urlState.current
@@ -131,14 +139,14 @@ export default function CascadesAll() {
     if (params.minFusionMeV !== DEFAULT_PARAMS.minFusionMeV) p.set('minFusionMeV', String(params.minFusionMeV))
     if (params.minTwoToTwoMeV !== DEFAULT_PARAMS.minTwoToTwoMeV) p.set('minTwoToTwoMeV', String(params.minTwoToTwoMeV))
     if (params.maxLoops !== DEFAULT_PARAMS.maxLoops) p.set('maxLoops', String(params.maxLoops))
-    if (params.maxNuclides !== DEFAULT_PARAMS.maxNuclides) p.set('maxNuclides', String(params.maxNuclides))
+    if (params.maxNuclides !== nuclideCount) p.set('maxNuclides', String(params.maxNuclides))
     if (params.feedbackBosons !== DEFAULT_PARAMS.feedbackBosons) p.set('feedbackBosons', String(params.feedbackBosons))
     if (params.feedbackFermions !== DEFAULT_PARAMS.feedbackFermions) p.set('feedbackFermions', String(params.feedbackFermions))
     if (params.allowDimers !== DEFAULT_PARAMS.allowDimers) p.set('allowDimers', String(params.allowDimers))
     if (params.excludeMelted !== DEFAULT_PARAMS.excludeMelted) p.set('excludeMelted', String(params.excludeMelted))
     if (params.excludeBoiledOff !== DEFAULT_PARAMS.excludeBoiledOff) p.set('excludeBoiledOff', String(params.excludeBoiledOff))
     setSearchParams(p, { replace: true })
-  }, [fuelNuclides, params, setSearchParams])
+  }, [fuelNuclides, params, nuclideCount, setSearchParams])
 
   // Load available elements and restore state when database is ready
   useEffect(() => {
@@ -162,6 +170,7 @@ export default function CascadesAll() {
             excludeMelted: savedState.excludeMelted,
             excludeBoiledOff: savedState.excludeBoiledOff,
           })
+          maxNuclidesExplicit.current = true
           setSliderMaxNuclides(savedState.maxNuclides)
           setSliderMaxLoops(savedState.maxLoops)
           setFuelNuclides(savedState.fuelNuclides)
@@ -200,6 +209,17 @@ export default function CascadesAll() {
       }
     }
   }, [db, hasRestoredFromContext, getCascadeState])
+
+  // Derive the Max Nuclides default/limit from the database's actual nuclide count.
+  // Declared after the restore effect so restored values are clamped, not overwritten.
+  useEffect(() => {
+    if (!db) return
+    const count = resolveNuclideCount(getNuclideCount(db))
+    const explicit = maxNuclidesExplicit.current
+    setNuclideCount(count)
+    setParams(p => ({ ...p, maxNuclides: deriveMaxNuclides(p.maxNuclides, count, explicit) }))
+    setSliderMaxNuclides(v => deriveMaxNuclides(v, count, explicit))
+  }, [db])
 
   // Sync weighted fuel with fuel nuclides
   // Skip during initial state restoration to preserve saved proportions
@@ -285,7 +305,7 @@ export default function CascadesAll() {
 
   const handleRunSimulation = async () => {
     if (!db) {
-      setError('Database not loaded yet. Please wait...')
+      setError(t('cascades.databaseNotLoaded'))
       return
     }
 
@@ -295,7 +315,7 @@ export default function CascadesAll() {
     try {
       // Validate fuel nuclides
       if (fuelNuclides.length === 0) {
-        throw new Error('Please select at least one fuel nuclide')
+        throw new Error(t('cascades.selectAtLeastOneFuel'))
       }
 
       // Export database to ArrayBuffer for worker
@@ -321,8 +341,9 @@ export default function CascadesAll() {
   }
 
   const handleReset = () => {
-    setParams({ ...DEFAULT_PARAMS })
-    setSliderMaxNuclides(DEFAULT_PARAMS.maxNuclides)
+    maxNuclidesExplicit.current = false
+    setParams({ ...DEFAULT_PARAMS, maxNuclides: nuclideCount })
+    setSliderMaxNuclides(nuclideCount)
     setSliderMaxLoops(DEFAULT_PARAMS.maxLoops)
     setFuelNuclides([...DEFAULT_FUEL])
     setResults(null)
@@ -503,70 +524,88 @@ export default function CascadesAll() {
 
         <div className="grid md:grid-cols-2 gap-6">
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <label htmlFor="cascade-temperature" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               {t('cascades.temperatureK')}
             </label>
             <input
+              id="cascade-temperature"
               type="number"
               className="input"
               value={params.temperature}
               onChange={(e) => setParams({...params, temperature: parseInt(e.target.value)})}
             />
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+              {t('cascades.temperatureHint')}
+            </p>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <label htmlFor="cascade-min-fusion" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               {t('cascades.minFusionEnergy')}
             </label>
             <input
+              id="cascade-min-fusion"
               type="number"
               step="0.1"
               className="input"
               value={params.minFusionMeV}
               onChange={(e) => setParams({...params, minFusionMeV: parseFloat(e.target.value)})}
             />
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+              {t('cascades.minFusionEnergyHint')}
+            </p>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <label htmlFor="cascade-min-two-to-two" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               {t('cascades.minTwoToTwoEnergy')}
             </label>
             <input
+              id="cascade-min-two-to-two"
               type="number"
               step="0.1"
               className="input"
               value={params.minTwoToTwoMeV}
               onChange={(e) => setParams({...params, minTwoToTwoMeV: parseFloat(e.target.value)})}
             />
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+              {t('cascades.minTwoToTwoEnergyHint')}
+            </p>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <label htmlFor="cascade-max-nuclides" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               {t('cascades.maxNuclidesToPair')}: {sliderMaxNuclides}
             </label>
             <input
+              id="cascade-max-nuclides"
+              data-testid="cascade-max-nuclides"
               type="range"
-              min="10"
-              max="10000"
-              step="10"
+              min={MIN_MAX_NUCLIDES}
+              max={nuclideCount}
+              step="1"
               className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700 accent-blue-600"
               value={sliderMaxNuclides}
               onInput={(e) => setSliderMaxNuclides(parseInt((e.target as HTMLInputElement).value))}
-              onMouseUp={(e) => setParams({...params, maxNuclides: parseInt((e.target as HTMLInputElement).value)})}
-              onTouchEnd={(e) => setParams({...params, maxNuclides: parseInt((e.target as HTMLInputElement).value)})}
+              onMouseUp={(e) => setParams({...params, maxNuclides: clampMaxNuclides(parseInt((e.target as HTMLInputElement).value), nuclideCount)})}
+              onTouchEnd={(e) => setParams({...params, maxNuclides: clampMaxNuclides(parseInt((e.target as HTMLInputElement).value), nuclideCount)})}
             />
             <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400 mt-1">
-              <span>10</span>
-              <span>{t('cascades.databaseNuclidesCount')}</span>
-              <span>10,000</span>
+              <span>{MIN_MAX_NUCLIDES}</span>
+              <span data-testid="cascade-nuclide-count">{t('cascades.databaseNuclidesCount', { total: nuclideCount })}</span>
+              <span>{nuclideCount.toLocaleString()}</span>
             </div>
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+              {t('cascades.maxNuclidesHint')}
+            </p>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <label htmlFor="cascade-max-loops" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               {t('cascades.maxCascadeLoops')}: {sliderMaxLoops}
             </label>
             <input
+              id="cascade-max-loops"
               type="range"
               min="1"
               max="100"
@@ -582,86 +621,125 @@ export default function CascadesAll() {
               <span>{t('cascades.recommendedLoops')}</span>
               <span>100</span>
             </div>
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+              {t('cascades.maxCascadeLoopsHint')}
+            </p>
           </div>
         </div>
 
         <div className="mt-6">
-          <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">{t('cascades.feedbackOptions')}</h3>
+          <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('cascades.feedbackOptions')}</h3>
+          <p className="text-xs text-gray-500 dark:text-gray-400 mb-3">
+            {t('cascades.feedbackOptionsHint')}
+          </p>
           <div className="space-y-3">
-            <label className="flex items-center">
-              <input
-                type="checkbox"
-                checked={params.feedbackBosons}
-                onChange={(e) => setParams({...params, feedbackBosons: e.target.checked})}
-                className="mr-2"
-              />
-              <span className="text-sm">{t('cascades.feedbackBosons')}</span>
-            </label>
-            <label className="flex items-center">
-              <input
-                type="checkbox"
-                checked={params.feedbackFermions}
-                onChange={(e) => setParams({...params, feedbackFermions: e.target.checked})}
-                className="mr-2"
-              />
-              <span className="text-sm">{t('cascades.feedbackFermions')}</span>
-            </label>
-            <label className="flex items-center">
-              <input
-                type="checkbox"
-                checked={params.allowDimers}
-                onChange={(e) => setParams({...params, allowDimers: e.target.checked})}
-                className="mr-2"
-              />
-              <span className="text-sm">{t('cascades.allowDimers')}</span>
-            </label>
-            <label className="flex items-center">
-              <input
-                type="checkbox"
-                checked={params.excludeMelted}
-                onChange={(e) => setParams({...params, excludeMelted: e.target.checked})}
-                className="mr-2"
-              />
-              <span className="text-sm">{t('cascades.excludeMelted')}</span>
-            </label>
-            <label className="flex items-center">
-              <input
-                type="checkbox"
-                checked={params.excludeBoiledOff}
-                onChange={(e) => setParams({...params, excludeBoiledOff: e.target.checked})}
-                className="mr-2"
-              />
-              <span className="text-sm">{t('cascades.excludeBoiledOff')}</span>
-            </label>
+            <div>
+              <label className="flex items-center">
+                <input
+                  type="checkbox"
+                  checked={params.feedbackBosons}
+                  onChange={(e) => setParams({...params, feedbackBosons: e.target.checked})}
+                  className="mr-2"
+                />
+                <span className="text-sm">{t('cascades.feedbackBosons')}</span>
+              </label>
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5 ml-6">
+                {t('cascades.feedbackBosonsHint')}
+              </p>
+            </div>
+            <div>
+              <label className="flex items-center">
+                <input
+                  type="checkbox"
+                  checked={params.feedbackFermions}
+                  onChange={(e) => setParams({...params, feedbackFermions: e.target.checked})}
+                  className="mr-2"
+                />
+                <span className="text-sm">{t('cascades.feedbackFermions')}</span>
+              </label>
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5 ml-6">
+                {t('cascades.feedbackFermionsHint')}
+              </p>
+            </div>
+            <div>
+              <label className="flex items-center">
+                <input
+                  type="checkbox"
+                  checked={params.allowDimers}
+                  onChange={(e) => setParams({...params, allowDimers: e.target.checked})}
+                  className="mr-2"
+                />
+                <span className="text-sm">{t('cascades.allowDimers')}</span>
+              </label>
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5 ml-6">
+                {t('cascades.allowDimersHint')}
+              </p>
+            </div>
+            <div>
+              <label className="flex items-center">
+                <input
+                  type="checkbox"
+                  checked={params.excludeMelted}
+                  onChange={(e) => setParams({...params, excludeMelted: e.target.checked})}
+                  className="mr-2"
+                  data-testid="cascade-exclude-melted"
+                />
+                <span className="text-sm">{t('cascades.excludeMelted', { temperature: Number.isFinite(params.temperature) ? params.temperature : '?' })}</span>
+              </label>
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5 ml-6">
+                {t('cascades.excludeMeltedHint')}
+              </p>
+            </div>
+            <div>
+              <label className="flex items-center">
+                <input
+                  type="checkbox"
+                  checked={params.excludeBoiledOff}
+                  onChange={(e) => setParams({...params, excludeBoiledOff: e.target.checked})}
+                  className="mr-2"
+                  data-testid="cascade-exclude-boiled-off"
+                />
+                <span className="text-sm">{t('cascades.excludeBoiledOff', { temperature: Number.isFinite(params.temperature) ? params.temperature : '?' })}</span>
+              </label>
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5 ml-6">
+                {t('cascades.excludeBoiledOffHint')}
+              </p>
+            </div>
           </div>
         </div>
       </div>
 
-      <div className="flex gap-3">
-        <button
-          className="btn btn-primary px-8 py-3"
-          onClick={handleRunSimulation}
-          disabled={isRunning || !db}
-        >
-          {isRunning ? (
-            <>
-              <Loader2 className="w-5 h-5 mr-2 inline animate-spin" />
-              {t('cascades.running')}
-            </>
-          ) : (
-            <>
-              <Play className="w-5 h-5 mr-2 inline" />
-              {t('cascades.runSimulation')}
-            </>
-          )}
-        </button>
-        <button
-          className="btn btn-secondary px-8 py-3"
-          onClick={handleReset}
-          disabled={isRunning}
-        >
-          {t('cascades.resetParameters')}
-        </button>
+      <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+        <div className="flex gap-3">
+          <button
+            className="btn btn-primary px-8 py-3"
+            onClick={handleRunSimulation}
+            disabled={isRunning || !db}
+          >
+            {isRunning ? (
+              <>
+                <Loader2 className="w-5 h-5 mr-2 inline animate-spin" />
+                {t('cascades.running')}
+              </>
+            ) : (
+              <>
+                <Play className="w-5 h-5 mr-2 inline" />
+                {t('cascades.runSimulation')}
+              </>
+            )}
+          </button>
+          <button
+            className="btn btn-secondary px-8 py-3"
+            onClick={handleReset}
+            disabled={isRunning}
+          >
+            {t('cascades.resetParameters')}
+          </button>
+        </div>
+        <p className="flex items-center gap-1.5 text-xs text-gray-500 dark:text-gray-400" data-testid="cascade-runtime-warning">
+          <Clock className="w-3.5 h-3.5 flex-shrink-0" aria-hidden="true" />
+          {t('cascades.runTimeWarning')}
+        </p>
       </div>
 
       {/* Progress Display */}

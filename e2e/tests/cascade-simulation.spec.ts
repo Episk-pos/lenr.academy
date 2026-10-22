@@ -219,11 +219,11 @@ test.describe('Cascade Simulation', () => {
     await fusionInput.fill('2.0');
     await expect(fusionInput).toHaveValue('2.0');
 
-    // Adjust max nuclides (now a range slider)
+    // Adjust max nuclides (range slider; max = number of nuclides in the database)
     const nuclidesInput = page.locator('label:has-text("Max Nuclides to Pair")').locator('..').locator('input[type="range"]');
-    await nuclidesInput.fill('3000');
+    await nuclidesInput.fill('200');
     // Verify it changed (value displayed in label)
-    await expect(page.locator('text=Max Nuclides to Pair: 3000')).toBeVisible();
+    await expect(page.locator('text=Max Nuclides to Pair: 200')).toBeVisible();
 
     // Reset parameters
     await page.click('button:has-text("Reset Parameters")');

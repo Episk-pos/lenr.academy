@@ -128,7 +128,12 @@
     "tryAgain": "Please try again",
     "contactSupport": "If the problem persists, please contact support",
     "reloadPage": "Reload Page",
-    "goHome": "Go to Home"
+    "goHome": "Go to Home",
+    "workerError": "Worker error occurred",
+    "simulationCancelled": "Simulation cancelled",
+    "simulationCancelledByUser": "Simulation cancelled by user",
+    "discoveryCancelled": "Discovery cancelled",
+    "discoveryCancelledByUser": "Cycle discovery cancelled by user"
   },
   "home": {
     "title": "LENR Academy",
@@ -620,7 +625,7 @@
     "simulationTitle": "Cascade Simulations",
     "simulationDescription": "Model cascading chain reactions from initial fuel nuclides",
     "databaseLimitsTitle": "Database-driven limits",
-    "databaseLimitsDescription": "The database contains 324 nuclides across 92 elements, with 3,921 fusion reactions and 1.2M two-to-two reactions. Slider ranges reflect these constraints. Default settings (5000 max nuclides, 25 loops) provide comprehensive results. Processing time ranges from 30 seconds to 15 minutes depending on parameters.",
+    "databaseLimitsDescription": "The database contains 324 nuclides across 92 elements, with 3,921 fusion reactions and 1.2M two-to-two reactions. Slider ranges reflect these constraints. By default the nuclide limit equals the number of nuclides in the database (no cap) and the cascade runs up to 25 loops.",
     "fuelNuclides": "Fuel Nuclides",
     "weighted": "Weighted",
     "weightedMode": "Weighted Mode",
@@ -633,15 +638,29 @@
     "minFusionEnergy": "Minimum Fusion Energy (MeV)",
     "minTwoToTwoEnergy": "Minimum 2-2 Energy (MeV)",
     "maxNuclidesToPair": "Max Nuclides to Pair",
-    "databaseNuclidesCount": "Database has 324 total nuclides",
+    "databaseNuclidesCount": "Database has {{total}} total nuclides",
     "maxCascadeLoops": "Max Cascade Loops",
     "recommendedLoops": "Recommended: 10-50",
     "feedbackOptions": "Feedback Options",
     "feedbackBosons": "Feedback Bosons",
     "feedbackFermions": "Feedback Fermions",
     "allowDimers": "Allow Dimer Formation (H, N, O, F, Cl, Br, I)",
-    "excludeMelted": "Exclude elements below melting point",
-    "excludeBoiledOff": "Exclude elements that boiled off",
+    "excludeMelted": "Exclude elements still solid at {{temperature}} K (melting point above the reactor temperature)",
+    "excludeBoiledOff": "Exclude elements boiled off at {{temperature}} K (boiling point below the reactor temperature)",
+    "databaseNotLoaded": "Database not loaded yet. Please wait...",
+    "selectAtLeastOneFuel": "Please select at least one fuel nuclide",
+    "temperatureHint": "Reactor temperature in kelvin, used by the melting and boiling point filters below.",
+    "minFusionEnergyHint": "Only fusion reactions releasing at least this much energy are included.",
+    "minTwoToTwoEnergyHint": "Only two-to-two reactions releasing at least this much energy are included.",
+    "maxNuclidesHint": "The cascade stops once more distinct nuclides than this are active. The maximum equals the number of nuclides in the database, which means no limit.",
+    "maxCascadeLoopsHint": "Each loop reacts the active nuclides with each other and feeds qualifying products back in.",
+    "feedbackOptionsHint": "Choose which reaction products are fed back as reactants in the next loop.",
+    "feedbackBosonsHint": "Feed back products with an even mass number (nuclear bosons).",
+    "feedbackFermionsHint": "Feed back products with an odd mass number (nuclear fermions).",
+    "allowDimersHint": "When off, nuclides of these elements cannot react with an identical nuclide (e.g. N-14 + N-14).",
+    "excludeMeltedHint": "Products of these elements are not fed back into the next loop.",
+    "excludeBoiledOffHint": "Products of these elements are assumed to leave the reactor and are not fed back.",
+    "runTimeWarning": "Simulations take from 30 seconds to 15 minutes depending on parameters.",
     "running": "Running...",
     "runSimulation": "Run Cascade Simulation",
     "resetParameters": "Reset Parameters",
@@ -1283,6 +1302,18 @@
     "about2": "Example: Copper (Z=29) electrons and Iron (Z=26) protons resonate with octave gap ΔN = 11 to within 0.0008%, because 29 × 1836.15 ≈ 26 × 2¹¹. The gap is set by the electron/proton mass ratio (log₂(1836.15) ≈ 10.84). The same match appears on every rung of the ladder: at N = 20 / 31 the shared wavelength is 73.78 µm, at N = 31 / 42 it is 151.10 mm, and each further octave doubles it. Only 8 of 4,186 possible element pairs match to < 0.01%.",
     "about3": "The reaction counts shown are from Dr. Alexander Parkhomov's tables of exothermic nuclear reactions. These counts indicate how many energetically possible reactions exist between each pair, not reaction rates or probabilities. Statistical analysis shows no significant correlation between Muller resonance and Parkhomov reaction density — the database is governed by nuclear binding energies, not wavelength resonance. This tool is exploratory.",
     "disclaimer": "Note: Muller's equation produces elegant mathematics but lacks independent experimental verification of the resonance mechanism. This tool is presented for exploration and hypothesis generation, not as a validated predictive model.",
+    "legend": {
+      "title": "Color scale",
+      "weaker": "Weaker resonance",
+      "stronger": "Stronger resonance (lower mismatch)",
+      "uncoloured": "Uncolored elements have no resonance match in the current view.",
+      "naeWeaker": "In NAE range (weaker)",
+      "naeBest": "Best NAE match",
+      "naeOutside": "Resonance outside the NAE range",
+      "naeUncoloured": "Uncolored elements have no computed electron resonance wavelength."
+    },
+    "noReactionsTitle": "No reactions for this pair in the Parkhomov tables",
+    "noReactionsFootnote": "A dash (-) means the Parkhomov tables contain no reactions of that type for this pair. Many resonant pairs involve elements absent from those tables, so dashes are common.",
     "tabs": {
       "resonancePairs": "Resonance Pairs",
       "naePredictions": "NAE Predictions"
@@ -1344,6 +1375,7 @@
     "filterAllSources": "All sources",
     "filterByLab": "Filter by source lab",
     "noResults": "No transmutations match the current filters.",
+    "pathwayResultsHint": "Candidate pathways from the Parkhomov tables appear below this card.",
     "curatedFrom": "Curated from the <1>HumanScholars LENR literature review</1>. {{count}} entries.",
     "stepCount_one": "1 step",
     "stepCount_other": "{{count}} steps",
@@ -1380,26 +1412,26 @@
       "iwamura-cs-pr": {
         "source": "Iwamura et al., Mitsubishi Heavy Industries (2002)",
         "setup": "Pd/CaO multilayer thin film with deuterium gas permeation",
-        "hypothesizedMechanism": "Sequential alpha-capture: 133Cs + 2 × 4He → 141Pr",
+        "hypothesizedMechanism": "Sequential alpha-capture: $133Cs + 2 × 4He → 141Pr$",
         "sourceTag": "JJAP 2002",
         "replicatedBy": "Toyota Central R&D (2013), Osaka University (2003)"
       },
       "iwamura-sr-mo": {
         "source": "Iwamura et al., Mitsubishi Heavy Industries (2002)",
         "setup": "Pd/CaO multilayer thin film with deuterium permeation",
-        "hypothesizedMechanism": "Sequential alpha-capture: 88Sr + 2 × 4He → 96Mo",
+        "hypothesizedMechanism": "Sequential alpha-capture: $88Sr + 2 × 4He → 96Mo$",
         "sourceTag": "JJAP 2002",
         "replicatedBy": "Toyota Central R&D (2013)"
       },
       "iwamura-ba-sm": {
         "source": "Iwamura et al., Mitsubishi Heavy Industries (2006)",
         "setup": "Pd/CaO multilayer thin film with deuterium permeation",
-        "hypothesizedMechanism": "Multi-step alpha-capture: 138Ba + 3 × 4He → 150Sm"
+        "hypothesizedMechanism": "Multi-step alpha-capture: $138Ba + 3 × 4He → 150Sm$"
       },
       "iwamura-w-pt": {
         "source": "Iwamura et al., Mitsubishi Heavy Industries (2007)",
         "setup": "Pd/CaO multilayer thin film with deuterium permeation",
-        "hypothesizedMechanism": "Sequential alpha-capture: 184W + 2 × 4He → 192Pt"
+        "hypothesizedMechanism": "Sequential alpha-capture: $184W + 2 × 4He → 192Pt$"
       },
       "vysotskii-cs-ba": {
         "source": "Vysotskii & Kornilova (Kiev State University, 2003)",
@@ -1410,7 +1442,7 @@
       "vysotskii-mn-fe": {
         "source": "Vysotskii & Kornilova (Kiev State University, 1996-2008)",
         "setup": "Iron-deficient microbial cultures supplemented with Mn-55 and D2O; Mössbauer spectroscopy of Fe-57 product",
-        "hypothesizedMechanism": "Net reaction proposed as 55Mn + d → 57Fe via biologically-mediated low-energy fusion"
+        "hypothesizedMechanism": "Net reaction proposed as $55Mn + d → 57Fe$ via biologically-mediated low-energy fusion"
       },
       "miley-multi-element": {
         "source": "Miley & Patterson (UIUC / CETI, 1996)",
@@ -1427,12 +1459,12 @@
       "savvatimova-pd-rh": {
         "source": "Savvatimova et al. (Luch, Russia, 1990s-2000s)",
         "setup": "Glow-discharge bombardment of Pd cathodes in deuterium plasma",
-        "hypothesizedMechanism": "Net loss of (p + 2n) reported; mechanism unresolved"
+        "hypothesizedMechanism": "Net loss of ($p + 2n$) reported; mechanism unresolved"
       },
       "spawar-tritium": {
         "source": "Mosier-Boss et al., SPAWAR Systems Center (2007-2009)",
         "setup": "Pd/D co-deposition on Au or Ag substrate; CR-39 detectors record charged-particle tracks; tritium accumulation measured",
-        "hypothesizedMechanism": "D + D → T + p reported; not strictly elemental transmutation but an anomalous nuclear process",
+        "hypothesizedMechanism": "$D + D → T + p$ reported; not strictly elemental transmutation but an anomalous nuclear process",
         "notes": "Included as a reference anomalous-nuclear-process claim. Net transmutation is D → T (neutron capture-like)."
       }
     }
@@ -1673,7 +1705,8 @@
       "description": "This error typically occurs when the cached database file is corrupted. You can fix this by clearing the cache and re-downloading the database.",
       "clearing": "Clearing Cache...",
       "clearAndReload": "Clear Cache & Reload",
-      "redownloadNote": "Note: This will re-download the {{size}}MB database file"
+      "redownloadNote": "Note: This will re-download the {{size}}MB database file",
+      "confirmClearCache": "This will clear the cached database and reload the page. The database ({{size}}MB) will be re-downloaded. Continue?"
     },
     "searchSimilar": "Search Similar Issues",
     "searchFirstTitle": "Please search for similar issues first to avoid duplicate reports",

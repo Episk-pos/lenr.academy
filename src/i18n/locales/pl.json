@@ -128,7 +128,12 @@
     "tryAgain": "Spróbuj ponownie",
     "contactSupport": "Jeśli problem będzie się powtarzał, skontaktuj się z pomocą techniczną",
     "reloadPage": "Odśwież stronę",
-    "goHome": "Przejdź do strony głównej"
+    "goHome": "Przejdź do strony głównej",
+    "workerError": "Wystąpił błąd workera",
+    "simulationCancelled": "Symulacja anulowana",
+    "simulationCancelledByUser": "Symulacja anulowana przez użytkownika",
+    "discoveryCancelled": "Wyszukiwanie anulowane",
+    "discoveryCancelledByUser": "Wyszukiwanie cykli anulowane przez użytkownika"
   },
   "home": {
     "title": "LENR Academy",
@@ -626,7 +631,7 @@
     "simulationTitle": "Symulacje kaskad",
     "simulationDescription": "Modeluj kaskadowe reakcje łańcuchowe na podstawie początkowych nuklidów paliwowych",
     "databaseLimitsTitle": "Limity wynikające z bazy danych",
-    "databaseLimitsDescription": "Baza danych zawiera 324 nuklidy 92 pierwiastków, 3921 reakcji syntezy i 1,2 mln reakcji dwa-na-dwa. Zakresy suwaków odzwierciedlają te ograniczenia. Ustawienia domyślne (maks. 5000 nuklidów, 25 pętli) zapewniają wyczerpujące wyniki. Czas przetwarzania wynosi od 30 sekund do 15 minut w zależności od parametrów.",
+    "databaseLimitsDescription": "Baza danych zawiera 324 nuklidy 92 pierwiastków, 3921 reakcji syntezy i 1,2 mln reakcji dwa-na-dwa. Zakresy suwaków odzwierciedlają te ograniczenia. Domyślnie limit nuklidów jest równy liczbie nuklidów w bazie danych (brak limitu), a kaskada wykonuje do 25 pętli.",
     "fuelNuclides": "Nuklidy paliwowe",
     "weighted": "Ważony",
     "weightedMode": "Tryb ważony",
@@ -639,15 +644,29 @@
     "minFusionEnergy": "Minimalna energia syntezy (MeV)",
     "minTwoToTwoEnergy": "Minimalna energia 2-2 (MeV)",
     "maxNuclidesToPair": "Maks. liczba nuklidów do parowania",
-    "databaseNuclidesCount": "Baza danych zawiera łącznie 324 nuklidy",
+    "databaseNuclidesCount": "Łączna liczba nuklidów w bazie danych: {{total}}",
     "maxCascadeLoops": "Maks. liczba pętli kaskady",
     "recommendedLoops": "Zalecane: 10-50",
     "feedbackOptions": "Opcje sprzężenia zwrotnego",
     "feedbackBosons": "Sprzężenie zwrotne bozonów",
     "feedbackFermions": "Sprzężenie zwrotne fermionów",
     "allowDimers": "Zezwalaj na tworzenie dimerów (H, N, O, F, Cl, Br, I)",
-    "excludeMelted": "Wyklucz pierwiastki poniżej temperatury topnienia",
-    "excludeBoiledOff": "Wyklucz pierwiastki, które odparowały",
+    "excludeMelted": "Wyklucz pierwiastki wciąż stałe w {{temperature}} K (temperatura topnienia wyższa niż temperatura reaktora)",
+    "excludeBoiledOff": "Wyklucz pierwiastki odparowane w {{temperature}} K (temperatura wrzenia niższa niż temperatura reaktora)",
+    "databaseNotLoaded": "Baza danych nie została jeszcze załadowana. Proszę czekać...",
+    "selectAtLeastOneFuel": "Wybierz co najmniej jeden nuklid paliwowy",
+    "temperatureHint": "Temperatura reaktora w kelwinach, używana przez poniższe filtry temperatury topnienia i wrzenia.",
+    "minFusionEnergyHint": "Uwzględniane są tylko reakcje syntezy uwalniające co najmniej tyle energii.",
+    "minTwoToTwoEnergyHint": "Uwzględniane są tylko reakcje dwa-na-dwa uwalniające co najmniej tyle energii.",
+    "maxNuclidesHint": "Kaskada zatrzymuje się, gdy aktywnych jest więcej różnych nuklidów niż ta wartość. Maksimum jest równe liczbie nuklidów w bazie danych, czyli brak limitu.",
+    "maxCascadeLoopsHint": "W każdej pętli aktywne nuklidy reagują ze sobą, a kwalifikujące się produkty są zawracane.",
+    "feedbackOptionsHint": "Wybierz, które produkty reakcji są zawracane jako reagenty w następnej pętli.",
+    "feedbackBosonsHint": "Zawracaj produkty o parzystej liczbie masowej (bozony jądrowe).",
+    "feedbackFermionsHint": "Zawracaj produkty o nieparzystej liczbie masowej (fermiony jądrowe).",
+    "allowDimersHint": "Gdy wyłączone, nuklidy tych pierwiastków nie mogą reagować z identycznym nuklidem (np. N-14 + N-14).",
+    "excludeMeltedHint": "Produkty tych pierwiastków nie są zawracane do następnej pętli.",
+    "excludeBoiledOffHint": "Zakłada się, że produkty tych pierwiastków opuszczają reaktor, więc nie są zawracane.",
+    "runTimeWarning": "Symulacje trwają od 30 sekund do 15 minut w zależności od parametrów.",
     "running": "Uruchamianie...",
     "runSimulation": "Uruchom symulację kaskady",
     "resetParameters": "Resetuj parametry",
@@ -1293,6 +1312,18 @@
     "about2": "Przykład: elektrony miedzi (Z=29) i protony żelaza (Z=26) rezonują z odstępem oktaw ΔN = 11 z dokładnością 0,0008%, ponieważ 29 × 1836,15 ≈ 26 × 2¹¹. Odstęp wynika ze stosunku mas elektronu i protonu (log₂(1836,15) ≈ 10,84). To samo dopasowanie pojawia się na każdym szczeblu drabiny: przy N = 20 / 31 wspólna długość fali wynosi 73,78 µm, przy N = 31 / 42 — 151,10 mm, a każda kolejna oktawa ją podwaja. Tylko 8 z 4186 możliwych par pierwiastków pasuje z dokładnością < 0,01%.",
     "about3": "Podane liczby reakcji pochodzą z tabel egzotermicznych reakcji jądrowych dr. Alexandra Parkhomova. Liczby te wskazują, ile energetycznie możliwych reakcji istnieje dla każdej pary, a nie szybkości ani prawdopodobieństwa reakcji. Analiza statystyczna nie wykazuje istotnej korelacji między rezonansem Mullera a gęstością reakcji Parkhomova — bazę danych determinują energie wiązania jąder, a nie rezonans długości fal. To narzędzie ma charakter eksploracyjny.",
     "disclaimer": "Uwaga: równanie Mullera daje elegancką matematykę, ale mechanizm rezonansu nie ma niezależnego potwierdzenia eksperymentalnego. To narzędzie służy do eksploracji i stawiania hipotez, a nie jako zweryfikowany model predykcyjny.",
+    "legend": {
+      "title": "Skala kolorów",
+      "weaker": "Słabszy rezonans",
+      "stronger": "Silniejszy rezonans (mniejsze niedopasowanie)",
+      "uncoloured": "Niepokolorowane pierwiastki nie mają rezonansu w bieżącym widoku.",
+      "naeWeaker": "W zakresie NAE (słabszy)",
+      "naeBest": "Najlepsze dopasowanie NAE",
+      "naeOutside": "Rezonans poza zakresem NAE",
+      "naeUncoloured": "Niepokolorowane pierwiastki nie mają obliczonej długości fali rezonansu elektronowego."
+    },
+    "noReactionsTitle": "Brak reakcji dla tej pary w tabelach Parkhomova",
+    "noReactionsFootnote": "Kreska (-) oznacza, że tabele Parkhomova nie zawierają reakcji tego typu dla tej pary. Wiele par rezonansowych obejmuje pierwiastki nieobecne w tych tabelach, dlatego kreski są częste.",
     "tabs": {
       "resonancePairs": "Pary rezonansowe",
       "naePredictions": "Przewidywania NAE"
@@ -1354,6 +1385,7 @@
     "filterAllSources": "Wszystkie źródła",
     "filterByLab": "Filtruj według laboratorium źródłowego",
     "noResults": "Żadna transmutacja nie pasuje do bieżących filtrów.",
+    "pathwayResultsHint": "Kandydujące ścieżki z tabel Parkhomova pojawią się pod tą kartą.",
     "curatedFrom": "Wybrane z <1>przeglądu literatury LENR HumanScholars</1>. Liczba wpisów: {{count}}.",
     "stepCount_one": "1 krok",
     "stepCount_few": "{{count}} kroki",
@@ -1392,26 +1424,26 @@
       "iwamura-cs-pr": {
         "source": "Iwamura i in., Mitsubishi Heavy Industries (2002)",
         "setup": "Wielowarstwowa cienka warstwa Pd/CaO z przenikaniem gazowego deuteru",
-        "hypothesizedMechanism": "Sekwencyjny wychwyt cząstek alfa: 133Cs + 2 × 4He → 141Pr",
+        "hypothesizedMechanism": "Sekwencyjny wychwyt cząstek alfa: $133Cs + 2 × 4He → 141Pr$",
         "sourceTag": "JJAP 2002",
         "replicatedBy": "Toyota Central R&D (2013), Uniwersytet w Osace (2003)"
       },
       "iwamura-sr-mo": {
         "source": "Iwamura i in., Mitsubishi Heavy Industries (2002)",
         "setup": "Wielowarstwowa cienka warstwa Pd/CaO z przenikaniem deuteru",
-        "hypothesizedMechanism": "Sekwencyjny wychwyt cząstek alfa: 88Sr + 2 × 4He → 96Mo",
+        "hypothesizedMechanism": "Sekwencyjny wychwyt cząstek alfa: $88Sr + 2 × 4He → 96Mo$",
         "sourceTag": "JJAP 2002",
         "replicatedBy": "Toyota Central R&D (2013)"
       },
       "iwamura-ba-sm": {
         "source": "Iwamura i in., Mitsubishi Heavy Industries (2006)",
         "setup": "Wielowarstwowa cienka warstwa Pd/CaO z przenikaniem deuteru",
-        "hypothesizedMechanism": "Wieloetapowy wychwyt cząstek alfa: 138Ba + 3 × 4He → 150Sm"
+        "hypothesizedMechanism": "Wieloetapowy wychwyt cząstek alfa: $138Ba + 3 × 4He → 150Sm$"
       },
       "iwamura-w-pt": {
         "source": "Iwamura i in., Mitsubishi Heavy Industries (2007)",
         "setup": "Wielowarstwowa cienka warstwa Pd/CaO z przenikaniem deuteru",
-        "hypothesizedMechanism": "Sekwencyjny wychwyt cząstek alfa: 184W + 2 × 4He → 192Pt"
+        "hypothesizedMechanism": "Sekwencyjny wychwyt cząstek alfa: $184W + 2 × 4He → 192Pt$"
       },
       "vysotskii-cs-ba": {
         "source": "Vysotskii i Kornilova (Kijowski Uniwersytet Państwowy, 2003)",
@@ -1422,7 +1454,7 @@
       "vysotskii-mn-fe": {
         "source": "Vysotskii i Kornilova (Kijowski Uniwersytet Państwowy, 1996-2008)",
         "setup": "Kultury mikroorganizmów z niedoborem żelaza, uzupełnione Mn-55 i D2O; spektroskopia mössbauerowska produktu Fe-57",
-        "hypothesizedMechanism": "Zaproponowana reakcja netto 55Mn + d → 57Fe poprzez biologicznie pośredniczoną niskoenergetyczną syntezę"
+        "hypothesizedMechanism": "Zaproponowana reakcja netto $55Mn + d → 57Fe$ poprzez biologicznie pośredniczoną niskoenergetyczną syntezę"
       },
       "miley-multi-element": {
         "source": "Miley i Patterson (UIUC / CETI, 1996)",
@@ -1439,12 +1471,12 @@
       "savvatimova-pd-rh": {
         "source": "Savvatimova i in. (Łucz, Rosja, lata 90. – 2000.)",
         "setup": "Bombardowanie katod Pd w wyładowaniu jarzeniowym w plazmie deuterowej",
-        "hypothesizedMechanism": "Opisano ubytek netto (p + 2n); mechanizm niewyjaśniony"
+        "hypothesizedMechanism": "Opisano ubytek netto ($p + 2n$); mechanizm niewyjaśniony"
       },
       "spawar-tritium": {
         "source": "Mosier-Boss i in., SPAWAR Systems Center (2007-2009)",
         "setup": "Współosadzanie Pd/D na podłożu Au lub Ag; detektory CR-39 rejestrują ślady cząstek naładowanych; mierzono akumulację trytu",
-        "hypothesizedMechanism": "Opisano D + D → T + p; nie jest to ściśle transmutacja pierwiastka, lecz anomalny proces jądrowy",
+        "hypothesizedMechanism": "Opisano $D + D → T + p$; nie jest to ściśle transmutacja pierwiastka, lecz anomalny proces jądrowy",
         "notes": "Uwzględnione jako referencyjne doniesienie o anomalnym procesie jądrowym. Transmutacja netto to D → T (podobna do wychwytu neutronu)."
       }
     }
@@ -1689,7 +1721,8 @@
       "description": "Ten błąd występuje zwykle, gdy plik bazy danych w pamięci podręcznej jest uszkodzony. Możesz to naprawić, czyszcząc pamięć podręczną i pobierając bazę danych ponownie.",
       "clearing": "Czyszczenie pamięci podręcznej...",
       "clearAndReload": "Wyczyść pamięć podręczną i odśwież",
-      "redownloadNote": "Uwaga: spowoduje to ponowne pobranie pliku bazy danych o rozmiarze {{size}}MB"
+      "redownloadNote": "Uwaga: spowoduje to ponowne pobranie pliku bazy danych o rozmiarze {{size}}MB",
+      "confirmClearCache": "Spowoduje to wyczyszczenie bazy danych z pamięci podręcznej i ponowne załadowanie strony. Baza danych ({{size}}MB) zostanie pobrana ponownie. Kontynuować?"
     },
     "searchSimilar": "Szukaj podobnych zgłoszeń",
     "searchFirstTitle": "Najpierw poszukaj podobnych zgłoszeń, aby uniknąć duplikatów",

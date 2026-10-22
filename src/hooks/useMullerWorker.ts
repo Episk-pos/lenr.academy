@@ -1,4 +1,5 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import type { MullerResonancePair, ReactionOverlap, NAEPrediction } from '../services/mullerResonanceService';
 import type { MullerWorkerRequest, MullerWorkerResponse } from '../workers/mullerWorker';
 
@@ -49,6 +50,10 @@ export function useMullerWorker(): UseMullerWorkerReturn {
   const [overlaps, setOverlaps] = useState<ReactionOverlap[]>([]);
 
   const workerRef = useRef<Worker | null>(null);
+  // Keep the latest t() in a ref so the worker (created once) uses the current language
+  const { t } = useTranslation();
+  const tRef = useRef(t);
+  tRef.current = t;
 
   useEffect(() => {
     const worker = new Worker(
@@ -85,7 +90,7 @@ export function useMullerWorker(): UseMullerWorkerReturn {
 
     worker.onerror = (event) => {
       setIsLoading(false);
-      setError(event.message || 'Muller worker error');
+      setError(event.message || tRef.current('errors.workerError'));
     };
 
     workerRef.current = worker;

@@ -128,7 +128,12 @@
     "tryAgain": "请重试",
     "contactSupport": "如果问题仍然存在，请联系支持",
     "reloadPage": "重新加载页面",
-    "goHome": "返回主页"
+    "goHome": "返回主页",
+    "workerError": "Worker 发生错误",
+    "simulationCancelled": "模拟已取消",
+    "simulationCancelledByUser": "用户已取消模拟",
+    "discoveryCancelled": "搜索已取消",
+    "discoveryCancelledByUser": "用户已取消循环搜索"
   },
   "home": {
     "title": "LENR Academy",
@@ -620,7 +625,7 @@
     "simulationTitle": "级联模拟",
     "simulationDescription": "从初始燃料核素模拟级联链式反应",
     "databaseLimitsTitle": "数据库限制",
-    "databaseLimitsDescription": "数据库包含92种元素的324种核素，3,921种聚变反应和120万种二对二反应。滑块范围反映这些约束。默认设置（最大5000核素，25循环）提供全面结果。处理时间根据参数从30秒到15分钟不等。",
+    "databaseLimitsDescription": "数据库包含92种元素的324种核素，3,921种聚变反应和120万种二对二反应。滑块范围反映这些约束。默认情况下，核素上限等于数据库中的核素数量（不设上限），级联最多运行25个循环。",
     "fuelNuclides": "燃料核素",
     "weighted": "加权",
     "weightedMode": "加权模式",
@@ -633,15 +638,29 @@
     "minFusionEnergy": "最小聚变能量 (MeV)",
     "minTwoToTwoEnergy": "最小2-2能量 (MeV)",
     "maxNuclidesToPair": "最大配对核素数",
-    "databaseNuclidesCount": "数据库共有324种核素",
+    "databaseNuclidesCount": "数据库共有{{total}}种核素",
     "maxCascadeLoops": "最大级联循环数",
     "recommendedLoops": "建议：10-50",
     "feedbackOptions": "反馈选项",
     "feedbackBosons": "玻色子反馈",
     "feedbackFermions": "费米子反馈",
     "allowDimers": "允许形成二聚体 (H, N, O, F, Cl, Br, I)",
-    "excludeMelted": "排除熔点以下的元素",
-    "excludeBoiledOff": "排除沸腾蒸发的元素",
+    "excludeMelted": "排除在 {{temperature}} K 时仍为固态的元素（熔点高于反应器温度）",
+    "excludeBoiledOff": "排除在 {{temperature}} K 时已沸腾蒸发的元素（沸点低于反应器温度）",
+    "databaseNotLoaded": "数据库尚未加载，请稍候...",
+    "selectAtLeastOneFuel": "请至少选择一种燃料核素",
+    "temperatureHint": "反应器温度（开尔文），用于下方的熔点和沸点过滤器。",
+    "minFusionEnergyHint": "仅包含释放能量不低于此值的聚变反应。",
+    "minTwoToTwoEnergyHint": "仅包含释放能量不低于此值的二对二反应。",
+    "maxNuclidesHint": "当活跃的不同核素数量超过此值时，级联停止。最大值等于数据库中的核素数量，即不设上限。",
+    "maxCascadeLoopsHint": "每个循环中活跃核素相互反应，符合条件的产物被反馈回去。",
+    "feedbackOptionsHint": "选择哪些反应产物在下一个循环中作为反应物反馈。",
+    "feedbackBosonsHint": "反馈质量数为偶数的产物（核玻色子）。",
+    "feedbackFermionsHint": "反馈质量数为奇数的产物（核费米子）。",
+    "allowDimersHint": "关闭时，这些元素的核素不能与相同的核素反应（例如 N-14 + N-14）。",
+    "excludeMeltedHint": "这些元素的产物不会反馈到下一个循环。",
+    "excludeBoiledOffHint": "这些元素的产物被视为已离开反应器，不会被反馈。",
+    "runTimeWarning": "根据参数不同，模拟需要30秒到15分钟。",
     "running": "运行中...",
     "runSimulation": "运行级联模拟",
     "resetParameters": "重置参数",
@@ -1283,6 +1302,18 @@
     "about2": "示例：铜（Z=29）的电子与铁（Z=26）的质子以八度差 ΔN = 11 共振，误差仅 0.0008%，因为 29 × 1836.15 ≈ 26 × 2¹¹。该差值由电子/质子质量比决定（log₂(1836.15) ≈ 10.84）。同一匹配出现在阶梯的每一级上：N = 20 / 31 时共同波长为 73.78 µm，N = 31 / 42 时为 151.10 mm，每升高一个八度波长加倍。在 4,186 种可能的元素对中，只有 8 对的匹配误差 < 0.01%。",
     "about3": "显示的反应计数来自帕尔霍莫夫博士的放热核反应表。统计分析显示穆勒共振与帕尔霍莫夫反应密度之间没有显著相关性。此工具是探索性的。",
     "disclaimer": "注意：穆勒方程产生了优雅的数学，但缺乏共振机制的独立实验验证。此工具用于探索和假设生成。",
+    "legend": {
+      "title": "颜色刻度",
+      "weaker": "较弱共振",
+      "stronger": "较强共振（失配更低）",
+      "uncoloured": "未着色的元素在当前视图中没有共振匹配。",
+      "naeWeaker": "在 NAE 范围内（较弱）",
+      "naeBest": "最佳 NAE 匹配",
+      "naeOutside": "NAE 范围外的共振",
+      "naeUncoloured": "未着色的元素没有计算出的电子共振波长。"
+    },
+    "noReactionsTitle": "Parkhomov 表中没有此对的反应",
+    "noReactionsFootnote": "短横线（-）表示 Parkhomov 表中没有此对该类型的反应。许多共振对包含这些表中没有的元素，因此短横线很常见。",
     "tabs": {
       "resonancePairs": "共振对",
       "naePredictions": "NAE预测"
@@ -1344,6 +1375,7 @@
     "filterAllSources": "所有来源",
     "filterByLab": "按来源实验室筛选",
     "noResults": "没有变换匹配当前的筛选条件。",
+    "pathwayResultsHint": "来自 Parkhomov 表的候选路径将显示在此卡片下方。",
     "curatedFrom": "整理自 <1>HumanScholars LENR 文献综述</1>。共 {{count}} 条。",
     "stepCount_one": "1 步",
     "stepCount_other": "{{count}} 步",
@@ -1380,26 +1412,26 @@
       "iwamura-cs-pr": {
         "source": "Iwamura et al., Mitsubishi Heavy Industries (2002)",
         "setup": "Pd/CaO multilayer thin film with deuterium gas permeation",
-        "hypothesizedMechanism": "Sequential alpha-capture: 133Cs + 2 × 4He → 141Pr",
+        "hypothesizedMechanism": "Sequential alpha-capture: $133Cs + 2 × 4He → 141Pr$",
         "sourceTag": "JJAP 2002",
         "replicatedBy": "Toyota Central R&D (2013), Osaka University (2003)"
       },
       "iwamura-sr-mo": {
         "source": "Iwamura et al., Mitsubishi Heavy Industries (2002)",
         "setup": "Pd/CaO multilayer thin film with deuterium permeation",
-        "hypothesizedMechanism": "Sequential alpha-capture: 88Sr + 2 × 4He → 96Mo",
+        "hypothesizedMechanism": "Sequential alpha-capture: $88Sr + 2 × 4He → 96Mo$",
         "sourceTag": "JJAP 2002",
         "replicatedBy": "Toyota Central R&D (2013)"
       },
       "iwamura-ba-sm": {
         "source": "Iwamura et al., Mitsubishi Heavy Industries (2006)",
         "setup": "Pd/CaO multilayer thin film with deuterium permeation",
-        "hypothesizedMechanism": "Multi-step alpha-capture: 138Ba + 3 × 4He → 150Sm"
+        "hypothesizedMechanism": "Multi-step alpha-capture: $138Ba + 3 × 4He → 150Sm$"
       },
       "iwamura-w-pt": {
         "source": "Iwamura et al., Mitsubishi Heavy Industries (2007)",
         "setup": "Pd/CaO multilayer thin film with deuterium permeation",
-        "hypothesizedMechanism": "Sequential alpha-capture: 184W + 2 × 4He → 192Pt"
+        "hypothesizedMechanism": "Sequential alpha-capture: $184W + 2 × 4He → 192Pt$"
       },
       "vysotskii-cs-ba": {
         "source": "Vysotskii & Kornilova (Kiev State University, 2003)",
@@ -1410,7 +1442,7 @@
       "vysotskii-mn-fe": {
         "source": "Vysotskii & Kornilova (Kiev State University, 1996-2008)",
         "setup": "Iron-deficient microbial cultures supplemented with Mn-55 and D2O; Mössbauer spectroscopy of Fe-57 product",
-        "hypothesizedMechanism": "Net reaction proposed as 55Mn + d → 57Fe via biologically-mediated low-energy fusion"
+        "hypothesizedMechanism": "Net reaction proposed as $55Mn + d → 57Fe$ via biologically-mediated low-energy fusion"
       },
       "miley-multi-element": {
         "source": "Miley & Patterson (UIUC / CETI, 1996)",
@@ -1427,12 +1459,12 @@
       "savvatimova-pd-rh": {
         "source": "Savvatimova et al. (Luch, Russia, 1990s-2000s)",
         "setup": "Glow-discharge bombardment of Pd cathodes in deuterium plasma",
-        "hypothesizedMechanism": "Net loss of (p + 2n) reported; mechanism unresolved"
+        "hypothesizedMechanism": "Net loss of ($p + 2n$) reported; mechanism unresolved"
       },
       "spawar-tritium": {
         "source": "Mosier-Boss et al., SPAWAR Systems Center (2007-2009)",
         "setup": "Pd/D co-deposition on Au or Ag substrate; CR-39 detectors record charged-particle tracks; tritium accumulation measured",
-        "hypothesizedMechanism": "D + D → T + p reported; not strictly elemental transmutation but an anomalous nuclear process",
+        "hypothesizedMechanism": "$D + D → T + p$ reported; not strictly elemental transmutation but an anomalous nuclear process",
         "notes": "Included as a reference anomalous-nuclear-process claim. Net transmutation is D → T (neutron capture-like)."
       }
     }
@@ -1673,7 +1705,8 @@
       "description": "此错误通常在缓存的数据库文件损坏时发生。您可以清除缓存并重新下载数据库来修复。",
       "clearing": "正在清除缓存...",
       "clearAndReload": "清除缓存并重新加载",
-      "redownloadNote": "注意：这将重新下载 {{size}}MB 的数据库文件"
+      "redownloadNote": "注意：这将重新下载 {{size}}MB 的数据库文件",
+      "confirmClearCache": "这将清除缓存的数据库并重新加载页面。数据库（{{size}}MB）将重新下载。是否继续？"
     },
     "searchSimilar": "搜索类似问题",
     "searchFirstTitle": "请先搜索类似问题，以避免重复报告",

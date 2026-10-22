@@ -630,6 +630,16 @@ export function getAllNuclides(db: Database): Nuclide[] {
 }
 
 /**
+ * Count the nuclides in the database (rows in NuclidesPlus).
+ * Returns 0 if the table is empty or the query yields no rows.
+ */
+export function getNuclideCount(db: Database): number {
+  const results = db.exec('SELECT COUNT(*) FROM NuclidesPlus');
+  if (results.length === 0 || results[0].values.length === 0) return 0;
+  return Number(results[0].values[0][0]) || 0;
+}
+
+/**
  * Get a specific nuclide by element symbol and mass number
  */
 export function getNuclideBySymbol(db: Database, elementSymbol: string, massNumber: number): Nuclide | null {

@@ -128,7 +128,12 @@
     "tryAgain": "もう一度お試しください",
     "contactSupport": "問題が解決しない場合は、サポートにお問い合わせください",
     "reloadPage": "ページを再読み込み",
-    "goHome": "ホームに戻る"
+    "goHome": "ホームに戻る",
+    "workerError": "ワーカーでエラーが発生しました",
+    "simulationCancelled": "シミュレーションがキャンセルされました",
+    "simulationCancelledByUser": "ユーザーがシミュレーションをキャンセルしました",
+    "discoveryCancelled": "探索がキャンセルされました",
+    "discoveryCancelledByUser": "ユーザーがサイクル探索をキャンセルしました"
   },
   "home": {
     "title": "LENR Academy",
@@ -620,7 +625,7 @@
     "simulationTitle": "カスケードシミュレーション",
     "simulationDescription": "初期燃料核種からのカスケード連鎖反応をモデル化",
     "databaseLimitsTitle": "データベース制限",
-    "databaseLimitsDescription": "データベースには92元素にわたる324核種、3,921の核融合反応、120万の2対2反応が含まれています。スライダー範囲はこれらの制約を反映しています。デフォルト設定（最大5000核種、25ループ）で包括的な結果が得られます。処理時間はパラメータに応じて30秒から15分です。",
+    "databaseLimitsDescription": "データベースには92元素にわたる324核種、3,921の核融合反応、120万の2対2反応が含まれています。スライダー範囲はこれらの制約を反映しています。デフォルトでは核種上限はデータベースの核種数と同じ（上限なし）で、カスケードは最大25ループ実行されます。",
     "fuelNuclides": "燃料核種",
     "weighted": "重み付け",
     "weightedMode": "重み付けモード",
@@ -633,15 +638,29 @@
     "minFusionEnergy": "最小核融合エネルギー (MeV)",
     "minTwoToTwoEnergy": "最小2-2エネルギー (MeV)",
     "maxNuclidesToPair": "ペアリング最大核種数",
-    "databaseNuclidesCount": "データベースには324核種",
+    "databaseNuclidesCount": "データベースには合計{{total}}核種",
     "maxCascadeLoops": "最大カスケードループ数",
     "recommendedLoops": "推奨: 10-50",
     "feedbackOptions": "フィードバックオプション",
     "feedbackBosons": "ボソンフィードバック",
     "feedbackFermions": "フェルミオンフィードバック",
     "allowDimers": "二量体形成を許可 (H, N, O, F, Cl, Br, I)",
-    "excludeMelted": "融点以下の元素を除外",
-    "excludeBoiledOff": "沸騰した元素を除外",
+    "excludeMelted": "{{temperature}} K でまだ固体の元素を除外（融点が炉内温度より高い）",
+    "excludeBoiledOff": "{{temperature}} K で蒸発した元素を除外（沸点が炉内温度より低い）",
+    "databaseNotLoaded": "データベースはまだ読み込まれていません。お待ちください...",
+    "selectAtLeastOneFuel": "燃料核種を少なくとも1つ選択してください",
+    "temperatureHint": "炉内温度（ケルビン）。下の融点・沸点フィルターで使用されます。",
+    "minFusionEnergyHint": "少なくともこのエネルギーを放出する核融合反応のみが含まれます。",
+    "minTwoToTwoEnergyHint": "少なくともこのエネルギーを放出する2対2反応のみが含まれます。",
+    "maxNuclidesHint": "アクティブな核種の種類がこの値を超えるとカスケードは停止します。最大値はデータベースの核種数と同じで、上限なしを意味します。",
+    "maxCascadeLoopsHint": "各ループでアクティブな核種同士が反応し、条件を満たす生成物がフィードバックされます。",
+    "feedbackOptionsHint": "次のループで反応物としてフィードバックする反応生成物を選択します。",
+    "feedbackBosonsHint": "質量数が偶数の生成物（核ボソン）をフィードバックします。",
+    "feedbackFermionsHint": "質量数が奇数の生成物（核フェルミオン）をフィードバックします。",
+    "allowDimersHint": "オフの場合、これらの元素の核種は同一の核種と反応できません（例：N-14 + N-14）。",
+    "excludeMeltedHint": "これらの元素の生成物は次のループにフィードバックされません。",
+    "excludeBoiledOffHint": "これらの元素の生成物は炉外に出たとみなされ、フィードバックされません。",
+    "runTimeWarning": "シミュレーションにはパラメータに応じて30秒から15分かかります。",
     "running": "実行中...",
     "runSimulation": "カスケードシミュレーションを実行",
     "resetParameters": "パラメータをリセット",
@@ -1283,6 +1302,18 @@
     "about2": "例：銅（Z=29）の電子と鉄（Z=26）の陽子は、29 × 1836.15 ≈ 26 × 2¹¹ であるため、オクターブ差 ΔN = 11 で 0.0008% の精度で共鳴します。この差は電子/陽子質量比（log₂(1836.15) ≈ 10.84）によって決まります。同じ一致はラダーのすべての段に現れます：N = 20 / 31 では共通波長は 73.78 µm、N = 31 / 42 では 151.10 mm で、オクターブが1つ上がるごとに2倍になります。考えられる 4,186 の元素ペアのうち、< 0.01% で一致するのは 8 ペアだけです。",
     "about3": "表示される反応数は、パルホモフ博士の発熱核反応表からのものです。統計分析では、ミュラー共鳴とパルホモフ反応密度の間に有意な相関は示されていません。このツールは探索的です。",
     "disclaimer": "注意：ミュラーの方程式はエレガントな数学を生成しますが、共鳴メカニズムの独立した実験的検証がありません。このツールは探索と仮説生成のために提示されています。",
+    "legend": {
+      "title": "カラースケール",
+      "weaker": "弱い共鳴",
+      "stronger": "強い共鳴（不一致が小さい）",
+      "uncoloured": "色のない元素は現在の表示で共鳴がありません。",
+      "naeWeaker": "NAE範囲内（弱め）",
+      "naeBest": "最良のNAE一致",
+      "naeOutside": "NAE範囲外の共鳴",
+      "naeUncoloured": "色のない元素には計算された電子共鳴波長がありません。"
+    },
+    "noReactionsTitle": "Parkhomov 表にこのペアの反応はありません",
+    "noReactionsFootnote": "ダッシュ（-）は、Parkhomov 表にこのペアのその種類の反応が含まれていないことを示します。多くの共鳴ペアにはこれらの表にない元素が含まれるため、ダッシュがよく表示されます。",
     "tabs": {
       "resonancePairs": "共鳴ペア",
       "naePredictions": "NAE予測"
@@ -1344,6 +1375,7 @@
     "filterAllSources": "すべての出典",
     "filterByLab": "出典の研究機関で絞り込む",
     "noResults": "現在のフィルタに一致する変換はありません。",
+    "pathwayResultsHint": "Parkhomov 表から得られた候補経路はこのカードの下に表示されます。",
     "curatedFrom": "<1>HumanScholars の LENR 文献レビュー</1>から収集。{{count}} 件。",
     "stepCount_one": "1 ステップ",
     "stepCount_other": "{{count}} ステップ",
@@ -1380,26 +1412,26 @@
       "iwamura-cs-pr": {
         "source": "Iwamura et al., Mitsubishi Heavy Industries (2002)",
         "setup": "Pd/CaO multilayer thin film with deuterium gas permeation",
-        "hypothesizedMechanism": "Sequential alpha-capture: 133Cs + 2 × 4He → 141Pr",
+        "hypothesizedMechanism": "Sequential alpha-capture: $133Cs + 2 × 4He → 141Pr$",
         "sourceTag": "JJAP 2002",
         "replicatedBy": "Toyota Central R&D (2013), Osaka University (2003)"
       },
       "iwamura-sr-mo": {
         "source": "Iwamura et al., Mitsubishi Heavy Industries (2002)",
         "setup": "Pd/CaO multilayer thin film with deuterium permeation",
-        "hypothesizedMechanism": "Sequential alpha-capture: 88Sr + 2 × 4He → 96Mo",
+        "hypothesizedMechanism": "Sequential alpha-capture: $88Sr + 2 × 4He → 96Mo$",
         "sourceTag": "JJAP 2002",
         "replicatedBy": "Toyota Central R&D (2013)"
       },
       "iwamura-ba-sm": {
         "source": "Iwamura et al., Mitsubishi Heavy Industries (2006)",
         "setup": "Pd/CaO multilayer thin film with deuterium permeation",
-        "hypothesizedMechanism": "Multi-step alpha-capture: 138Ba + 3 × 4He → 150Sm"
+        "hypothesizedMechanism": "Multi-step alpha-capture: $138Ba + 3 × 4He → 150Sm$"
       },
       "iwamura-w-pt": {
         "source": "Iwamura et al., Mitsubishi Heavy Industries (2007)",
         "setup": "Pd/CaO multilayer thin film with deuterium permeation",
-        "hypothesizedMechanism": "Sequential alpha-capture: 184W + 2 × 4He → 192Pt"
+        "hypothesizedMechanism": "Sequential alpha-capture: $184W + 2 × 4He → 192Pt$"
       },
       "vysotskii-cs-ba": {
         "source": "Vysotskii & Kornilova (Kiev State University, 2003)",
@@ -1410,7 +1442,7 @@
       "vysotskii-mn-fe": {
         "source": "Vysotskii & Kornilova (Kiev State University, 1996-2008)",
         "setup": "Iron-deficient microbial cultures supplemented with Mn-55 and D2O; Mössbauer spectroscopy of Fe-57 product",
-        "hypothesizedMechanism": "Net reaction proposed as 55Mn + d → 57Fe via biologically-mediated low-energy fusion"
+        "hypothesizedMechanism": "Net reaction proposed as $55Mn + d → 57Fe$ via biologically-mediated low-energy fusion"
       },
       "miley-multi-element": {
         "source": "Miley & Patterson (UIUC / CETI, 1996)",
@@ -1427,12 +1459,12 @@
       "savvatimova-pd-rh": {
         "source": "Savvatimova et al. (Luch, Russia, 1990s-2000s)",
         "setup": "Glow-discharge bombardment of Pd cathodes in deuterium plasma",
-        "hypothesizedMechanism": "Net loss of (p + 2n) reported; mechanism unresolved"
+        "hypothesizedMechanism": "Net loss of ($p + 2n$) reported; mechanism unresolved"
       },
       "spawar-tritium": {
         "source": "Mosier-Boss et al., SPAWAR Systems Center (2007-2009)",
         "setup": "Pd/D co-deposition on Au or Ag substrate; CR-39 detectors record charged-particle tracks; tritium accumulation measured",
-        "hypothesizedMechanism": "D + D → T + p reported; not strictly elemental transmutation but an anomalous nuclear process",
+        "hypothesizedMechanism": "$D + D → T + p$ reported; not strictly elemental transmutation but an anomalous nuclear process",
         "notes": "Included as a reference anomalous-nuclear-process claim. Net transmutation is D → T (neutron capture-like)."
       }
     }
@@ -1673,7 +1705,8 @@
       "description": "このエラーは通常、キャッシュされたデータベースファイルが破損している場合に発生します。キャッシュを消去してデータベースを再ダウンロードすることで修正できます。",
       "clearing": "キャッシュを消去中...",
       "clearAndReload": "キャッシュを消去して再読み込み",
-      "redownloadNote": "注意：{{size}}MBのデータベースファイルを再ダウンロードします"
+      "redownloadNote": "注意：{{size}}MBのデータベースファイルを再ダウンロードします",
+      "confirmClearCache": "キャッシュされたデータベースを消去してページを再読み込みします。データベース（{{size}}MB）は再ダウンロードされます。続行しますか？"
     },
     "searchSimilar": "類似の問題を検索",
     "searchFirstTitle": "重複報告を避けるため、まず類似の問題を検索してください",
