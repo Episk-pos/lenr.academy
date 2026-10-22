@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useId, useRef, useState } from 'react'
-import type { KeyboardEvent, ReactNode } from 'react'
+import type { FocusEvent, KeyboardEvent, ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 import { ChevronDown, Download } from 'lucide-react'
 
@@ -22,8 +22,10 @@ interface ExportMenuProps {
  * Single "Export ▾" dropdown that replaces separate CSV/JSON/PDF buttons.
  *
  * Accessibility: menu-button pattern (aria-haspopup/aria-expanded), items use
- * role="menuitem", ArrowUp/ArrowDown/Home/End move focus, Escape closes and
- * returns focus to the trigger, Tab closes. Clicking outside closes the menu.
+ * role="menuitem". Enter/Space/ArrowDown on the trigger open the menu and focus
+ * the first item (ArrowUp focuses the last); ArrowUp/ArrowDown/Home/End move
+ * focus; Escape closes and returns focus to the trigger. Clicking outside or
+ * moving focus out of the component closes the menu.
  */
 export default function ExportMenu({ items, disabled = false, label }: ExportMenuProps) {
   const { t } = useTranslation()
@@ -40,8 +42,21 @@ export default function ExportMenu({ items, disabled = false, label }: ExportMen
   }, [])
 
   const openAndFocus = (index: number) => {
+    if (isOpen) {
+      // Already open: the [isOpen] effect will not re-run, so focus directly
+      itemRefs.current[index]?.focus()
+      return
+    }
     pendingFocusIndex.current = index
     setIsOpen(true)
+  }
+
+  // Close when focus leaves the whole component (e.g. tabbing away)
+  const handleBlur = (event: FocusEvent<HTMLDivElement>) => {
+    const next = event.relatedTarget as Node | null
+    if (!next || !containerRef.current?.contains(next)) {
+      setIsOpen(false)
+    }
   }
 
   // Close on outside click
@@ -74,7 +89,10 @@ export default function ExportMenu({ items, disabled = false, label }: ExportMen
   }, [disabled])
 
   const handleTriggerKeyDown = (event: KeyboardEvent<HTMLButtonElement>) => {
-    if (event.key === 'ArrowDown') {
+    if (event.key === 'ArrowDown' || event.key === 'Enter' || event.key === ' ') {
+      // Enter/Space/ArrowDown open the menu and focus the first item
+      // (WAI-ARIA menu button pattern). preventDefault suppresses the native
+      // click so the menu is not toggled closed again.
       event.preventDefault()
       openAndFocus(0)
     } else if (event.key === 'ArrowUp') {
@@ -123,7 +141,7 @@ export default function ExportMenu({ items, disabled = false, label }: ExportMen
   }
 
   return (
-    <div className="relative inline-block" ref={containerRef}>
+    <div className="relative inline-block" ref={containerRef} onBlur={handleBlur}>
       <button
         ref={triggerRef}
         type="button"
@@ -151,6 +169,9 @@ export default function ExportMenu({ items, disabled = false, label }: ExportMen
           aria-label={label ?? t('reactions.export')}
           className="absolute right-0 z-20 mt-1 min-w-[11rem] py-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md shadow-lg"
           onKeyDown={handleMenuKeyDown}
+          // Keep focus where it is on pointer interaction so browsers that do
+          // not focus buttons on click (Safari) don't trigger a focus-out close
+          onMouseDown={(event) => event.preventDefault()}
           data-testid="export-menu"
         >
           {items.map((item, index) => (

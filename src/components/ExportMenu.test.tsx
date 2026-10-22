@@ -89,6 +89,50 @@ describe('ExportMenu', () => {
     expect(items[2]).toHaveFocus();
   });
 
+  it('focuses the first item on ArrowDown when already opened by click', () => {
+    const { trigger } = setup();
+    fireEvent.click(trigger);
+    expect(screen.getByRole('menu')).toBeInTheDocument();
+    fireEvent.keyDown(trigger, { key: 'ArrowDown' });
+    expect(screen.getAllByRole('menuitem')[0]).toHaveFocus();
+  });
+
+  it('focuses the last item on ArrowUp when already open', () => {
+    const { trigger } = setup();
+    fireEvent.click(trigger);
+    fireEvent.keyDown(trigger, { key: 'ArrowUp' });
+    expect(screen.getAllByRole('menuitem')[2]).toHaveFocus();
+  });
+
+  it('opens and focuses the first item on Enter', () => {
+    const { trigger } = setup();
+    fireEvent.keyDown(trigger, { key: 'Enter' });
+    expect(trigger).toHaveAttribute('aria-expanded', 'true');
+    expect(screen.getAllByRole('menuitem')[0]).toHaveFocus();
+  });
+
+  it('opens and focuses the first item on Space', () => {
+    const { trigger } = setup();
+    fireEvent.keyDown(trigger, { key: ' ' });
+    expect(screen.getAllByRole('menuitem')[0]).toHaveFocus();
+  });
+
+  it('closes when focus leaves the component', () => {
+    const { trigger } = setup();
+    fireEvent.click(trigger);
+    const outside = screen.getByRole('button', { name: 'outside' });
+    fireEvent.blur(trigger, { relatedTarget: outside });
+    expect(screen.queryByRole('menu')).not.toBeInTheDocument();
+  });
+
+  it('stays open when focus moves between the trigger and its items', () => {
+    const { trigger } = setup();
+    fireEvent.click(trigger);
+    const firstItem = screen.getAllByRole('menuitem')[0];
+    fireEvent.blur(trigger, { relatedTarget: firstItem });
+    expect(screen.getByRole('menu')).toBeInTheDocument();
+  });
+
   it('is disabled when requested', () => {
     const { trigger } = setup(true);
     expect(trigger).toBeDisabled();

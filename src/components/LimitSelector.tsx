@@ -76,6 +76,7 @@ export default function LimitSelector({ value, onChange, id }: LimitSelectorProp
       {showCustomInput ? (
         <div className="flex gap-2">
           <input
+            id={id}
             type="number"
             className="input flex-1"
             value={customValue}
