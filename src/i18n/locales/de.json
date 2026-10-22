@@ -409,6 +409,7 @@
     "linkCopied": "Link kopiert!",
     "exportJson": "JSON exportieren",
     "exportPdf": "PDF exportieren",
+    "pdfFontFallback": "Die PDF-Schriftart konnte nicht geladen werden. Einige Zeichen werden möglicherweise nicht korrekt angezeigt.",
     "inputs": "Eingaben",
     "output": "Ausgabe",
     "outputs": "Ausgaben",

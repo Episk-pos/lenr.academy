@@ -409,6 +409,7 @@
     "linkCopied": "Link Copied!",
     "exportJson": "Export JSON",
     "exportPdf": "Export PDF",
+    "pdfFontFallback": "Couldn't load the PDF font. Some characters may not display correctly.",
     "inputs": "Inputs",
     "output": "Output",
     "outputs": "Outputs",

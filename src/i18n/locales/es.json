@@ -410,6 +410,7 @@
     "linkCopied": "Enlace copiado!",
     "exportJson": "Exportar JSON",
     "exportPdf": "Exportar PDF",
+    "pdfFontFallback": "No se pudo cargar la fuente del PDF. Es posible que algunos caracteres no se muestren correctamente.",
     "inputs": "Entradas",
     "output": "Salida",
     "outputs": "Salidas",

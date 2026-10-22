@@ -409,6 +409,7 @@
     "linkCopied": "リンクをコピーしました!",
     "exportJson": "JSONエクスポート",
     "exportPdf": "PDFエクスポート",
+    "pdfFontFallback": "PDF用フォントを読み込めませんでした。一部の文字が正しく表示されない可能性があります。",
     "inputs": "入力",
     "output": "出力",
     "outputs": "出力",

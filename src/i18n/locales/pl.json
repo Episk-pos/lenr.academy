@@ -411,6 +411,7 @@
     "linkCopied": "Skopiowano link!",
     "exportJson": "Eksportuj JSON",
     "exportPdf": "Eksportuj PDF",
+    "pdfFontFallback": "Nie udało się wczytać czcionki PDF. Niektóre znaki mogą nie wyświetlać się poprawnie.",
     "inputs": "Wejścia",
     "output": "Wyjście",
     "outputs": "Wyjścia",
