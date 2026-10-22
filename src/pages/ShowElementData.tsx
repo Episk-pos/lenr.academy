@@ -32,6 +32,7 @@ import {
   getRadioactiveNuclides,
   getNuclideBySymbol,
   getRadioactiveNuclideData,
+  getNuclideHalfLives,
   getUniqueDecayModes,
   getUniqueRadiationTypes,
   type RadioactiveDecay
@@ -144,6 +145,22 @@ function getDaughterNuclide(Z: number, A: number, E: string, decayMode: string):
   }
 
   return null
+}
+
+/** Atomic radii legend entries: [label i18n key, description i18n key] */
+const ATOMIC_RADII_LEGEND = [
+  ['elements.empirical', 'elementData.radiiMeasured'],
+  ['elements.calculated', 'elementData.radiiTheoretical'],
+  ['elements.vanDerWaals', 'elementData.radiiNonBonded'],
+  ['elements.covalent', 'elementData.radiiBonded'],
+] as const
+
+/**
+ * Compact half-life label for isotope cards, e.g. "12.33Y" or "4.5e+9Y".
+ */
+function formatCompactHalfLife(halfLife: number | null, units: string | null): string | null {
+  if (halfLife === null || units === null) return null
+  return halfLife >= 10000 ? `${halfLife.toExponential(1)}${units}` : `${halfLife}${units}`
 }
 
 export default function ShowElementData() {
@@ -1179,6 +1196,17 @@ export default function ShowElementData() {
     return isotopes.filter(displayNuclide => displayNuclide.type === 'full')
   }, [isotopes, showLimitedDataNuclides])
 
+  // Primary half-life for full-data (NuclidesPlus) isotopes that also have decay
+  // records, keyed by "Z-A". Looked up by Z/A because RadioNuclides files tritium
+  // under 'H' while NuclidesPlus uses 'T'.
+  const fullIsotopeHalfLives = useMemo(() => {
+    if (!db) return new Map<string, { halfLife: number | null; units: string | null }>()
+    const fullIsotopes = isotopes
+      .filter(displayNuclide => displayNuclide.type === 'full')
+      .map(displayNuclide => ({ Z: displayNuclide.data.Z, A: displayNuclide.data.A }))
+    return getNuclideHalfLives(db, fullIsotopes)
+  }, [db, isotopes])
+
   // Filter configurations
   const elementsFilterConfigs: FilterConfig[] = [
     {
@@ -1741,10 +1769,6 @@ export default function ShowElementData() {
                     <h3 className="font-semibold text-gray-900 dark:text-white mb-3 text-sm uppercase tracking-wide">{t('elements.periodicTable')}</h3>
                     <dl className="space-y-2 text-sm">
                       <div className="flex justify-between">
-                        <dt className="text-gray-600 dark:text-gray-400">{t('elements.atomicNumberZ')}:</dt>
-                        <dd className="font-medium text-gray-900 dark:text-gray-100">{element.Z}</dd>
-                      </div>
-                      <div className="flex justify-between">
                         <dt className="text-gray-600 dark:text-gray-400">{t('elements.period')}:</dt>
                         <dd className="font-medium text-gray-900 dark:text-gray-100">{element.Period}</dd>
                       </div>
@@ -1895,9 +1919,16 @@ export default function ShowElementData() {
                         </div>
                       )}
                     </dl>
-                    <div className="mt-3 p-2 bg-gray-50 dark:bg-gray-800 rounded text-xs text-gray-600 dark:text-gray-400">
-                      <strong>{t('elements.empirical')}:</strong> {t('elementData.radiiMeasured')} • <strong>{t('elements.calculated')}:</strong> {t('elementData.radiiTheoretical')}<br />
-                      <strong>{t('elements.vanDerWaals')}:</strong> {t('elementData.radiiNonBonded')} • <strong>{t('elements.covalent')}:</strong> {t('elementData.radiiBonded')}
+                    <div
+                      data-testid="atomic-radii-legend"
+                      className="mt-3 p-2 bg-gray-50 dark:bg-gray-800 rounded text-xs text-gray-600 dark:text-gray-400 grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1"
+                    >
+                      {ATOMIC_RADII_LEGEND.map(([labelKey, descKey]) => (
+                        <div key={labelKey} className="min-w-0">
+                          <span className="font-semibold">{t(labelKey)}:</span>{' '}
+                          <span>{t(descKey)}</span>
+                        </div>
+                      ))}
                     </div>
                   </div>
                 )}
@@ -1999,12 +2030,13 @@ export default function ShowElementData() {
                       // For full nuclides, check stability
                       const isStable = isFull && typeof displayNuclide.data.logHalfLife === 'number' && displayNuclide.data.logHalfLife > 9
 
-                      // For radioactive-only, format half-life
-                      const halfLifeStr = !isFull && displayNuclide.data.halfLife !== null && displayNuclide.data.Units !== null
-                        ? displayNuclide.data.halfLife >= 10000
-                          ? `${displayNuclide.data.halfLife.toExponential(1)}${displayNuclide.data.Units}`
-                          : `${displayNuclide.data.halfLife}${displayNuclide.data.Units}`
-                        : null
+                      // Full nuclides with RadioNuclides decay records (e.g. T-3) are radioactive
+                      const fullHalfLife = isFull ? fullIsotopeHalfLives.get(`${Z}-${A}`) : undefined
+
+                      // Format half-life for radioactive-only entries and radioactive full nuclides
+                      const halfLifeStr = isFull
+                        ? formatCompactHalfLife(fullHalfLife?.halfLife ?? null, fullHalfLife?.units ?? null)
+                        : formatCompactHalfLife(displayNuclide.data.halfLife, displayNuclide.data.Units)
 
                       return (
                         <IsotopeCard
@@ -2014,6 +2046,8 @@ export default function ShowElementData() {
                           Z={Z}
                           nBorF={displayNuclide.type === 'full' ? displayNuclide.data.nBorF : undefined}
                           stable={isStable}
+                          radioactive={isFull && !isStable && fullHalfLife !== undefined}
+                          halfLife={isFull && !isStable ? halfLifeStr : null}
                           limitedData={displayNuclide.type === 'full' ? undefined : {
                             decayMode: displayNuclide.data.RDM,
                             halfLife: halfLifeStr,

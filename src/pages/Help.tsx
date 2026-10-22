@@ -2,7 +2,7 @@ import { useState, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 import { Search, BookOpen, Beaker, ArrowRight } from 'lucide-react'
-import { GLOSSARY, GLOSSARY_CATEGORIES, GlossaryEntry } from '../data/glossary'
+import { GLOSSARY, GLOSSARY_CATEGORIES, GlossaryEntry, localizeGlossaryEntry } from '../data/glossary'
 import { EXAMPLE_QUERIES, ExampleQuery } from '../data/exampleQueries'
 import PageHeader from '../components/PageHeader'
 import { PAGE_ICONS } from '../constants/pageIcons'
@@ -43,12 +43,20 @@ export default function Help() {
     }
     if (searchTerm) {
       const lower = searchTerm.toLowerCase();
-      entries = entries.filter(
-        e => e.term.toLowerCase().includes(lower) || e.definition.toLowerCase().includes(lower)
-      );
+      entries = entries.filter(e => {
+        const { term, definition } = localizeGlossaryEntry(e, t);
+        return (
+          term.toLowerCase().includes(lower) ||
+          definition.toLowerCase().includes(lower) ||
+          e.term.toLowerCase().includes(lower) ||
+          e.definition.toLowerCase().includes(lower)
+        );
+      });
     }
-    return entries.sort((a, b) => a.term.localeCompare(b.term));
-  }, [searchTerm, selectedCategory]);
+    return [...entries].sort((a, b) =>
+      localizeGlossaryEntry(a, t).term.localeCompare(localizeGlossaryEntry(b, t).term)
+    );
+  }, [searchTerm, selectedCategory, t]);
 
   const handleTryQuery = (query: ExampleQuery) => {
     const params = new URLSearchParams();
@@ -232,15 +240,16 @@ function CategoryButton({ label, active, onClick }: { label: string; active: boo
 
 function GlossaryItem({ entry }: { entry: GlossaryEntry }) {
   const { t } = useTranslation()
+  const { term, definition } = localizeGlossaryEntry(entry, t)
   return (
     <div className="card p-3">
       <div className="flex items-start justify-between gap-2">
         <div>
           <h3 className="text-sm font-medium text-gray-900 dark:text-white">
-            {entry.term}
+            {term}
           </h3>
           <p className="text-sm text-gray-600 dark:text-gray-400 mt-0.5">
-            {entry.definition}
+            {definition}
           </p>
           {entry.relatedTerms && entry.relatedTerms.length > 0 && (
             <div className="flex flex-wrap gap-1 mt-1.5">

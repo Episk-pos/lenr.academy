@@ -29,6 +29,8 @@ export interface IsotopeCardProps {
   limitedData?: IsotopeCardLimitedData
   /** Show a radioactive badge (full-data variant only) */
   radioactive?: boolean
+  /** Pre-formatted half-life pill (full-data variant only, e.g. "12.33Y") */
+  halfLife?: string | null
   /** Selected / pinned state (filled blue) */
   selected?: boolean
   /** Highlighted (e.g. hovered elsewhere on the page) */
@@ -52,6 +54,7 @@ export default function IsotopeCard({
   stable = false,
   limitedData,
   radioactive = false,
+  halfLife = null,
   selected = false,
   highlighted = false,
   dimmed = false,
@@ -118,6 +121,17 @@ export default function IsotopeCard({
                     }`}
                   >
                     <Radiation className="w-3 h-3" />
+                  </span>
+                )}
+                {halfLife && (
+                  <span
+                    data-testid="isotope-card-half-life"
+                    title={t('elements.halfLife')}
+                    className={`px-1.5 py-0.5 rounded-full text-xs ${
+                      selected ? 'bg-gray-600 text-gray-100' : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300'
+                    }`}
+                  >
+                    {halfLife}
                   </span>
                 )}
               </>

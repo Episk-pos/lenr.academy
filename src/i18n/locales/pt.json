@@ -1037,7 +1037,8 @@
     "tipGroupByKeyword": "GROUP BY",
     "tipGroupByRest": "para agregações",
     "tipStringsText": "Literais de texto usam aspas simples:",
-    "tipStringsCode": "'H'"
+    "tipStringsCode": "'H'",
+    "runShortcutHint": "Pressione Ctrl+Enter (⌘+Enter no Mac) para executar a consulta."
   },
   "updates": {
     "appUpdateAvailable": "Atualização do aplicativo disponível: {{current}} → {{available}}",
@@ -1243,7 +1244,29 @@
       "cascades": "cascata",
       "mullerResonance": "ressonância"
     },
-    "opensPage": "Abre: {{page}}"
+    "opensPage": "Abre: {{page}}",
+    "glossaryTerms": {
+      "nae": {
+        "term": "NAE (Nuclear Active Environment, ambiente nuclear ativo)",
+        "definition": "Termo de Edmund Storms para os sítios especiais em nanoescala de um material, como fissuras, lacunas ou estruturas de superfície em um hidreto metálico, onde se propõe que as LENR ocorram, em vez de em toda a rede cristalina."
+      },
+      "comptonWavelength": {
+        "term": "Comprimento de onda Compton",
+        "definition": "λ = h/(mc): o comprimento de onda de um fóton cuja energia é igual à energia de repouso de uma partícula. Para o elétron Cₑ ≈ 2,426 pm e para o próton Cₚ ≈ 1,321 fm; a razão entre eles é a razão de massas próton-elétron, ≈ 1836,15."
+      },
+      "mullerResonance": {
+        "term": "Ressonância de Muller",
+        "definition": "Modelo de Frithjof Muller no qual cada elemento tem escadas de comprimentos de onda L = Z × C × 2ᴺ construídas a partir dos comprimentos de onda Compton do elétron (Cₑ) e do próton (Cₚ). Os elementos Z₁ e Z₂ ressoam quando Z₁ · Cₑ · 2ᴺ = Z₂ · Cₚ · 2^(N+ΔN), ou seja, Z₁/Z₂ ≈ 2^ΔN / 1836,15. A ressonância fixa apenas a diferença de oitavas ΔN; a oitava absoluta N é livre."
+      },
+      "catalyticCycle": {
+        "term": "Ciclo catalítico",
+        "definition": "Sequência fechada de reações na qual um nuclídeo consumido em uma etapa inicial é regenerado em uma etapa posterior, atuando assim como catalisador enquanto o combustível é convertido em produtos e energia. O ciclo CNO estelar é o exemplo clássico: o C-12 é recuperado enquanto quatro prótons se tornam hélio-4."
+      },
+      "dimer": {
+        "term": "Dímero",
+        "definition": "Molécula formada por dois átomos ou unidades idênticos, como H₂, N₂, O₂ e os halogênios diatômicos F₂, Cl₂, Br₂ e I₂. A opção \"Permitir Formação de Dímeros\" do simulador de cascata se aplica a esses elementos naturalmente diatômicos."
+      }
+    }
   },
   "mullerResonance": {
     "title": "Explorador de Ressonância de Muller",

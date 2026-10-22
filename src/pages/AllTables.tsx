@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, type KeyboardEvent } from 'react'
 import { Play, BookOpen, Download, Loader, AlertCircle } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { useDatabase } from '../contexts/DatabaseContext'
@@ -71,6 +71,13 @@ export default function AllTables() {
     }
   }
 
+  const handleEditorKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+      e.preventDefault()
+      if (!isExecuting) executeQuery()
+    }
+  }
+
   const exportToCSV = () => {
     if (!results || results.length === 0) return
 
@@ -112,16 +119,30 @@ export default function AllTables() {
         <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">{t('allTables.sqlEditor')}</h2>
 
         <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+          <label
+            htmlFor="sql-query-editor"
+            className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+          >
             {t('allTables.enterSqlQuery')}
           </label>
           <textarea
-            className="input font-mono text-sm"
+            id="sql-query-editor"
+            className="input h-auto min-h-[9rem] resize-y font-mono text-sm leading-relaxed"
             rows={6}
+            spellCheck={false}
             value={sqlQuery}
             onChange={(e) => setSqlQuery(e.target.value)}
+            onKeyDown={handleEditorKeyDown}
             placeholder={t('allTables.queryPlaceholder')}
+            aria-describedby="sql-query-editor-hint"
           />
+          <p
+            id="sql-query-editor-hint"
+            data-testid="sql-run-shortcut-hint"
+            className="mt-1 text-xs text-gray-500 dark:text-gray-400"
+          >
+            {t('allTables.runShortcutHint')}
+          </p>
         </div>
 
         <div className="flex gap-3">

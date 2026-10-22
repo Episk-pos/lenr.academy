@@ -31,6 +31,14 @@ describe('IsotopeCard', () => {
     expect(card.className).toContain('bg-amber-50')
   })
 
+  it('shows a half-life pill on full-data radioactive nuclides (e.g. T-3)', () => {
+    const { rerender } = render(<IsotopeCard E="T" A={3} Z={1} nBorF="f" />)
+    expect(screen.queryByTestId('isotope-card-half-life')).not.toBeInTheDocument()
+    rerender(<IsotopeCard E="T" A={3} Z={1} nBorF="f" radioactive halfLife="12.33Y" />)
+    expect(screen.getByTestId('isotope-card-radioactive')).toBeInTheDocument()
+    expect(screen.getByTestId('isotope-card-half-life')).toHaveTextContent('12.33Y')
+  })
+
   it('shows radioactive badge only when requested', () => {
     const { rerender } = render(<IsotopeCard E="Co" A={60} Z={27} nBorF="b" />)
     expect(screen.queryByTestId('isotope-card-radioactive')).not.toBeInTheDocument()

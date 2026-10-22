@@ -1036,7 +1036,8 @@
     "tipGroupByKeyword": "GROUP BY",
     "tipGroupByRest": "",
     "tipStringsText": "字符串字面量使用单引号：",
-    "tipStringsCode": "'H'"
+    "tipStringsCode": "'H'",
+    "runShortcutHint": "按 Ctrl+Enter（Mac 上为 ⌘+Enter）运行查询。"
   },
   "updates": {
     "appUpdateAvailable": "应用更新可用：{{current}} → {{available}}",
@@ -1241,7 +1242,29 @@
       "cascades": "级联",
       "mullerResonance": "共振"
     },
-    "opensPage": "打开：{{page}}"
+    "opensPage": "打开：{{page}}",
+    "glossaryTerms": {
+      "nae": {
+        "term": "NAE（Nuclear Active Environment，核活性环境）",
+        "definition": "埃德蒙·斯托姆斯提出的术语，指材料中特殊的纳米尺度位点，例如金属氢化物中的裂纹、间隙或表面结构；该理论认为 LENR 发生在这些位点，而非整个晶格中。"
+      },
+      "comptonWavelength": {
+        "term": "康普顿波长",
+        "definition": "λ = h/(mc)：能量等于粒子静止质能的光子的波长。电子的 Cₑ ≈ 2.426 pm，质子的 Cₚ ≈ 1.321 fm；二者之比等于质子与电子的质量比，约为 1836.15。"
+      },
+      "mullerResonance": {
+        "term": "穆勒共振",
+        "definition": "弗里乔夫·穆勒的模型：每种元素都有由电子（Cₑ）和质子（Cₚ）康普顿波长构成的波长阶梯 L = Z × C × 2ᴺ。当 Z₁ · Cₑ · 2ᴺ = Z₂ · Cₚ · 2^(N+ΔN)，即 Z₁/Z₂ ≈ 2^ΔN / 1836.15 时，元素 Z₁ 与 Z₂ 发生共振。共振只确定八度差 ΔN；绝对八度 N 可以任意取值。"
+      },
+      "catalyticCycle": {
+        "term": "催化循环",
+        "definition": "一种闭合的反应序列：早期步骤中消耗的核素在后续步骤中重新生成，因此它起到催化剂的作用，而燃料被转化为产物并释放能量。恒星中的 CNO 循环是经典例子：C-12 得以回收，同时四个质子变为氦-4。"
+      },
+      "dimer": {
+        "term": "二聚体",
+        "definition": "由两个相同原子或单元组成的分子，例如 H₂、N₂、O₂ 以及双原子卤素 F₂、Cl₂、Br₂ 和 I₂。级联模拟器中的“允许形成二聚体”选项适用于这些天然以双原子形式存在的元素。"
+      }
+    }
   },
   "mullerResonance": {
     "title": "穆勒共振探索器",

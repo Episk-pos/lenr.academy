@@ -3,6 +3,12 @@ export interface GlossaryEntry {
   definition: string;
   category: 'nuclear' | 'reaction' | 'database' | 'measurement';
   relatedTerms?: string[];
+  /**
+   * Optional i18n key prefix (e.g. "help.glossaryTerms.nae"). When set, the Help
+   * page renders `${i18nKey}.term` and `${i18nKey}.definition` in the active
+   * locale; `term` / `definition` remain the English source and stable ID.
+   */
+  i18nKey?: string;
 }
 
 export const GLOSSARY: GlossaryEntry[] = [
@@ -148,7 +154,43 @@ export const GLOSSARY: GlossaryEntry[] = [
     relatedTerms: ['Cascade'],
   },
 
+  {
+    term: 'Catalytic Cycle',
+    definition: 'A closed sequence of reactions in which a nuclide consumed in an early step is regenerated in a later one, so it acts as a catalyst while fuel is converted into products and energy. The stellar CNO cycle is the classic example: C-12 is recovered while four protons become helium-4.',
+    category: 'reaction',
+    relatedTerms: ['Feedback Loop', 'Cascade'],
+    i18nKey: 'help.glossaryTerms.catalyticCycle',
+  },
+  {
+    term: 'Dimer',
+    definition: 'A molecule made of two identical atoms or units, such as H₂, N₂, O₂ and the diatomic halogens F₂, Cl₂, Br₂ and I₂. The cascade simulator\'s "Allow Dimer Formation" option applies to these naturally diatomic elements.',
+    category: 'reaction',
+    relatedTerms: ['Cascade'],
+    i18nKey: 'help.glossaryTerms.dimer',
+  },
+  {
+    term: 'NAE (Nuclear Active Environment)',
+    definition: 'Edmund Storms\' term for the special nanoscale sites in a material, such as cracks, gaps or surface features in a metal hydride, where LENR are proposed to occur, rather than throughout the bulk lattice.',
+    category: 'reaction',
+    relatedTerms: ['LENR', 'Muller Resonance'],
+    i18nKey: 'help.glossaryTerms.nae',
+  },
+  {
+    term: 'Muller Resonance',
+    definition: 'Frithjof Muller\'s model in which each element has wavelength ladders L = Z × C × 2ᴺ built from the electron (Cₑ) and proton (Cₚ) Compton wavelengths. Elements Z₁ and Z₂ resonate when Z₁ · Cₑ · 2ᴺ = Z₂ · Cₚ · 2^(N+ΔN), i.e. Z₁/Z₂ ≈ 2^ΔN / 1836.15. The resonance fixes only the octave gap ΔN; the absolute octave N is free.',
+    category: 'reaction',
+    relatedTerms: ['Compton Wavelength', 'NAE (Nuclear Active Environment)'],
+    i18nKey: 'help.glossaryTerms.mullerResonance',
+  },
+
   // Measurement units
+  {
+    term: 'Compton Wavelength',
+    definition: 'λ = h/(mc): the wavelength of a photon whose energy equals a particle\'s rest-mass energy. For the electron Cₑ ≈ 2.426 pm and for the proton Cₚ ≈ 1.321 fm; their ratio is the proton-to-electron mass ratio, ≈ 1836.15.',
+    category: 'measurement',
+    relatedTerms: ['Muller Resonance'],
+    i18nKey: 'help.glossaryTerms.comptonWavelength',
+  },
   {
     term: 'MeV',
     definition: 'Megaelectronvolt (10⁶ eV). A unit of energy commonly used in nuclear physics. 1 MeV = 1.602 × 10⁻¹³ joules. The energy released in a nuclear reaction is the Q-value, measured in MeV.',
@@ -225,3 +267,20 @@ export const GLOSSARY_CATEGORIES = {
   database: 'help.category.database',
   measurement: 'help.category.measurement',
 } as const;
+
+/**
+ * Resolve the display term/definition for a glossary entry in the active locale.
+ * Entries without an `i18nKey` fall back to their English source text.
+ */
+export function localizeGlossaryEntry(
+  entry: GlossaryEntry,
+  translate: (key: string) => string
+): { term: string; definition: string } {
+  if (!entry.i18nKey) {
+    return { term: entry.term, definition: entry.definition };
+  }
+  return {
+    term: translate(`${entry.i18nKey}.term`),
+    definition: translate(`${entry.i18nKey}.definition`),
+  };
+}

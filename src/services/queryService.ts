@@ -819,6 +819,58 @@ export function getRadioactiveDecayData(db: Database, Z: number, A: number): Dec
 }
 
 /**
+ * Primary (highest-intensity) half-life record for a nuclide from RadioNuclides
+ */
+export interface NuclideHalfLife {
+  halfLife: number | null;
+  units: string | null;
+  logHalfLife: number | null;
+  decayMode: string | null;
+}
+
+/**
+ * Batch-look up the primary half-life of each nuclide in RadioNuclides.
+ *
+ * Matches on (Z, A) rather than the element symbol: NuclidesPlus stores the
+ * hydrogen isotopes as 'H', 'D' and 'T', but RadioNuclides lists tritium under
+ * 'H' (Z=1, A=3), so a symbol-keyed lookup silently misses it.
+ *
+ * Returns a Map keyed by "Z-A" (e.g. "1-3"); nuclides without decay data
+ * (stable, e.g. D-2) are absent from the map.
+ */
+export function getNuclideHalfLives(
+  db: Database,
+  nuclides: Array<{ Z: number; A: number }>
+): Map<string, NuclideHalfLife> {
+  const halfLives = new Map<string, NuclideHalfLife>();
+  if (nuclides.length === 0) return halfLives;
+
+  const conditions = nuclides.map(() => '(Z = ? AND A = ?)').join(' OR ');
+  const params = nuclides.flatMap(n => [n.Z, n.A]);
+  const sql = `
+    SELECT Z, A, HL, Units, LHL, RDM
+    FROM RadioNuclides
+    WHERE ${conditions}
+    ORDER BY Z, A, RI DESC
+  `;
+  const results = db.exec(sql, params);
+  if (results.length === 0) return halfLives;
+
+  results[0].values.forEach((row) => {
+    const key = `${row[0]}-${row[1]}`;
+    if (halfLives.has(key)) return; // keep the highest-intensity row
+    halfLives.set(key, {
+      halfLife: row[2] as number | null,
+      units: row[3] as string | null,
+      logHalfLife: row[4] as number | null,
+      decayMode: row[5] as string | null,
+    });
+  });
+
+  return halfLives;
+}
+
+/**
  * Check if an isotope is radioactive (has decay data)
  */
 export function isRadioactive(db: Database, Z: number, A: number): boolean {
@@ -908,6 +960,9 @@ export function getElementSymbolByZ(db: Database, Z: number): string | null {
 export function getRadioactiveNuclideData(db: Database, E: string, A: number): import('../types').RadioactiveNuclideData | null {
   // First, check if this isotope exists in RadioNuclides
   // Map database columns (HL, LHL) to TypeScript properties (halfLife, logHalfLife)
+  // RadioNuclides stores hydrogen isotopes under 'H' (e.g. tritium is H-3), whereas
+  // NuclidesPlus uses the distinct symbols 'D' and 'T' — normalise before matching.
+  const lookupSymbol = E === 'D' || E === 'T' ? 'H' : E;
   const checkSql = `
     SELECT Z, RDM, HL, Units, LHL
     FROM RadioNuclides
@@ -915,7 +970,7 @@ export function getRadioactiveNuclideData(db: Database, E: string, A: number): i
     ORDER BY RI DESC
     LIMIT 1
   `;
-  const checkResults = db.exec(checkSql, [E, A]);
+  const checkResults = db.exec(checkSql, [lookupSymbol, A]);
 
   if (checkResults.length === 0 || checkResults[0].values.length === 0) {
     return null;

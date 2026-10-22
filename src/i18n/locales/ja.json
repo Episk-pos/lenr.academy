@@ -1036,7 +1036,8 @@
     "tipGroupByKeyword": "GROUP BY",
     "tipGroupByRest": "を使用",
     "tipStringsText": "文字列リテラルにはシングルクォートを使用:",
-    "tipStringsCode": "'H'"
+    "tipStringsCode": "'H'",
+    "runShortcutHint": "Ctrl+Enter（Macでは⌘+Enter）でクエリを実行します。"
   },
   "updates": {
     "appUpdateAvailable": "アプリの更新が利用可能です：{{current}} → {{available}}",
@@ -1241,7 +1242,29 @@
       "cascades": "カスケード",
       "mullerResonance": "共鳴"
     },
-    "opensPage": "開くページ：{{page}}"
+    "opensPage": "開くページ：{{page}}",
+    "glossaryTerms": {
+      "nae": {
+        "term": "NAE（Nuclear Active Environment、核活性環境）",
+        "definition": "エドマンド・ストームズによる用語で、LENR が結晶格子全体ではなく、金属水素化物の亀裂・隙間・表面構造など、物質中の特殊なナノスケールの部位で起こるとする考え方を指します。"
+      },
+      "comptonWavelength": {
+        "term": "コンプトン波長",
+        "definition": "λ = h/(mc)：エネルギーが粒子の静止質量エネルギーに等しい光子の波長。電子では Cₑ ≈ 2.426 pm、陽子では Cₚ ≈ 1.321 fm で、その比は陽子と電子の質量比 ≈ 1836.15 に等しくなります。"
+      },
+      "mullerResonance": {
+        "term": "ミュラー共鳴",
+        "definition": "フリチョフ・ミュラーのモデルで、各元素は電子（Cₑ）と陽子（Cₚ）のコンプトン波長から作られる波長のはしご L = Z × C × 2ᴺ を持ちます。元素 Z₁ と Z₂ は Z₁ · Cₑ · 2ᴺ = Z₂ · Cₚ · 2^(N+ΔN)、すなわち Z₁/Z₂ ≈ 2^ΔN / 1836.15 のときに共鳴します。共鳴で決まるのはオクターブ差 ΔN だけで、絶対オクターブ N は自由です。"
+      },
+      "catalyticCycle": {
+        "term": "触媒サイクル",
+        "definition": "初期の段階で消費された核種が後の段階で再生される閉じた反応系列で、その核種は触媒として働き、燃料は生成物とエネルギーに変換されます。恒星の CNO サイクルが代表例で、C-12 が回収される一方、4 個の陽子がヘリウム 4 になります。"
+      },
+      "dimer": {
+        "term": "二量体",
+        "definition": "H₂、N₂、O₂ や二原子ハロゲン F₂、Cl₂、Br₂、I₂ のように、同一の原子または単位 2 個からなる分子。カスケードシミュレーターの「二量体形成を許可」オプションは、これら天然で二原子分子をつくる元素に適用されます。"
+      }
+    }
   },
   "mullerResonance": {
     "title": "ミュラー共鳴エクスプローラー",
