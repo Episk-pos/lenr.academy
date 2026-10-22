@@ -445,7 +445,12 @@
     "mayBeSlow": "(kann langsam sein)",
     "showAllInTable": "Alle in Tabelle anzeigen →",
     "alreadyShowingAll": "Zeige bereits alle Ergebnisse",
-    "runQueryToView": "Führen Sie eine Abfrage aus, um {{type}}-Reaktionen anzuzeigen.",
+    "runQueryToView": "Führen Sie eine Abfrage aus, um {{type}} anzuzeigen.",
+    "runQueryType": {
+      "fusion": "Fusionsreaktionen",
+      "fission": "Spaltungsreaktionen",
+      "twoToTwo": "Zwei-zu-Zwei-Reaktionen"
+    },
     "noMatchingReactions": "Keine Reaktionen entsprechen dem ausgewählten Filter.",
     "elementExistsInFull": "Element {{element}} existiert im vollständigen Datensatz, aber nicht in den begrenzten Ergebnissen.",
     "nuclidesHeading": "In Ergebnissen vorkommende Nuklide",
@@ -723,7 +728,8 @@
       "minFrequency": "Mindesthäufigkeit: {{count}}×",
       "showOnlyFeedback": "Nur Rückkopplungsschleifen anzeigen",
       "showing": "Zeige {{shown}} von {{total}} Pfaden",
-      "topNByFrequency": "Top {{n}} nach {{weighted}}Häufigkeit",
+      "topNByFrequency": "Top {{n}} nach Häufigkeit",
+      "topNByWeightedFrequency": "Top {{n}} nach gewichteter Häufigkeit",
       "weightedView": "Gewichtete Ansicht",
       "filtersApplied": "Angewendete Filter",
       "feedbackLoopsOnly": "Nur Rückkopplungsschleifen ({{count}} Treffer)",

@@ -14,7 +14,7 @@ import {
  * - Language selection modal on first visit
  * - Language switcher in the header
  * - Translation persistence across page reloads
- * - Multiple language support (en, ja, zh, ru, de, fr, es)
+ * - Multiple language support (en, de, es, fr, ja, ru, zh, it, pt, uk, pl, ko, hi)
  * - Cascade simulation tab translations
  */
 
@@ -389,7 +389,13 @@ test.describe('All Supported Languages', () => {
     { code: 'ru', name: 'Русский', navItem: /Главная|Реакции синтеза/ },
     { code: 'de', name: 'Deutsch', navItem: /Startseite|Fusionsreaktionen/ },
     { code: 'fr', name: 'Français', navItem: /Accueil|Réactions de fusion/ },
-    { code: 'es', name: 'Español', navItem: /Inicio|Reacciones de fusión/ }
+    { code: 'es', name: 'Español', navItem: /Inicio|Reacciones de fusión/ },
+    { code: 'it', name: 'Italiano', navItem: /Reazioni di fusione/ }, // nav "Home" is identical to English
+    { code: 'pt', name: 'Português (Brasil)', navItem: /Início|Reações de Fusão/ },
+    { code: 'uk', name: 'Українська', navItem: /Головна|Реакції синтезу/ },
+    { code: 'pl', name: 'Polski', navItem: /Strona główna|Reakcje syntezy/ },
+    { code: 'ko', name: '한국어', navItem: /홈|핵융합 반응/ },
+    { code: 'hi', name: 'हिन्दी', navItem: /होम|संलयन/ }
   ];
 
   for (const lang of languages) {
@@ -523,7 +529,7 @@ test.describe('Desktop Language Dropdown Positioning', () => {
   test('should open language dropdown above the button in expanded sidebar', async ({ page }) => {
     // Find the language switcher in the desktop sidebar
     // The sidebar uses hidden lg:fixed lg:flex classes
-    const languageSwitcher = page.locator('button').filter({ hasText: /English|日本語|中文|Deutsch|Français|Español|Русский/ }).first();
+    const languageSwitcher = page.locator('button').filter({ hasText: /English|日本語|中文|Deutsch|Français|Español|Русский|Italiano|Português|Українська|Polski|한국어|हिन्दी/ }).first();
     await expect(languageSwitcher).toBeVisible();
 
     // Get button position before clicking
@@ -592,7 +598,7 @@ test.describe('Desktop Language Dropdown Positioning', () => {
 
   test('should keep dropdown visible within viewport on desktop', async ({ page }) => {
     // Find and click the language switcher
-    const languageSwitcher = page.locator('button').filter({ hasText: /English|日本語|中文|Deutsch|Français|Español|Русский/ }).first();
+    const languageSwitcher = page.locator('button').filter({ hasText: /English|日本語|中文|Deutsch|Français|Español|Русский|Italiano|Português|Українська|Polski|한국어|हिन्दी/ }).first();
     await expect(languageSwitcher).toBeVisible();
     await languageSwitcher.click();
 

@@ -445,7 +445,12 @@
     "mayBeSlow": "(may be slow)",
     "showAllInTable": "Show All in Table →",
     "alreadyShowingAll": "Already showing all results",
-    "runQueryToView": "Run a query to view {{type}} reactions.",
+    "runQueryToView": "Run a query to view {{type}}.",
+    "runQueryType": {
+      "fusion": "fusion reactions",
+      "fission": "fission reactions",
+      "twoToTwo": "two-to-two reactions"
+    },
     "noMatchingReactions": "No reactions match the selected filter.",
     "elementExistsInFull": "Element {{element}} exists in the full dataset but not in the limited results.",
     "nuclidesHeading": "Nuclides Appearing in Results",
@@ -723,7 +728,8 @@
       "minFrequency": "Minimum Frequency: {{count}}×",
       "showOnlyFeedback": "Show only feedback loops",
       "showing": "Showing {{shown}} of {{total}} total pathways",
-      "topNByFrequency": "top {{n}} by {{weighted}}frequency",
+      "topNByFrequency": "top {{n}} by frequency",
+      "topNByWeightedFrequency": "top {{n}} by weighted frequency",
       "weightedView": "Weighted view",
       "filtersApplied": "Filters applied",
       "feedbackLoopsOnly": "Feedback loops only ({{count}} matched)",

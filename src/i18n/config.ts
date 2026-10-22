@@ -10,6 +10,12 @@ import zh from './locales/zh.json'
 import de from './locales/de.json'
 import fr from './locales/fr.json'
 import es from './locales/es.json'
+import it from './locales/it.json'
+import pt from './locales/pt.json'
+import uk from './locales/uk.json'
+import pl from './locales/pl.json'
+import ko from './locales/ko.json'
+import hi from './locales/hi.json'
 
 export const SUPPORTED_LANGUAGES = {
   en: { name: 'English', nativeName: 'English', flag: '🇬🇧' },
@@ -19,6 +25,12 @@ export const SUPPORTED_LANGUAGES = {
   de: { name: 'German', nativeName: 'Deutsch', flag: '🇩🇪' },
   fr: { name: 'French', nativeName: 'Français', flag: '🇫🇷' },
   es: { name: 'Spanish', nativeName: 'Español', flag: '🇪🇸' },
+  it: { name: 'Italian', nativeName: 'Italiano', flag: '🇮🇹' },
+  pt: { name: 'Portuguese (Brazil)', nativeName: 'Português (Brasil)', flag: '🇧🇷' },
+  uk: { name: 'Ukrainian', nativeName: 'Українська', flag: '🇺🇦' },
+  pl: { name: 'Polish', nativeName: 'Polski', flag: '🇵🇱' },
+  ko: { name: 'Korean', nativeName: '한국어', flag: '🇰🇷' },
+  hi: { name: 'Hindi', nativeName: 'हिन्दी', flag: '🇮🇳' },
 } as const
 
 export type SupportedLanguage = keyof typeof SUPPORTED_LANGUAGES
@@ -50,8 +62,34 @@ const languageMap: Record<string, SupportedLanguage> = {
   'es-ES': 'es',
   'es-MX': 'es',
   'es-AR': 'es',
+  'it': 'it',
+  'it-IT': 'it',
+  'it-CH': 'it',
+  'pt': 'pt',
+  'pt-BR': 'pt',
+  'pt-PT': 'pt',
+  'uk': 'uk',
+  'uk-UA': 'uk',
+  'pl': 'pl',
+  'pl-PL': 'pl',
+  'ko': 'ko',
+  'ko-KR': 'ko',
+  'hi': 'hi',
+  'hi-IN': 'hi',
 }
 
+// Keep <html lang> in sync with the active language (screen readers, hyphenation,
+// and script-appropriate font fallback). Registered before init so the initial
+// languageChanged event emitted during init is captured too.
+i18n.on('languageChanged', (lng) => {
+  if (typeof document !== 'undefined' && lng) {
+    document.documentElement.lang = lng
+  }
+})
+
+// Region-coded browser languages (pt-BR, zh-TW, ko-KR, ...) need no explicit
+// mapping: with supportedLngs set, i18next's getBestMatchFromCodes falls back to
+// the language-only code (see detection.test.ts).
 i18n
   .use(LanguageDetector)
   .use(initReactI18next)
@@ -64,6 +102,12 @@ i18n
       de: { translation: de },
       fr: { translation: fr },
       es: { translation: es },
+      it: { translation: it },
+      pt: { translation: pt },
+      uk: { translation: uk },
+      pl: { translation: pl },
+      ko: { translation: ko },
+      hi: { translation: hi },
     },
     fallbackLng: DEFAULT_LANGUAGE,
     supportedLngs: Object.keys(SUPPORTED_LANGUAGES) as SupportedLanguage[],
