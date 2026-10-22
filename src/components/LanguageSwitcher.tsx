@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { Globe, Check, ChevronDown } from 'lucide-react'
 import { useLanguage } from '../contexts/LanguageContext'
 import type { SupportedLanguage } from '../i18n/config'
+import { computeDropdownPosition } from '../utils/dropdownPosition'
 
 interface LanguageSwitcherProps {
   className?: string
@@ -19,25 +20,17 @@ export default function LanguageSwitcher({ className = '', compact = false, posi
   const dropdownRef = useRef<HTMLDivElement>(null)
   const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0, width: 0 })
 
-  // Update dropdown position when opening
+  // Update dropdown position when opening (direction-aware, clamped to the viewport)
   useEffect(() => {
     if (isOpen && buttonRef.current) {
-      const rect = buttonRef.current.getBoundingClientRect()
-      if (position === 'below') {
-        // Mobile header: position below button, aligned to right edge
-        setDropdownPosition({
-          top: rect.bottom + 8, // Position below button with small gap
-          left: rect.right - Math.max(rect.width, 200), // Align right edges
-          width: Math.max(rect.width, 200) // Minimum width of 200px
-        })
-      } else {
-        // Desktop sidebar: position above button, left-aligned
-        setDropdownPosition({
-          top: rect.top - 8, // Position above button with small gap
-          left: rect.left,
-          width: Math.max(rect.width, 200) // Minimum width of 200px
-        })
-      }
+      setDropdownPosition(
+        computeDropdownPosition(
+          buttonRef.current.getBoundingClientRect(),
+          position,
+          document.documentElement.dir === 'rtl',
+          window.innerWidth,
+        )
+      )
     }
   }, [isOpen, position])
 
