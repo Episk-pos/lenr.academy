@@ -369,3 +369,41 @@ export async function verifyBothDetailsCards(
     }
   }
 }
+
+/**
+ * "Nuclides Appearing in Results" section on the reaction query pages
+ * (element chips + isotope cards for the displayed element).
+ */
+export function resultNuclidesSection(page: Page) {
+  return page.getByTestId('result-nuclides-by-element');
+}
+
+/** Element chip in the "Nuclides Appearing in Results" section */
+export function resultElementChip(page: Page, element: string) {
+  return resultNuclidesSection(page).locator(`[data-testid="element-chip"][data-element="${element}"]`);
+}
+
+/** All isotope cards currently displayed in the "Nuclides Appearing in Results" section */
+export function resultNuclideCards(page: Page) {
+  return resultNuclidesSection(page).getByTestId('isotope-card');
+}
+
+/**
+ * Isotope card for a nuclide (e.g. "Zr-94") in the results section. Cards are
+ * only rendered for the displayed element, so if the card is not present this
+ * clicks the element chip first (which pins that element, like the heatmap).
+ */
+export async function getResultNuclideCard(page: Page, nuclideId: string) {
+  const section = resultNuclidesSection(page);
+  await section.waitFor({ state: 'visible', timeout: 10000 });
+  const card = section.locator(`[data-testid="isotope-card"][data-nuclide="${nuclideId}"]`);
+  if (await card.count() === 0) {
+    const element = nuclideId.split('-')[0];
+    const chip = resultElementChip(page, element);
+    await chip.scrollIntoViewIfNeeded();
+    await chip.click();
+    await card.waitFor({ state: 'visible', timeout: 5000 });
+  }
+  await card.scrollIntoViewIfNeeded();
+  return card;
+}

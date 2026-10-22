@@ -17,6 +17,7 @@ import SortableTable, { TableColumn } from '../components/SortableTable'
 import FilterPanel, { FilterConfig, FilterPreset } from '../components/FilterPanel'
 import DatabaseLoadingCard from '../components/DatabaseLoadingCard'
 import Tooltip from '../components/Tooltip'
+import IsotopeCard from '../components/IsotopeCard'
 import DecayChainDiagram from '../components/DecayChainDiagram'
 import SegreChartDiagram, { type ChartNuclide } from '../components/SegreChartDiagram'
 import ColumnToggle from '../components/ColumnToggle'
@@ -2000,64 +2001,20 @@ export default function ShowElementData() {
                         : null
 
                       return (
-                        <Tooltip
+                        <IsotopeCard
                           key={`${E}-${A}-${idx}`}
-                          content={!isFull ? "Limited data - radioactive decay only" : undefined}
-                        >
-                          <button
-                            onClick={() => handleNuclideClick(displayNuclide)}
-                            className={`
-                              p-3 rounded-lg border-2 transition-all duration-150 w-full h-full min-h-[100px]
-                              ${isSelected
-                                ? 'bg-blue-500 text-white border-blue-600 ring-2 ring-blue-400 shadow-md'
-                                : isFull
-                                  ? 'bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600 hover:bg-blue-50 dark:hover:bg-blue-900/30 hover:border-blue-400'
-                                  : 'bg-amber-50 dark:bg-amber-900/10 text-gray-900 dark:text-gray-100 border-amber-300 dark:border-amber-700 hover:bg-amber-100 dark:hover:bg-amber-900/20 hover:border-amber-400'
-                              }
-                            `}
-                          >
-                            <div className="text-center">
-                              <div className="text-lg font-bold">{E}-{A}</div>
-                              <div className="text-xs opacity-75">Z={Z}</div>
-                              <div className="mt-1 flex flex-wrap gap-1 justify-center">
-                                {displayNuclide.type === 'full' ? (
-                                  <>
-                                    <span className={`px-1.5 py-0.5 rounded-full text-xs ${
-                                      displayNuclide.data.nBorF === 'b'
-                                        ? isSelected ? 'bg-blue-600 text-blue-100' : 'bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300'
-                                        : isSelected ? 'bg-orange-600 text-orange-100' : 'bg-orange-100 dark:bg-orange-900/50 text-orange-700 dark:text-orange-300'
-                                    }`}>
-                                      {displayNuclide.data.nBorF === 'b' ? 'B' : 'F'}
-                                    </span>
-                                    {isStable && (
-                                      <span className={`px-1.5 py-0.5 rounded-full text-xs ${
-                                        isSelected ? 'bg-green-600 text-green-100' : 'bg-green-100 dark:bg-green-900/50 text-green-700 dark:text-green-300'
-                                      }`}>
-                                        Stable
-                                      </span>
-                                    )}
-                                  </>
-                                ) : (
-                                  <>
-                                    <span className={`px-1.5 py-0.5 rounded-full text-xs flex items-center gap-0.5 ${
-                                      isSelected ? 'bg-amber-600 text-amber-100' : 'bg-amber-100 dark:bg-amber-900/50 text-amber-700 dark:text-amber-300'
-                                    }`}>
-                                      <Radiation className="w-2.5 h-2.5" />
-                                      {displayNuclide.data.RDM}
-                                    </span>
-                                    {halfLifeStr && (
-                                      <span className={`px-1.5 py-0.5 rounded-full text-xs ${
-                                        isSelected ? 'bg-gray-600 text-gray-100' : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300'
-                                      }`}>
-                                        {halfLifeStr}
-                                      </span>
-                                    )}
-                                  </>
-                                )}
-                              </div>
-                            </div>
-                          </button>
-                        </Tooltip>
+                          E={E}
+                          A={A}
+                          Z={Z}
+                          nBorF={displayNuclide.type === 'full' ? displayNuclide.data.nBorF : undefined}
+                          stable={isStable}
+                          limitedData={displayNuclide.type === 'full' ? undefined : {
+                            decayMode: displayNuclide.data.RDM,
+                            halfLife: halfLifeStr,
+                          }}
+                          selected={isSelected}
+                          onClick={() => handleNuclideClick(displayNuclide)}
+                        />
                       )
                     })}
                   </div>
