@@ -307,7 +307,7 @@ export default function Layout({ children }: LayoutProps) {
           <div className={`flex items-center py-6 border-b dark:border-gray-700 overflow-hidden transition-all duration-300 ${desktopSidebarCollapsed ? 'px-4 justify-center' : 'px-5 justify-start gap-2'}`}>
             <Atom className={`text-primary-600 flex-shrink-0 transition-all duration-300 ${desktopSidebarCollapsed ? 'w-6 h-6' : 'w-8 h-8'}`} />
             <div className={`whitespace-nowrap transition-all duration-150 overflow-hidden ${desktopSidebarCollapsed ? 'opacity-0 w-0 delay-0' : 'opacity-100 w-auto delay-150'}`}>
-              <h1 className="text-xl font-bold text-gray-900 dark:text-white">{t('brand.appName')}</h1>
+              <p className="text-xl font-bold text-gray-900 dark:text-white whitespace-nowrap">{t('brand.appName')}</p>
             </div>
           </div>
           <nav className="flex-1 min-h-0 overflow-y-auto p-4">
