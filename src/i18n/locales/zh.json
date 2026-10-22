@@ -156,7 +156,7 @@
     },
     "aboutData": {
       "title": "关于数据",
-      "description": "反应数据库来自<strong>亚历山大·帕尔霍莫夫博士</strong>2018年对280种稳定核素的分析，识别出<strong>1,389种聚变</strong>、<strong>817种裂变</strong>和<strong>516,789种二对二</strong>放热反应 — 低能核嬗变的热力学有利途径。最初由R.W. Greenyer和P.W. Power为马丁·弗莱施曼纪念项目开发为<nanosoftLink>Nanosoft软件包</nanosoftLink>。",
+      "description": "反应数据库来自<strong>亚历山大·帕尔霍莫夫博士</strong>2018年对稳定核素之间放热核反应的分析 — 低能核嬗变的热力学有利途径。数据库包含<strong>3,921种聚变</strong>、<strong>1,733种裂变</strong>和<strong>1,215,374种二对二</strong>反应（含涉及中微子的反应）；其中不涉及中微子的有聚变1,505种、裂变818种、二对二518,657种。最初由R.W. Greenyer和P.W. Power为马丁·弗莱施曼纪念项目开发为<nanosoftLink>Nanosoft软件包</nanosoftLink>。",
       "visitNanosoft": "访问原始Nanosoft软件包"
     },
     "openSource": {
@@ -904,7 +904,10 @@
     "fissionAllDescription": "所有放热裂变反应，包括中微子变体",
     "twoToTwoAllDescription": "所有放热2-2嬗变反应",
     "nuclidesPlusDescription": "324种稳定和长寿命核素的扩展表",
-    "elementsPlusDescription": "元素周期表中的综合元素特性",
+    "elementPropertiesPlusDescription": "元素周期表中的综合元素特性",
+    "atomicRadiiDescription": "每种元素的经验、计算、范德华和共价原子半径（pm）",
+    "radioNuclidesDescription": "放射性衰变数据：衰变模式、半衰期、辐射类型、能量（keV）和强度",
+    "elementsPlusDescription": "列出每种元素的原子序数、符号和名称的视图",
     "fieldZ": "Z",
     "fieldZDescription": "原子序数（质子数）",
     "fieldA": "A",
@@ -938,7 +941,7 @@
     "noResults": "查询成功执行，但未返回结果。",
     "exampleQueries": "查询示例",
     "availableTables": "可用表格",
-    "fusionAllShort": "聚变反应 (E1 + E → E)",
+    "fusionAllShort": "聚变反应 (E1 + E2 → E)",
     "fissionAllShort": "裂变反应 (E → E1 + E2)",
     "twoToTwoAllShort": "2对2反应 (E1 + E2 → E3 + E4)",
     "nuclidesPlusShort": "核素属性",
@@ -956,8 +959,8 @@
     "tipGroupByText": "聚合时使用",
     "tipGroupByKeyword": "GROUP BY",
     "tipGroupByRest": "",
-    "tipStringsText": "字符串比较使用双引号：",
-    "tipStringsCode": "\"H\""
+    "tipStringsText": "字符串字面量使用单引号：",
+    "tipStringsCode": "'H'"
   },
   "updates": {
     "appUpdateAvailable": "应用更新可用：{{current}} → {{available}}",

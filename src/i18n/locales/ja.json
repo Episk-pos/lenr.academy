@@ -156,7 +156,7 @@
     },
     "aboutData": {
       "title": "データについて",
-      "description": "反応データベースは、<strong>アレクサンダー・パルホモフ博士</strong>による2018年の280安定核種の解析に基づき、<strong>1,389の核融合</strong>、<strong>817の核分裂</strong>、<strong>516,789の2対2</strong>発熱反応を特定しています — 低エネルギーでの核変換の熱力学的に有利な経路です。もとはマーティン・フライシュマン記念プロジェクトのためにR.W. GreenyerとP.W. Powerが<nanosoftLink>Nanosoftパッケージ</nanosoftLink>として開発しました。",
+      "description": "反応データベースは、<strong>アレクサンダー・パルホモフ博士</strong>による2018年の安定核種間の発熱核反応の解析に基づいています — 低エネルギーでの核変換の熱力学的に有利な経路です。ニュートリノが関与する反応を含め、<strong>3,921の核融合</strong>、<strong>1,733の核分裂</strong>、<strong>1,215,374の2対2</strong>反応を収録しており、そのうちニュートリノが関与しない反応は核融合1,505、核分裂818、2対2が518,657です。もとはマーティン・フライシュマン記念プロジェクトのためにR.W. GreenyerとP.W. Powerが<nanosoftLink>Nanosoftパッケージ</nanosoftLink>として開発しました。",
       "visitNanosoft": "オリジナルのNanosoftパッケージを訪問"
     },
     "openSource": {
@@ -904,7 +904,10 @@
     "fissionAllDescription": "ニュートリノ変種を含む全発熱核分裂反応",
     "twoToTwoAllDescription": "全発熱2-2核変換反応",
     "nuclidesPlusDescription": "324の安定・長寿命核種の拡張テーブル",
-    "elementsPlusDescription": "周期表からの包括的な元素特性",
+    "elementPropertiesPlusDescription": "周期表からの包括的な元素特性",
+    "atomicRadiiDescription": "各元素の経験的・計算・ファンデルワールス・共有結合原子半径（pm）",
+    "radioNuclidesDescription": "放射性崩壊データ：崩壊モード、半減期、放射線の種類、エネルギー（keV）、強度",
+    "elementsPlusDescription": "各元素の原子番号、元素記号、名称を一覧表示するビュー",
     "fieldZ": "Z",
     "fieldZDescription": "原子番号（陽子数）",
     "fieldA": "A",
@@ -938,7 +941,7 @@
     "noResults": "クエリは正常に実行されましたが、結果がありませんでした。",
     "exampleQueries": "クエリ例",
     "availableTables": "利用可能なテーブル",
-    "fusionAllShort": "核融合反応 (E1 + E → E)",
+    "fusionAllShort": "核融合反応 (E1 + E2 → E)",
     "fissionAllShort": "核分裂反応 (E → E1 + E2)",
     "twoToTwoAllShort": "2対2反応 (E1 + E2 → E3 + E4)",
     "nuclidesPlusShort": "核種特性",
@@ -956,8 +959,8 @@
     "tipGroupByText": "集計には",
     "tipGroupByKeyword": "GROUP BY",
     "tipGroupByRest": "を使用",
-    "tipStringsText": "文字列比較にはダブルクォートを使用:",
-    "tipStringsCode": "\"H\""
+    "tipStringsText": "文字列リテラルにはシングルクォートを使用:",
+    "tipStringsCode": "'H'"
   },
   "updates": {
     "appUpdateAvailable": "アプリの更新が利用可能です：{{current}} → {{available}}",

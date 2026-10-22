@@ -19,9 +19,9 @@ A modern web application for exploring Low Energy Nuclear Reactions (LENR) and c
 
 This application provides interactive tools for querying and analyzing a SQLite nuclear reaction database originally compiled by Dr. Alexander Parkhomov. The Parkhomov tables contain:
 
-- **1,389 fusion reactions** - combining lighter nuclei
-- **817 fission reactions** - splitting heavier nuclei
-- **516,789 two-to-two reactions** - transforming pairs of nuclides
+- **3,921 fusion reactions** (1,505 without neutrinos) - combining lighter nuclei
+- **1,733 fission reactions** (818 without neutrinos) - splitting heavier nuclei
+- **1,215,374 two-to-two reactions** (518,657 without neutrinos) - transforming pairs of nuclides
 
 All reactions are exothermic (energy-producing) and represent thermodynamically favorable pathways for nuclear transmutation.
 

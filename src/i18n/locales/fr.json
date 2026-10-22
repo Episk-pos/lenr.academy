@@ -156,7 +156,7 @@
     },
     "aboutData": {
       "title": "À propos des données",
-      "description": "La base de données de réactions provient de l'analyse de 2018 du <strong>Dr Alexander Parkhomov</strong> portant sur 280 nucléides stables, identifiant <strong>1 389 réactions de fusion</strong>, <strong>817 de fission</strong> et <strong>516 789 deux-à-deux</strong> exothermiques — des voies thermodynamiquement favorables pour la transmutation nucléaire à basse énergie. Développé à l'origine sous le nom de <nanosoftLink>Package Nanosoft</nanosoftLink> par R.W. Greenyer et P.W. Power pour le Projet Mémorial Martin Fleischmann.",
+      "description": "La base de données de réactions provient de l'analyse de 2018 du <strong>Dr Alexander Parkhomov</strong> portant sur les réactions nucléaires exothermiques entre nucléides stables — des voies thermodynamiquement favorables pour la transmutation nucléaire à basse énergie. Elle contient <strong>3 921 réactions de fusion</strong>, <strong>1 733 de fission</strong> et <strong>1 215 374 deux-à-deux</strong>, y compris les réactions impliquant des neutrinos ; parmi elles, 1 505 de fusion, 818 de fission et 518 657 deux-à-deux n'impliquent aucun neutrino. Développé à l'origine sous le nom de <nanosoftLink>Package Nanosoft</nanosoftLink> par R.W. Greenyer et P.W. Power pour le Projet Mémorial Martin Fleischmann.",
       "visitNanosoft": "Visiter le Package Nanosoft original"
     },
     "openSource": {
@@ -904,7 +904,10 @@
     "fissionAllDescription": "Toutes les réactions de fission exothermiques, y compris les variantes avec neutrinos",
     "twoToTwoAllDescription": "Toutes les réactions de transmutation 2-2 exothermiques",
     "nuclidesPlusDescription": "Table étendue de 324 nucléides stables et à longue durée de vie",
-    "elementsPlusDescription": "Propriétés complètes des éléments du tableau périodique",
+    "elementPropertiesPlusDescription": "Propriétés complètes des éléments du tableau périodique",
+    "atomicRadiiDescription": "Rayons atomiques empiriques, calculés, de van der Waals et covalents (pm) de chaque élément",
+    "radioNuclidesDescription": "Données de désintégration radioactive : modes de désintégration, demi-vies, types de rayonnement, énergies (keV) et intensités",
+    "elementsPlusDescription": "Vue listant le numéro atomique, le symbole et le nom de chaque élément",
     "fieldZ": "Z",
     "fieldZDescription": "Numéro atomique (nombre de protons)",
     "fieldA": "A",
@@ -938,7 +941,7 @@
     "noResults": "La requête a été exécutée avec succès mais n'a retourné aucun résultat.",
     "exampleQueries": "Exemples de requêtes",
     "availableTables": "Tables disponibles",
-    "fusionAllShort": "Réactions de fusion (E1 + E → E)",
+    "fusionAllShort": "Réactions de fusion (E1 + E2 → E)",
     "fissionAllShort": "Réactions de fission (E → E1 + E2)",
     "twoToTwoAllShort": "Réactions 2-à-2 (E1 + E2 → E3 + E4)",
     "nuclidesPlusShort": "Propriétés des nucléides",
@@ -956,8 +959,8 @@
     "tipGroupByText": "Utilisez",
     "tipGroupByKeyword": "GROUP BY",
     "tipGroupByRest": "pour les agrégations",
-    "tipStringsText": "Les comparaisons de chaînes utilisent des guillemets doubles :",
-    "tipStringsCode": "\"H\""
+    "tipStringsText": "Les chaînes littérales utilisent des guillemets simples :",
+    "tipStringsCode": "'H'"
   },
   "updates": {
     "appUpdateAvailable": "Mise à jour disponible : {{current}} → {{available}}",

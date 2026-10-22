@@ -156,7 +156,7 @@
     },
     "aboutData": {
       "title": "Sobre los datos",
-      "description": "La base de datos de reacciones proviene del análisis de 2018 de <strong>Dr. Alexander Parkhomov</strong> sobre 280 nucleidos estables, identificando <strong>1,389 reacciones de fusión</strong>, <strong>817 de fisión</strong> y <strong>516,789 dos a dos</strong> exotérmicas — vías termodinámicamente favorables para la transmutación nuclear a bajas energías. Originalmente desarrollado como el <nanosoftLink>Paquete Nanosoft</nanosoftLink> por R.W. Greenyer y P.W. Power para el Proyecto Memorial Martin Fleischmann.",
+      "description": "La base de datos de reacciones proviene del análisis de 2018 de <strong>Dr. Alexander Parkhomov</strong> sobre reacciones nucleares exotérmicas entre nucleidos estables — vías termodinámicamente favorables para la transmutación nuclear a bajas energías. Contiene <strong>3.921 reacciones de fusión</strong>, <strong>1.733 de fisión</strong> y <strong>1.215.374 dos a dos</strong>, incluidas las reacciones con participación de neutrinos; de ellas, 1.505 de fusión, 818 de fisión y 518.657 dos a dos no involucran neutrinos. Originalmente desarrollado como el <nanosoftLink>Paquete Nanosoft</nanosoftLink> por R.W. Greenyer y P.W. Power para el Proyecto Memorial Martin Fleischmann.",
       "visitNanosoft": "Visitar el paquete Nanosoft original"
     },
     "openSource": {
@@ -904,7 +904,10 @@
     "fissionAllDescription": "Todas las reacciones de fisión exotérmicas, incluidas variantes con neutrinos",
     "twoToTwoAllDescription": "Todas las reacciones de transmutación 2-2 exotérmicas",
     "nuclidesPlusDescription": "Tabla extendida de 324 nucleidos estables y de larga vida",
-    "elementsPlusDescription": "Propiedades completas de elementos de la tabla periódica",
+    "elementPropertiesPlusDescription": "Propiedades completas de elementos de la tabla periódica",
+    "atomicRadiiDescription": "Radios atómicos empíricos, calculados, de van der Waals y covalentes (pm) de cada elemento",
+    "radioNuclidesDescription": "Datos de desintegración radiactiva: modos de desintegración, semividas, tipos de radiación, energías (keV) e intensidades",
+    "elementsPlusDescription": "Vista que enumera el número atómico, el símbolo y el nombre de cada elemento",
     "fieldZ": "Z",
     "fieldZDescription": "Número atómico (número de protones)",
     "fieldA": "A",
@@ -938,7 +941,7 @@
     "noResults": "La consulta se ejecutó correctamente pero no devolvió resultados.",
     "exampleQueries": "Consultas de ejemplo",
     "availableTables": "Tablas disponibles",
-    "fusionAllShort": "Reacciones de fusión (E1 + E → E)",
+    "fusionAllShort": "Reacciones de fusión (E1 + E2 → E)",
     "fissionAllShort": "Reacciones de fisión (E → E1 + E2)",
     "twoToTwoAllShort": "Reacciones 2-a-2 (E1 + E2 → E3 + E4)",
     "nuclidesPlusShort": "Propiedades de nucleidos",
@@ -956,8 +959,8 @@
     "tipGroupByText": "Use",
     "tipGroupByKeyword": "GROUP BY",
     "tipGroupByRest": "para agregaciones",
-    "tipStringsText": "Las comparaciones de cadenas usan comillas dobles:",
-    "tipStringsCode": "\"H\""
+    "tipStringsText": "Los literales de cadena usan comillas simples:",
+    "tipStringsCode": "'H'"
   },
   "updates": {
     "appUpdateAvailable": "Actualización disponible: {{current}} → {{available}}",

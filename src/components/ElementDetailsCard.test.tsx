@@ -22,9 +22,9 @@ const mockElement: Element = {
   MaxIonization: 7902.5,
   Melting: 1811.0,
   Boiling: 3134.0,
-  SpecHeat: 0.449,
+  SpecHeat: 449, // DB units: J/(kg·K)
   ThermConduct: 80.4,
-  STPDensity: 7.874,
+  STPDensity: 7874, // DB units: kg/m³
   MolarVolume: 7.09,
   ElectConduct: 10.0,
   MagType: 'Ferromagnetic',
@@ -82,12 +82,22 @@ describe('ElementDetailsCard', () => {
     renderWithRouter(<ElementDetailsCard element={mockElement} />);
     expect(screen.getByText(/1811.00 K/)).toBeInTheDocument(); // Melting
     expect(screen.getByText(/3134.00 K/)).toBeInTheDocument(); // Boiling
+    // SpecHeat is stored in J/(kg·K); displayed in J/(g·K)
+    expect(screen.getByText('0.449 J/(g·K)')).toBeInTheDocument();
   });
 
   it('renders physical properties', () => {
     renderWithRouter(<ElementDetailsCard element={mockElement} />);
-    expect(screen.getByText(/7.874 g\/cm/)).toBeInTheDocument(); // Density
+    // STPDensity is stored in kg/m³; displayed in g/cm³
+    expect(screen.getByText('7.874 g/cm³')).toBeInTheDocument(); // Density
     expect(screen.getByText('Ferromagnetic')).toBeInTheDocument(); // MagType
+  });
+
+  it('renders gas density in g/L', () => {
+    // Hydrogen: STPDensity 0.0899 kg/m³ == 0.0899 g/L
+    renderWithRouter(<ElementDetailsCard element={{ ...mockElement, STPDensity: 0.0899, SpecHeat: 14300 }} />);
+    expect(screen.getByText('0.0899 g/L')).toBeInTheDocument();
+    expect(screen.getByText('14.300 J/(g·K)')).toBeInTheDocument();
   });
 
   it('renders close button when onClose provided', () => {

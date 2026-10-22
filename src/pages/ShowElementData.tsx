@@ -39,7 +39,7 @@ import RussellChartDiagram from '../components/RussellChartDiagram'
 import RussellWaveDiagram from '../components/RussellWaveDiagram'
 import RussellChart3D from '../components/RussellChart3D'
 import { RUSSELL_COLORS, getPredictedElements } from '../constants/russellElements'
-import { expandHalfLifeUnit, normalizeElementSymbol } from '../utils/formatUtils'
+import { expandHalfLifeUnit, normalizeElementSymbol, formatDensity, formatSpecificHeat, densityToGPerCm3 } from '../utils/formatUtils'
 import { filterDataBySearch, SearchMetadata } from '../utils/searchUtils'
 import { RADIATION_TYPE_INFO } from '../constants/radiationTypes'
 import { SPECIAL_PARTICLE_IDS, SPECIAL_PARTICLES_BY_ID } from '../constants/specialParticles'
@@ -334,10 +334,10 @@ export default function ShowElementData() {
 
     // Density range
     if (elementsFilters.density?.min != null) {
-      result = result.filter(el => el.STPDensity != null && el.STPDensity >= elementsFilters.density.min)
+      result = result.filter(el => el.STPDensity != null && densityToGPerCm3(el.STPDensity) >= elementsFilters.density.min)
     }
     if (elementsFilters.density?.max != null) {
-      result = result.filter(el => el.STPDensity != null && el.STPDensity <= elementsFilters.density.max)
+      result = result.filter(el => el.STPDensity != null && densityToGPerCm3(el.STPDensity) <= elementsFilters.density.max)
     }
 
     // Apply search filter (after other filters, before pagination)
@@ -1233,7 +1233,7 @@ export default function ShowElementData() {
     },
     {
       key: 'density',
-      label: `${t('elements.densitySTP')}`,
+      label: `${t('elements.densitySTP')} (g/cm³)`,
       type: 'range',
       min: 0,
       max: 25,
@@ -1487,7 +1487,7 @@ export default function ShowElementData() {
       key: 'STPDensity',
       label: 'Density (g/cm³)',
       sortable: true,
-      render: (val) => val != null ? Number(val).toFixed(3) : '-'
+      render: (val) => val != null ? Number(densityToGPerCm3(Number(val)).toPrecision(4)).toString() : '-'
     }
   ], [])
 
@@ -1817,7 +1817,7 @@ export default function ShowElementData() {
                     {typeof element.SpecHeat === 'number' && !isNaN(element.SpecHeat) && (
                       <div className="flex justify-between">
                         <dt className="text-gray-600 dark:text-gray-400">{t('elements.specificHeat')}:</dt>
-                        <dd className="font-medium text-gray-900 dark:text-gray-100">{element.SpecHeat.toFixed(2)} J/(g·K)</dd>
+                        <dd className="font-medium text-gray-900 dark:text-gray-100">{formatSpecificHeat(element.SpecHeat)}</dd>
                       </div>
                     )}
                     {typeof element.ThermConduct === 'number' && !isNaN(element.ThermConduct) && (
@@ -1835,7 +1835,7 @@ export default function ShowElementData() {
                     {typeof element.STPDensity === 'number' && !isNaN(element.STPDensity) && (
                       <div className="flex justify-between">
                         <dt className="text-gray-600 dark:text-gray-400">{t('elements.densitySTP')}:</dt>
-                        <dd className="font-medium text-gray-900 dark:text-gray-100">{element.STPDensity.toFixed(3)} g/cm³</dd>
+                        <dd className="font-medium text-gray-900 dark:text-gray-100">{formatDensity(element.STPDensity)}</dd>
                       </div>
                     )}
                     {typeof element.MolarVolume === 'number' && !isNaN(element.MolarVolume) && (
@@ -2420,7 +2420,7 @@ export default function ShowElementData() {
                       {typeof element.SpecHeat === 'number' && !isNaN(element.SpecHeat) && (
                         <div className="flex justify-between">
                           <dt className="text-gray-600 dark:text-gray-400">Specific Heat:</dt>
-                          <dd className="font-medium text-gray-900 dark:text-gray-100">{element.SpecHeat.toFixed(2)} J/(g·K)</dd>
+                          <dd className="font-medium text-gray-900 dark:text-gray-100">{formatSpecificHeat(element.SpecHeat)}</dd>
                         </div>
                       )}
                       {typeof element.ThermConduct === 'number' && !isNaN(element.ThermConduct) && (
