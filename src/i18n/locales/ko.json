@@ -492,6 +492,8 @@
     "elementChipHint": "가장 가벼운 원소를 표시합니다. 원소를 선택하면 고정됩니다.",
     "clickForDetails": "위의 원소나 핵종을 클릭하면 상세 특성을 볼 수 있습니다",
     "details": "상세",
+    "showDetails": "세부 정보 표시",
+    "closeDetails": "세부 정보 닫기",
     "radioactive": "방사성",
     "querying": "조회 중...",
     "export": "내보내기",

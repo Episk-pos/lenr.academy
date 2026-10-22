@@ -492,6 +492,8 @@
     "elementChipHint": "最も軽い元素を表示しています。元素を選択すると固定されます。",
     "clickForDetails": "上の元素または核種をクリックして詳細なプロパティを表示",
     "details": "詳細",
+    "showDetails": "詳細を表示",
+    "closeDetails": "詳細を閉じる",
     "radioactive": "放射性",
     "querying": "クエリ実行中...",
     "export": "エクスポート",

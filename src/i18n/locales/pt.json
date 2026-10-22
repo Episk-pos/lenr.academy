@@ -493,6 +493,8 @@
     "elementChipHint": "Mostrando o elemento mais leve. Selecione um elemento para fixá-lo.",
     "clickForDetails": "Clique em um elemento ou nuclídeo acima para ver as propriedades detalhadas",
     "details": "Detalhes",
+    "showDetails": "Mostrar detalhes",
+    "closeDetails": "Fechar detalhes",
     "radioactive": "Radioativo",
     "querying": "Consultando...",
     "export": "Exportar",

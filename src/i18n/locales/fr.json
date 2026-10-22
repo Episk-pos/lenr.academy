@@ -493,6 +493,8 @@
     "elementChipHint": "L'élément le plus léger est affiché. Sélectionnez un élément pour l'épingler.",
     "clickForDetails": "Cliquez sur un élément ou un nucléide ci-dessus pour voir les propriétés détaillées",
     "details": "Détails",
+    "showDetails": "Afficher les détails",
+    "closeDetails": "Fermer les détails",
     "radioactive": "Radioactif",
     "querying": "Interrogation en cours...",
     "export": "Exporter",

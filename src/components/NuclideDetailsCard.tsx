@@ -14,6 +14,8 @@ import DecayChainDiagram from './DecayChainDiagram'
 interface NuclideDetailsCardProps {
   nuclide: Nuclide | null
   onClose?: () => void
+  /** Single-column layout for narrow containers (details rail / drawer) */
+  compact?: boolean
 }
 
 // Helper function to get decay mode badge styling
@@ -73,8 +75,10 @@ function getDaughterNuclide(Z: number, A: number, E: string, decayMode: string):
 }
 
 
-export default function NuclideDetailsCard({ nuclide, onClose }: NuclideDetailsCardProps) {
+export default function NuclideDetailsCard({ nuclide, onClose, compact = false }: NuclideDetailsCardProps) {
   const { t } = useTranslation()
+  const gridCols = compact ? 'grid-cols-1 gap-4' : 'md:grid-cols-2 lg:grid-cols-3 gap-6'
+  const twoCols = compact ? 'grid-cols-1' : 'md:grid-cols-2'
   const { db } = useDatabase()
   const navigate = useNavigate()
   const [decayData, setDecayData] = useState<DecayData[]>([])
@@ -159,7 +163,7 @@ export default function NuclideDetailsCard({ nuclide, onClose }: NuclideDetailsC
 
   return (
     <>
-    <div className="card p-6 animate-fade-in max-w-full">
+    <div className={`card ${compact ? 'p-4' : 'p-6'} animate-fade-in max-w-full`}>
       <div className="flex items-start justify-between mb-4">
         <div>
           <h2 className="text-2xl font-bold mb-1 flex items-center gap-2">
@@ -190,7 +194,7 @@ export default function NuclideDetailsCard({ nuclide, onClose }: NuclideDetailsC
         )}
       </div>
 
-      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
+      <div className={`grid ${gridCols} mb-6`}>
         <div className="min-w-0">
           <h3 className="font-semibold text-gray-900 dark:text-white mb-3 text-sm uppercase tracking-wide">
             {t('elements.nuclearProperties')}
@@ -529,7 +533,7 @@ export default function NuclideDetailsCard({ nuclide, onClose }: NuclideDetailsC
 
           <div className={`transition-all duration-300 ease-in-out overflow-hidden ${showDecayChain ? 'max-h-[2000px] opacity-100' : 'max-h-0 opacity-0'}`}>
             {/* Controls */}
-            <div className="grid md:grid-cols-2 gap-4 mb-4">
+            <div className={`grid ${twoCols} gap-4 mb-4`}>
               <div>
                 <label className="block text-xs font-medium text-purple-900 dark:text-purple-200 mb-1">
                   {t('elements.maxDepthGenerations', { depth: chainDepth })}
@@ -592,7 +596,7 @@ export default function NuclideDetailsCard({ nuclide, onClose }: NuclideDetailsC
           <h3 className="font-semibold text-amber-900 dark:text-amber-200 mb-2 text-sm">
             {t('elements.radiationTypeLegend')}
           </h3>
-          <div className="grid md:grid-cols-2 gap-x-4 gap-y-1 text-xs text-amber-800 dark:text-amber-300">
+          <div className={`grid ${twoCols} gap-x-4 gap-y-1 text-xs text-amber-800 dark:text-amber-300`}>
             {uniqueRadiationTypes.map(type => {
               const info = getRadiationTypeInfo(type, t)
               if (!info) return null
@@ -611,7 +615,7 @@ export default function NuclideDetailsCard({ nuclide, onClose }: NuclideDetailsC
                 </div>
               )
             })}
-            <div className="md:col-span-2 mt-1 text-xs opacity-80">
+            <div className={`${compact ? '' : 'md:col-span-2 '}mt-1 text-xs opacity-80`}>
               {t('elements.shellDesignations')}
             </div>
           </div>
@@ -782,7 +786,7 @@ export default function NuclideDetailsCard({ nuclide, onClose }: NuclideDetailsC
 
           <div className={`transition-all duration-300 ease-in-out overflow-hidden ${showDecayChain ? 'max-h-[2000px] opacity-100' : 'max-h-0 opacity-0'}`}>
             {/* Controls */}
-            <div className="grid md:grid-cols-2 gap-4 mb-4">
+            <div className={`grid ${twoCols} gap-4 mb-4`}>
               <div>
                 <label className="block text-xs font-medium text-purple-900 dark:text-purple-200 mb-1">
                   {t('elements.maxDepthGenerations', { depth: chainDepth })}
@@ -845,7 +849,7 @@ export default function NuclideDetailsCard({ nuclide, onClose }: NuclideDetailsC
           <h3 className="font-semibold text-amber-900 dark:text-amber-200 mb-2 text-sm">
             {t('elements.radiationTypeLegend')}
           </h3>
-          <div className="grid md:grid-cols-2 gap-x-4 gap-y-1 text-xs text-amber-800 dark:text-amber-300">
+          <div className={`grid ${twoCols} gap-x-4 gap-y-1 text-xs text-amber-800 dark:text-amber-300`}>
             {uniqueRadiationTypes.map(type => {
               const info = getRadiationTypeInfo(type, t)
               if (!info) return null
@@ -864,7 +868,7 @@ export default function NuclideDetailsCard({ nuclide, onClose }: NuclideDetailsC
                 </div>
               )
             })}
-            <div className="md:col-span-2 mt-1 text-xs opacity-80">
+            <div className={`${compact ? '' : 'md:col-span-2 '}mt-1 text-xs opacity-80`}>
               {t('elements.shellDesignations')}
             </div>
           </div>

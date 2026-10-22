@@ -2,6 +2,10 @@ import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { Nuclide } from '../types'
 import IsotopeCard from './IsotopeCard'
+import { useHoverHighlight, useHoverHighlightStore } from '../contexts/HoverHighlightContext'
+import type { HoverHighlightState } from '../contexts/HoverHighlightContext'
+
+const selectHoveredNuclide = (state: HoverHighlightState) => state.nuclide
 
 interface ElementGroup {
   E: string
@@ -16,14 +20,21 @@ export interface ResultNuclidesByElementProps {
   radioactiveNuclides: Set<string>
   /** Element symbol currently pinned on the page (heatmap), or null */
   pinnedElement: string | null
-  /** Currently highlighted nuclide id (`${E}-${A}`), hovered or pinned */
+  /**
+   * Pinned nuclide id (`${E}-${A}`). Outside a HoverHighlightContext provider this may
+   * also carry a hovered (unpinned) id; inside one, hover is read from the store.
+   */
   highlightedNuclide: string | null
   /** Whether highlightedNuclide is pinned */
   pinnedNuclide: boolean
   /** Toggle pinning of an element — must be the same handler the heatmap uses */
   onElementSelect: (symbol: string) => void
-  /** Hover a nuclide card (null on leave); only called while no nuclide is pinned */
-  onNuclideHover: (nuclideId: string | null) => void
+  /**
+   * Hover a nuclide card (null on leave); only called while no nuclide is pinned.
+   * Optional: inside a HoverHighlightContext provider hover is written to the store instead
+   * of page state, so hovering doesn't re-render the whole query page.
+   */
+  onNuclideHover?: (nuclideId: string | null) => void
   /** Click a nuclide card (toggle pin) */
   onNuclideSelect: (nuclide: Nuclide) => void
 }
@@ -44,6 +55,20 @@ export default function ResultNuclidesByElement({
   onNuclideSelect,
 }: ResultNuclidesByElementProps) {
   const { t } = useTranslation()
+  const hoverStore = useHoverHighlightStore()
+  const hoveredNuclide = useHoverHighlight(selectHoveredNuclide)
+
+  // The id that drives card highlight/dim styling: the pinned nuclide wins,
+  // otherwise the hovered one (from the store when available, else from props).
+  const activeNuclide = pinnedNuclide
+    ? highlightedNuclide
+    : hoverStore ? hoveredNuclide : highlightedNuclide
+
+  const reportHover = (nuclideId: string | null) => {
+    if (pinnedNuclide) return
+    hoverStore?.setNuclide(nuclideId)
+    onNuclideHover?.(nuclideId)
+  }
 
   const groups = useMemo<ElementGroup[]>(() => {
     const byElement = new Map<string, ElementGroup>()
@@ -148,10 +173,11 @@ export default function ResultNuclidesByElement({
               </p>
             )}
           </div>
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
+          {/* xl narrows back to 4 columns: the query pages add a details rail beside the main column at xl */}
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-4 2xl:grid-cols-6 gap-3">
             {displayedGroup.nuclides.map(nuc => {
               const nuclideId = `${nuc.E}-${nuc.A}`
-              const isActive = highlightedNuclide === nuclideId
+              const isActive = activeNuclide === nuclideId
               return (
                 <IsotopeCard
                   key={nuclideId}
@@ -163,10 +189,10 @@ export default function ResultNuclidesByElement({
                   radioactive={radioactiveNuclides.has(`${nuc.Z}-${nuc.A}`)}
                   selected={pinnedNuclide && isActive}
                   highlighted={!pinnedNuclide && isActive}
-                  dimmed={highlightedNuclide !== null && !isActive}
+                  dimmed={activeNuclide !== null && !isActive}
                   onClick={() => onNuclideSelect(nuc)}
-                  onMouseEnter={() => { if (!pinnedNuclide) onNuclideHover(nuclideId) }}
-                  onMouseLeave={() => { if (!pinnedNuclide) onNuclideHover(null) }}
+                  onMouseEnter={() => reportHover(nuclideId)}
+                  onMouseLeave={() => reportHover(null)}
                 />
               )
             })}
