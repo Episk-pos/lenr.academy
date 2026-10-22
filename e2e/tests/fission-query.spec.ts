@@ -115,12 +115,14 @@ test.describe('Fission Query Page', () => {
     await waitForReactionResults(page, 'fission');
 
     // Find export button and scroll to it
-    const exportButton = page.getByRole('button', { name: /Export CSV/i });
+    // Exports live in a single "Export" dropdown menu
+    const exportButton = page.getByTestId('export-menu-button');
     await exportButton.scrollIntoViewIfNeeded();
 
     if (await exportButton.isVisible()) {
-      const downloadPromise = page.waitForEvent('download');
       await exportButton.click();
+      const downloadPromise = page.waitForEvent('download');
+      await page.getByRole('menuitem', { name: /Export CSV/i }).click();
 
       const download = await downloadPromise;
       expect(download.suggestedFilename()).toMatch(/fission.*\.csv/i);

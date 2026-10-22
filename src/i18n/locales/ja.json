@@ -352,7 +352,8 @@
     "terminalNuclides": "終端核種",
     "stableCount": "安定",
     "radioactiveCount": "放射性",
-    "radiationTypeLegend": "放射線タイプ凡例"
+    "radiationTypeLegend": "放射線タイプ凡例",
+    "notAvailableInDatabase": "データベースで利用できません"
   },
   "reactions": {
     "reaction": "反応",
@@ -460,7 +461,16 @@
     "clickForDetails": "上の元素または核種をクリックして詳細なプロパティを表示",
     "details": "詳細",
     "radioactive": "放射性",
-    "querying": "クエリ実行中..."
+    "querying": "クエリ実行中...",
+    "export": "エクスポート",
+    "neutrinoBadge": {
+      "left": "ν",
+      "leftTitle": "ニュートリノ（ν、左巻き）：全核電荷が1減少（β⁺／電子捕獲型）",
+      "right": "ν̄",
+      "rightTitle": "反ニュートリノ（ν̄、右巻き）：全核電荷が1増加（β⁻型）",
+      "none": "—",
+      "noneTitle": "ニュートリノの関与なし"
+    }
   },
   "histogram": {
     "title": "エネルギー分布",

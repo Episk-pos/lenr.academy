@@ -3,7 +3,8 @@ import {
   waitForDatabaseReady,
   acceptMeteredWarningIfPresent,
   acceptPrivacyConsent,
-  waitForReactionResults
+  waitForReactionResults,
+  expandHeatmapIfCollapsed
 } from '../fixtures/test-helpers';
 
 test.describe('Enhanced Empty State', () => {
@@ -21,6 +22,9 @@ test.describe('Enhanced Empty State', () => {
     // Scroll down to make sure the heatmap toggle is in view BEFORE trying to locate it
     await page.evaluate(() => window.scrollBy(0, 500));
     await page.waitForTimeout(100);
+
+    // Heatmap is collapsed by default - expand it to reach the toggle
+    await expandHeatmapIfCollapsed(page);
 
     // Now locate and interact with the heatmap toggle
     const heatmapToggle = page.getByRole('switch', { name: /use all.*matching results/i });
@@ -68,6 +72,9 @@ test.describe('Enhanced Empty State', () => {
     await page.evaluate(() => window.scrollBy(0, 500));
     await page.waitForTimeout(100);
 
+    // Heatmap is collapsed by default - expand it to reach the toggle
+    await expandHeatmapIfCollapsed(page);
+
     // Now locate and interact with the heatmap toggle
     const heatmapToggle = page.getByRole('switch', { name: /use all.*matching results/i });
     await heatmapToggle.scrollIntoViewIfNeeded();
@@ -110,6 +117,9 @@ test.describe('Enhanced Empty State', () => {
     await page.evaluate(() => window.scrollBy(0, 500));
     await page.waitForTimeout(100);
 
+    // Heatmap is collapsed by default - expand it to reach the toggle
+    await expandHeatmapIfCollapsed(page);
+
     // Now locate and interact with the heatmap toggle
     const heatmapToggle = page.getByRole('switch', { name: /use all.*matching results/i });
     await heatmapToggle.scrollIntoViewIfNeeded();
@@ -151,6 +161,9 @@ test.describe('Enhanced Empty State', () => {
     // Scroll down to make sure the heatmap toggle is in view BEFORE trying to locate it
     await page.evaluate(() => window.scrollBy(0, 500));
     await page.waitForTimeout(100);
+
+    // Heatmap is collapsed by default - expand it to reach the toggle
+    await expandHeatmapIfCollapsed(page);
 
     // Now locate and interact with the heatmap toggle
     const heatmapToggle = page.getByRole('switch', { name: /use all.*matching results/i });

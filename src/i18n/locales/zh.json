@@ -352,7 +352,8 @@
     "terminalNuclides": "末端核素",
     "stableCount": "稳定",
     "radioactiveCount": "放射性",
-    "radiationTypeLegend": "辐射类型图例"
+    "radiationTypeLegend": "辐射类型图例",
+    "notAvailableInDatabase": "数据库中不可用"
   },
   "reactions": {
     "reaction": "反应",
@@ -460,7 +461,16 @@
     "clickForDetails": "点击上方元素或核素查看详细属性",
     "details": "详情",
     "radioactive": "放射性",
-    "querying": "查询中..."
+    "querying": "查询中...",
+    "export": "导出",
+    "neutrinoBadge": {
+      "left": "ν",
+      "leftTitle": "中微子（ν，左旋）：总核电荷减少 1（β⁺ / 电子俘获型）",
+      "right": "ν̄",
+      "rightTitle": "反中微子（ν̄，右旋）：总核电荷增加 1（β⁻ 型）",
+      "none": "—",
+      "noneTitle": "不涉及中微子"
+    }
   },
   "histogram": {
     "title": "能量分布",

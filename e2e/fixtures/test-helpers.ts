@@ -164,6 +164,21 @@ export function getPeriodicTableElement(page: Page, symbol: string) {
 }
 
 /**
+ * Expand the "Element Heatmap" section on a query page if it is collapsed.
+ * The heatmap is collapsed by default (unless a persisted preference or a
+ * pinE/pinN URL parameter expands it).
+ */
+export async function expandHeatmapIfCollapsed(page: Page) {
+  const heatmapToggle = page.locator('button[title*="periodic table"]').first();
+  await heatmapToggle.scrollIntoViewIfNeeded();
+  const title = await heatmapToggle.getAttribute('title');
+  if (!title?.includes('Collapse')) {
+    await heatmapToggle.click();
+    await page.waitForTimeout(500); // Wait for expansion animation
+  }
+}
+
+/**
  * Helper to select multiple elements from periodic table
  */
 export async function selectElements(page: Page, symbols: string[]) {

@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo, useCallback, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Download, FileJson, FileText, Info, Loader2, Eye, EyeOff, Radiation, ChevronDown } from 'lucide-react'
+import { FileJson, FileText, FileSpreadsheet, Info, Loader2, Eye, EyeOff, Radiation, ChevronDown } from 'lucide-react'
 import { useSearchParams, Link, useNavigate } from 'react-router-dom'
 import ShareQueryButton from '../components/ShareQueryButton'
 import type { FusionReaction, QueryFilter, Nuclide, Element, HeatmapMode, HeatmapMetrics, AtomicRadiiData } from '../types'
@@ -15,6 +15,11 @@ import ResultNuclidesByElement from '../components/ResultNuclidesByElement'
 import DatabaseLoadingCard from '../components/DatabaseLoadingCard'
 import { VirtualizedList } from '../components/VirtualizedList'
 import LimitSelector from '../components/LimitSelector'
+import ExportMenu from '../components/ExportMenu'
+import IncreaseLimitHint from '../components/IncreaseLimitHint'
+import NeutrinoBadge from '../components/NeutrinoBadge'
+import ReactionTableHeader from '../components/ReactionTableHeader'
+import { useBosonFermionVisibility } from '../hooks/useBosonFermionVisibility'
 import { exportToJSON, exportToPDF } from '../utils/exportUtils'
 import { useQueryHistory } from '../hooks/useQueryHistory'
 import QueryHistoryPanel from '../components/QueryHistoryPanel'
@@ -106,12 +111,8 @@ export default function FusionQuery() {
   const [isQuerying, setIsQuerying] = useState(false)
   const [executionTime, setExecutionTime] = useState(0)
   const [totalCount, setTotalCount] = useState(0)
-  const [showBosonFermion, setShowBosonFermion] = useState(() => {
-    const saved = localStorage.getItem('showBosonFermion')
-    if (saved !== null) return JSON.parse(saved)
-    // Default to show (on) for desktop (≥768px), hide (off) for mobile
-    return window.innerWidth >= 768
-  })
+  // Boson/Fermion columns: shared default (shown on wide screens, hidden on narrow)
+  const [showBosonFermion, setShowBosonFermion] = useBosonFermionVisibility('showBosonFermion')
 
   const tableContainerRef = useRef<HTMLDivElement | null>(null)
   const [fusionViewportHeight, setFusionViewportHeight] = useState<number | null>(null)
@@ -140,7 +141,7 @@ export default function FusionQuery() {
     if (showBosonFermion) {
       return 'minmax(85px, 1fr) minmax(85px, 1fr) minmax(85px, 1fr) minmax(100px, 1fr) minmax(100px, 1fr) repeat(6, minmax(70px, 0.9fr))'
     }
-    return 'minmax(85px, 1fr) minmax(85px, 1fr) minmax(85px, 1fr) minmax(60px, 0.8fr) minmax(60px, 0.8fr)'
+    return 'minmax(85px, 1fr) minmax(85px, 1fr) minmax(85px, 1fr) minmax(72px, 0.8fr) minmax(72px, 0.8fr)'
   }, [showBosonFermion])
 
   const fusionEstimatedRowHeight = useMemo(() => (showBosonFermion ? 70 : 60), [showBosonFermion])
@@ -156,7 +157,7 @@ export default function FusionQuery() {
   const [hasInitializedFromUrl, setHasInitializedFromUrl] = useState(false)
 
   // Heatmap state
-  const [showHeatmap, setShowHeatmap] = useState(true)
+  const [showHeatmap, setShowHeatmap] = useState(false) // collapsed by default; persisted preference restored below
   const [heatmapMode, setHeatmapMode] = useState<HeatmapMode>('frequency')
   const [useAllResultsForHeatmap, setUseAllResultsForHeatmap] = useState(false)
   const [allResults, setAllResults] = useState<FusionReaction[]>([])
@@ -388,11 +389,6 @@ export default function FusionQuery() {
       setHasInitializedFromUrl(true)
     }
   }, [showResults, isInitialized, nuclides, resultElements, hasInitializedFromUrl, searchParams, pinnedNuclide, pinnedElement, setSearchParams])
-
-  // Save B/F toggle to localStorage
-  useEffect(() => {
-    localStorage.setItem('showBosonFermion', JSON.stringify(showBosonFermion))
-  }, [showBosonFermion])
 
   // Save state changes to QueryStateContext
   useEffect(() => {
@@ -788,6 +784,7 @@ export default function FusionQuery() {
               {/* Result Limit */}
               <div className="overflow-visible">
                 <LimitSelector
+                  id="fusion-limit-selector"
                   value={filter.limit}
                   onChange={(limit) => setFilter({...filter, limit})}
                 />
@@ -1007,7 +1004,7 @@ export default function FusionQuery() {
                 <p className="text-sm text-gray-500 dark:text-gray-400">
                   {t('reactions.queryExecuted', { time: executionTime.toFixed(2) })}
                   {filter.limit && filter.limit > 0 && totalCount > filter.limit && (
-                    <span className="ml-2">• {t('reactions.increaseLimit')}</span>
+                    <IncreaseLimitHint onExpand={() => setShowFilters(true)} targetId="fusion-limit-selector" />
                   )}
                 </p>
               </div>
@@ -1020,31 +1017,15 @@ export default function FusionQuery() {
                   {showBosonFermion ? <EyeOff className="w-4 h-4 mr-2 inline" /> : <Eye className="w-4 h-4 mr-2 inline" />}
                   {showBosonFermion ? t('reactions.hideBFTypes') : t('reactions.showBFTypes')}
                 </button>
-                <button
-                  onClick={exportToCSV}
-                  className="btn btn-secondary px-4 py-2 text-sm"
-                  disabled={results.length === 0}
-                >
-                  <Download className="w-4 h-4 mr-2 inline" />
-                  {t('reactions.exportCsv')}
-                </button>
                 <ShareQueryButton />
-                <button
-                  onClick={() => exportToJSON(results, { queryType: 'fusion', filter: queryFilter, executionTime, rowCount: results.length, totalCount })}
-                  className="btn btn-secondary px-4 py-2 text-sm"
+                <ExportMenu
                   disabled={results.length === 0}
-                >
-                  <FileJson className="w-4 h-4 mr-2 inline" />
-                  {t('reactions.exportJson')}
-                </button>
-                <button
-                  onClick={() => exportToPDF(results, { queryType: 'fusion', filter: queryFilter, executionTime, rowCount: results.length, totalCount }).catch((err) => console.error('PDF export failed:', err))}
-                  className="btn btn-secondary px-4 py-2 text-sm"
-                  disabled={results.length === 0}
-                >
-                  <FileText className="w-4 h-4 mr-2 inline" />
-                  {t('reactions.exportPdf')}
-                </button>
+                  items={[
+                    { key: 'csv', label: t('reactions.exportCsv'), icon: <FileSpreadsheet className="w-4 h-4" />, onSelect: exportToCSV },
+                    { key: 'json', label: t('reactions.exportJson'), icon: <FileJson className="w-4 h-4" />, onSelect: () => exportToJSON(results, { queryType: 'fusion', filter: queryFilter, executionTime, rowCount: results.length, totalCount }) },
+                    { key: 'pdf', label: t('reactions.exportPdf'), icon: <FileText className="w-4 h-4" />, onSelect: () => { exportToPDF(results, { queryType: 'fusion', filter: queryFilter, executionTime, rowCount: results.length, totalCount }).catch((err) => console.error('PDF export failed:', err)) } },
+                  ]}
+                />
               </div>
             </div>
 
@@ -1059,52 +1040,20 @@ export default function FusionQuery() {
                   className="sticky top-0 z-[5]"
                   style={{ paddingRight: fusionHeaderPadding }}
                 >
-                  <div
-                    className="grid border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-sm font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-300"
-                    style={{ gridTemplateColumns: fusionColumnTemplate }}
-                  >
-                    <div className="px-3 py-2 text-center bg-blue-50 dark:bg-blue-900/30 col-span-2">
-                      {t('reactions.inputs')}
-                    </div>
-                    <div className="px-3 py-2 text-center bg-green-50 dark:bg-green-900/30">
-                      {t('reactions.output')}
-                    </div>
-                    <div className="px-1 py-2 sm:px-3 text-center">{t('reactions.energyMeV')}</div>
-                    <div className="px-1 py-2 sm:px-3 text-center">{t('reactions.neutrino')}</div>
-                    {showBosonFermion && (
-                      <>
-                        <div className="px-3 py-2 text-center bg-purple-50 dark:bg-purple-900/30 col-span-2">
-                          {t('reactions.input1Type')}
-                        </div>
-                        <div className="px-3 py-2 text-center bg-purple-50 dark:bg-purple-900/30 col-span-2">
-                          {t('reactions.input2Type')}
-                        </div>
-                        <div className="px-3 py-2 text-center bg-amber-50 dark:bg-amber-900/30 col-span-2">
-                          {t('reactions.outputType')}
-                        </div>
-                      </>
-                    )}
-                  </div>
-                  <div
-                    className="grid border-b border-gray-200 dark:border-gray-700 bg-gray-100 dark:bg-gray-800/80 text-xs font-medium uppercase text-gray-500 dark:text-gray-400"
-                    style={{ gridTemplateColumns: fusionColumnTemplate }}
-                  >
-                    <div className="px-3 py-2 text-center bg-blue-50 dark:bg-blue-900/30">{t('reactions.input1')}</div>
-                    <div className="px-3 py-2 text-center bg-blue-50 dark:bg-blue-900/30">{t('reactions.input2')}</div>
-                    <div className="px-3 py-2 text-center bg-green-50 dark:bg-green-900/30">{t('reactions.output')}</div>
-                    <div className="px-3 py-2 text-center" aria-hidden="true">&nbsp;</div>
-                    <div className="px-3 py-2 text-center" aria-hidden="true">&nbsp;</div>
-                    {showBosonFermion && (
-                      <>
-                        <div className="px-3 py-2 text-center">{t('reactions.nuclear')}</div>
-                        <div className="px-3 py-2 text-center">{t('reactions.atomic')}</div>
-                        <div className="px-3 py-2 text-center">{t('reactions.nuclear')}</div>
-                        <div className="px-3 py-2 text-center">{t('reactions.atomic')}</div>
-                        <div className="px-3 py-2 text-center">{t('reactions.nuclear')}</div>
-                        <div className="px-3 py-2 text-center">{t('reactions.atomic')}</div>
-                      </>
-                    )}
-                  </div>
+                  <ReactionTableHeader
+                    gridTemplateColumns={fusionColumnTemplate}
+                    columns={[
+                      { key: 'inputs', label: t('reactions.inputs'), className: 'bg-blue-50 dark:bg-blue-900/30', children: [{ key: 'in1', label: t('reactions.input1') }, { key: 'in2', label: t('reactions.input2') }] },
+                      { key: 'output', label: t('reactions.output'), className: 'bg-green-50 dark:bg-green-900/30' },
+                      { key: 'energy', label: <>{t('reactions.energy')} <span className="normal-case">(MeV)</span></> },
+                      { key: 'neutrino', label: t('reactions.neutrino'), compact: true, normalCase: true },
+                      ...(showBosonFermion ? [
+                        { key: 'input1Type', label: t('reactions.input1Type'), className: 'bg-purple-50 dark:bg-purple-900/30', children: [{ key: 'n', label: t('reactions.nuclear') }, { key: 'a', label: t('reactions.atomic') }] },
+                        { key: 'input2Type', label: t('reactions.input2Type'), className: 'bg-purple-50 dark:bg-purple-900/30', children: [{ key: 'n', label: t('reactions.nuclear') }, { key: 'a', label: t('reactions.atomic') }] },
+                        { key: 'outputType', label: t('reactions.outputType'), className: 'bg-amber-50 dark:bg-amber-900/30', children: [{ key: 'n', label: t('reactions.nuclear') }, { key: 'a', label: t('reactions.atomic') }] },
+                      ] : []),
+                    ]}
+                  />
                 </div>
 
                 {filteredResults.length === 0 ? (
@@ -1204,17 +1153,7 @@ export default function FusionQuery() {
                             <span className="font-semibold text-green-600 dark:text-green-300">{reaction.MeV.toFixed(2)}</span>
                           </div>
                           <div className="px-1 py-1.5 sm:px-3 sm:py-3 text-center">
-                            <span
-                              className={`px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-full text-[10px] sm:text-xs font-medium ${
-                                reaction.neutrino === 'none'
-                                  ? 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300'
-                                  : reaction.neutrino === 'left'
-                                  ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300'
-                                  : 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300'
-                              }`}
-                            >
-                              {reaction.neutrino === 'none' ? 'None' : reaction.neutrino === 'left' ? 'Left' : 'Right'}
-                            </span>
+                            <NeutrinoBadge neutrino={reaction.neutrino} />
                           </div>
                           {showBosonFermion && (
                             <>
@@ -1368,17 +1307,7 @@ export default function FusionQuery() {
                               <span className="font-semibold text-green-600 dark:text-green-300">{reaction.MeV.toFixed(2)}</span>
                             </div>
                             <div className="px-1 py-1.5 sm:px-3 sm:py-3 text-center">
-                              <span
-                                className={`px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-full text-[10px] sm:text-xs font-medium ${
-                                  reaction.neutrino === 'none'
-                                    ? 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300'
-                                    : reaction.neutrino === 'left'
-                                    ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300'
-                                    : 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300'
-                                }`}
-                              >
-                                {reaction.neutrino === 'none' ? 'None' : reaction.neutrino === 'left' ? 'Left' : 'Right'}
-                              </span>
+                              <NeutrinoBadge neutrino={reaction.neutrino} />
                             </div>
                             {showBosonFermion && (
                               <>

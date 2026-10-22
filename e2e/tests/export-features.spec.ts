@@ -48,14 +48,14 @@ test.describe('Export Features', () => {
       await runButton.click();
       await waitForReactionResults(page, 'fusion');
 
-      // Export buttons should be visible (JSON and PDF)
-      const jsonButton = page.getByRole('button', { name: /JSON/i }).first();
-      const pdfButton = page.getByRole('button', { name: /PDF/i }).first();
+      // Export options (CSV/JSON/PDF) live in a single "Export" dropdown menu
+      const exportButton = page.getByTestId('export-menu-button');
+      await exportButton.scrollIntoViewIfNeeded();
+      await exportButton.click();
 
-      const jsonVisible = await jsonButton.isVisible({ timeout: 3000 }).catch(() => false);
-      const pdfVisible = await pdfButton.isVisible({ timeout: 3000 }).catch(() => false);
-
-      expect(jsonVisible || pdfVisible).toBe(true);
+      await expect(page.getByRole('menuitem', { name: /Export JSON/i })).toBeVisible();
+      await expect(page.getByRole('menuitem', { name: /Export PDF/i })).toBeVisible();
+      await expect(page.getByRole('menuitem', { name: /Export CSV/i })).toBeVisible();
     }
   });
 
@@ -72,12 +72,14 @@ test.describe('Export Features', () => {
       await runButton.click();
       await waitForReactionResults(page, 'fission');
 
-      // Check for export options (JSON or PDF button should exist)
-      const jsonButton = page.getByRole('button', { name: /JSON/i }).first();
-      const pdfButton = page.getByRole('button', { name: /PDF/i }).first();
-      const jsonVisible = await jsonButton.isVisible({ timeout: 3000 }).catch(() => false);
-      const pdfVisible = await pdfButton.isVisible({ timeout: 3000 }).catch(() => false);
-      expect(jsonVisible || pdfVisible).toBe(true);
+      // Export options (CSV/JSON/PDF) live in a single "Export" dropdown menu
+      const exportButton = page.getByTestId('export-menu-button');
+      await exportButton.scrollIntoViewIfNeeded();
+      await exportButton.click();
+
+      await expect(page.getByRole('menuitem', { name: /Export JSON/i })).toBeVisible();
+      await expect(page.getByRole('menuitem', { name: /Export PDF/i })).toBeVisible();
+      await expect(page.getByRole('menuitem', { name: /Export CSV/i })).toBeVisible();
     }
   });
 

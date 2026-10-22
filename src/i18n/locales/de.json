@@ -352,7 +352,8 @@
     "terminalNuclides": "Endnuklide",
     "stableCount": "stabil",
     "radioactiveCount": "radioaktiv",
-    "radiationTypeLegend": "Strahlungsart-Legende"
+    "radiationTypeLegend": "Strahlungsart-Legende",
+    "notAvailableInDatabase": "In der Datenbank nicht verfügbar"
   },
   "reactions": {
     "reaction": "Reaktion",
@@ -460,7 +461,16 @@
     "clickForDetails": "Klicken Sie auf ein Element oder Nuklid oben, um detaillierte Eigenschaften zu sehen",
     "details": "Details",
     "radioactive": "Radioaktiv",
-    "querying": "Abfrage läuft..."
+    "querying": "Abfrage läuft...",
+    "export": "Exportieren",
+    "neutrinoBadge": {
+      "left": "ν",
+      "leftTitle": "Neutrino (ν, linkshändig): Gesamtkernladung sinkt um 1 (β⁺- / Elektroneneinfang-Typ)",
+      "right": "ν̄",
+      "rightTitle": "Antineutrino (ν̄, rechtshändig): Gesamtkernladung steigt um 1 (β⁻-Typ)",
+      "none": "—",
+      "noneTitle": "Kein Neutrino beteiligt"
+    }
   },
   "histogram": {
     "title": "Energieverteilung",

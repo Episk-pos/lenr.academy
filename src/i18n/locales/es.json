@@ -352,7 +352,8 @@
     "terminalNuclides": "Nucleidos terminales",
     "stableCount": "estable",
     "radioactiveCount": "radiactivo",
-    "radiationTypeLegend": "Leyenda de tipos de radiación"
+    "radiationTypeLegend": "Leyenda de tipos de radiación",
+    "notAvailableInDatabase": "No disponible en la base de datos"
   },
   "reactions": {
     "reaction": "Reacción",
@@ -460,7 +461,16 @@
     "clickForDetails": "Haga clic en un elemento o nucleido arriba para ver propiedades detalladas",
     "details": "Detalles",
     "radioactive": "Radiactivo",
-    "querying": "Consultando..."
+    "querying": "Consultando...",
+    "export": "Exportar",
+    "neutrinoBadge": {
+      "left": "ν",
+      "leftTitle": "Neutrino (ν, levógiro): la carga nuclear total disminuye en 1 (tipo β⁺ / captura electrónica)",
+      "right": "ν̄",
+      "rightTitle": "Antineutrino (ν̄, dextrógiro): la carga nuclear total aumenta en 1 (tipo β⁻)",
+      "none": "—",
+      "noneTitle": "Sin neutrino involucrado"
+    }
   },
   "histogram": {
     "title": "Distribucion de energia",

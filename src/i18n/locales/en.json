@@ -352,7 +352,8 @@
     "terminalNuclides": "Terminal Nuclides",
     "stableCount": "stable",
     "radioactiveCount": "radioactive",
-    "radiationTypeLegend": "Radiation Type Legend"
+    "radiationTypeLegend": "Radiation Type Legend",
+    "notAvailableInDatabase": "Not available in database"
   },
   "reactions": {
     "reaction": "Reaction",
@@ -460,7 +461,16 @@
     "clickForDetails": "Click on an element or a nuclide above to see detailed properties",
     "details": "Details",
     "radioactive": "Radioactive",
-    "querying": "Querying..."
+    "querying": "Querying...",
+    "export": "Export",
+    "neutrinoBadge": {
+      "left": "ν",
+      "leftTitle": "Neutrino (ν, left-handed): total nuclear charge decreases by 1 (β⁺ / electron-capture type)",
+      "right": "ν̄",
+      "rightTitle": "Antineutrino (ν̄, right-handed): total nuclear charge increases by 1 (β⁻ type)",
+      "none": "—",
+      "noneTitle": "No neutrino involved"
+    }
   },
   "histogram": {
     "title": "Energy Distribution",

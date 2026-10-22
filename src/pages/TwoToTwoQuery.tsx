@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo, useCallback, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Download, FileJson, FileText, Info, Loader2, Eye, EyeOff, Radiation, ChevronDown } from 'lucide-react'
+import { FileJson, FileText, FileSpreadsheet, Info, Loader2, Eye, EyeOff, Radiation, ChevronDown } from 'lucide-react'
 import ShareQueryButton from '../components/ShareQueryButton'
 import { useSearchParams, Link, useNavigate } from 'react-router-dom'
 import type { TwoToTwoReaction, QueryFilter, Element, Nuclide, HeatmapMode, HeatmapMetrics, AtomicRadiiData, NeutrinoType } from '../types'
@@ -15,6 +15,11 @@ import ResultNuclidesByElement from '../components/ResultNuclidesByElement'
 import DatabaseLoadingCard from '../components/DatabaseLoadingCard'
 import { VirtualizedList } from '../components/VirtualizedList'
 import LimitSelector from '../components/LimitSelector'
+import ExportMenu from '../components/ExportMenu'
+import IncreaseLimitHint from '../components/IncreaseLimitHint'
+import NeutrinoBadge from '../components/NeutrinoBadge'
+import ReactionTableHeader from '../components/ReactionTableHeader'
+import { useBosonFermionVisibility } from '../hooks/useBosonFermionVisibility'
 import { exportToJSON, exportToPDF } from '../utils/exportUtils'
 import { useQueryHistory } from '../hooks/useQueryHistory'
 import QueryHistoryPanel from '../components/QueryHistoryPanel'
@@ -129,13 +134,8 @@ export default function TwoToTwoQuery() {
   const [totalCount, setTotalCount] = useState(0)
   const [isQuerying, setIsQuerying] = useState(false)
 
-  // Boson/Fermion toggle - default to off for TwoToTwo (too many columns)
-  const [showBosonFermion, setShowBosonFermion] = useState(() => {
-    const saved = localStorage.getItem('showBosonFermion_twotwo')
-    if (saved !== null) return JSON.parse(saved)
-    // Default to hide (off) for TwoToTwo - 8 B/F columns is too much
-    return false
-  })
+  // Boson/Fermion columns: shared default (shown on wide screens, hidden on narrow)
+  const [showBosonFermion, setShowBosonFermion] = useBosonFermionVisibility('showBosonFermion_twotwo')
 
   const tableContainerRef = useRef<HTMLDivElement | null>(null)
   const [twoTwoViewportHeight, setTwoTwoViewportHeight] = useState<number | null>(null)
@@ -162,9 +162,9 @@ export default function TwoToTwoQuery() {
 
   const twoTwoColumnTemplate = useMemo(() => {
     if (showBosonFermion) {
-      return 'repeat(4, minmax(60px, 1fr)) repeat(10, minmax(60px, 0.9fr))'
+      return 'repeat(4, minmax(60px, 1fr)) minmax(60px, 0.9fr) minmax(72px, 0.9fr) repeat(8, minmax(60px, 0.9fr))'
     }
-    return 'repeat(4, minmax(85px, 1fr)) minmax(60px, 1fr) minmax(60px, 1fr)'
+    return 'repeat(4, minmax(85px, 1fr)) minmax(72px, 1fr) minmax(72px, 1fr)'
   }, [showBosonFermion])
 
   const twoTwoEstimatedRowHeight = useMemo(() => (showBosonFermion ? 80 : 70), [showBosonFermion])
@@ -180,7 +180,7 @@ export default function TwoToTwoQuery() {
   const [hasInitializedFromUrl, setHasInitializedFromUrl] = useState(false)
 
   // Heatmap state
-  const [showHeatmap, setShowHeatmap] = useState(true)
+  const [showHeatmap, setShowHeatmap] = useState(false) // collapsed by default; persisted preference restored below
   const [heatmapMode, setHeatmapMode] = useState<HeatmapMode>('frequency')
   const [useAllResultsForHeatmap, setUseAllResultsForHeatmap] = useState(false)
   const [allResults, setAllResults] = useState<TwoToTwoReaction[]>([])
@@ -358,23 +358,18 @@ export default function TwoToTwoQuery() {
               setHighlightedElement(savedState.visualization.pinnedElement.E)
               setPinnedElement(true)
             }
-            setShowHeatmap(savedState.visualization.showHeatmap ?? true)
+            setShowHeatmap(savedState.visualization.showHeatmap ?? false)
             setHeatmapMode(savedState.visualization.heatmapMode ?? 'frequency')
             setUserTableHeight(savedState.visualization.userTableHeight ?? null)
           }
 
           // Restore UI state
-          setShowBosonFermion(savedState.showBosonFermion ?? false)
+          if (savedState.showBosonFermion !== undefined) setShowBosonFermion(savedState.showBosonFermion)
         }
         setHasRestoredFromContext(true)
       }
     }
   }, [db, hasAnyUrlParams, hasRestoredFromContext])
-
-  // Save B/F toggle to localStorage (separate key for TwoToTwo)
-  useEffect(() => {
-    localStorage.setItem('showBosonFermion_twotwo', JSON.stringify(showBosonFermion))
-  }, [showBosonFermion])
 
   // Initialize pinned state from URL params (after results are loaded)
   // This effect should ONLY run once when results first load, not on every URL change
@@ -827,6 +822,7 @@ export default function TwoToTwoQuery() {
               {/* Result Limit */}
               <div className="overflow-visible">
                 <LimitSelector
+                  id="twotwo-limit-selector"
                   value={filter.limit}
                   onChange={(limit) => setFilter({...filter, limit})}
                 />
@@ -1073,7 +1069,7 @@ export default function TwoToTwoQuery() {
                 <p className="text-sm text-gray-500 dark:text-gray-400">
                   {t('reactions.queryExecuted', { time: executionTime.toFixed(2) })}
                   {filter.limit && filter.limit > 0 && totalCount > filter.limit && (
-                    <span className="ml-2">• {t('reactions.increaseLimit')}</span>
+                    <IncreaseLimitHint onExpand={() => setShowFilters(true)} targetId="twotwo-limit-selector" />
                   )}
                 </p>
               </div>
@@ -1081,36 +1077,20 @@ export default function TwoToTwoQuery() {
                 <button
                   onClick={() => setShowBosonFermion(!showBosonFermion)}
                   className="btn btn-secondary px-4 py-2 text-sm"
-                  title={showBosonFermion ? 'Hide Boson/Fermion columns' : 'Show Boson/Fermion columns'}
+                  title={showBosonFermion ? t('reactions.hideBFTypes') : t('reactions.showBFTypes')}
                 >
                   {showBosonFermion ? <EyeOff className="w-4 h-4 mr-2 inline" /> : <Eye className="w-4 h-4 mr-2 inline" />}
                   {showBosonFermion ? t('reactions.hideBFTypes') : t('reactions.showBFTypes')}
                 </button>
-                <button
-                  onClick={exportToCSV}
-                  className="btn btn-secondary px-4 py-2 text-sm"
-                  disabled={results.length === 0}
-                >
-                  <Download className="w-4 h-4 mr-2 inline" />
-                  {t('reactions.exportCsv')}
-                </button>
                 <ShareQueryButton />
-                <button
-                  onClick={() => exportToJSON(results, { queryType: 'twotwo', filter: queryFilter, executionTime, rowCount: results.length, totalCount })}
-                  className="btn btn-secondary px-4 py-2 text-sm"
+                <ExportMenu
                   disabled={results.length === 0}
-                >
-                  <FileJson className="w-4 h-4 mr-2 inline" />
-                  {t('reactions.exportJson')}
-                </button>
-                <button
-                  onClick={() => exportToPDF(results, { queryType: 'twotwo', filter: queryFilter, executionTime, rowCount: results.length, totalCount }).catch((err) => console.error('PDF export failed:', err))}
-                  className="btn btn-secondary px-4 py-2 text-sm"
-                  disabled={results.length === 0}
-                >
-                  <FileText className="w-4 h-4 mr-2 inline" />
-                  {t('reactions.exportPdf')}
-                </button>
+                  items={[
+                    { key: 'csv', label: t('reactions.exportCsv'), icon: <FileSpreadsheet className="w-4 h-4" />, onSelect: exportToCSV },
+                    { key: 'json', label: t('reactions.exportJson'), icon: <FileJson className="w-4 h-4" />, onSelect: () => exportToJSON(results, { queryType: 'twotwo', filter: queryFilter, executionTime, rowCount: results.length, totalCount }) },
+                    { key: 'pdf', label: t('reactions.exportPdf'), icon: <FileText className="w-4 h-4" />, onSelect: () => { exportToPDF(results, { queryType: 'twotwo', filter: queryFilter, executionTime, rowCount: results.length, totalCount }).catch((err) => console.error('PDF export failed:', err)) } },
+                  ]}
+                />
               </div>
             </div>
 
@@ -1125,58 +1105,21 @@ export default function TwoToTwoQuery() {
                   className="sticky top-0 z-[5]"
                   style={{ paddingRight: twoTwoHeaderPadding }}
                 >
-                  <div
-                    className="grid border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-sm font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-300"
-                    style={{ gridTemplateColumns: twoTwoColumnTemplate }}
-                  >
-                    <div className="px-3 py-2 text-center bg-blue-50 dark:bg-blue-900/30 col-span-2">
-                      {t('reactions.inputs')}
-                    </div>
-                    <div className="px-3 py-2 text-center bg-green-50 dark:bg-green-900/30 col-span-2">
-                      {t('reactions.outputs')}
-                    </div>
-                    <div className="px-3 py-2 text-center">{t('reactions.energyMeV')}</div>
-                    <div className="px-1 py-2 sm:px-3 text-center">{t('reactions.neutrino')}</div>
-                    {showBosonFermion && (
-                      <>
-                        <div className="px-3 py-2 text-center bg-purple-50 dark:bg-purple-900/30 col-span-2">
-                          {t('reactions.input1Type')}
-                        </div>
-                        <div className="px-3 py-2 text-center bg-purple-50 dark:bg-purple-900/30 col-span-2">
-                          {t('reactions.input2Type')}
-                        </div>
-                        <div className="px-3 py-2 text-center bg-amber-50 dark:bg-amber-900/30 col-span-2">
-                          {t('reactions.output1Type')}
-                        </div>
-                        <div className="px-3 py-2 text-center bg-amber-50 dark:bg-amber-900/30 col-span-2">
-                          {t('reactions.output2Type')}
-                        </div>
-                      </>
-                    )}
-                  </div>
-                  <div
-                    className="grid border-b border-gray-200 dark:border-gray-700 bg-gray-100 dark:bg-gray-800/80 text-xs font-medium uppercase text-gray-500 dark:text-gray-400"
-                    style={{ gridTemplateColumns: twoTwoColumnTemplate }}
-                  >
-                    <div className="px-3 py-2 text-center bg-blue-50 dark:bg-blue-900/30">{t('reactions.input1')}</div>
-                    <div className="px-3 py-2 text-center bg-blue-50 dark:bg-blue-900/30">{t('reactions.input2')}</div>
-                    <div className="px-3 py-2 text-center bg-green-50 dark:bg-green-900/30">{t('reactions.output1')}</div>
-                    <div className="px-3 py-2 text-center bg-green-50 dark:bg-green-900/30">{t('reactions.output2')}</div>
-                    <div className="px-3 py-2 text-center">{t('reactions.energy')}</div>
-                    <div className="px-1 py-2 sm:px-3 text-center">{t('reactions.neutrino')}</div>
-                    {showBosonFermion && (
-                      <>
-                        <div className="px-3 py-2 text-center">{t('reactions.nuclear')}</div>
-                        <div className="px-3 py-2 text-center">{t('reactions.atomic')}</div>
-                        <div className="px-3 py-2 text-center">{t('reactions.nuclear')}</div>
-                        <div className="px-3 py-2 text-center">{t('reactions.atomic')}</div>
-                        <div className="px-3 py-2 text-center">{t('reactions.nuclear')}</div>
-                        <div className="px-3 py-2 text-center">{t('reactions.atomic')}</div>
-                        <div className="px-3 py-2 text-center">{t('reactions.nuclear')}</div>
-                        <div className="px-3 py-2 text-center">{t('reactions.atomic')}</div>
-                      </>
-                    )}
-                  </div>
+                  <ReactionTableHeader
+                    gridTemplateColumns={twoTwoColumnTemplate}
+                    columns={[
+                      { key: 'inputs', label: t('reactions.inputs'), className: 'bg-blue-50 dark:bg-blue-900/30', children: [{ key: 'in1', label: t('reactions.input1') }, { key: 'in2', label: t('reactions.input2') }] },
+                      { key: 'outputs', label: t('reactions.outputs'), className: 'bg-green-50 dark:bg-green-900/30', children: [{ key: 'out1', label: t('reactions.output1') }, { key: 'out2', label: t('reactions.output2') }] },
+                      { key: 'energy', label: <>{t('reactions.energy')} <span className="normal-case">(MeV)</span></> },
+                      { key: 'neutrino', label: t('reactions.neutrino'), compact: true, normalCase: true },
+                      ...(showBosonFermion ? [
+                        { key: 'input1Type', label: t('reactions.input1Type'), className: 'bg-purple-50 dark:bg-purple-900/30', children: [{ key: 'n', label: t('reactions.nuclear') }, { key: 'a', label: t('reactions.atomic') }] },
+                        { key: 'input2Type', label: t('reactions.input2Type'), className: 'bg-purple-50 dark:bg-purple-900/30', children: [{ key: 'n', label: t('reactions.nuclear') }, { key: 'a', label: t('reactions.atomic') }] },
+                        { key: 'output1Type', label: t('reactions.output1Type'), className: 'bg-amber-50 dark:bg-amber-900/30', children: [{ key: 'n', label: t('reactions.nuclear') }, { key: 'a', label: t('reactions.atomic') }] },
+                        { key: 'output2Type', label: t('reactions.output2Type'), className: 'bg-amber-50 dark:bg-amber-900/30', children: [{ key: 'n', label: t('reactions.nuclear') }, { key: 'a', label: t('reactions.atomic') }] },
+                      ] : []),
+                    ]}
+                  />
                 </div>
 
                 {filteredResults.length === 0 ? (
@@ -1293,17 +1236,7 @@ export default function TwoToTwoQuery() {
                             <span className="font-semibold text-green-600 dark:text-green-300">{reaction.MeV.toFixed(2)}</span>
                           </div>
                           <div className="px-1 py-1.5 sm:px-3 sm:py-3 text-center">
-                            <span
-                              className={`px-2 py-1 rounded-full text-xs font-medium ${
-                                reaction.neutrino === 'none'
-                                  ? 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300'
-                                  : reaction.neutrino === 'left'
-                                  ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300'
-                                  : 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300'
-                              }`}
-                            >
-                              {reaction.neutrino === 'none' ? 'None' : reaction.neutrino === 'left' ? 'Left' : 'Right'}
-                            </span>
+                            <NeutrinoBadge neutrino={reaction.neutrino} />
                           </div>
                           {showBosonFermion && (
                             <>
@@ -1496,17 +1429,7 @@ export default function TwoToTwoQuery() {
                             <span className="font-semibold text-green-600 dark:text-green-300">{reaction.MeV.toFixed(2)}</span>
                           </div>
                           <div className="px-1 py-1.5 sm:px-3 sm:py-3 text-center">
-                            <span
-                              className={`px-2 py-1 rounded-full text-xs font-medium ${
-                                reaction.neutrino === 'none'
-                                  ? 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300'
-                                  : reaction.neutrino === 'left'
-                                  ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300'
-                                  : 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300'
-                              }`}
-                            >
-                              {reaction.neutrino === 'none' ? 'None' : reaction.neutrino === 'left' ? 'Left' : 'Right'}
-                            </span>
+                            <NeutrinoBadge neutrino={reaction.neutrino} />
                           </div>
                           {showBosonFermion && (
                             <>

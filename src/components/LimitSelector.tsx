@@ -4,6 +4,8 @@ import { ChevronDown } from 'lucide-react'
 export interface LimitSelectorProps {
   value: number | null | undefined
   onChange: (value: number | undefined) => void
+  /** Optional id for the selector button (lets other UI focus/scroll to it) */
+  id?: string
 }
 
 const limitOptions = [
@@ -15,7 +17,7 @@ const limitOptions = [
   { value: -1, label: 'Custom' }
 ]
 
-export default function LimitSelector({ value, onChange }: LimitSelectorProps) {
+export default function LimitSelector({ value, onChange, id }: LimitSelectorProps) {
   const [isOpen, setIsOpen] = useState(false)
   const [customValue, setCustomValue] = useState('')
   const [showCustomInput, setShowCustomInput] = useState(false)
@@ -67,7 +69,7 @@ export default function LimitSelector({ value, onChange }: LimitSelectorProps) {
 
   return (
     <div className="relative" ref={dropdownRef}>
-      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+      <label htmlFor={id} className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
         Result Limit
       </label>
       
@@ -99,6 +101,7 @@ export default function LimitSelector({ value, onChange }: LimitSelectorProps) {
       ) : (
         <>
           <button
+            id={id}
             type="button"
             className="input flex items-center justify-between w-full text-left"
             onClick={() => setIsOpen(!isOpen)}
