@@ -156,7 +156,7 @@
     },
     "aboutData": {
       "title": "About the Data",
-      "description": "The reaction database comes from <strong>Dr. Alexander Parkhomov's</strong> 2018 analysis of 280 stable nuclides, identifying <strong>1,389 fusion</strong>, <strong>817 fission</strong>, and <strong>516,789 two-to-two</strong> exothermic reactions — thermodynamically favorable pathways for nuclear transmutation at low energies. Originally developed as the <nanosoftLink>Nanosoft Package</nanosoftLink> by R.W. Greenyer and P.W. Power for the Martin Fleischmann Memorial Project.",
+      "description": "The reaction database comes from <strong>Dr. Alexander Parkhomov's</strong> 2018 analysis of exothermic nuclear reactions between stable nuclides — thermodynamically favorable pathways for nuclear transmutation at low energies. It contains <strong>3,921 fusion</strong>, <strong>1,733 fission</strong>, and <strong>1,215,374 two-to-two</strong> reactions, including neutrino-involved reactions; of these, 1,505 fusion, 818 fission, and 518,657 two-to-two reactions involve no neutrinos. Originally developed as the <nanosoftLink>Nanosoft Package</nanosoftLink> by R.W. Greenyer and P.W. Power for the Martin Fleischmann Memorial Project.",
       "visitNanosoft": "Visit Original Nanosoft Package"
     },
     "openSource": {
@@ -904,7 +904,10 @@
     "fissionAllDescription": "All exothermic fission reactions including neutrino variants",
     "twoToTwoAllDescription": "All exothermic 2-2 transmutation reactions",
     "nuclidesPlusDescription": "Extended table of 324 stable and long-lived nuclides",
-    "elementsPlusDescription": "Comprehensive element properties from periodic table",
+    "elementPropertiesPlusDescription": "Comprehensive element properties from periodic table",
+    "atomicRadiiDescription": "Empirical, calculated, van der Waals, and covalent atomic radii (pm) for each element",
+    "radioNuclidesDescription": "Radioactive decay data: decay modes, half-lives, radiation types, energies (keV), and intensities",
+    "elementsPlusDescription": "View listing each element's atomic number, symbol, and name",
     "fieldZ": "Z",
     "fieldZDescription": "Atomic number (number of protons)",
     "fieldA": "A",
@@ -938,7 +941,7 @@
     "noResults": "Query executed successfully but returned no results.",
     "exampleQueries": "Example Queries",
     "availableTables": "Available Tables",
-    "fusionAllShort": "Fusion reactions (E1 + E → E)",
+    "fusionAllShort": "Fusion reactions (E1 + E2 → E)",
     "fissionAllShort": "Fission reactions (E → E1 + E2)",
     "twoToTwoAllShort": "2-to-2 reactions (E1 + E2 → E3 + E4)",
     "nuclidesPlusShort": "Nuclear isotope properties",
@@ -956,8 +959,8 @@
     "tipGroupByText": "Use",
     "tipGroupByKeyword": "GROUP BY",
     "tipGroupByRest": "for aggregations",
-    "tipStringsText": "String comparisons use double quotes:",
-    "tipStringsCode": "\"H\""
+    "tipStringsText": "String literals use single quotes:",
+    "tipStringsCode": "'H'"
   },
   "updates": {
     "appUpdateAvailable": "App update available: {{current}} → {{available}}",

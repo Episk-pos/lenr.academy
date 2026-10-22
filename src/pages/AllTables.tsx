@@ -16,9 +16,9 @@ export default function AllTables() {
   const exampleQueries = [
     'SELECT * FROM NuclidesPlus ORDER BY Z, A',
     'SELECT * FROM ElementsPlus WHERE Melting > 1000',
-    'SELECT * FROM FusionAll WHERE E1 = "H" AND MeV > 20 LIMIT 50',
-    'SELECT * FROM FissionAll WHERE E = "Pb" ORDER BY MeV DESC LIMIT 50',
-    'SELECT * FROM TwoToTwoAll WHERE E1 IN ("H","D") AND E2 = "Ni" ORDER BY MeV DESC LIMIT 50',
+    'SELECT * FROM FusionAll WHERE E1 = \'H\' AND MeV > 20 LIMIT 50',
+    'SELECT * FROM FissionAll WHERE E = \'Pb\' ORDER BY MeV DESC LIMIT 50',
+    'SELECT * FROM TwoToTwoAll WHERE E1 IN (\'H\', \'D\') AND E2 = \'Ni\' ORDER BY MeV DESC LIMIT 50',
     'SELECT COUNT(*) as TotalReactions FROM FusionAll',
     'SELECT E, COUNT(*) as ReactionCount FROM FusionAll GROUP BY E ORDER BY ReactionCount DESC',
   ]

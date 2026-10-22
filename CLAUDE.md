@@ -7,9 +7,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 LENR Academy is a React/TypeScript SPA that provides interactive tools for exploring Low Energy Nuclear Reactions (LENR) and cold fusion transmutation pathways. It's a modern reimplementation of the original [Nanosoft Package](https://nanosoft.co.nz) PHP application developed by R.W. Greenyer and P.W. Power.
 
 The application operates entirely client-side using a 161MB SQLite database (parkhomov.db) containing Dr. Alexander Parkhomov's nuclear reaction tables:
-- 1,389 fusion reactions
-- 817 fission reactions
-- 516,789 two-to-two reactions
+- 3,921 fusion reactions (1,505 without neutrinos)
+- 1,733 fission reactions (818 without neutrinos)
+- 1,215,374 two-to-two reactions (518,657 without neutrinos)
 
 **Live site**: https://lenr.academy
 **Repository**: https://github.com/Episk-pos/lenr.academy

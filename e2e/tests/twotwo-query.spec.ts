@@ -142,7 +142,7 @@ test.describe('Two-to-Two Query Page', () => {
   });
 
   test('should limit results due to large dataset', async ({ page }) => {
-    // Two-to-two has 516,789 reactions, so limits are important
+    // Two-to-two has 1,215,374 reactions, so limits are important
     // Default limit is 100, let's change it to 50
     await page.waitForFunction(
       () => document.querySelector('[role="region"][aria-label="Two-to-two reaction results"] div[class*="grid"][class*="border-b"]') !== null,

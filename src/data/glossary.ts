@@ -119,19 +119,19 @@ export const GLOSSARY: GlossaryEntry[] = [
   },
   {
     term: 'Fusion',
-    definition: 'A nuclear reaction where two lighter nuclei combine to form a heavier nucleus (A + B → C). Releases energy when the product has higher binding energy per nucleon than the reactants. This database contains 1,389 fusion reactions.',
+    definition: 'A nuclear reaction where two lighter nuclei combine to form a heavier nucleus (A + B → C). Releases energy when the product has higher binding energy per nucleon than the reactants. This database contains 3,921 fusion reactions, of which 1,505 involve no neutrinos.',
     category: 'reaction',
     relatedTerms: ['Fission', 'Two-to-Two', 'MeV'],
   },
   {
     term: 'Fission',
-    definition: 'A nuclear reaction where a heavier nucleus splits into two lighter nuclei (A → B + C). Releases energy when the products have higher binding energy per nucleon. This database contains 817 fission reactions.',
+    definition: 'A nuclear reaction where a heavier nucleus splits into two lighter nuclei (A → B + C). Releases energy when the products have higher binding energy per nucleon. This database contains 1,733 fission reactions, of which 818 involve no neutrinos.',
     category: 'reaction',
     relatedTerms: ['Fusion', 'Two-to-Two', 'MeV'],
   },
   {
     term: 'Two-to-Two',
-    definition: 'A nuclear reaction where two nuclei interact and produce two different nuclei (A + B → C + D). The most common reaction type in the database with 516,789 reactions.',
+    definition: 'A nuclear reaction where two nuclei interact and produce two different nuclei (A + B → C + D). The most common reaction type in the database, with 1,215,374 reactions (518,657 of which involve no neutrinos).',
     category: 'reaction',
     relatedTerms: ['Fusion', 'Fission'],
   },

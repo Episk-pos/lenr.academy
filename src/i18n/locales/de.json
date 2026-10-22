@@ -156,7 +156,7 @@
     },
     "aboutData": {
       "title": "Über die Daten",
-      "description": "Die Reaktionsdatenbank stammt aus der Analyse von <strong>Dr. Alexander Parkhomov</strong> aus dem Jahr 2018 über 280 stabile Nuklide und identifiziert <strong>1.389 Fusions-</strong>, <strong>817 Spaltungs-</strong> und <strong>516.789 Zwei-zu-Zwei-</strong>Reaktionen — thermodynamisch günstige Wege für Kerntransmutation bei niedrigen Energien. Ursprünglich entwickelt als <nanosoftLink>Nanosoft-Paket</nanosoftLink> von R.W. Greenyer und P.W. Power für das Martin Fleischmann Gedächtnisprojekt.",
+      "description": "Die Reaktionsdatenbank stammt aus der Analyse exothermer Kernreaktionen zwischen stabilen Nukliden von <strong>Dr. Alexander Parkhomov</strong> aus dem Jahr 2018 — thermodynamisch günstige Wege für Kerntransmutation bei niedrigen Energien. Sie enthält <strong>3.921 Fusions-</strong>, <strong>1.733 Spaltungs-</strong> und <strong>1.215.374 Zwei-zu-Zwei-</strong>Reaktionen, einschließlich Reaktionen mit Neutrino-Beteiligung; davon sind 1.505 Fusions-, 818 Spaltungs- und 518.657 Zwei-zu-Zwei-Reaktionen ohne Neutrinos. Ursprünglich entwickelt als <nanosoftLink>Nanosoft-Paket</nanosoftLink> von R.W. Greenyer und P.W. Power für das Martin Fleischmann Gedächtnisprojekt.",
       "visitNanosoft": "Originales Nanosoft-Paket besuchen"
     },
     "openSource": {
@@ -904,7 +904,10 @@
     "fissionAllDescription": "Alle exothermen Spaltungsreaktionen einschließlich Neutrino-Varianten",
     "twoToTwoAllDescription": "Alle exothermen 2-2-Transmutationsreaktionen",
     "nuclidesPlusDescription": "Erweiterte Tabelle mit 324 stabilen und langlebigen Nukliden",
-    "elementsPlusDescription": "Umfassende Elementeigenschaften aus dem Periodensystem",
+    "elementPropertiesPlusDescription": "Umfassende Elementeigenschaften aus dem Periodensystem",
+    "atomicRadiiDescription": "Empirische, berechnete, Van-der-Waals- und kovalente Atomradien (pm) für jedes Element",
+    "radioNuclidesDescription": "Daten zum radioaktiven Zerfall: Zerfallsarten, Halbwertszeiten, Strahlungsarten, Energien (keV) und Intensitäten",
+    "elementsPlusDescription": "Ansicht mit Ordnungszahl, Symbol und Namen jedes Elements",
     "fieldZ": "Z",
     "fieldZDescription": "Ordnungszahl (Anzahl der Protonen)",
     "fieldA": "A",
@@ -938,7 +941,7 @@
     "noResults": "Abfrage erfolgreich ausgeführt, aber keine Ergebnisse zurückgegeben.",
     "exampleQueries": "Beispielabfragen",
     "availableTables": "Verfügbare Tabellen",
-    "fusionAllShort": "Fusionsreaktionen (E1 + E → E)",
+    "fusionAllShort": "Fusionsreaktionen (E1 + E2 → E)",
     "fissionAllShort": "Spaltungsreaktionen (E → E1 + E2)",
     "twoToTwoAllShort": "2-zu-2-Reaktionen (E1 + E2 → E3 + E4)",
     "nuclidesPlusShort": "Nuklideneigenschaften",
@@ -956,8 +959,8 @@
     "tipGroupByText": "Verwenden Sie",
     "tipGroupByKeyword": "GROUP BY",
     "tipGroupByRest": "für Aggregationen",
-    "tipStringsText": "String-Vergleiche verwenden doppelte Anführungszeichen:",
-    "tipStringsCode": "\"H\""
+    "tipStringsText": "Zeichenketten-Literale verwenden einfache Anführungszeichen:",
+    "tipStringsCode": "'H'"
   },
   "updates": {
     "appUpdateAvailable": "App-Update verfügbar: {{current}} → {{available}}",

@@ -83,7 +83,7 @@ test.describe('Home Page', () => {
     await sectionHeading.scrollIntoViewIfNeeded();
     await expect(sectionHeading).toBeVisible();
     // Reaction counts are called out inline
-    await expect(page.getByText(/1,389 fusion/)).toBeVisible();
+    await expect(page.getByText(/3,921 fusion/)).toBeVisible();
   });
 
   test('should display nanosoft external link in data heritage section', async ({ page }) => {

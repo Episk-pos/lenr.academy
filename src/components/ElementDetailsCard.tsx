@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next'
 import type { Element, AtomicRadiiData } from '../types'
 import CitationBadge from './CitationBadge'
 import { getCitationsForElement } from '../services/citationsService'
+import { formatDensity, formatSpecificHeat } from '../utils/formatUtils'
 
 interface ElementDetailsCardProps {
   element: Element | null
@@ -150,7 +151,7 @@ export default function ElementDetailsCard({ element, atomicRadii, onClose }: El
               <div className="flex justify-between">
                 <dt className="text-gray-600 dark:text-gray-400">{t('elements.specificHeat')}:</dt>
                 <dd className="font-medium text-gray-900 dark:text-gray-100">
-                  {element.SpecHeat.toFixed(2)} J/(g·K)
+                  {formatSpecificHeat(element.SpecHeat)}
                 </dd>
               </div>
             )}
@@ -174,7 +175,7 @@ export default function ElementDetailsCard({ element, atomicRadii, onClose }: El
               <div className="flex justify-between">
                 <dt className="text-gray-600 dark:text-gray-400">{t('elements.densitySTP')}:</dt>
                 <dd className="font-medium text-gray-900 dark:text-gray-100">
-                  {element.STPDensity.toFixed(3)} g/cm³
+                  {formatDensity(element.STPDensity)}
                 </dd>
               </div>
             )}
