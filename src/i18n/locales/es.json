@@ -2037,5 +2037,27 @@
       "name": "Emisión de dos protones",
       "description": "el núcleo emite dos protones"
     }
+  },
+  "export": {
+    "pdf": {
+      "title": "{{type}}: {{equation}}",
+      "generated": "Generado el {{date}}",
+      "reactionCount_one": "{{shown}} de {{count}} reacción",
+      "reactionCount_many": "{{shown}} de {{count}} reacciones",
+      "reactionCount_other": "{{shown}} de {{count}} reacciones",
+      "queryParameters": "Parámetros de consulta: {{params}}",
+      "noFilters": "Sin filtros aplicados",
+      "filterValue": "{{label}}: {{value}}",
+      "inputElement": "Elemento de entrada",
+      "inputElementN": "Elemento de entrada {{n}}",
+      "outputElement": "Elemento de salida",
+      "outputElementN": "Elemento de salida {{n}}",
+      "minEnergy": "Energía mín.",
+      "maxEnergy": "Energía máx.",
+      "limit": "Límite",
+      "columnElement": "Elemento",
+      "footer": "{{brand}} · {{url}} | Basado en el trabajo del Dr. Alexander Parkhomov",
+      "pageNumber": "Página {{page}} de {{total}}"
+    }
   }
 }

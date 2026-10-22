@@ -2033,5 +2033,26 @@
       "name": "Doppelte Protonenemission",
       "description": "Kern emittiert zwei Protonen"
     }
+  },
+  "export": {
+    "pdf": {
+      "title": "{{type}}: {{equation}}",
+      "generated": "Erstellt am {{date}}",
+      "reactionCount_one": "{{shown}} von {{count}} Reaktion",
+      "reactionCount_other": "{{shown}} von {{count}} Reaktionen",
+      "queryParameters": "Abfrageparameter: {{params}}",
+      "noFilters": "Keine Filter angewendet",
+      "filterValue": "{{label}}: {{value}}",
+      "inputElement": "Eingangselement",
+      "inputElementN": "Eingangselement {{n}}",
+      "outputElement": "Ausgangselement",
+      "outputElementN": "Ausgangselement {{n}}",
+      "minEnergy": "Min. Energie",
+      "maxEnergy": "Max. Energie",
+      "limit": "Limit",
+      "columnElement": "Element",
+      "footer": "{{brand}} · {{url}} | Basierend auf der Arbeit von Dr. Alexander Parkhomov",
+      "pageNumber": "Seite {{page}} von {{total}}"
+    }
   }
 }

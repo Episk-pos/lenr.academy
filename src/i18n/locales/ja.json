@@ -2033,5 +2033,26 @@
       "name": "二陽子放出",
       "description": "原子核が陽子を2個放出"
     }
+  },
+  "export": {
+    "pdf": {
+      "title": "{{type}}：{{equation}}",
+      "generated": "作成日時：{{date}}",
+      "reactionCount_one": "{{count}}件中{{shown}}件の反応",
+      "reactionCount_other": "{{count}}件中{{shown}}件の反応",
+      "queryParameters": "クエリ条件：{{params}}",
+      "noFilters": "フィルターなし",
+      "filterValue": "{{label}}：{{value}}",
+      "inputElement": "入力元素",
+      "inputElementN": "入力元素{{n}}",
+      "outputElement": "出力元素",
+      "outputElementN": "出力元素{{n}}",
+      "minEnergy": "最小エネルギー",
+      "maxEnergy": "最大エネルギー",
+      "limit": "上限",
+      "columnElement": "元素",
+      "footer": "{{brand}} · {{url}} | アレクサンドル・パルホモフ博士の研究に基づく",
+      "pageNumber": "{{page}} / {{total}} ページ"
+    }
   }
 }

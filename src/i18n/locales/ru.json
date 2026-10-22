@@ -2049,5 +2049,28 @@
       "name": "Двухпротонный распад",
       "description": "ядро испускает два протона"
     }
+  },
+  "export": {
+    "pdf": {
+      "title": "{{type}}: {{equation}}",
+      "generated": "Создано {{date}}",
+      "reactionCount_one": "{{shown}} из {{count}} реакции",
+      "reactionCount_few": "{{shown}} из {{count}} реакций",
+      "reactionCount_many": "{{shown}} из {{count}} реакций",
+      "reactionCount_other": "{{shown}} из {{count}} реакции",
+      "queryParameters": "Параметры запроса: {{params}}",
+      "noFilters": "Фильтры не применены",
+      "filterValue": "{{label}}: {{value}}",
+      "inputElement": "Входной элемент",
+      "inputElementN": "Входной элемент {{n}}",
+      "outputElement": "Выходной элемент",
+      "outputElementN": "Выходной элемент {{n}}",
+      "minEnergy": "Мин. энергия",
+      "maxEnergy": "Макс. энергия",
+      "limit": "Лимит",
+      "columnElement": "Элемент",
+      "footer": "{{brand}} · {{url}} | На основе работ д-ра Александра Пархомова",
+      "pageNumber": "Страница {{page}} из {{total}}"
+    }
   }
 }

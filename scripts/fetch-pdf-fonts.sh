@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 # Download Noto Sans sources (SIL OFL 1.1) from google/fonts and build the
-# subset TTFs served from public/fonts/pdf/ for PDF export.
+# subset TTFs served from public/fonts/pdf/ for PDF export (plus
+# NotoSansDevanagari-Shaping.ttf, which keeps OpenType layout tables for
+# canvas shaping; see src/utils/pdfShaping.ts).
 #
 # Re-run after adding characters to ja/zh/ko/hi locale files that fall
 # outside the common-character sets (src/utils/pdfFonts.test.ts will tell you).

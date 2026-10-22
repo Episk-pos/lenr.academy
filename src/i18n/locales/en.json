@@ -2033,5 +2033,26 @@
       "name": "Double proton emission",
       "description": "nucleus emits two protons"
     }
+  },
+  "export": {
+    "pdf": {
+      "title": "{{type}}: {{equation}}",
+      "generated": "Generated {{date}}",
+      "reactionCount_one": "{{shown}} of {{count}} reaction",
+      "reactionCount_other": "{{shown}} of {{count}} reactions",
+      "queryParameters": "Query parameters: {{params}}",
+      "noFilters": "No filters applied",
+      "filterValue": "{{label}}: {{value}}",
+      "inputElement": "Input element",
+      "inputElementN": "Input element {{n}}",
+      "outputElement": "Output element",
+      "outputElementN": "Output element {{n}}",
+      "minEnergy": "Min energy",
+      "maxEnergy": "Max energy",
+      "limit": "Limit",
+      "columnElement": "Element",
+      "footer": "{{brand}} · {{url}} | Based on work by Dr. Alexander Parkhomov",
+      "pageNumber": "Page {{page}} of {{total}}"
+    }
   }
 }

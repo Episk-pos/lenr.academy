@@ -2049,5 +2049,28 @@
       "name": "Двопротонний розпад",
       "description": "ядро випромінює два протони"
     }
+  },
+  "export": {
+    "pdf": {
+      "title": "{{type}}: {{equation}}",
+      "generated": "Створено {{date}}",
+      "reactionCount_one": "{{shown}} з {{count}} реакції",
+      "reactionCount_few": "{{shown}} з {{count}} реакцій",
+      "reactionCount_many": "{{shown}} з {{count}} реакцій",
+      "reactionCount_other": "{{shown}} з {{count}} реакції",
+      "queryParameters": "Параметри запиту: {{params}}",
+      "noFilters": "Фільтри не застосовано",
+      "filterValue": "{{label}}: {{value}}",
+      "inputElement": "Вхідний елемент",
+      "inputElementN": "Вхідний елемент {{n}}",
+      "outputElement": "Вихідний елемент",
+      "outputElementN": "Вихідний елемент {{n}}",
+      "minEnergy": "Мін. енергія",
+      "maxEnergy": "Макс. енергія",
+      "limit": "Ліміт",
+      "columnElement": "Елемент",
+      "footer": "{{brand}} · {{url}} | На основі праць д-ра Олександра Пархомова",
+      "pageNumber": "Сторінка {{page}} з {{total}}"
+    }
   }
 }

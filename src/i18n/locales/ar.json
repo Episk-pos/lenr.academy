@@ -2065,5 +2065,30 @@
       "name": "انبعاث بروتونين",
       "description": "تبعث النواة بروتونين"
     }
+  },
+  "export": {
+    "pdf": {
+      "title": "{{type}}: {{equation}}",
+      "generated": "أُنشئ في {{date}}",
+      "reactionCount_zero": "{{shown}} من أصل {{count}} تفاعل",
+      "reactionCount_one": "{{shown}} من أصل {{count}} تفاعل",
+      "reactionCount_two": "{{shown}} من أصل {{count}} تفاعلين",
+      "reactionCount_few": "{{shown}} من أصل {{count}} تفاعلات",
+      "reactionCount_many": "{{shown}} من أصل {{count}} تفاعلًا",
+      "reactionCount_other": "{{shown}} من أصل {{count}} تفاعل",
+      "queryParameters": "معاملات الاستعلام: {{params}}",
+      "noFilters": "لم تُطبَّق أي مرشحات",
+      "filterValue": "{{label}}: {{value}}",
+      "inputElement": "عنصر الإدخال",
+      "inputElementN": "عنصر الإدخال {{n}}",
+      "outputElement": "عنصر الإخراج",
+      "outputElementN": "عنصر الإخراج {{n}}",
+      "minEnergy": "الحد الأدنى للطاقة",
+      "maxEnergy": "الحد الأقصى للطاقة",
+      "limit": "الحد",
+      "columnElement": "العنصر",
+      "footer": "{{brand}} · {{url}} | استنادًا إلى أعمال د. ألكسندر باركهوموف",
+      "pageNumber": "صفحة {{page}} من {{total}}"
+    }
   }
 }
