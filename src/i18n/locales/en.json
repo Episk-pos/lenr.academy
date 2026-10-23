@@ -495,8 +495,6 @@
     "elementChipHint": "Showing the lightest element. Select an element to pin it.",
     "clickForDetails": "Click on an element or a nuclide above to see detailed properties",
     "details": "Details",
-    "showDetails": "Show details",
-    "closeDetails": "Close details",
     "radioactive": "Radioactive",
     "querying": "Querying...",
     "export": "Export",

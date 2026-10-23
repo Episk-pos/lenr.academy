@@ -9,7 +9,7 @@ import { useQueryState } from '../contexts/QueryStateContext'
 import { queryFusion, getAllElements, getNuclideBySymbol, getElementBySymbol, getAtomicRadii, getFusionSqlPreview, calculateHeatmapMetrics } from '../services/queryService'
 import PeriodicTableSelector from '../components/PeriodicTableSelector'
 import PeriodicTable from '../components/PeriodicTable'
-import DetailsRail, { PinnedDetails } from '../components/DetailsRail'
+import PinnedDetails from '../components/PinnedDetails'
 import { HoverHighlightContext, createHoverHighlightStore } from '../contexts/HoverHighlightContext'
 import ResultNuclidesByElement from '../components/ResultNuclidesByElement'
 import DatabaseLoadingCard from '../components/DatabaseLoadingCard'
@@ -257,7 +257,7 @@ export default function FusionQuery() {
     hoverStore.setNuclide(null)
   }, [hoverStore, pinnedNuclide, highlightedNuclide, pinnedElement, highlightedElement, nuclides])
 
-  // Identity of what's pinned; a new value auto-opens the details drawer on narrow screens
+  // Identity of what's pinned; a new value scrolls the inline Details card into view
   const detailsPinKey = (pinnedNuclide && highlightedNuclide) || (pinnedElement && highlightedElement)
     ? `${pinnedElement ? highlightedElement : ''}|${pinnedNuclide ? highlightedNuclide : ''}`
     : null
@@ -674,8 +674,7 @@ export default function FusionQuery() {
 
   return (
     <HoverHighlightContext.Provider value={hoverStore}>
-    <div className={`mx-auto ${showResults ? 'xl:flex xl:items-start xl:gap-6 xl:max-w-[calc(80rem+344px)] 2xl:max-w-[calc(80rem+444px)]' : ''}`}>
-    <div className="max-w-7xl mx-auto min-w-0 xl:flex-1">
+    <div className="max-w-7xl mx-auto">
       <div className="mb-6 flex items-start justify-between">
         <PageHeader
           icon={PAGE_ICONS.fusion}
@@ -855,8 +854,8 @@ export default function FusionQuery() {
       {/* Results */}
       {showResults && (
         <div className="space-y-6">
-          {/* Heatmap Visualization (xl:px-4 keeps the full periodic table inside the column beside the details rail) */}
-          <div className="card p-6 xl:px-4">
+          {/* Heatmap Visualization */}
+          <div className="card p-6">
             <div className="flex items-center justify-between mb-4">
               <div className="flex-1">
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
@@ -1455,14 +1454,11 @@ export default function FusionQuery() {
             onElementSelect={handleElementPinToggle}
             onNuclideSelect={handleNuclideSelect}
           />
-        </div>
-      )}
-    </div>
 
-      {/* Details: sticky rail at xl+, slide-in drawer below */}
-      {showResults && (
-        <DetailsRail pinKey={detailsPinKey}>
+          {/* Details Section */}
           <PinnedDetails
+            pinKey={detailsPinKey}
+            scrollOnPin={hasInitializedFromUrl}
             nuclide={selectedNuclideDetails}
             element={selectedElementDetails}
             atomicRadii={selectedElementRadii}
@@ -1475,7 +1471,7 @@ export default function FusionQuery() {
               setHighlightedElement(null)
             }}
           />
-        </DetailsRail>
+        </div>
       )}
     </div>
     </HoverHighlightContext.Provider>
