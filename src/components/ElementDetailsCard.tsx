@@ -10,20 +10,16 @@ interface ElementDetailsCardProps {
   element: Element | null
   atomicRadii?: AtomicRadiiData | null
   onClose?: () => void
-  /** Single-column layout for narrow containers (details rail / drawer) */
-  compact?: boolean
 }
 
-export default function ElementDetailsCard({ element, atomicRadii, onClose, compact = false }: ElementDetailsCardProps) {
+export default function ElementDetailsCard({ element, atomicRadii, onClose }: ElementDetailsCardProps) {
   const { t } = useTranslation()
   if (!element) return null
-
-  const gridCols = compact ? 'grid-cols-1 gap-4' : 'md:grid-cols-2 lg:grid-cols-3 gap-6'
 
   const elementCitations = getCitationsForElement(element.Z)
 
   return (
-    <div className={`card ${compact ? 'p-4 [&_dd]:min-w-0 [&_dd]:break-words' : 'p-6'} animate-fade-in`}>
+    <div className="card p-6 animate-fade-in">
       <div className="flex items-start justify-between mb-4">
         <div>
           <h2 className="text-2xl font-bold mb-1">
@@ -49,7 +45,7 @@ export default function ElementDetailsCard({ element, atomicRadii, onClose, comp
         )}
       </div>
 
-      <div className={`grid ${gridCols} mb-6`}>
+      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
         <div>
           <h3 className="font-semibold text-gray-900 dark:text-white mb-3 text-sm uppercase tracking-wide">
             {t('elements.periodicTable')}
@@ -129,7 +125,7 @@ export default function ElementDetailsCard({ element, atomicRadii, onClose, comp
         </div>
       </div>
 
-      <div className={`grid ${gridCols}`}>
+      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
         <div>
           <h3 className="font-semibold text-gray-900 dark:text-white mb-3 text-sm uppercase tracking-wide">
             {t('elements.thermalProperties')}

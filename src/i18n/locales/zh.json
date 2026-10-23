@@ -495,8 +495,6 @@
     "elementChipHint": "当前显示最轻的元素。选择一个元素以固定。",
     "clickForDetails": "点击上方元素或核素查看详细属性",
     "details": "详情",
-    "showDetails": "显示详情",
-    "closeDetails": "关闭详情",
     "radioactive": "放射性",
     "querying": "查询中...",
     "export": "导出",
