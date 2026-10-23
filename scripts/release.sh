@@ -31,12 +31,68 @@ if ! git config --get user.signingkey &> /dev/null; then
     exit 1
 fi
 
+# --- BEGIN VERSION HELPERS ---
+# Explicit version pattern, e.g. 0.2.0, v0.2.0-beta.0, 1.0.0-rc.3
+EXPLICIT_VERSION_REGEX='^v?[0-9]+\.[0-9]+\.[0-9]+(-(alpha|beta|rc)\.[0-9]+)?$'
+
+# is_explicit_version STR: returns 0 if STR is an explicit version
+is_explicit_version() {
+    [[ "$1" =~ $EXPLICIT_VERSION_REGEX ]]
+}
+
+# prerelease_rank ID: alpha=1, beta=2, rc=3, anything else=0
+prerelease_rank() {
+    case "$1" in
+        alpha) echo 1 ;;
+        beta)  echo 2 ;;
+        rc)    echo 3 ;;
+        *)     echo 0 ;;
+    esac
+}
+
+# version_gt A B: returns 0 if semver A > B (incl. prerelease precedence), 1 otherwise.
+# Versions must not have a leading 'v'. Prerelease form: <id>.<num>
+version_gt() {
+    local re='^([0-9]+)\.([0-9]+)\.([0-9]+)(-([a-z]+)\.([0-9]+))?$'
+    local a_maj a_min a_pat a_pre a_num b_maj b_min b_pat b_pre b_num
+    [[ "$1" =~ $re ]] || return 1
+    a_maj=${BASH_REMATCH[1]}; a_min=${BASH_REMATCH[2]}; a_pat=${BASH_REMATCH[3]}
+    a_pre=${BASH_REMATCH[5]}; a_num=${BASH_REMATCH[6]}
+    [[ "$2" =~ $re ]] || return 1
+    b_maj=${BASH_REMATCH[1]}; b_min=${BASH_REMATCH[2]}; b_pat=${BASH_REMATCH[3]}
+    b_pre=${BASH_REMATCH[5]}; b_num=${BASH_REMATCH[6]}
+
+    # Compare major/minor/patch numerically (10# avoids octal on leading zeros)
+    local i av bv
+    local a_parts=("$a_maj" "$a_min" "$a_pat") b_parts=("$b_maj" "$b_min" "$b_pat")
+    for i in 0 1 2; do
+        av=$((10#${a_parts[$i]})); bv=$((10#${b_parts[$i]}))
+        if (( av > bv )); then return 0; fi
+        if (( av < bv )); then return 1; fi
+    done
+
+    # Same core version: a plain release sorts above any prerelease
+    if [ -z "$a_pre" ] && [ -z "$b_pre" ]; then return 1; fi
+    if [ -z "$a_pre" ]; then return 0; fi
+    if [ -z "$b_pre" ]; then return 1; fi
+
+    # Both prereleases: compare identifier rank, then number
+    local a_rank b_rank
+    a_rank=$(prerelease_rank "$a_pre"); b_rank=$(prerelease_rank "$b_pre")
+    if (( a_rank > b_rank )); then return 0; fi
+    if (( a_rank < b_rank )); then return 1; fi
+    if (( 10#$a_num > 10#$b_num )); then return 0; fi
+    return 1
+}
+# --- END VERSION HELPERS ---
+
 # Parse arguments
 BUMP_TYPE="${1:-}"
 PRERELEASE_IDENTIFIER="${2:-alpha}"
+EXPLICIT_VERSION=""
 
 if [ -z "$BUMP_TYPE" ]; then
-    echo -e "${RED}Usage: $0 <patch|minor|major|prerelease> [alpha|beta|rc]${NC}"
+    echo -e "${RED}Usage: $0 <patch|minor|major|prerelease|X.Y.Z[-alpha|beta|rc.N]> [alpha|beta|rc]${NC}"
     echo ""
     echo "Examples:"
     echo "  $0 patch                    # 0.0.1 → 0.0.2"
@@ -44,12 +100,15 @@ if [ -z "$BUMP_TYPE" ]; then
     echo "  $0 major                    # 0.0.1 → 1.0.0"
     echo "  $0 prerelease              # 0.0.1 → 0.0.2-alpha.0"
     echo "  $0 prerelease beta         # 0.0.1 → 0.0.2-beta.0"
+    echo "  $0 0.2.0-beta.0            # explicit version"
     exit 1
 fi
 
-# Validate bump type
-if [[ ! "$BUMP_TYPE" =~ ^(patch|minor|major|prerelease)$ ]]; then
-    echo -e "${RED}Error: Invalid bump type '$BUMP_TYPE'. Use: patch, minor, major, or prerelease${NC}"
+# Validate bump type (or explicit version)
+if is_explicit_version "$BUMP_TYPE"; then
+    EXPLICIT_VERSION="${BUMP_TYPE#v}"
+elif [[ ! "$BUMP_TYPE" =~ ^(patch|minor|major|prerelease)$ ]]; then
+    echo -e "${RED}Error: Invalid bump type '$BUMP_TYPE'. Use: patch, minor, major, prerelease, or an explicit version (e.g. 0.2.0-beta.0)${NC}"
     exit 1
 fi
 
@@ -146,7 +205,23 @@ bump_version() {
     echo "${major}.${minor}.${patch}"
 }
 
-NEW_VERSION=$(bump_version "$CURRENT_VERSION" "$BUMP_TYPE" "$PRERELEASE_IDENTIFIER")
+if [ -n "$EXPLICIT_VERSION" ]; then
+    NEW_VERSION="$EXPLICIT_VERSION"
+
+    # Refuse if the tag already exists
+    if git rev-parse -q --verify "refs/tags/v$NEW_VERSION" > /dev/null; then
+        echo -e "${RED}Error: Tag v$NEW_VERSION already exists.${NC}"
+        exit 1
+    fi
+
+    # Refuse if not strictly greater than the current version
+    if ! version_gt "$NEW_VERSION" "$CURRENT_VERSION"; then
+        echo -e "${RED}Error: Explicit version $NEW_VERSION is not greater than current version $CURRENT_VERSION.${NC}"
+        exit 1
+    fi
+else
+    NEW_VERSION=$(bump_version "$CURRENT_VERSION" "$BUMP_TYPE" "$PRERELEASE_IDENTIFIER")
+fi
 echo -e "${GREEN}New version: $NEW_VERSION${NC}"
 echo ""
 
