@@ -155,9 +155,11 @@ export function traceDecayChain(
   // Track visited nuclides to prevent infinite loops (e.g., isomeric transitions)
   const visited = new Set<string>()
 
-  // Track branch count and terminal nuclides
+  // Track branching points (nuclides with 2+ followed decay modes) and
+  // unique terminal nuclides (several paths may end at the same nuclide)
   let branchCount = 0
   const terminalNuclides: DecayChainResult['terminalNuclides'] = []
+  const terminalKeys = new Set<string>()
 
   /**
    * Recursive helper to build decay tree
@@ -207,6 +209,10 @@ export function traceDecayChain(
 
     // If this is a leaf node (stable or max depth reached), record it
     if (isStable || decayData.length === 0 || depth >= maxDepth) {
+      if (terminalKeys.has(key)) {
+        return node
+      }
+      terminalKeys.add(key)
       terminalNuclides.push({
         Z: currentZ,
         A: currentA,
@@ -250,12 +256,11 @@ export function traceDecayChain(
     })
 
     // Process each decay mode above the minimum branching ratio
+    let followedModes = 0
     normalizedIntensities.forEach((branchingRatio, decayMode) => {
       if (branchingRatio < minBranchingRatio) {
         return // Skip low-probability branches
       }
-
-      branchCount++
 
       // Calculate daughter nuclide
       const daughter = getDaughterNuclide(currentZ, currentA, E, decayMode)
@@ -268,6 +273,8 @@ export function traceDecayChain(
       if (!daughterE) {
         return // Invalid daughter
       }
+
+      followedModes++
 
       // Recursively build child node
       const childNode = buildNode(
@@ -282,6 +289,11 @@ export function traceDecayChain(
         node.children.push(childNode)
       }
     })
+
+    // A branching point is a nuclide with two or more followed decay modes
+    if (followedModes >= 2) {
+      branchCount++
+    }
 
     return node
   }

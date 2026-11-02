@@ -54,10 +54,13 @@ describe('RadioactiveNuclideCard decay chain', () => {
     fireEvent.click(within(section).getByRole('button', { name: en.elements.expandDecayChain }))
     expect(within(section).getByRole('button', { name: en.elements.collapseDecayChain })).toBeInTheDocument()
 
-    // Default controls: depth 5, min branching 10% -> Bi-212 branches to Po-212 and Tl-208, both to Pb-208
+    // Default controls: depth 5, min branching 10% -> Bi-212 branches to Po-212 and Tl-208, both to Pb-208,
+    // which is listed once
     const terminals = screen.getByTestId('decay-chain-terminals')
-    expect(terminals).toHaveTextContent('Pb-208, Pb-208')
-    expect(terminals).toHaveTextContent(`(2 ${en.elements.stableCount}, 0 ${en.elements.radioactiveCount})`)
+    expect(terminals).toHaveTextContent('Pb-208')
+    expect(terminals).not.toHaveTextContent('Pb-208, Pb-208')
+    expect(terminals).toHaveTextContent(`(1 ${en.elements.stableCount}, 0 ${en.elements.radioactiveCount})`)
+    expect(section).toHaveTextContent(`${en.elements.branchCount}: 1`)
 
     for (const node of ['Pb-212', 'Bi-212', 'Po-212', 'Tl-208', 'Pb-208']) {
       expect(within(section).getAllByText(node).length).toBeGreaterThan(0)

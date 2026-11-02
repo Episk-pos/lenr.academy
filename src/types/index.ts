@@ -265,8 +265,8 @@ export interface DecayChainNode {
 export interface DecayChainResult {
   root: DecayChainNode;                           // Root nuclide node
   totalGenerations: number;                       // Maximum depth of the tree
-  branchCount: number;                            // Total number of decay branches
-  terminalNuclides: Array<{                       // Leaf nodes of the tree
+  branchCount: number;                            // Number of branching points (nuclides with 2+ followed decay modes)
+  terminalNuclides: Array<{                       // Unique leaf nuclides of the tree
     Z: number;
     A: number;
     E: string;

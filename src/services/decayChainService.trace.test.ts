@@ -44,8 +44,25 @@ describe('traceDecayChain for nuclides without a NuclidesPlus row', () => {
     expect(chain.totalGenerations).toBe(6);
     expect(chain.terminalNuclides).toEqual([
       { Z: 82, A: 208, E: 'Pb', isStable: true },
+    ]);
+    expect(chain.branchCount).toBe(1);
+  });
+
+  it('counts branching points, not edges, and lists each terminal nuclide once', () => {
+    const chain = traceDecayChain(db, 88, 224, { maxDepth: 10, minBranchingRatio: 1 });
+    // Only Bi-212 splits (Po-212 | Tl-208); both paths end at Pb-208
+    expect(chain.branchCount).toBe(1);
+    expect(chain.terminalNuclides.filter(n => n.Z === 82 && n.A === 208)).toHaveLength(1);
+    expect(chain.terminalNuclides).toEqual([
       { Z: 82, A: 208, E: 'Pb', isStable: true },
     ]);
+  });
+
+  it('reports zero branching points for a linear chain', () => {
+    // Stops at Pb-212, before the Bi-212 split
+    const chain = traceDecayChain(db, 88, 224, { maxDepth: 3, minBranchingRatio: 1 });
+    expect(chain.branchCount).toBe(0);
+    expect(chain.terminalNuclides.map(n => `${n.E}-${n.A}`)).toEqual(['Pb-212']);
   });
 
   it('marks the radioactive members radioactive and only Pb-208 stable', () => {
