@@ -84,6 +84,25 @@ describe('DecayChainDiagram', () => {
     expect(radioactiveLabels.length).toBeGreaterThanOrEqual(2);
   });
 
+  it('shows UNKNOWN (not STABLE or RADIOACTIVE) for nodes of unknown stability', () => {
+    const root = makeNode({
+      nuclide: { Z: 17, A: 36, E: 'Cl' },
+      children: [
+        makeNode({
+          nuclide: { Z: 16, A: 36, E: 'S' },
+          decayMode: 'EC',
+          branchingRatio: 2,
+          logHalfLife: undefined,
+          stabilityUnknown: true,
+        }),
+      ],
+    });
+    render(<DecayChainDiagram root={root} />);
+    expect(screen.getByText('UNKNOWN')).toBeInTheDocument();
+    expect(screen.getAllByText('RADIOACTIVE')).toHaveLength(1);
+    expect(screen.queryByText('STABLE')).not.toBeInTheDocument();
+  });
+
   it('renders decay mode labels on edges', () => {
     render(<DecayChainDiagram root={makeDecayChain()} />);
     expect(screen.getByText('A')).toBeInTheDocument();

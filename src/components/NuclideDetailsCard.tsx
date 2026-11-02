@@ -2,14 +2,13 @@ import { useEffect, useState, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { getRadiationTypeInfo } from '../constants/radiationTypes'
 import { X, ChevronDown, ChevronUp, ArrowRight, Radiation } from 'lucide-react'
-import type { Nuclide, DecayData, DecayChainResult } from '../types'
+import type { Nuclide, DecayData } from '../types'
 import { useDatabase } from '../contexts/DatabaseContext'
 import { getRadioactiveDecayData, getElementSymbolByZ, getNuclideBySymbol, getNuclideHalfLives, type NuclideHalfLife } from '../services/queryService'
-import { traceDecayChain } from '../services/decayChainService'
 import { useNavigate, Link } from 'react-router-dom'
 import { expandHalfLifeUnit } from '../utils/formatUtils'
 import { getIAEAAbundance } from '../constants/iaeaAbundances'
-import DecayChainDiagram from './DecayChainDiagram'
+import DecayChainSection from './DecayChainSection'
 
 interface NuclideDetailsCardProps {
   nuclide: Nuclide | null
@@ -80,16 +79,11 @@ export default function NuclideDetailsCard({ nuclide, onClose }: NuclideDetailsC
   const [decayData, setDecayData] = useState<DecayData[]>([])
   const [groundStateHalfLife, setGroundStateHalfLife] = useState<NuclideHalfLife | null>(null)
   const [showFullDecayTable, setShowFullDecayTable] = useState(false)
-  const [decayChain, setDecayChain] = useState<DecayChainResult | null>(null)
-  const [showDecayChain, setShowDecayChain] = useState(false)
-  const [chainDepth, setChainDepth] = useState(5)
-  const [minBranchingRatio, setMinBranchingRatio] = useState(10)
 
   useEffect(() => {
     if (!nuclide || !db) {
       setDecayData([])
       setGroundStateHalfLife(null)
-      setDecayChain(null)
       return
     }
 
@@ -101,23 +95,7 @@ export default function NuclideDetailsCard({ nuclide, onClose }: NuclideDetailsC
     const lhl = typeof nuclide.logHalfLife === 'number' ? nuclide.logHalfLife : null
     const halfLives = getNuclideHalfLives(db, [{ Z: nuclide.Z, A: nuclide.A, logHalfLife: lhl }])
     setGroundStateHalfLife(halfLives.get(`${nuclide.Z}-${nuclide.A}`) ?? null)
-
-    // Build decay chain if nuclide is radioactive
-    if (data.length > 0) {
-      try {
-        const chain = traceDecayChain(db, nuclide.Z, nuclide.A, {
-          maxDepth: chainDepth,
-          minBranchingRatio
-        })
-        setDecayChain(chain)
-      } catch (error) {
-        console.error('Error tracing decay chain:', error)
-        setDecayChain(null)
-      }
-    } else {
-      setDecayChain(null)
-    }
-  }, [nuclide, db, chainDepth, minBranchingRatio])
+  }, [nuclide, db])
 
   // Compute unique radiation types and decay modes present in the decay data
   const uniqueRadiationTypes = useMemo(() => {
@@ -574,70 +552,7 @@ export default function NuclideDetailsCard({ nuclide, onClose }: NuclideDetailsC
       )}
 
       {/* Decay Chain Visualization */}
-      {decayChain && decayChain.totalGenerations > 0 && (
-        <div className="mt-6 p-4 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
-          <div className="flex items-center justify-between mb-3">
-            <h3 className="font-semibold text-purple-900 dark:text-purple-200 text-sm">
-              {t('elements.decayChainVisualization')}
-            </h3>
-            <button
-              onClick={() => setShowDecayChain(!showDecayChain)}
-              className="btn btn-secondary p-2"
-              title={showDecayChain ? t('elements.collapseDecayChain') : t('elements.expandDecayChain')}
-              aria-label={showDecayChain ? t('elements.collapseDecayChain') : t('elements.expandDecayChain')}
-            >
-              <ChevronDown className={`w-5 h-5 transition-transform duration-200 ${showDecayChain ? 'rotate-180' : ''}`} />
-            </button>
-          </div>
-
-          <div className={`transition-all duration-300 ease-in-out overflow-hidden ${showDecayChain ? 'max-h-[2000px] opacity-100' : 'max-h-0 opacity-0'}`}>
-            {/* Controls */}
-            <div className="grid md:grid-cols-2 gap-4 mb-4">
-              <div>
-                <label className="block text-xs font-medium text-purple-900 dark:text-purple-200 mb-1">
-                  {t('elements.maxDepthGenerations', { depth: chainDepth })}
-                </label>
-                <input
-                  type="range"
-                  min="1"
-                  max="15"
-                  value={chainDepth}
-                  onChange={(e) => setChainDepth(parseInt(e.target.value))}
-                  className="w-full h-2 bg-purple-200 dark:bg-purple-800 rounded-lg appearance-none cursor-pointer"
-                />
-              </div>
-              <div>
-                <label className="block text-xs font-medium text-purple-900 dark:text-purple-200 mb-1">
-                  {t('elements.minBranchingRatio', { ratio: minBranchingRatio })}
-                </label>
-                <input
-                  type="range"
-                  min="1"
-                  max="100"
-                  value={minBranchingRatio}
-                  onChange={(e) => setMinBranchingRatio(parseInt(e.target.value))}
-                  className="w-full h-2 bg-purple-200 dark:bg-purple-800 rounded-lg appearance-none cursor-pointer"
-                />
-              </div>
-            </div>
-
-            {/* Chain Info */}
-            <div className="text-xs text-purple-800 dark:text-purple-300 mb-4 space-y-1">
-              <div><strong>{t('elements.totalGenerations')}:</strong> {decayChain.totalGenerations}</div>
-              <div><strong>{t('elements.branchCount')}:</strong> {decayChain.branchCount}</div>
-              <div>
-                <strong>{t('elements.terminalNuclides')}:</strong> {decayChain.terminalNuclides.map(n => `${n.E}-${n.A}`).join(', ')}
-                {' '}
-                ({decayChain.terminalNuclides.filter(n => n.isStable).length} {t('elements.stableCount')},{' '}
-                {decayChain.terminalNuclides.filter(n => !n.isStable).length} {t('elements.radioactiveCount')})
-              </div>
-            </div>
-
-            {/* Diagram */}
-            <DecayChainDiagram root={decayChain.root} maxHeight={300} />
-          </div>
-        </div>
-      )}
+      {nuclide && <DecayChainSection db={db} Z={nuclide.Z} A={nuclide.A} />}
 
       <div className="mt-4 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
         <h3 className="font-semibold text-blue-900 dark:text-blue-200 mb-2 text-sm">
@@ -829,70 +744,7 @@ export default function NuclideDetailsCard({ nuclide, onClose }: NuclideDetailsC
       )}
 
       {/* Decay Chain Visualization */}
-      {decayChain && decayChain.totalGenerations > 0 && (
-        <div className="mt-6 p-4 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
-          <div className="flex items-center justify-between mb-3">
-            <h3 className="font-semibold text-purple-900 dark:text-purple-200 text-sm">
-              {t('elements.decayChainVisualization')}
-            </h3>
-            <button
-              onClick={() => setShowDecayChain(!showDecayChain)}
-              className="btn btn-secondary p-2"
-              title={showDecayChain ? t('elements.collapseDecayChain') : t('elements.expandDecayChain')}
-              aria-label={showDecayChain ? t('elements.collapseDecayChain') : t('elements.expandDecayChain')}
-            >
-              <ChevronDown className={`w-5 h-5 transition-transform duration-200 ${showDecayChain ? 'rotate-180' : ''}`} />
-            </button>
-          </div>
-
-          <div className={`transition-all duration-300 ease-in-out overflow-hidden ${showDecayChain ? 'max-h-[2000px] opacity-100' : 'max-h-0 opacity-0'}`}>
-            {/* Controls */}
-            <div className="grid md:grid-cols-2 gap-4 mb-4">
-              <div>
-                <label className="block text-xs font-medium text-purple-900 dark:text-purple-200 mb-1">
-                  {t('elements.maxDepthGenerations', { depth: chainDepth })}
-                </label>
-                <input
-                  type="range"
-                  min="1"
-                  max="15"
-                  value={chainDepth}
-                  onChange={(e) => setChainDepth(parseInt(e.target.value))}
-                  className="w-full h-2 bg-purple-200 dark:bg-purple-800 rounded-lg appearance-none cursor-pointer"
-                />
-              </div>
-              <div>
-                <label className="block text-xs font-medium text-purple-900 dark:text-purple-200 mb-1">
-                  {t('elements.minBranchingRatio', { ratio: minBranchingRatio })}
-                </label>
-                <input
-                  type="range"
-                  min="1"
-                  max="100"
-                  value={minBranchingRatio}
-                  onChange={(e) => setMinBranchingRatio(parseInt(e.target.value))}
-                  className="w-full h-2 bg-purple-200 dark:bg-purple-800 rounded-lg appearance-none cursor-pointer"
-                />
-              </div>
-            </div>
-
-            {/* Chain Info */}
-            <div className="text-xs text-purple-800 dark:text-purple-300 mb-4 space-y-1">
-              <div><strong>{t('elements.totalGenerations')}:</strong> {decayChain.totalGenerations}</div>
-              <div><strong>{t('elements.branchCount')}:</strong> {decayChain.branchCount}</div>
-              <div>
-                <strong>{t('elements.terminalNuclides')}:</strong> {decayChain.terminalNuclides.map(n => `${n.E}-${n.A}`).join(', ')}
-                {' '}
-                ({decayChain.terminalNuclides.filter(n => n.isStable).length} {t('elements.stableCount')},{' '}
-                {decayChain.terminalNuclides.filter(n => !n.isStable).length} {t('elements.radioactiveCount')})
-              </div>
-            </div>
-
-            {/* Diagram */}
-            <DecayChainDiagram root={decayChain.root} maxHeight={300} />
-          </div>
-        </div>
-      )}
+      {nuclide && <DecayChainSection db={db} Z={nuclide.Z} A={nuclide.A} />}
 
       <div className="mt-4 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
         <h3 className="font-semibold text-blue-900 dark:text-blue-200 mb-2 text-sm">

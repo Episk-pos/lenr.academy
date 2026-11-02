@@ -259,6 +259,7 @@ export interface DecayChainNode {
   children: DecayChainNode[];          // Daughter nuclides
   depth: number;                       // Generation depth from root (0 = root)
   isStable: boolean;                   // True if LHL > 9 (half-life > 1 billion years)
+  stabilityUnknown?: boolean;          // True if the nuclide is in neither RadioNuclides nor NuclidesPlus (isStable is false)
 }
 
 export interface DecayChainResult {
@@ -270,6 +271,7 @@ export interface DecayChainResult {
     A: number;
     E: string;
     isStable: boolean;
+    stabilityUnknown?: boolean;
   }>;
 }
 
