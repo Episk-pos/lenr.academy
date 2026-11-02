@@ -33,8 +33,8 @@ All reactions are exothermic (energy-producing) and represent thermodynamically 
 - **Pinned details**: pin an element or nuclide to filter the results and open its details card
 
 ### Pathways & dynamics
+- **Cycle Discovery**: search the reaction database for closed catalytic loops, where a fuel is consumed while the intermediate catalysts are regenerated, ranked by energy, catalyst recovery, abundance and stability, each with an interactive loop diagram
 - **Cascades**: simulate chain reactions from a fuel mix and explore them as a summary, flow view, pathway browser, network graph or product chart
-- **Cycles**: discover catalytic cycles whose intermediates are regenerated
 - **Transmutations**: documented LENR transmutation claims from primary sources, each paired with candidate pathways from the database
 
 ### Nuclear data
@@ -59,17 +59,17 @@ All reactions are exothermic (energy-producing) and represent thermodynamically 
 
 ### Desktop
 
-<img src="docs/screenshots/desktop/cascades-dark.png" alt="Cascade simulation results with network diagram (dark mode)" width="600"/>
+<img src="docs/screenshots/desktop/cycles-dark.png" alt="Cycle Discovery detail view: a 6-step Li-6 catalytic cycle with its loop diagram (dark mode)" width="600"/>
 
-*Cascades: simulate chain reactions from a fuel mix (here H-1, Li-7, Ni-58) and explore the resulting reaction network.*
+*Cycle Discovery: a closed catalytic loop found by the search. Li-6 is the fuel; C-12 climbs through O-18, Mg-24, Si-30 and Ar-36 before a two-to-two step regenerates C-12 and Si-30, releasing 123 MeV per turn with no byproducts.*
 
 <img src="docs/screenshots/desktop/fusion-heatmap-light.png" alt="Fusion query results with periodic-table heatmap and a pinned nuclide" width="600"/>
 
 *Fusion query: a periodic-table heatmap of the results, filtered to reactions involving the pinned nuclide Ni-60.*
 
-<img src="docs/screenshots/desktop/decay-chain-th230-dark.png" alt="Th-230 decay chain visualization (dark mode)" width="600"/>
+<img src="docs/screenshots/desktop/decay-chain-ra224-dark.png" alt="Ra-224 decay chain visualization (dark mode)" width="600"/>
 
-*Decay chains: Th-230 traced through 10 generations to stable Pb-206, including the Bi-210 branch.*
+*Decay chains: Ra-224 (thorium series) traced to stable Pb-208, including the Bi-212 branch through Po-212 or Tl-208.*
 
 ### Mobile
 

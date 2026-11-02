@@ -11,7 +11,7 @@
  *   npm run screenshots    # BASE_URL defaults to http://localhost:5199
  *
  *   BASE_URL=http://localhost:5173 npm run screenshots
- *   npm run screenshots -- --only cascades-dark   # capture a single shot
+ *   npm run screenshots -- --only cycles-dark   # capture a single shot
  */
 
 import { chromium, Browser, BrowserContext, Locator, Page } from '@playwright/test';
@@ -64,7 +64,6 @@ async function newContext(browser: Browser, shot: Shot): Promise<BrowserContext>
         'lenr-analytics-consent': 'declined', // suppresses privacy banner (and Umami)
         'lenr-metered-download-consent': 'accepted', // suppresses metered warning
         'lenr-pwa-install-snoozed-until': '2999-01-01T00:00:00.000Z',
-        'cascade-sankey-guide-seen': 'true',
       };
       for (const [k, v] of Object.entries(preset)) localStorage.setItem(k, v);
 
@@ -131,25 +130,31 @@ async function save(page: Page, shot: Shot) {
 
 const SHOTS: Shot[] = [
   {
-    // Cascades: H-1 + Li-7 + Ni-58 fuel, 3 MeV thresholds, Max Nuclides 30.
-    // ~1.3k reactions over 2 loops: a network that is rich but still legible
-    // (the default fuel/limits produce thousands of overlapping edges).
-    // Framed on the "Cascade Complete" summary card with the Network tab below.
-    name: 'cascades-dark',
+    // Cycle Discovery with the default search parameters (315 cycles found).
+    // Opens the 6-step Li-6 cycle: Li-6 + Li-6 -> C-12, then Li-6 climbs
+    // C-12 -> O-18 -> Mg-24 -> Si-30 -> Ar-36 and a 2->2 step regenerates
+    // C-12 + Si-30. A closed loop with no byproducts, +123 MeV per turn.
+    // Framed on the detail view: cycle summary, metrics and the loop diagram.
+    name: 'cycles-dark',
     dir: 'desktop',
     device: DESKTOP_ZOOMED,
     theme: 'dark',
     lang: 'en',
     capture: async (page) => {
-      await gotoReady(page, '/cascades?fuel=H-1,Li-7,Ni-58&maxNuclides=30&maxLoops=10&minFusionMeV=3&minTwoToTwoMeV=3');
-      await page.getByRole('button', { name: /run cascade simulation/i }).click();
-      const complete = page.getByText('Cascade Complete', { exact: true });
-      await complete.waitFor({ timeout: 300000 });
-      await page.getByRole('button', { name: 'Network', exact: true }).click();
-      await page.getByTitle('Zoom out').click();
-      await page.waitForTimeout(6000); // let the D3 force layout settle
-      await complete.evaluate((el) => el.closest('.card, div')?.scrollIntoView({ block: 'start' }));
-      await page.mouse.wheel(0, -48);
+      await gotoReady(page, '/cycles');
+      await page.getByRole('button', { name: 'Discover Cycles' }).click();
+      await page.getByText('Discovery Complete').waitFor({ timeout: 300000 });
+      await page
+        .locator('table tbody tr')
+        .filter({ hasText: 'Li-6' })
+        .filter({ hasText: '+123.1 MeV' })
+        .first()
+        .click();
+      await page.getByRole('heading', { name: 'Catalytic Cycle Diagram' }).waitFor();
+      await page.mouse.move(0, 0); // no hover highlight on the diagram
+      await page.waitForTimeout(1500);
+      // Cycle Detail card at the top, page title scrolled away
+      await page.evaluate(() => window.scrollTo(0, 108));
       await page.waitForTimeout(500);
     },
   },
@@ -175,18 +180,18 @@ const SHOTS: Shot[] = [
     },
   },
   {
-    // Decay chain: Th-230 (ionium, U-238 series daughter), depth 15, min
-    // branching 1%: 10 generations Th-230 -> Ra-226 -> Rn-222 -> ... -> Pb-206
-    // with the Bi-210 -> {Po-210 | Tl-206} branch. Ra-224 / Pb-212 (thorium
-    // series) are only in RadioNuclides, so they get the limited-data card,
-    // which has no decay chain section.
-    name: 'decay-chain-th230-dark',
+    // Decay chain: Ra-224 (thorium series, 4n), depth 15, min branching 1%:
+    // Ra-224 -> Rn-220 -> Po-216 -> Pb-212 -> Bi-212 -> {Po-212 | Tl-208}
+    // -> Pb-208. Ra-224 is only in RadioNuclides, so this is the limited-data
+    // card (the page enables the limited-data toggle for it); its decay chain
+    // section needs the limited-data decay chain fix (PR #212).
+    name: 'decay-chain-ra224-dark',
     dir: 'desktop',
     device: DESKTOP,
     theme: 'dark',
     lang: 'en',
     capture: async (page) => {
-      await gotoReady(page, '/element-data?Z=90&A=230');
+      await gotoReady(page, '/element-data?Z=88&A=224');
       const expand = page.getByRole('button', { name: 'Expand decay chain' });
       await expand.click();
       const section = page.locator('div.bg-purple-50', { has: page.locator('.react-transform-wrapper') }).filter({ visible: true });
@@ -194,22 +199,10 @@ const SHOTS: Shot[] = [
       await setRange(sliders.nth(0), '15'); // max generations
       await setRange(sliders.nth(1), '1'); // min branching ratio %
       await page.waitForTimeout(2000); // max-h transition + diagram layout
-      await section.evaluate((el) => el.scrollIntoView({ block: 'end' }));
-      await page.evaluate(() => window.scrollBy(0, 16));
-      // Zoom in one step and pan left until the tail (Bi-210 branch -> Pb-206)
-      // hits the right bound; the clamp makes the final position repeatable
-      const zoomIn = section.getByRole('button', { name: 'Zoom in', exact: true });
-      await zoomIn.click();
-      await page.waitForTimeout(400);
-      const canvas = section.locator('.react-transform-wrapper');
-      const box = (await canvas.boundingBox())!;
-      const cx = box.x + box.width / 2;
-      const cy = box.y + box.height * 0.12; // empty canvas above the chain (a drag ending on a node navigates)
-      await page.mouse.move(cx, cy);
-      await page.mouse.down();
-      await page.mouse.move(cx - 400, cy, { steps: 20 });
-      await page.waitForTimeout(400); // settle so release adds no pan inertia
-      await page.mouse.up();
+      // Section just below the sticky nuclide tab bar, radiation legend below it
+      await section.evaluate((el) => el.scrollIntoView({ block: 'start' }));
+      await page.evaluate(() => window.scrollBy(0, -72));
+      // Default zoom: the whole chain, including the branch, fits the canvas
       await page.mouse.move(0, 0);
       await page.waitForTimeout(800);
     },
@@ -259,8 +252,8 @@ const SHOTS: Shot[] = [
     },
   },
   {
-    // Japanese UI on the fusion query form. The Segre chart and heatmap
-    // periodic tables overflow 390px, and segreChart.* is not yet translated.
+    // Japanese UI on the fusion query form (the Segre chart and heatmap
+    // periodic tables below it overflow 390px).
     name: 'fusion-query-ja-light',
     dir: 'mobile',
     device: MOBILE,
