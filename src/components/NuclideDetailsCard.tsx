@@ -552,7 +552,7 @@ export default function NuclideDetailsCard({ nuclide, onClose }: NuclideDetailsC
       )}
 
       {/* Decay Chain Visualization */}
-      {nuclide && <DecayChainSection db={db} Z={nuclide.Z} A={nuclide.A} />}
+      {nuclide && decayData.length > 0 && <DecayChainSection db={db} Z={nuclide.Z} A={nuclide.A} />}
 
       <div className="mt-4 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
         <h3 className="font-semibold text-blue-900 dark:text-blue-200 mb-2 text-sm">
@@ -744,7 +744,7 @@ export default function NuclideDetailsCard({ nuclide, onClose }: NuclideDetailsC
       )}
 
       {/* Decay Chain Visualization */}
-      {nuclide && <DecayChainSection db={db} Z={nuclide.Z} A={nuclide.A} />}
+      {nuclide && decayData.length > 0 && <DecayChainSection db={db} Z={nuclide.Z} A={nuclide.A} />}
 
       <div className="mt-4 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
         <h3 className="font-semibold text-blue-900 dark:text-blue-200 mb-2 text-sm">
