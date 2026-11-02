@@ -8,7 +8,7 @@
 
 import type { Database } from 'sql.js'
 import type { DecayChainNode, DecayChainResult, DecayData } from '../types'
-import { getRadioactiveDecayData, getElementSymbolByZ, getNuclideBySymbol } from './queryService'
+import { getRadioactiveDecayData, getElementSymbolByZ, getNuclideHalfLives, STABLE_LHL_SENTINEL, type NuclideHalfLife } from './queryService'
 
 /**
  * Calculate daughter nuclide from decay mode
@@ -56,48 +56,74 @@ export function getDaughterNuclide(
 }
 
 /**
- * Check if a nuclide is stable
+ * Look up NuclidesPlus.LHL by (Z, A).
  *
- * A nuclide is considered stable if:
- * 1. It has NO decay data in RadioNuclides table (truly stable)
- * 2. OR it has logHalfLife > 9 AND no decay data (very long-lived, effectively stable)
+ * Keyed on Z/A rather than the element symbol because NuclidesPlus stores the
+ * hydrogen isotopes as 'H' / 'D' / 'T' while ElementPropertiesPlus maps Z=1 to 'H'.
+ *
+ * @returns `undefined` when the nuclide has no NuclidesPlus row, otherwise its LHL (may be null)
+ */
+function getNuclidesPlusLHL(db: Database, Z: number, A: number): number | null | undefined {
+  const results = db.exec(`SELECT LHL FROM NuclidesPlus WHERE Z = ? AND A = ? LIMIT 1`, [Z, A])
+  if (results.length === 0 || results[0].values.length === 0) {
+    return undefined
+  }
+  const lhl = results[0].values[0][0]
+  return typeof lhl === 'number' ? lhl : null
+}
+
+/**
+ * Ground-state half-life and stability of a nuclide.
+ *
+ * Uses the same radioactivity predicate as the rest of the app
+ * (getRadioactiveNuclides / getNuclideHalfLives): a nuclide is radioactive iff
+ * it has a ground-state RadioNuclides row, i.e. one matching its NuclidesPlus
+ * LHL, or any RadioNuclides row when it has no NuclidesPlus entry (e.g. Ra-224,
+ * Pb-212). Long-lived nuclides such as U-238 are radioactive; stable nuclides
+ * with only isomer rows (Ba-137m) are not.
+ *
+ * Without a ground-state row, a nuclide is stable if its NuclidesPlus LHL > 9
+ * (stable, or so long-lived it is effectively stable). When stability cannot
+ * be determined (no RadioNuclides rows and no NuclidesPlus half-life), the
+ * nuclide is NOT reported as stable.
  *
  * @param db - SQLite database
  * @param Z - Atomic number
  * @param A - Mass number
- * @returns true if stable, false if radioactive
+ */
+function getNuclideStability(
+  db: Database,
+  Z: number,
+  A: number
+): {
+  isStable: boolean
+  stabilityUnknown: boolean
+  halfLife?: NuclideHalfLife
+  nuclidesPlusLHL: number | null | undefined
+} {
+  const nuclidesPlusLHL = getNuclidesPlusLHL(db, Z, A)
+  const halfLife = getNuclideHalfLives(db, [{ Z, A, logHalfLife: nuclidesPlusLHL }]).get(`${Z}-${A}`)
+
+  if (halfLife) {
+    return { isStable: false, stabilityUnknown: false, halfLife, nuclidesPlusLHL }
+  }
+
+  if (typeof nuclidesPlusLHL === 'number') {
+    return { isStable: nuclidesPlusLHL > 9, stabilityUnknown: false, nuclidesPlusLHL }
+  }
+
+  // No NuclidesPlus half-life and (since getNuclideHalfLives falls back to any
+  // row in that case) no RadioNuclides rows either: stability unknown
+  return { isStable: false, stabilityUnknown: true, nuclidesPlusLHL }
+}
+
+/**
+ * Check if a nuclide is stable (see getNuclideStability)
+ *
+ * @returns true if stable, false if radioactive or unknown
  */
 function isNuclideStable(db: Database, Z: number, A: number): boolean {
-  // First check if it has decay data in RadioNuclides
-  const radioSql = `SELECT COUNT(*) FROM RadioNuclides WHERE Z = ? AND A = ?`
-  const radioResults = db.exec(radioSql, [Z, A])
-  const hasDecayData = radioResults.length > 0 && (radioResults[0].values[0][0] as number) > 0
-
-  // If it has decay data, it's radioactive (even if long-lived like U-238)
-  if (hasDecayData) {
-    return false
-  }
-
-  // No decay data, check NuclidesPlus for logHalfLife
-  const sql = `
-    SELECT LHL
-    FROM NuclidesPlus
-    WHERE Z = ? AND A = ?
-    LIMIT 1
-  `
-  const results = db.exec(sql, [Z, A])
-
-  if (results.length === 0 || results[0].values.length === 0) {
-    return true // Not found anywhere, assume stable
-  }
-
-  const logHalfLife = results[0].values[0][0] as number | null
-  if (logHalfLife === null || logHalfLife === undefined) {
-    return true // No half-life data, assume stable
-  }
-
-  // Very long-lived (> 1 billion years) with no decay data = effectively stable
-  return logHalfLife > 9
+  return getNuclideStability(db, Z, A).isStable
 }
 
 /**
@@ -129,9 +155,11 @@ export function traceDecayChain(
   // Track visited nuclides to prevent infinite loops (e.g., isomeric transitions)
   const visited = new Set<string>()
 
-  // Track branch count and terminal nuclides
+  // Track branching points (nuclides with 2+ followed decay modes) and
+  // unique terminal nuclides (several paths may end at the same nuclide)
   let branchCount = 0
-  const terminalNuclides: Array<{ Z: number; A: number; E: string; isStable: boolean }> = []
+  const terminalNuclides: DecayChainResult['terminalNuclides'] = []
+  const terminalKeys = new Set<string>()
 
   /**
    * Recursive helper to build decay tree
@@ -151,8 +179,9 @@ export function traceDecayChain(
       return null
     }
 
-    // Check if nuclide is stable
-    const isStable = isNuclideStable(db, currentZ, currentA)
+    // Stability and this nuclide's own ground-state half-life (RadioNuclides
+    // fallback covers nuclides without a NuclidesPlus row)
+    const { isStable, stabilityUnknown, halfLife: halfLifeRecord, nuclidesPlusLHL } = getNuclideStability(db, currentZ, currentA)
 
     // Get element symbol
     const E = getElementSymbolByZ(db, currentZ)
@@ -163,30 +192,33 @@ export function traceDecayChain(
     // Get decay data
     const decayData = getRadioactiveDecayData(db, currentZ, currentA)
 
-    // Get log half-life from NuclidesPlus
-    const nuclide = getNuclideBySymbol(db, E, currentA)
-    const logHalfLife = nuclide?.logHalfLife ?? null
-
     // Create node
     const node: DecayChainNode = {
       nuclide: { Z: currentZ, A: currentA, E },
       decayMode: parentDecayMode,
       branchingRatio: parentBranchingRatio,
-      halfLife: undefined,
-      halfLifeUnits: undefined,
-      logHalfLife: logHalfLife ?? undefined,
+      halfLife: halfLifeRecord?.halfLife ?? undefined,
+      halfLifeUnits: halfLifeRecord?.units ?? undefined,
+      logHalfLife: halfLifeRecord?.logHalfLife
+        ?? (typeof nuclidesPlusLHL === 'number' && nuclidesPlusLHL < STABLE_LHL_SENTINEL ? nuclidesPlusLHL : undefined),
       children: [],
       depth,
-      isStable
+      isStable,
+      ...(stabilityUnknown && { stabilityUnknown })
     }
 
     // If this is a leaf node (stable or max depth reached), record it
     if (isStable || decayData.length === 0 || depth >= maxDepth) {
+      if (terminalKeys.has(key)) {
+        return node
+      }
+      terminalKeys.add(key)
       terminalNuclides.push({
         Z: currentZ,
         A: currentA,
         E,
-        isStable
+        isStable,
+        ...(stabilityUnknown && { stabilityUnknown })
       })
       return node
     }
@@ -224,12 +256,11 @@ export function traceDecayChain(
     })
 
     // Process each decay mode above the minimum branching ratio
+    let followedModes = 0
     normalizedIntensities.forEach((branchingRatio, decayMode) => {
       if (branchingRatio < minBranchingRatio) {
         return // Skip low-probability branches
       }
-
-      branchCount++
 
       // Calculate daughter nuclide
       const daughter = getDaughterNuclide(currentZ, currentA, E, decayMode)
@@ -243,9 +274,7 @@ export function traceDecayChain(
         return // Invalid daughter
       }
 
-      // Get decay data for this specific mode to extract half-life
-      const modeDecays = decayModeMap.get(decayMode) ?? []
-      const primaryDecay = modeDecays.find(d => d.halfLife !== null) ?? modeDecays[0]
+      followedModes++
 
       // Recursively build child node
       const childNode = buildNode(
@@ -257,12 +286,14 @@ export function traceDecayChain(
       )
 
       if (childNode) {
-        // Add half-life info from parent's decay data
-        childNode.halfLife = primaryDecay?.halfLife ?? undefined
-        childNode.halfLifeUnits = primaryDecay?.halfLifeUnits ?? undefined
         node.children.push(childNode)
       }
     })
+
+    // A branching point is a nuclide with two or more followed decay modes
+    if (followedModes >= 2) {
+      branchCount++
+    }
 
     return node
   }
@@ -277,7 +308,7 @@ export function traceDecayChain(
         nuclide: { Z, A, E: getElementSymbolByZ(db, Z) ?? '?' },
         children: [],
         depth: 0,
-        isStable: true
+        isStable: false
       },
       totalGenerations: 0,
       branchCount: 0,

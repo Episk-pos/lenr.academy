@@ -7,6 +7,7 @@ import { useDatabase } from '../contexts/DatabaseContext'
 import { getElementSymbolByZ, getNuclideBySymbol } from '../services/queryService'
 import { useNavigate, Link } from 'react-router-dom'
 import { expandHalfLifeUnit } from '../utils/formatUtils'
+import DecayChainSection from './DecayChainSection'
 
 interface RadioactiveNuclideCardProps {
   nuclideData: RadioactiveNuclideData
@@ -359,6 +360,9 @@ export default function RadioactiveNuclideCard({ nuclideData, onClose }: Radioac
             </div>
         </div>
       )}
+
+      {/* Decay Chain Visualization */}
+      <DecayChainSection db={db} Z={nuclideData.Z} A={nuclideData.A} />
 
       {nuclideData.decayData.length > 0 && (
         <div className="mt-4 p-4 bg-amber-50 dark:bg-amber-900/20 rounded-lg">

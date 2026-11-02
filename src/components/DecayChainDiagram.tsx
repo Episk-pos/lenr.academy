@@ -52,20 +52,26 @@ function getDecayModeColor(decayMode: string): string {
 }
 
 /**
- * Get background color for stable/radioactive nodes
+ * Get background color for stable/radioactive/unknown-stability nodes
  */
-function getNodeBackground(isStable: boolean, isDark: boolean): string {
-  if (isStable) {
+function getNodeBackground(node: DecayChainNode, isDark: boolean): string {
+  if (node.stabilityUnknown) {
+    return isDark ? '#374151' : '#f3f4f6' // gray-700 / gray-100
+  }
+  if (node.isStable) {
     return isDark ? '#166534' : '#dcfce7' // green-800 / green-100
   }
   return isDark ? '#7c2d12' : '#fed7aa' // orange-900 / orange-200
 }
 
 /**
- * Get border color for stable/radioactive nodes
+ * Get border color for stable/radioactive/unknown-stability nodes
  */
-function getNodeBorder(isStable: boolean, isDark: boolean): string {
-  if (isStable) {
+function getNodeBorder(node: DecayChainNode, isDark: boolean): string {
+  if (node.stabilityUnknown) {
+    return isDark ? '#9ca3af' : '#6b7280' // gray-400 / gray-500
+  }
+  if (node.isStable) {
     return isDark ? '#22c55e' : '#16a34a' // green-500 / green-600
   }
   return isDark ? '#f97316' : '#ea580c' // orange-500 / orange-600
@@ -354,8 +360,8 @@ export default function DecayChainDiagram({ root, maxHeight = 600, showWrapper =
                 width={layoutNode.width}
                 height={layoutNode.height}
                 rx="8"
-                fill={getNodeBackground(node.isStable, isDark)}
-                stroke={getNodeBorder(node.isStable, isDark)}
+                fill={getNodeBackground(node, isDark)}
+                stroke={getNodeBorder(node, isDark)}
                 strokeWidth={isHovered ? '3' : '2'}
                 style={{ transition: 'stroke-width 0.2s' }}
               />
@@ -390,9 +396,13 @@ export default function DecayChainDiagram({ root, maxHeight = 600, showWrapper =
                 textAnchor="middle"
                 fontSize="9"
                 fontWeight="600"
-                fill={node.isStable ? (isDark ? '#86efac' : '#16a34a') : (isDark ? '#fdba74' : '#ea580c')}
+                fill={node.stabilityUnknown
+                  ? (isDark ? '#d1d5db' : '#4b5563')
+                  : node.isStable ? (isDark ? '#86efac' : '#16a34a') : (isDark ? '#fdba74' : '#ea580c')}
               >
-                {(node.isStable ? t('elements.stable') : t('reactions.radioactive')).toLocaleUpperCase(i18n?.language)}
+                {(node.stabilityUnknown
+                  ? t('elementData.status.unknown')
+                  : node.isStable ? t('elements.stable') : t('reactions.radioactive')).toLocaleUpperCase(i18n?.language)}
               </text>
 
               {/* Hover tooltip */}

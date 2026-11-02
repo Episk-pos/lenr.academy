@@ -180,7 +180,7 @@ const chain = traceDecayChain(db, 92, 238, {
 
 // chain.root contains full tree
 // chain.totalGenerations = maximum depth
-// chain.branchCount = number of decay branches
+// chain.branchCount = number of branching points
 // chain.terminalNuclides = array of leaf nodes
 ```
 

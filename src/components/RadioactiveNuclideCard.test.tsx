@@ -19,6 +19,8 @@ vi.mock('react-router-dom', async () => {
   };
 });
 
+vi.mock('./DecayChainSection', () => ({ default: () => null }));
+
 vi.mock('../contexts/DatabaseContext', () => ({
   useDatabase: () => ({
     db: { exec: vi.fn() },

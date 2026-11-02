@@ -259,17 +259,19 @@ export interface DecayChainNode {
   children: DecayChainNode[];          // Daughter nuclides
   depth: number;                       // Generation depth from root (0 = root)
   isStable: boolean;                   // True if LHL > 9 (half-life > 1 billion years)
+  stabilityUnknown?: boolean;          // True if the nuclide is in neither RadioNuclides nor NuclidesPlus (isStable is false)
 }
 
 export interface DecayChainResult {
   root: DecayChainNode;                           // Root nuclide node
   totalGenerations: number;                       // Maximum depth of the tree
-  branchCount: number;                            // Total number of decay branches
-  terminalNuclides: Array<{                       // Leaf nodes of the tree
+  branchCount: number;                            // Number of branching points (nuclides with 2+ followed decay modes)
+  terminalNuclides: Array<{                       // Unique leaf nuclides of the tree
     Z: number;
     A: number;
     E: string;
     isStable: boolean;
+    stabilityUnknown?: boolean;
   }>;
 }
 
