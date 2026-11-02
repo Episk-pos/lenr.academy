@@ -27,56 +27,61 @@ All reactions are exothermic (energy-producing) and represent thermodynamically 
 
 ## Features
 
-### Core Query Tools ("Big Three")
-- **Fusion Reactions**: Query reactions where two nuclei combine to form a heavier nucleus
-- **Fission Reactions**: Query reactions where heavy nuclei split into lighter products
-- **Two-To-Two Reactions**: Query 2-2 transmutation reactions
+### Reaction queries
+- **Fusion, Fission and Two-to-Two**: filter the Parkhomov tables by input/output elements, energy range and neutrino involvement, with a live SQL preview
+- **Periodic-table heatmap**: see which elements appear in the results, coloured by frequency, energy or diversity
+- **Pinned details**: pin an element or nuclide to filter the results and open its details card
 
-### Supporting Tools
-- **Show Element Data**: Interactive periodic table and element property viewer with isotope selection
-- **Tables in Detail**: Database schema browser
-- **All Tables**: Advanced SQL query builder for custom queries
-- **Cascade Simulations**: Model chain reactions and predict reaction products
+### Pathways & dynamics
+- **Cycle Discovery**: search the reaction database for closed catalytic loops, where a fuel is consumed while the intermediate catalysts are regenerated, ranked by energy, catalyst recovery, abundance and stability, each with an interactive loop diagram
+- **Cascades**: simulate chain reactions from a fuel mix and explore them as a summary, flow view, pathway browser, network graph or product chart
+- **Transmutations**: documented LENR transmutation claims from primary sources, each paired with candidate pathways from the database
 
-### Advanced Features
-- **Dark/Light Theme**: Toggle between themes with system preference detection
-- **Offline SQLite Database Caching**: IndexedDB caching for faster load times and offline access
-- **Download Progress**: Real-time progress indicators during database loading
-- **Automatic Updates**: Version checking and update notifications
-- **Interactive Periodic Table**: Click-to-select elements with visual feedback
-- **Nuclide/Isotope Details**: Comprehensive quantum and nuclear properties
-- **Element vs Nuclide Views**: Context-aware detail cards on query pages
-- **Multi-element Selection**: Query multiple elements simultaneously
-- **CSV Export**: Export query results to spreadsheets
-- **Error Tracking**: Privacy-focused error monitoring with Sentry (GDPR-compliant, EU hosting)
+### Nuclear data
+- **Element & nuclide data**: chemical, physical and nuclear properties, with integrated, Russell, element, nuclide and decay views
+- **Decay chains**: interactive multi-generation decay trees with adjustable depth and branching threshold
+- **Segre chart**: zoomable chart of nuclides (Z vs N), coloured by stability
+- **Muller Resonance**: electron-proton wavelength resonances between elements, cross-referenced with the reaction tables
+
+### Power tools
+- **All Tables**: run custom SQL against every table in the browser
+- **Tables in Detail**: schema and field descriptions for each table
+- **Export**: download results as CSV, JSON or PDF
+
+### Reach & accessibility
+- **14 languages**, with native-language switching
+- **Dark and light themes**
+- **Offline-ready**: the database is cached in IndexedDB after the first download
+- **Installable PWA**
+- **Privacy controls** for analytics and error reporting
 
 ## Screenshots
 
-### Desktop Views
+### Desktop
 
-<img src="docs/screenshots/desktop/home-light.png" alt="Home page with feature overview" width="600"/>
+<img src="docs/screenshots/desktop/cycles-dark.png" alt="Cycle Discovery detail view: a 6-step Li-6 catalytic cycle with its loop diagram (dark mode)" width="600"/>
 
-*Home page with feature overview*
+*Cycle Discovery: a closed catalytic loop found by the search. Li-6 is the fuel; C-12 climbs through O-18, Mg-24, Si-30 and Ar-36 before a two-to-two step regenerates C-12 and Si-30, releasing 123 MeV per turn with no byproducts.*
 
-<img src="docs/screenshots/desktop/fusion-query-light.png" alt="Fusion Reactions query interface" width="600"/>
+<img src="docs/screenshots/desktop/fusion-heatmap-light.png" alt="Fusion query results with periodic-table heatmap and a pinned nuclide" width="600"/>
 
-*Fusion Reactions query interface*
+*Fusion query: a periodic-table heatmap of the results, filtered to reactions involving the pinned nuclide Ni-60.*
 
-<img src="docs/screenshots/desktop/element-data-dark.png" alt="Show Element Data with interactive periodic table (dark mode)" width="600"/>
+<img src="docs/screenshots/desktop/decay-chain-ra224-dark.png" alt="Ra-224 decay chain visualization (dark mode)" width="600"/>
 
-*Show Element Data with interactive periodic table (dark mode)*
+*Decay chains: Ra-224 (thorium series) traced to stable Pb-208, including the Bi-212 branch through Po-212 or Tl-208.*
 
-### Mobile Views
+### Mobile
 
 <p>
-  <img src="docs/screenshots/mobile/sidebar-open-dark.png" alt="Mobile navigation sidebar (dark mode)" width="250"/>
-  <img src="docs/screenshots/mobile/fusion-query-light.png" alt="Fusion Reactions query interface" width="250"/>
-  <img src="docs/screenshots/mobile/element-data-light.png" alt="Show Element Data page" width="250"/>
+  <img src="docs/screenshots/mobile/sidebar-languages-dark.png" alt="Mobile navigation with the language switcher open (dark mode)" width="250"/>
+  <img src="docs/screenshots/mobile/transmutations-light.png" alt="Transmutation pathway explorer with candidate pathways" width="250"/>
+  <img src="docs/screenshots/mobile/fusion-query-ja-light.png" alt="Fusion query form in Japanese" width="250"/>
 </p>
 
-*Mobile views: Navigation sidebar (dark mode), Fusion Reactions query, and Show Element Data*
+*Mobile: navigation and language switcher, candidate pathways for a documented transmutation, and the fusion query in Japanese.*
 
-> 📸 **Screenshots are auto-generated** using Playwright. To regenerate: `npm run screenshots`
+> 📸 **Screenshots are auto-generated** with Playwright. To regenerate them, start the dev server (`npm run dev`) and run `npm run screenshots` (set `BASE_URL` if the server isn't on `http://localhost:5199`).
 
 ## Database
 
