@@ -1,0 +1,44 @@
+name: Mirror to GitLab
+
+# One-way mirror: GitHub is the source of truth, and
+# work.episkopos.community/episkopos/lenr.academy follows it. GitLab CE has no
+# pull mirroring, so GitHub pushes every branch and tag on each change.
+# GITLAB_MIRROR_TOKEN is a GitLab project access token (write_repository).
+
+on:
+  push:
+    branches: ['**']
+    tags: ['**']
+  delete:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: gitlab-mirror
+  cancel-in-progress: false
+
+jobs:
+  mirror:
+    name: Push branches and tags to GitLab
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    # Skip in forks, which have no token.
+    if: github.repository == 'Episk-pos/lenr.academy'
+
+    steps:
+      - name: Mirror refs
+        env:
+          GITLAB_MIRROR_TOKEN: ${{ secrets.GITLAB_MIRROR_TOKEN }}
+          GITLAB_REPO: work.episkopos.community/episkopos/lenr.academy.git
+        run: |
+          : "${GITLAB_MIRROR_TOKEN:?GITLAB_MIRROR_TOKEN secret is not set}"
+          git init -q --bare mirror.git
+          cd mirror.git
+          git fetch -q "https://github.com/${GITHUB_REPOSITORY}.git" \
+            '+refs/heads/*:refs/heads/*' '+refs/tags/*:refs/tags/*'
+          # --prune deletes GitLab branches/tags that no longer exist on GitHub.
+          git push --prune "https://oauth2:${GITLAB_MIRROR_TOKEN}@${GITLAB_REPO}" \
+            '+refs/heads/*:refs/heads/*' '+refs/tags/*:refs/tags/*'
