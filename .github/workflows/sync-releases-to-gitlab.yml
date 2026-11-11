@@ -1,0 +1,55 @@
+name: Sync releases to GitLab
+
+# The git mirror (mirror-to-gitlab.yml) only carries refs. This recreates
+# GitHub Releases on work.episkopos.community/episkopos/lenr.academy with the
+# same notes and asset links pointing back to GitHub downloads.
+# GITLAB_RELEASE_TOKEN is a GitLab project access token (api scope).
+
+on:
+  release:
+    types: [published, edited, deleted]
+  # Assets such as parkhomov.db are uploaded after publishing, which fires no
+  # release event; a daily full sync picks them up.
+  schedule:
+    - cron: '17 4 * * *'
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Release tag to sync (blank = all releases)'
+        required: false
+
+permissions:
+  contents: read
+
+concurrency:
+  # Per tag, so a pending event for one release never replaces another's.
+  group: gitlab-release-sync-${{ github.event.release.tag_name || inputs.tag || 'all' }}
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    name: Sync releases to GitLab
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    # Skip in forks, which have no token.
+    if: github.repository == 'Episk-pos/lenr.academy'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Sync
+        env:
+          GITLAB_RELEASE_TOKEN: ${{ secrets.GITLAB_RELEASE_TOKEN }}
+          GH_TOKEN: ${{ github.token }}
+          ACTION: ${{ github.event.action }}
+          TAG: ${{ github.event.release.tag_name || inputs.tag }}
+        run: |
+          if [ "$ACTION" = deleted ]; then
+            scripts/sync-releases-to-gitlab.sh --delete "$TAG"
+          elif [ -n "$TAG" ]; then
+            scripts/sync-releases-to-gitlab.sh "$TAG"
+          else
+            scripts/sync-releases-to-gitlab.sh --all
+          fi
