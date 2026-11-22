@@ -2,7 +2,8 @@
  * Lazy, on-demand Unicode font support for PDF export.
  *
  * jsPDF's standard 14 fonts (Helvetica etc.) only cover Latin-1 / WinAnsi, so
- * Cyrillic, Greek, CJK, Hangul, Devanagari, Arabic and symbols such as "→"
+ * Cyrillic, Greek, CJK, Hangul, Devanagari, Bengali, Thai, Arabic and symbols
+ * such as "→"
  * come out as garbage. This module:
  *
  *   1. detects which scripts the PDF text actually contains (`detectScripts`),
@@ -32,6 +33,12 @@
  *   which double-reverses after the bidi engine and mangles digits and Latin.
  *   Remaining gaps: no mark positioning (harakat sit at default offsets) and
  *   no right-aligned/mirrored layout, so the page layout stays LTR.
+ *   Persian (fa) and Urdu (ur) use the same font and shaper: jsPDF's table
+ *   has the Persian/Urdu letters (پ چ ژ گ ک ی ے ٹ ڈ ڑ ں ھ ۀ ہ), and a ZWNJ
+ *   (U+200C, kept by normalizePdfText) is not an Arabic letter to it, so it
+ *   breaks the join exactly as Persian spelling expects. ۂ and ۃ (rare) are
+ *   missing from that table and render in their isolated form. Urdu is set in
+ *   Naskh, not Nastaliq.
  * - Devanagari (hi): jsPDF has no shaper for it, so doc.text() would draw
  *   glyphs in logical order without reordering or conjunct formation (the
  *   short-i matra ि after its consonant instead of before it, क्ष as क् + ष).
@@ -46,6 +53,14 @@
  *   resolution but are not vector text), and if FontFace/canvas is unavailable
  *   or the shaping font fails to load, export falls back to the unshaped
  *   doc.text() rendering described above, which is still legible.
+ * - Bengali (bn) is handled exactly like Devanagari (same pre-base vowel and
+ *   conjunct problem), with NotoSansBengali-Shaping.ttf on the canvas.
+ * - Thai (th) needs no reordering, but without GPOS/GSUB its vowel and tone
+ *   marks collide with each other (นี้ ปั้น) and with tall consonants (ป่า),
+ *   and descender variants (ญ ฐ before ู) are not used, so it also goes
+ *   through the canvas, with NotoSansThai-Shaping.ttf. Thai is written
+ *   without spaces between words; the canvas wrapper breaks long runs at
+ *   Intl.Segmenter word boundaries.
  * - Only one font is active per document. Mixing two complex scripts (e.g.
  *   Arabic + CJK) renders the lower-priority one as missing glyphs.
  */
@@ -59,9 +74,11 @@ export type PdfScript =
   | 'han'
   | 'hangul'
   | 'devanagari'
+  | 'bengali'
+  | 'thai'
   | 'arabic'
 
-export type PdfFontId = 'latin' | 'jp' | 'sc' | 'kr' | 'devanagari' | 'arabic'
+export type PdfFontId = 'latin' | 'jp' | 'sc' | 'kr' | 'devanagari' | 'bengali' | 'thai' | 'arabic'
 
 export interface PdfFontSpec {
   id: PdfFontId
@@ -79,6 +96,8 @@ export const PDF_FONTS: Record<PdfFontId, PdfFontSpec> = {
   sc: { id: 'sc', file: 'NotoSansSC-Regular.ttf', family: 'NotoSansSCPdf', shaping: 'none-needed' },
   kr: { id: 'kr', file: 'NotoSansKR-Regular.ttf', family: 'NotoSansKRPdf', shaping: 'none-needed' },
   devanagari: { id: 'devanagari', file: 'NotoSansDevanagari-Regular.ttf', family: 'NotoSansDevanagariPdf', shaping: 'canvas' },
+  bengali: { id: 'bengali', file: 'NotoSansBengali-Regular.ttf', family: 'NotoSansBengaliPdf', shaping: 'canvas' },
+  thai: { id: 'thai', file: 'NotoSansThai-Regular.ttf', family: 'NotoSansThaiPdf', shaping: 'canvas' },
   arabic: { id: 'arabic', file: 'NotoSansArabic-Regular.ttf', family: 'NotoSansArabicPdf', shaping: 'jspdf-arabic' },
 }
 
@@ -91,6 +110,8 @@ function classify(cp: number): PdfScript {
       (cp >= 0x08a0 && cp <= 0x08ff) || (cp >= 0xfb50 && cp <= 0xfdff) ||
       (cp >= 0xfe70 && cp <= 0xfeff)) return 'arabic'
   if ((cp >= 0x0900 && cp <= 0x097f) || (cp >= 0xa8e0 && cp <= 0xa8ff)) return 'devanagari'
+  if (cp >= 0x0980 && cp <= 0x09ff) return 'bengali'
+  if (cp >= 0x0e00 && cp <= 0x0e7f) return 'thai'
   if ((cp >= 0x1100 && cp <= 0x11ff) || (cp >= 0x3130 && cp <= 0x318f) ||
       (cp >= 0xac00 && cp <= 0xd7af)) return 'hangul'
   if ((cp >= 0x3040 && cp <= 0x30ff) || (cp >= 0x31f0 && cp <= 0x31ff) ||
@@ -127,14 +148,18 @@ export function detectScripts(texts: Iterable<string | null | undefined>): Set<P
 /**
  * Choose the font for a document, or null if Helvetica suffices (pure Latin-1).
  *
- * Priority when scripts mix: Arabic > Devanagari > Hangul > Kana > Han > other.
+ * Priority when scripts mix: Arabic > Bengali > Devanagari > Thai > Hangul >
+ * Kana > Han > other. Bengali beats Devanagari because Bengali text uses the
+ * Devanagari dandas (। ॥), which the Bengali font covers.
  * Han without kana/hangul is ambiguous (Japanese kanji vs Chinese hanzi have
  * different glyph shapes and coverage), so the UI language decides.
  */
 export function selectPdfFont(scripts: Set<PdfScript>, language: string | undefined): PdfFontSpec | null {
   const lang = (language ?? '').toLowerCase().split(/[-_]/)[0]
   if (scripts.has('arabic')) return PDF_FONTS.arabic
+  if (scripts.has('bengali')) return PDF_FONTS.bengali
   if (scripts.has('devanagari')) return PDF_FONTS.devanagari
+  if (scripts.has('thai')) return PDF_FONTS.thai
   if (scripts.has('hangul')) return PDF_FONTS.kr
   if (scripts.has('kana')) return PDF_FONTS.jp
   if (scripts.has('han')) {

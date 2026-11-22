@@ -28,6 +28,10 @@ import tr from './locales/tr.json'
 import id from './locales/id.json'
 import vi from './locales/vi.json'
 import sw from './locales/sw.json'
+import bn from './locales/bn.json'
+import th from './locales/th.json'
+import fa from './locales/fa.json'
+import ur from './locales/ur.json'
 
 export const SUPPORTED_LANGUAGES = {
   en: { name: 'English', nativeName: 'English', flag: '🇬🇧' },
@@ -55,6 +59,10 @@ export const SUPPORTED_LANGUAGES = {
   id: { name: 'Indonesian', nativeName: 'Bahasa Indonesia', flag: '🇮🇩' },
   vi: { name: 'Vietnamese', nativeName: 'Tiếng Việt', flag: '🇻🇳' },
   sw: { name: 'Swahili', nativeName: 'Kiswahili', flag: '🇹🇿' },
+  bn: { name: 'Bengali', nativeName: 'বাংলা', flag: '🇧🇩' },
+  th: { name: 'Thai', nativeName: 'ไทย', flag: '🇹🇭' },
+  fa: { name: 'Persian', nativeName: 'فارسی', flag: '🇮🇷' },
+  ur: { name: 'Urdu', nativeName: 'اردو', flag: '🇵🇰' },
 } as const
 
 export type SupportedLanguage = keyof typeof SUPPORTED_LANGUAGES
@@ -141,11 +149,22 @@ const languageMap: Record<string, SupportedLanguage> = {
   'sw': 'sw',
   'sw-KE': 'sw',
   'sw-TZ': 'sw',
+  'bn': 'bn',
+  'bn-BD': 'bn',
+  'bn-IN': 'bn',
+  'th': 'th',
+  'th-TH': 'th',
+  'fa': 'fa',
+  'fa-IR': 'fa',
+  'fa-AF': 'fa',
+  'ur': 'ur',
+  'ur-PK': 'ur',
+  'ur-IN': 'ur',
 }
 
 // Keep <html lang> and <html dir> in sync with the active language (screen
 // readers, hyphenation, script-appropriate font fallback, and right-to-left
-// layout for Arabic). Registered before init so the initial languageChanged
+// layout for Arabic, Persian and Urdu; i18next's dir() knows all three). Registered before init so the initial languageChanged
 // event emitted during init is captured too.
 i18n.on('languageChanged', (lng) => {
   if (typeof document !== 'undefined' && lng) {
@@ -190,6 +209,10 @@ i18n
       id: { translation: id },
       vi: { translation: vi },
       sw: { translation: sw },
+      bn: { translation: bn },
+      th: { translation: th },
+      fa: { translation: fa },
+      ur: { translation: ur },
     },
     fallbackLng: DEFAULT_LANGUAGE,
     supportedLngs: Object.keys(SUPPORTED_LANGUAGES) as SupportedLanguage[],

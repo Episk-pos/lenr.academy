@@ -6,6 +6,8 @@ Copyright 2022 Google LLC. All Rights Reserved.
 Copyright 2022 The Noto Project Authors (https://github.com/notofonts/symbols)
 (c) 2014-2021 Adobe (http://www.adobe.com/), with Reserved Font Name 'Source'.
 Copyright 2022 The Noto Project Authors (https://github.com/notofonts/devanagari)
+Copyright 2025 The Noto Project Authors (https://github.com/notofonts/bengali)
+Copyright 2022 The Noto Project Authors (https://github.com/notofonts/thai)
 Copyright 2022 The Noto Project Authors (https://github.com/notofonts/arabic)
 
 This Font Software is licensed under the SIL Open Font License, Version 1.1.

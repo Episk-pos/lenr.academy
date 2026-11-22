@@ -1,11 +1,11 @@
 import { describe, it, expect } from 'vitest';
-import { getMappedLanguage, SUPPORTED_LANGUAGES, DEFAULT_LANGUAGE } from './config';
+import i18n, { getMappedLanguage, SUPPORTED_LANGUAGES, DEFAULT_LANGUAGE } from './config';
 import type { SupportedLanguage } from './config';
 
 describe('i18n config', () => {
   describe('SUPPORTED_LANGUAGES', () => {
-    it('contains exactly 25 languages', () => {
-      expect(Object.keys(SUPPORTED_LANGUAGES)).toHaveLength(25);
+    it('contains exactly 29 languages', () => {
+      expect(Object.keys(SUPPORTED_LANGUAGES)).toHaveLength(29);
     });
 
     it('includes all expected language codes', () => {
@@ -13,6 +13,7 @@ describe('i18n config', () => {
         'en', 'ru', 'ja', 'zh', 'de', 'fr', 'es',
         'it', 'pt', 'uk', 'pl', 'ko', 'hi', 'ar',
         'nl', 'sv', 'da', 'nb', 'fi', 'cs', 'hu', 'tr', 'id', 'vi', 'sw',
+        'bn', 'th', 'fa', 'ur',
       ];
       expected.forEach((lang) => {
         expect(SUPPORTED_LANGUAGES).toHaveProperty(lang);
@@ -63,6 +64,10 @@ describe('i18n config', () => {
       expect(getMappedLanguage('id')).toBe('id');
       expect(getMappedLanguage('vi')).toBe('vi');
       expect(getMappedLanguage('sw')).toBe('sw');
+      expect(getMappedLanguage('bn')).toBe('bn');
+      expect(getMappedLanguage('th')).toBe('th');
+      expect(getMappedLanguage('fa')).toBe('fa');
+      expect(getMappedLanguage('ur')).toBe('ur');
     });
 
     it('maps regional variants to base languages', () => {
@@ -104,6 +109,13 @@ describe('i18n config', () => {
       expect(getMappedLanguage('vi-VN')).toBe('vi');
       expect(getMappedLanguage('sw-KE')).toBe('sw');
       expect(getMappedLanguage('sw-TZ')).toBe('sw');
+      expect(getMappedLanguage('bn-BD')).toBe('bn');
+      expect(getMappedLanguage('bn-IN')).toBe('bn');
+      expect(getMappedLanguage('th-TH')).toBe('th');
+      expect(getMappedLanguage('fa-IR')).toBe('fa');
+      expect(getMappedLanguage('fa-AF')).toBe('fa');
+      expect(getMappedLanguage('ur-PK')).toBe('ur');
+      expect(getMappedLanguage('ur-IN')).toBe('ur');
     });
 
     it('maps every Norwegian code to Bokmål', () => {
@@ -113,10 +125,23 @@ describe('i18n config', () => {
     });
 
     it('falls back to default language for unknown codes', () => {
-      expect(getMappedLanguage('th')).toBe('en');
+      expect(getMappedLanguage('el')).toBe('en');
       expect(getMappedLanguage('he-IL')).toBe('en');
       expect(getMappedLanguage('xx-XX')).toBe('en');
       expect(getMappedLanguage('')).toBe('en');
+    });
+  });
+
+  describe('text direction', () => {
+    it('is right-to-left for Arabic, Persian and Urdu', () => {
+      for (const lang of ['ar', 'fa', 'ur']) expect(i18n.dir(lang), lang).toBe('rtl');
+    });
+
+    it('is left-to-right for every other supported language', () => {
+      const rtl = new Set(['ar', 'fa', 'ur']);
+      for (const lang of Object.keys(SUPPORTED_LANGUAGES).filter((l) => !rtl.has(l))) {
+        expect(i18n.dir(lang), lang).toBe('ltr');
+      }
     });
   });
 });

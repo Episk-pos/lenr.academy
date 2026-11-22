@@ -57,6 +57,13 @@ describe('i18n browser language detection', () => {
     ['vi-VN', 'vi'],
     ['sw-KE', 'sw'],
     ['sw-TZ', 'sw'],
+    ['bn-BD', 'bn'],
+    ['bn-IN', 'bn'],
+    ['th-TH', 'th'],
+    ['fa-IR', 'fa'],
+    ['fa-AF', 'fa'],
+    ['ur-PK', 'ur'],
+    ['ur-IN', 'ur'],
   ])('maps region-coded browser language %s to %s', async (browserLang, expected) => {
     const i18n = await initWithBrowserLanguages([browserLang]);
     expect(i18n.language).toBe(expected);
@@ -75,12 +82,12 @@ describe('i18n browser language detection', () => {
   );
 
   it('picks the first supported language from the browser preference list', async () => {
-    const i18n = await initWithBrowserLanguages(['th-TH', 'pt-BR', 'en-US']);
+    const i18n = await initWithBrowserLanguages(['el-GR', 'pt-BR', 'en-US']);
     expect(i18n.language).toBe('pt');
   });
 
   it('falls back to English for unsupported browser languages', async () => {
-    const i18n = await initWithBrowserLanguages(['th-TH', 'he-IL']);
+    const i18n = await initWithBrowserLanguages(['el-GR', 'he-IL']);
     expect(i18n.language).toBe('en');
   });
 
@@ -128,6 +135,27 @@ describe('i18n browser language detection', () => {
       expect(document.documentElement.dir).toBe('ltr');
       await i18n.changeLanguage('ar');
       await i18n.changeLanguage('ja');
+      expect(document.documentElement.dir).toBe('ltr');
+    });
+
+    it.each([
+      ['fa-IR', 'fa'],
+      ['ur-PK', 'ur'],
+    ])('sets dir="rtl" on init for a %s browser', async (browserLang, lang) => {
+      await initWithBrowserLanguages([browserLang]);
+      expect(document.documentElement.lang).toBe(lang);
+      expect(document.documentElement.dir).toBe('rtl');
+    });
+
+    it('switches to rtl for Persian and Urdu, and keeps Bengali and Thai ltr', async () => {
+      const i18n = await initWithBrowserLanguages(['en-US']);
+      await i18n.changeLanguage('fa');
+      expect(document.documentElement.dir).toBe('rtl');
+      await i18n.changeLanguage('bn');
+      expect(document.documentElement.dir).toBe('ltr');
+      await i18n.changeLanguage('ur');
+      expect(document.documentElement.dir).toBe('rtl');
+      await i18n.changeLanguage('th');
       expect(document.documentElement.dir).toBe('ltr');
     });
   });

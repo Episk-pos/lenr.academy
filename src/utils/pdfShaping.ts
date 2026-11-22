@@ -1,12 +1,14 @@
 /**
- * Canvas rasterisation of Devanagari text for PDF export.
+ * Canvas rasterisation of Devanagari, Bengali and Thai text for PDF export.
  *
- * jsPDF has no OpenType shaping engine, so Devanagari drawn with doc.text()
- * comes out in logical order without matra reordering or conjuncts (see
- * ./pdfFonts.ts). The browser does shape it correctly, so every text run that
- * contains Devanagari is drawn on an offscreen <canvas> with a FontFace built
- * from NotoSansDevanagari-Shaping.ttf (a subset that keeps GSUB/GPOS/GDEF,
- * unlike the jsPDF fonts) and placed in the PDF as a PNG via doc.addImage.
+ * jsPDF has no OpenType shaping engine, so Devanagari and Bengali drawn with
+ * doc.text() come out in logical order without matra reordering or conjuncts,
+ * and Thai vowel and tone marks collide with each other and with tall
+ * consonants (see ./pdfFonts.ts). The browser does shape them correctly, so
+ * every text run that contains one of these scripts is drawn on an offscreen
+ * <canvas> with FontFaces built from the matching *-Shaping.ttf files (subsets
+ * that keep GSUB/GPOS/GDEF, unlike the jsPDF fonts) and placed in the PDF as a
+ * PNG via doc.addImage.
  *
  * `createCanvasShaper` returns null when FontFace / canvas are unavailable or
  * the font fails to load; callers then keep the unshaped doc.text() path.
@@ -17,25 +19,86 @@
 
 import { pdfFontUrl } from './pdfFonts'
 
-export const SHAPING_FONT = {
-  file: 'NotoSansDevanagari-Shaping.ttf',
-  family: 'LenrPdfDevanagariShaping',
-} as const
+export type ShapingScript = 'devanagari' | 'bengali' | 'thai'
 
-/** True if the text contains Devanagari (incl. Extended / Vedic) and must be shaped on a canvas. */
+export interface ShapingFont {
+  /** File name under public/fonts/pdf/ */
+  file: string
+  /** CSS font-family the FontFace is registered under */
+  family: string
+}
+
+export const SHAPING_FONTS: Record<ShapingScript, ShapingFont> = {
+  devanagari: { file: 'NotoSansDevanagari-Shaping.ttf', family: 'LenrPdfDevanagariShaping' },
+  bengali: { file: 'NotoSansBengali-Shaping.ttf', family: 'LenrPdfBengaliShaping' },
+  thai: { file: 'NotoSansThai-Shaping.ttf', family: 'LenrPdfThaiShaping' },
+}
+
+/** The script of a UTF-16 code unit that must be shaped on a canvas, if any. */
+function shapingScriptOf(c: number): ShapingScript | null {
+  if ((c >= 0x0900 && c <= 0x097f) || (c >= 0xa8e0 && c <= 0xa8ff) || (c >= 0x1cd0 && c <= 0x1cff)) return 'devanagari'
+  if (c >= 0x0980 && c <= 0x09ff) return 'bengali'
+  if (c >= 0x0e00 && c <= 0x0e7f) return 'thai'
+  return null
+}
+
+/** True if the text contains Devanagari (incl. Extended / Vedic), Bengali or Thai and must be shaped on a canvas. */
 export function needsCanvasShaping(text: string | null | undefined): boolean {
   if (!text) return false
   for (let i = 0; i < text.length; i++) {
-    const c = text.charCodeAt(i)
-    if ((c >= 0x0900 && c <= 0x097f) || (c >= 0xa8e0 && c <= 0xa8ff) || (c >= 0x1cd0 && c <= 0x1cff)) return true
+    if (shapingScriptOf(text.charCodeAt(i))) return true
   }
   return false
+}
+
+/**
+ * The shaping fonts needed for `texts`, in a stable order. The Devanagari
+ * dandas (। ॥) are also used in Bengali text, and the Bengali font covers
+ * them, so they alone do not pull in the Devanagari font next to Bengali.
+ */
+export function shapingFontsFor(texts: Iterable<string | null | undefined>): ShapingFont[] {
+  const scripts = new Set<ShapingScript>()
+  let dandaOnly = true
+  for (const text of texts) {
+    if (!text) continue
+    for (let i = 0; i < text.length; i++) {
+      const c = text.charCodeAt(i)
+      const script = shapingScriptOf(c)
+      if (!script) continue
+      scripts.add(script)
+      if (script === 'devanagari' && c !== 0x0964 && c !== 0x0965) dandaOnly = false
+    }
+  }
+  if (dandaOnly && scripts.has('bengali')) scripts.delete('devanagari')
+  return (Object.keys(SHAPING_FONTS) as ShapingScript[]).filter((s) => scripts.has(s)).map((s) => SHAPING_FONTS[s])
+}
+
+interface WordSegmenter {
+  segment(text: string): Iterable<{ segment: string }>
+}
+
+let wordSegmenter: WordSegmenter | null | undefined
+
+/**
+ * Split a run without spaces (Thai has none between words) at word
+ * boundaries using Intl.Segmenter, where available. Returns [word] otherwise.
+ */
+function segmentWord(word: string): string[] {
+  if (wordSegmenter === undefined) {
+    const Segmenter = (Intl as unknown as { Segmenter?: new (locale?: string, opts?: { granularity: 'word' }) => WordSegmenter }).Segmenter
+    wordSegmenter = Segmenter ? new Segmenter(undefined, { granularity: 'word' }) : null
+  }
+  return wordSegmenter ? Array.from(wordSegmenter.segment(word), (s) => s.segment) : [word]
 }
 
 export const PT_TO_MM = 25.4 / 72
 /** Canvas pixels per point: 3x the CSS 96 dpi resolution, so images stay crisp when zoomed/printed. */
 const PX_PER_PT = 3 * (96 / 72)
-/** Glyph extents of Noto Sans Devanagari in em (head.yMax 1347, yMin -530 per 1000 upm). */
+/**
+ * Glyph extents in em, from the tallest shaping font: Noto Sans Devanagari
+ * (head.yMax 1347, yMin -530 per 1000 upm). Bengali (917/-408) and Thai
+ * (1009/-433) fit inside.
+ */
 const ASCENT_EM = 1.35
 const DESCENT_EM = 0.55
 /** Horizontal padding so overhanging marks are not clipped at the image edge. */
@@ -77,34 +140,41 @@ export function clearShapingFontCache(): void {
   fontFaceCache.clear()
 }
 
-function loadShapingFont(fetchImpl: typeof fetch): Promise<void> {
-  const cached = fontFaceCache.get(SHAPING_FONT.file)
+function loadShapingFont(font: ShapingFont, fetchImpl: typeof fetch): Promise<void> {
+  const cached = fontFaceCache.get(font.file)
   if (cached) return cached
   const promise = (async () => {
-    const res = await fetchImpl(pdfFontUrl(SHAPING_FONT.file))
-    if (!res.ok) throw new Error(`Failed to fetch shaping font ${SHAPING_FONT.file}: HTTP ${res.status}`)
-    const face = new FontFace(SHAPING_FONT.family, await res.arrayBuffer())
+    const res = await fetchImpl(pdfFontUrl(font.file))
+    if (!res.ok) throw new Error(`Failed to fetch shaping font ${font.file}: HTTP ${res.status}`)
+    const face = new FontFace(font.family, await res.arrayBuffer())
     await face.load()
     document.fonts.add(face)
   })()
-  fontFaceCache.set(SHAPING_FONT.file, promise)
-  promise.catch(() => fontFaceCache.delete(SHAPING_FONT.file))
+  fontFaceCache.set(font.file, promise)
+  promise.catch(() => fontFaceCache.delete(font.file))
   return promise
 }
 
 /**
- * Build a canvas-backed shaper, or return null (never throws) if the browser
- * lacks FontFace/canvas support or the shaping font cannot be loaded.
+ * Build a canvas-backed shaper for `fonts` (see shapingFontsFor), or return
+ * null (never throws) if the browser lacks FontFace/canvas support or a
+ * shaping font cannot be loaded.
  */
-export async function createCanvasShaper(fetchImpl: typeof fetch = fetch): Promise<TextShaper | null> {
+export async function createCanvasShaper(
+  fonts: readonly ShapingFont[],
+  fetchImpl: typeof fetch = fetch,
+): Promise<TextShaper | null> {
   try {
+    if (fonts.length === 0) return null
     if (typeof document === 'undefined' || typeof FontFace === 'undefined' || !document.fonts) return null
     const canvas = document.createElement('canvas')
     const ctx = canvas.getContext('2d')
     if (!ctx) return null
-    await loadShapingFont(fetchImpl)
+    await Promise.all(fonts.map((font) => loadShapingFont(font, fetchImpl)))
 
-    const fontCss = (sizePt: number) => `${sizePt * PX_PER_PT}px "${SHAPING_FONT.family}", sans-serif`
+    // Each family only covers its own script, so the canvas picks per glyph
+    const families = fonts.map((font) => `"${font.family}"`).join(', ')
+    const fontCss = (sizePt: number) => `${sizePt * PX_PER_PT}px ${families}, sans-serif`
     const measurePx = (text: string, sizePt: number) => {
       ctx.font = fontCss(sizePt)
       return ctx.measureText(text).width
@@ -118,15 +188,22 @@ export async function createCanvasShaper(fetchImpl: typeof fetch = fetch): Promi
       wrap(text, sizePt, maxWidth) {
         const words = text.split(/\s+/).filter(Boolean)
         if (words.length === 0) return ['']
+        // A word too wide for a line (typically Thai, written without spaces)
+        // is broken at word boundaries; its pieces join without a space.
+        const pieces: { text: string; sep: string }[] = []
+        for (const word of words) {
+          const parts = measure(word, sizePt) > maxWidth ? segmentWord(word) : [word]
+          parts.forEach((part, i) => pieces.push({ text: part, sep: i === 0 ? ' ' : '' }))
+        }
         const lines: string[] = []
-        let line = words[0]
-        for (const word of words.slice(1)) {
-          const candidate = `${line} ${word}`
+        let line = pieces[0].text
+        for (const piece of pieces.slice(1)) {
+          const candidate = `${line}${piece.sep}${piece.text}`
           if (measure(candidate, sizePt) <= maxWidth) {
             line = candidate
           } else {
             lines.push(line)
-            line = word
+            line = piece.text
           }
         }
         lines.push(line)
@@ -162,7 +239,7 @@ export async function createCanvasShaper(fetchImpl: typeof fetch = fetch): Promi
       },
     }
   } catch (err) {
-    console.warn('PDF export: canvas shaping unavailable, Devanagari will be unshaped.', err)
+    console.warn('PDF export: canvas shaping unavailable, Devanagari/Bengali/Thai will be unshaped.', err)
     return null
   }
 }

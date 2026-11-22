@@ -32,12 +32,17 @@ import tr from '../i18n/locales/tr.json';
 import id from '../i18n/locales/id.json';
 import vi from '../i18n/locales/vi.json';
 import sw from '../i18n/locales/sw.json';
+import bn from '../i18n/locales/bn.json';
+import th from '../i18n/locales/th.json';
+import fa from '../i18n/locales/fa.json';
+import ur from '../i18n/locales/ur.json';
 
 type Tree = Record<string, unknown>;
 
 const locales: Record<string, Tree> = {
   en, de, es, fr, ja, ru, zh, it, pt, uk, pl, ko, hi, ar,
   nl, sv, da, nb, fi, cs, hu, tr, id, vi, sw,
+  bn, th, fa, ur,
 };
 
 /**

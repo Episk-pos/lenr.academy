@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 # Download Noto Sans sources (SIL OFL 1.1) from google/fonts and build the
-# subset TTFs served from public/fonts/pdf/ for PDF export (plus
-# NotoSansDevanagari-Shaping.ttf, which keeps OpenType layout tables for
-# canvas shaping; see src/utils/pdfShaping.ts).
+# subset TTFs served from public/fonts/pdf/ for PDF export (plus the
+# Devanagari/Bengali/Thai *-Shaping.ttf fonts, which keep OpenType layout
+# tables for canvas shaping; see src/utils/pdfShaping.ts).
 #
-# Re-run after adding characters to ja/zh/ko/hi locale files that fall
+# Re-run after adding characters to ja/zh/ko/hi/bn/th/ar/fa/ur locale files that fall
 # outside the common-character sets (src/utils/pdfFonts.test.ts will tell you).
 #
 # Requires: curl, python3 with fonttools (pip install fonttools)
@@ -24,6 +24,8 @@ FILES=(
   "notosanssc/NotoSansSC[wght].ttf"
   "notosanskr/NotoSansKR[wght].ttf"
   "notosansdevanagari/NotoSansDevanagari[wdth,wght].ttf"
+  "notosansbengali/NotoSansBengali[wdth,wght].ttf"
+  "notosansthai/NotoSansThai[wdth,wght].ttf"
   "notosansarabic/NotoSansArabic[wdth,wght].ttf"
 )
 

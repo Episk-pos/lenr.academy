@@ -70,6 +70,10 @@ describe('detectScripts', () => {
     ['핵융합', 'hangul'],
     ['नाभिकीय', 'devanagari'],
     ['اندماج', 'arabic'],
+    ['ফিউশন বিক্রিয়া', 'bengali'],
+    ['ปฏิกิริยาฟิวชัน', 'thai'],
+    ['واکنش‌های همجوشی ۱۲۳', 'arabic'],
+    ['فیوژن ردعمل ٹھنڈا', 'arabic'],
   ])('detects %s as %s', (text, script) => {
     expect(detectScripts([text]).has(script as never)).toBe(true)
   })
@@ -124,6 +128,14 @@ describe('selectPdfFont', () => {
     expect(pick('تفاعلات الاندماج', 'ar')).toBe('arabic')
   })
 
+  it('maps Bengali and Thai to their fonts, and Persian and Urdu to the Arabic font', () => {
+    expect(pick('ফিউশন বিক্রিয়া', 'bn')).toBe('bengali')
+    expect(pick('ফিউশন বিক্রিয়া। পৃষ্ঠা ১', 'bn')).toBe('bengali') // with the shared danda
+    expect(pick('ปฏิกิริยาฟิวชัน', 'th')).toBe('thai')
+    expect(pick('واکنش‌های همجوشی هسته‌ای ۱۲۳', 'fa')).toBe('arabic')
+    expect(pick('فیوژن ردعمل ٹھنڈا ڈیٹا بڑے ہیں', 'ur')).toBe('arabic')
+  })
+
   it('prioritises complex scripts when mixed', () => {
     expect(pick('اندماج 核 → x')).toBe('arabic')
     expect(pick('संलयन 핵')).toBe('devanagari')
@@ -133,6 +145,8 @@ describe('selectPdfFont', () => {
   it('declares shaping support per font', () => {
     expect(PDF_FONTS.arabic.shaping).toBe('jspdf-arabic')
     expect(PDF_FONTS.devanagari.shaping).toBe('canvas')
+    expect(PDF_FONTS.bengali.shaping).toBe('canvas')
+    expect(PDF_FONTS.thai.shaping).toBe('canvas')
   })
 })
 
@@ -228,6 +242,10 @@ describe('normalizePdfText', () => {
     expect(normalizePdfText('Cafe\u0301 \u26A0\uFE0F')).toBe('Café \u26A0')
   })
 
+  it('keeps the ZWNJ that Persian spelling relies on', () => {
+    expect(normalizePdfText('می\u200Cشود')).toBe('می\u200Cشود')
+  })
+
   it('strips bidi marks that make jsPDF reverse Arabic runs (Intl adds RLMs to Arabic dates)', () => {
     expect(normalizePdfText('22\u200F/10\u200F/2026\u060C 9:40 \u0645')).toBe('22/10/2026\u060C 9:40 \u0645')
     expect(normalizePdfText('\u2067x\u2069 \u200Ey\u061C')).toBe('x y')
@@ -294,11 +312,50 @@ describe('shipped font files', () => {
     for (const cp of [0xfeb3, 0xfefc, 0xfee1]) expect(cmap[cp], cp.toString(16)).toBeTruthy()
   })
 
+  it('Arabic font covers Persian/Urdu letters, Persian digits, ZWNJ and their presentation forms', () => {
+    const cmap = cmapOf(PDF_FONTS.arabic)
+    const letters = 'پچژگکیےٹڈڑںھۀۂۃہۓ۰۱۲۳۴۵۶۷۸۹\u200C'
+    expect([...letters].filter((ch) => !cmap[ch.codePointAt(0)!]).join('')).toBe('')
+    // Forms jsPDF.processArabic produces for "پژوهشگاه کیهانی" and "بڑے" (peh initial,
+    // jeh final, gaf medial, keheh initial, farsi yeh medial/final, rreh final, yeh barree isolated)
+    for (const cp of [0xfb58, 0xfb8b, 0xfb95, 0xfb90, 0xfbff, 0xfbfd, 0xfb8d, 0xfbae]) {
+      expect(cmap[cp], cp.toString(16)).toBeTruthy()
+    }
+  })
+
+  it("jsPDF's Arabic shaper joins Persian/Urdu letters and breaks the join at a ZWNJ", () => {
+    const parser = (jsPDF as unknown as { API: { __arabicParser__: { processArabic(s: string): string } } }).API.__arabicParser__
+    const forms = (s: string) => [...parser.processArabic(s)].map((c) => c.codePointAt(0)!.toString(16))
+    // می‌شود: yeh final, ZWNJ kept, sheen initial (not medial)
+    expect(forms('می\u200Cشود')).toEqual(['fee3', 'fbfd', '200c', 'feb7', 'feee', 'fea9'])
+    // بڑے: beh initial, rreh final, yeh barree isolated (rreh does not join left)
+    expect(forms('بڑے')).toEqual(['fe91', 'fb8d', 'fbae'])
+  })
+
+  it.each([
+    ['arabic', 'fa', 'واکنش‌های همجوشی هسته‌ای ۱۲۳'],
+    ['arabic', 'ur', 'فیوژن ردعمل ٹھنڈا ڈیٹا بڑے ہیں گھر'],
+    ['bengali', 'bn', 'ফিউশন বিক্রিয়া ক্ষ ১২৩। ॥'],
+    ['thai', 'th', 'ปฏิกิริยาฟิวชัน นี้ ป่า ผู้ น้ำ ๑๒๓'],
+  ] as const)('%s font renders %s sample text without missing glyphs', (id, lang, sample) => {
+    const spec = PDF_FONTS[id]
+    expect(selectPdfFont(detectScripts([sample]), lang)).toBe(spec)
+    const cmap = cmapOf(spec)
+    expect([...normalizePdfText(sample)].filter((ch) => ch.trim() && !cmap[ch.codePointAt(0)!]).join('')).toBe('')
+    const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' })
+    doc.addFileToVFS(spec.file, fontBase64(spec))
+    doc.addFont(spec.file, spec.family, 'normal')
+    doc.setFont(spec.family, 'normal')
+    doc.text(normalizePdfText(sample), 14, 15)
+    expect(doc.output().length).toBeGreaterThan(1000)
+  })
+
   // If this fails after editing a locale file, rebuild the fonts:
   //   bash scripts/fetch-pdf-fonts.sh
   it.each([
     'en', 'de', 'es', 'fr', 'it', 'pt', 'pl', 'ru', 'uk', 'ja', 'zh', 'ko', 'hi', 'ar',
     'nl', 'sv', 'da', 'nb', 'fi', 'cs', 'hu', 'tr', 'id', 'vi', 'sw',
+    'bn', 'th', 'fa', 'ur',
   ])(
     'the font selected for %s covers every character in its locale file',
     (locale) => {
