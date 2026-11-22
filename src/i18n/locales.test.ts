@@ -1,5 +1,8 @@
 import { describe, it, expect } from 'vitest';
 import { createInstance } from 'i18next';
+import { readdirSync } from 'node:fs';
+import { resolve } from 'node:path';
+import { SUPPORTED_LANGUAGES } from './config';
 import en from './locales/en.json';
 import de from './locales/de.json';
 import es from './locales/es.json';
@@ -14,6 +17,17 @@ import pl from './locales/pl.json';
 import ko from './locales/ko.json';
 import hi from './locales/hi.json';
 import ar from './locales/ar.json';
+import nl from './locales/nl.json';
+import sv from './locales/sv.json';
+import da from './locales/da.json';
+import nb from './locales/nb.json';
+import fi from './locales/fi.json';
+import cs from './locales/cs.json';
+import hu from './locales/hu.json';
+import tr from './locales/tr.json';
+import id from './locales/id.json';
+import vi from './locales/vi.json';
+import sw from './locales/sw.json';
 
 /**
  * Recursively get all keys from a nested object as dot-notation paths
@@ -58,7 +72,10 @@ const PLURAL_SUFFIX = /^(.*)_(zero|one|two|few|many|other)$/;
 // CLDR plural categories a locale may need that English does not have
 const EXTRA_PLURAL_SUFFIX = /^(.*)_(zero|two|few|many)$/;
 
-const locales = { de, es, fr, ja, ru, zh, it: it_, pt, uk, pl, ko, hi, ar };
+const locales = {
+  de, es, fr, ja, ru, zh, it: it_, pt, uk, pl, ko, hi, ar,
+  nl, sv, da, nb, fi, cs, hu, tr, id, vi, sw,
+};
 const enKeys = getAllKeys(en as Record<string, unknown>);
 const enFlat = flatten(en as Record<string, unknown>);
 
@@ -70,6 +87,16 @@ function isEnPluralBase(base: string): boolean {
 describe('i18n locale consistency', () => {
   it('English locale has translation keys', () => {
     expect(enKeys.length).toBeGreaterThan(50);
+  });
+
+  it('checks every locale file and every supported language', () => {
+    const files = readdirSync(resolve(__dirname, 'locales'))
+      .filter((f) => f.endsWith('.json'))
+      .map((f) => f.replace(/\.json$/, ''))
+      .sort();
+    const checked = ['en', ...Object.keys(locales)].sort();
+    expect(checked).toEqual(files);
+    expect(checked).toEqual(Object.keys(SUPPORTED_LANGUAGES).sort());
   });
 
   for (const [locale, translations] of Object.entries(locales)) {

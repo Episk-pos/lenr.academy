@@ -92,6 +92,18 @@ describe('selectPdfFont', () => {
     expect(pick('ν')).toBe('latin')
   })
 
+  it('uses Noto Sans for Vietnamese, Czech, Hungarian and Turkish text', () => {
+    expect(pick('Phản ứng nhiệt hạch hạt nhân', 'vi')).toBe('latin')
+    expect(pick('Fúzní reakce těžkých jader', 'cs')).toBe('latin')
+    expect(pick('Fúziós reakciók – hő', 'hu')).toBe('latin')
+    expect(pick('Füzyon tepkimeleri ışık', 'tr')).toBe('latin')
+  })
+
+  it('keeps Helvetica for Latin-1-only Nordic text', () => {
+    expect(pick('Fusjonsreaksjoner på øya', 'nb')).toBeNull()
+    expect(pick('Fuusioreaktiot ja hääsää', 'fi')).toBeNull()
+  })
+
   it('maps kana to JP and Hangul to KR', () => {
     expect(pick('核融合反応', 'ja')).toBe('jp')
     expect(pick('カタカナ', 'zh')).toBe('jp')
@@ -263,6 +275,19 @@ describe('shipped font files', () => {
     }
   })
 
+  it('Noto Sans covers Vietnamese (Latin Extended Additional + combining marks) and Czech/Hungarian/Turkish letters', () => {
+    const cmap = cmapOf(PDF_FONTS.latin)
+    const missing: string[] = []
+    const need = (cp: number) => { if (!cmap[cp]) missing.push(cp.toString(16)) }
+    for (let cp = 0x1ea0; cp <= 0x1ef9; cp++) need(cp)
+    for (let cp = 0x0300; cp <= 0x0323; cp++) need(cp)
+    for (const ch of 'ơƠưƯđĐ₫ěščřžýůťďňĚŠČŘŽŮŤĎŇőűŐŰğışİĞŞæøåÆØÅ') need(ch.codePointAt(0)!)
+    expect(missing).toEqual([])
+    // jsPDF cannot position combining marks, so decomposed input must compose to covered glyphs
+    for (const ch of normalizePdfText('Vie\u0323\u0302t Nam Đa\u0300 Na\u0306\u0303ng')) need(ch.codePointAt(0)!)
+    expect(missing).toEqual([])
+  })
+
   it('Arabic font keeps the presentation forms jsPDF shapes into', () => {
     const cmap = cmapOf(PDF_FONTS.arabic)
     // seen initial, lam-alef ligature, meem final (produced by jsPDF.processArabic for "سلام")
@@ -271,7 +296,10 @@ describe('shipped font files', () => {
 
   // If this fails after editing a locale file, rebuild the fonts:
   //   bash scripts/fetch-pdf-fonts.sh
-  it.each(['en', 'de', 'es', 'fr', 'it', 'pt', 'pl', 'ru', 'uk', 'ja', 'zh', 'ko', 'hi', 'ar'])(
+  it.each([
+    'en', 'de', 'es', 'fr', 'it', 'pt', 'pl', 'ru', 'uk', 'ja', 'zh', 'ko', 'hi', 'ar',
+    'nl', 'sv', 'da', 'nb', 'fi', 'cs', 'hu', 'tr', 'id', 'vi', 'sw',
+  ])(
     'the font selected for %s covers every character in its locale file',
     (locale) => {
       const strings = localeStrings(locale)

@@ -17,6 +17,17 @@ import pl from './locales/pl.json'
 import ko from './locales/ko.json'
 import hi from './locales/hi.json'
 import ar from './locales/ar.json'
+import nl from './locales/nl.json'
+import sv from './locales/sv.json'
+import da from './locales/da.json'
+import nb from './locales/nb.json'
+import fi from './locales/fi.json'
+import cs from './locales/cs.json'
+import hu from './locales/hu.json'
+import tr from './locales/tr.json'
+import id from './locales/id.json'
+import vi from './locales/vi.json'
+import sw from './locales/sw.json'
 
 export const SUPPORTED_LANGUAGES = {
   en: { name: 'English', nativeName: 'English', flag: '🇬🇧' },
@@ -33,6 +44,17 @@ export const SUPPORTED_LANGUAGES = {
   ko: { name: 'Korean', nativeName: '한국어', flag: '🇰🇷' },
   hi: { name: 'Hindi', nativeName: 'हिन्दी', flag: '🇮🇳' },
   ar: { name: 'Arabic', nativeName: 'العربية', flag: '🇸🇦' },
+  nl: { name: 'Dutch', nativeName: 'Nederlands', flag: '🇳🇱' },
+  sv: { name: 'Swedish', nativeName: 'Svenska', flag: '🇸🇪' },
+  da: { name: 'Danish', nativeName: 'Dansk', flag: '🇩🇰' },
+  nb: { name: 'Norwegian (Bokmål)', nativeName: 'Norsk bokmål', flag: '🇳🇴' },
+  fi: { name: 'Finnish', nativeName: 'Suomi', flag: '🇫🇮' },
+  cs: { name: 'Czech', nativeName: 'Čeština', flag: '🇨🇿' },
+  hu: { name: 'Hungarian', nativeName: 'Magyar', flag: '🇭🇺' },
+  tr: { name: 'Turkish', nativeName: 'Türkçe', flag: '🇹🇷' },
+  id: { name: 'Indonesian', nativeName: 'Bahasa Indonesia', flag: '🇮🇩' },
+  vi: { name: 'Vietnamese', nativeName: 'Tiếng Việt', flag: '🇻🇳' },
+  sw: { name: 'Swahili', nativeName: 'Kiswahili', flag: '🇹🇿' },
 } as const
 
 export type SupportedLanguage = keyof typeof SUPPORTED_LANGUAGES
@@ -90,6 +112,35 @@ const languageMap: Record<string, SupportedLanguage> = {
   'ar-LB': 'ar',
   'ar-QA': 'ar',
   'ar-TN': 'ar',
+  'nl': 'nl',
+  'nl-NL': 'nl',
+  'nl-BE': 'nl',
+  'sv': 'sv',
+  'sv-SE': 'sv',
+  'sv-FI': 'sv',
+  'da': 'da',
+  'da-DK': 'da',
+  'nb': 'nb',
+  'nb-NO': 'nb',
+  'nn': 'nb',
+  'nn-NO': 'nb',
+  'no': 'nb',
+  'no-NO': 'nb',
+  'fi': 'fi',
+  'fi-FI': 'fi',
+  'cs': 'cs',
+  'cs-CZ': 'cs',
+  'hu': 'hu',
+  'hu-HU': 'hu',
+  'tr': 'tr',
+  'tr-TR': 'tr',
+  'id': 'id',
+  'id-ID': 'id',
+  'vi': 'vi',
+  'vi-VN': 'vi',
+  'sw': 'sw',
+  'sw-KE': 'sw',
+  'sw-TZ': 'sw',
 }
 
 // Keep <html lang> and <html dir> in sync with the active language (screen
@@ -105,7 +156,10 @@ i18n.on('languageChanged', (lng) => {
 
 // Region-coded browser languages (pt-BR, zh-TW, ko-KR, ...) need no explicit
 // mapping: with supportedLngs set, i18next's getBestMatchFromCodes falls back to
-// the language-only code (see detection.test.ts).
+// the language-only code (see detection.test.ts). It cannot map one language
+// code to a different one, though: Norwegian browsers report `no` or `nn`
+// (Nynorsk) as often as `nb`, so detected codes go through languageMap first
+// (convertDetectedLanguage) to land on our Bokmål translation.
 i18n
   .use(LanguageDetector)
   .use(initReactI18next)
@@ -125,6 +179,17 @@ i18n
       ko: { translation: ko },
       hi: { translation: hi },
       ar: { translation: ar },
+      nl: { translation: nl },
+      sv: { translation: sv },
+      da: { translation: da },
+      nb: { translation: nb },
+      fi: { translation: fi },
+      cs: { translation: cs },
+      hu: { translation: hu },
+      tr: { translation: tr },
+      id: { translation: id },
+      vi: { translation: vi },
+      sw: { translation: sw },
     },
     fallbackLng: DEFAULT_LANGUAGE,
     supportedLngs: Object.keys(SUPPORTED_LANGUAGES) as SupportedLanguage[],
@@ -135,6 +200,7 @@ i18n
       lookupLocalStorage: 'lenr-language-preference',
       caches: ['localStorage'],
       excludeCacheFor: ['cimode'],
+      convertDetectedLanguage: (lng: string) => languageMap[lng] ?? lng,
     },
 
     interpolation: {

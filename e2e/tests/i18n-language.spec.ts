@@ -6,6 +6,13 @@ import {
   setLanguagePreference,
   acceptPrivacyConsent
 } from '../fixtures/test-helpers';
+import { readFileSync } from 'node:fs';
+
+/** Navigation label from a locale file (for locales whose labels are not hardcoded below) */
+function navLabel(locale: string, key: 'fusionReactions'): string {
+  const url = new URL(`../../src/i18n/locales/${locale}.json`, import.meta.url);
+  return JSON.parse(readFileSync(url, 'utf-8')).navigation[key];
+}
 
 /**
  * E2E Tests for Internationalization (i18n) and Language Switching
@@ -14,7 +21,8 @@ import {
  * - Language selection modal on first visit
  * - Language switcher in the header
  * - Translation persistence across page reloads
- * - Multiple language support (en, de, es, fr, ja, ru, zh, it, pt, uk, pl, ko, hi, ar)
+ * - Multiple language support (en, de, es, fr, ja, ru, zh, it, pt, uk, pl, ko, hi, ar,
+ *   nl, sv, da, nb, fi, cs, hu, tr, id, vi, sw)
  * - Right-to-left layout direction for Arabic
  * - Cascade simulation tab translations
  */
@@ -397,7 +405,20 @@ test.describe('All Supported Languages', () => {
     { code: 'pl', name: 'Polski', navItem: /Strona główna|Reakcje syntezy/ },
     { code: 'ko', name: '한국어', navItem: /홈|핵융합 반응/ },
     { code: 'hi', name: 'हिन्दी', navItem: /होम|संलयन/ },
-    { code: 'ar', name: 'العربية', navItem: /الرئيسية|الاندماج/ }
+    { code: 'ar', name: 'العربية', navItem: /الرئيسية|الاندماج/ },
+    // Nav "Home" is often left untranslated in these locales, so match the
+    // fusion item, read from the locale file (a string name is a substring match)
+    { code: 'nl', name: 'Nederlands', navItem: navLabel('nl', 'fusionReactions') },
+    { code: 'sv', name: 'Svenska', navItem: navLabel('sv', 'fusionReactions') },
+    { code: 'da', name: 'Dansk', navItem: navLabel('da', 'fusionReactions') },
+    { code: 'nb', name: 'Norsk bokmål', navItem: navLabel('nb', 'fusionReactions') },
+    { code: 'fi', name: 'Suomi', navItem: navLabel('fi', 'fusionReactions') },
+    { code: 'cs', name: 'Čeština', navItem: navLabel('cs', 'fusionReactions') },
+    { code: 'hu', name: 'Magyar', navItem: navLabel('hu', 'fusionReactions') },
+    { code: 'tr', name: 'Türkçe', navItem: navLabel('tr', 'fusionReactions') },
+    { code: 'id', name: 'Bahasa Indonesia', navItem: navLabel('id', 'fusionReactions') },
+    { code: 'vi', name: 'Tiếng Việt', navItem: navLabel('vi', 'fusionReactions') },
+    { code: 'sw', name: 'Kiswahili', navItem: navLabel('sw', 'fusionReactions') }
   ];
 
   for (const lang of languages) {
@@ -533,6 +554,29 @@ test.describe('Mobile Language Dropdown Positioning', () => {
       return localStorage.getItem('lenr-language-preference');
     });
     expect(preference).toBe('ja');
+  });
+
+  test('scrolls the long language list inside the viewport to reach the last language', async ({ page }) => {
+    const mobileHeader = page.locator('div.sticky.top-0').first();
+    await mobileHeader.locator('button').nth(1).click();
+
+    const dropdown = page.locator('div.fixed').filter({ hasText: /English|日本語|中文/ });
+    await expect(dropdown).toBeVisible({ timeout: 3000 });
+
+    // 25 languages do not fit on a 667px screen: the menu must end inside the viewport and scroll
+    const box = await dropdown.boundingBox();
+    expect(box).not.toBeNull();
+    expect(box!.y + box!.height).toBeLessThanOrEqual(667);
+    const scrolls = await dropdown.evaluate((el) => el.scrollHeight > el.clientHeight);
+    expect(scrolls).toBe(true);
+
+    const swahili = dropdown.getByText('Kiswahili');
+    await swahili.scrollIntoViewIfNeeded();
+    await expect(swahili).toBeInViewport();
+    await swahili.click();
+
+    const preference = await page.evaluate(() => localStorage.getItem('lenr-language-preference'));
+    expect(preference).toBe('sw');
   });
 });
 

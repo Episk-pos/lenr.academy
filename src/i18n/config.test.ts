@@ -4,14 +4,15 @@ import type { SupportedLanguage } from './config';
 
 describe('i18n config', () => {
   describe('SUPPORTED_LANGUAGES', () => {
-    it('contains exactly 14 languages', () => {
-      expect(Object.keys(SUPPORTED_LANGUAGES)).toHaveLength(14);
+    it('contains exactly 25 languages', () => {
+      expect(Object.keys(SUPPORTED_LANGUAGES)).toHaveLength(25);
     });
 
     it('includes all expected language codes', () => {
       const expected: SupportedLanguage[] = [
         'en', 'ru', 'ja', 'zh', 'de', 'fr', 'es',
         'it', 'pt', 'uk', 'pl', 'ko', 'hi', 'ar',
+        'nl', 'sv', 'da', 'nb', 'fi', 'cs', 'hu', 'tr', 'id', 'vi', 'sw',
       ];
       expected.forEach((lang) => {
         expect(SUPPORTED_LANGUAGES).toHaveProperty(lang);
@@ -51,6 +52,17 @@ describe('i18n config', () => {
       expect(getMappedLanguage('ko')).toBe('ko');
       expect(getMappedLanguage('hi')).toBe('hi');
       expect(getMappedLanguage('ar')).toBe('ar');
+      expect(getMappedLanguage('nl')).toBe('nl');
+      expect(getMappedLanguage('sv')).toBe('sv');
+      expect(getMappedLanguage('da')).toBe('da');
+      expect(getMappedLanguage('nb')).toBe('nb');
+      expect(getMappedLanguage('fi')).toBe('fi');
+      expect(getMappedLanguage('cs')).toBe('cs');
+      expect(getMappedLanguage('hu')).toBe('hu');
+      expect(getMappedLanguage('tr')).toBe('tr');
+      expect(getMappedLanguage('id')).toBe('id');
+      expect(getMappedLanguage('vi')).toBe('vi');
+      expect(getMappedLanguage('sw')).toBe('sw');
     });
 
     it('maps regional variants to base languages', () => {
@@ -78,11 +90,31 @@ describe('i18n config', () => {
       expect(getMappedLanguage('ar-SA')).toBe('ar');
       expect(getMappedLanguage('ar-EG')).toBe('ar');
       expect(getMappedLanguage('ar-AE')).toBe('ar');
+      expect(getMappedLanguage('nl-NL')).toBe('nl');
+      expect(getMappedLanguage('nl-BE')).toBe('nl');
+      expect(getMappedLanguage('sv-SE')).toBe('sv');
+      expect(getMappedLanguage('sv-FI')).toBe('sv');
+      expect(getMappedLanguage('da-DK')).toBe('da');
+      expect(getMappedLanguage('nb-NO')).toBe('nb');
+      expect(getMappedLanguage('fi-FI')).toBe('fi');
+      expect(getMappedLanguage('cs-CZ')).toBe('cs');
+      expect(getMappedLanguage('hu-HU')).toBe('hu');
+      expect(getMappedLanguage('tr-TR')).toBe('tr');
+      expect(getMappedLanguage('id-ID')).toBe('id');
+      expect(getMappedLanguage('vi-VN')).toBe('vi');
+      expect(getMappedLanguage('sw-KE')).toBe('sw');
+      expect(getMappedLanguage('sw-TZ')).toBe('sw');
+    });
+
+    it('maps every Norwegian code to Bokmål', () => {
+      for (const code of ['no', 'no-NO', 'nn', 'nn-NO', 'nb', 'nb-NO']) {
+        expect(getMappedLanguage(code), code).toBe('nb');
+      }
     });
 
     it('falls back to default language for unknown codes', () => {
-      expect(getMappedLanguage('nl')).toBe('en');
-      expect(getMappedLanguage('sv-SE')).toBe('en');
+      expect(getMappedLanguage('th')).toBe('en');
+      expect(getMappedLanguage('he-IL')).toBe('en');
       expect(getMappedLanguage('xx-XX')).toBe('en');
       expect(getMappedLanguage('')).toBe('en');
     });
