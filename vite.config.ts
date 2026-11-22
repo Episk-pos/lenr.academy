@@ -52,11 +52,12 @@ export default defineConfig({
         ],
       },
       workbox: {
-        // Cache all static assets
+        // Cache all static assets (includes the per-locale JS chunks, so the
+        // app keeps working offline in any language, not just English)
         globPatterns: ['**/*.{js,css,html,ico,png,svg,wasm}'],
 
-        // Increase maximum file size for sql-wasm.wasm (~44KB)
-        maximumFileSizeToCacheInBytes: 8 * 1024 * 1024, // 8MB (main bundle inlines all locale JSON)
+        // Raise the 2MB default for the main bundle (~3.2MB; locales are separate chunks)
+        maximumFileSizeToCacheInBytes: 5 * 1024 * 1024, // 5MB
 
         // Runtime caching strategies
         runtimeCaching: [
