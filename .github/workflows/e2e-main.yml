@@ -130,6 +130,7 @@ jobs:
 
       - name: Build beta bundle
         env:
+          NODE_OPTIONS: --max-old-space-size=6144
           VITE_SENTRY_DSN: ${{ secrets.VITE_SENTRY_DSN }}
           SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
           SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT }}

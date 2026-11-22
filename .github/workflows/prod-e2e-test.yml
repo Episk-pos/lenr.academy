@@ -70,6 +70,7 @@ jobs:
       - name: Build production bundle
         run: npm run build
         env:
+          NODE_OPTIONS: --max-old-space-size=6144
           VITE_SENTRY_DSN: ""
 
       - name: Copy database to dist
