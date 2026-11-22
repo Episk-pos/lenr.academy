@@ -1,37 +1,11 @@
 import i18n from 'i18next'
 import { initReactI18next } from 'react-i18next'
 import LanguageDetector from 'i18next-browser-languagedetector'
+import resourcesToBackend from 'i18next-resources-to-backend'
 
-// Import translation files
+// English is bundled (it is the fallback, so it must be available synchronously).
+// Every other locale is a separate chunk, fetched only when that language is used.
 import en from './locales/en.json'
-import ru from './locales/ru.json'
-import ja from './locales/ja.json'
-import zh from './locales/zh.json'
-import de from './locales/de.json'
-import fr from './locales/fr.json'
-import es from './locales/es.json'
-import it from './locales/it.json'
-import pt from './locales/pt.json'
-import uk from './locales/uk.json'
-import pl from './locales/pl.json'
-import ko from './locales/ko.json'
-import hi from './locales/hi.json'
-import ar from './locales/ar.json'
-import nl from './locales/nl.json'
-import sv from './locales/sv.json'
-import da from './locales/da.json'
-import nb from './locales/nb.json'
-import fi from './locales/fi.json'
-import cs from './locales/cs.json'
-import hu from './locales/hu.json'
-import tr from './locales/tr.json'
-import id from './locales/id.json'
-import vi from './locales/vi.json'
-import sw from './locales/sw.json'
-import bn from './locales/bn.json'
-import th from './locales/th.json'
-import fa from './locales/fa.json'
-import ur from './locales/ur.json'
 
 export const SUPPORTED_LANGUAGES = {
   en: { name: 'English', nativeName: 'English', flag: '🇬🇧' },
@@ -182,38 +156,17 @@ i18n.on('languageChanged', (lng) => {
 i18n
   .use(LanguageDetector)
   .use(initReactI18next)
+  .use(resourcesToBackend((lng: string) => import(`./locales/${lng}.json`)))
+
+/**
+ * Resolves once the detected language's bundle has loaded. main.tsx waits for
+ * it before the first render, so non-English users never see English or raw keys.
+ */
+export const i18nReady = i18n
   .init({
-    resources: {
-      en: { translation: en },
-      ru: { translation: ru },
-      ja: { translation: ja },
-      zh: { translation: zh },
-      de: { translation: de },
-      fr: { translation: fr },
-      es: { translation: es },
-      it: { translation: it },
-      pt: { translation: pt },
-      uk: { translation: uk },
-      pl: { translation: pl },
-      ko: { translation: ko },
-      hi: { translation: hi },
-      ar: { translation: ar },
-      nl: { translation: nl },
-      sv: { translation: sv },
-      da: { translation: da },
-      nb: { translation: nb },
-      fi: { translation: fi },
-      cs: { translation: cs },
-      hu: { translation: hu },
-      tr: { translation: tr },
-      id: { translation: id },
-      vi: { translation: vi },
-      sw: { translation: sw },
-      bn: { translation: bn },
-      th: { translation: th },
-      fa: { translation: fa },
-      ur: { translation: ur },
-    },
+    resources: { en: { translation: en } },
+    // Load languages missing from `resources` through the resourcesToBackend loader
+    partialBundledLanguages: true,
     fallbackLng: DEFAULT_LANGUAGE,
     supportedLngs: Object.keys(SUPPORTED_LANGUAGES) as SupportedLanguage[],
 
@@ -231,7 +184,7 @@ i18n
     },
 
     react: {
-      useSuspense: false, // Disable suspense for now
+      useSuspense: false, // main.tsx awaits i18nReady instead
     },
   })
 

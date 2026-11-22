@@ -461,6 +461,8 @@ export async function exportToPDF(
   const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' })
   const pageWidth = doc.internal.pageSize.getWidth()
   const language = i18n.language
+  // Locale bundles are lazy chunks: make sure the active one is in the store
+  await i18n.loadLanguages(language)
 
   // Collect every string up front so the font can be chosen from the actual content
   const { head: headRows, mapRow } = getTableLayout(metadata.queryType)

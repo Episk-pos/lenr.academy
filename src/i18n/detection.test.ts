@@ -1,5 +1,7 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import type { i18n as I18n } from 'i18next';
+import de from './locales/de.json';
+import fa from './locales/fa.json';
 
 /**
  * Exercises the real i18n config (LanguageDetector + supportedLngs) with
@@ -10,10 +12,8 @@ async function initWithBrowserLanguages(languages: string[]): Promise<I18n> {
   vi.spyOn(navigator, 'languages', 'get').mockReturnValue(languages);
   vi.spyOn(navigator, 'language', 'get').mockReturnValue(languages[0]);
   vi.resetModules();
-  const { default: i18n } = await import('./config');
-  if (!i18n.isInitialized) {
-    await new Promise<void>((resolve) => i18n.on('initialized', () => resolve()));
-  }
+  const { default: i18n, i18nReady } = await import('./config');
+  await i18nReady;
   return i18n;
 }
 
@@ -157,6 +157,35 @@ describe('i18n browser language detection', () => {
       expect(document.documentElement.dir).toBe('rtl');
       await i18n.changeLanguage('th');
       expect(document.documentElement.dir).toBe('ltr');
+    });
+  });
+
+  describe('lazy locale loading', () => {
+    it('bundles only English up front', async () => {
+      const i18n = await initWithBrowserLanguages(['en-US']);
+      expect(i18n.hasResourceBundle('en', 'translation')).toBe(true);
+      expect(i18n.hasResourceBundle('de', 'translation')).toBe(false);
+      expect(i18n.hasResourceBundle('fa', 'translation')).toBe(false);
+    });
+
+    it('loads a locale bundle when switching to that language', async () => {
+      const i18n = await initWithBrowserLanguages(['en-US']);
+      await i18n.changeLanguage('de');
+      expect(i18n.hasResourceBundle('de', 'translation')).toBe(true);
+      expect(i18n.t('language.selectLanguage')).toBe(de.language.selectLanguage);
+    });
+
+    it('has the detected language loaded by the time i18nReady resolves', async () => {
+      const i18n = await initWithBrowserLanguages(['fa-IR']);
+      expect(i18n.hasResourceBundle('fa', 'translation')).toBe(true);
+      expect(i18n.t('language.selectLanguage')).toBe(fa.language.selectLanguage);
+    });
+
+    it('loads another language on demand for getFixedT', async () => {
+      const i18n = await initWithBrowserLanguages(['en-US']);
+      await i18n.loadLanguages('de');
+      expect(i18n.getFixedT('de')('language.selectLanguage')).toBe(de.language.selectLanguage);
+      expect(i18n.language).toBe('en');
     });
   });
 });

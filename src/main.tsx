@@ -20,7 +20,7 @@ import './index.css'
 import 'katex/dist/katex.min.css'
 import { loadUmamiScript } from './utils/analytics'
 import { generateErrorFingerprint } from './utils/errorFingerprint'
-import './i18n/config' // Initialize i18n
+import { i18nReady } from './i18n/config'
 
 // Initialize Sentry for error tracking
 // Only initialize if DSN is provided (production environment) AND user hasn't explicitly declined
@@ -117,8 +117,17 @@ if (analyticsConsent === 'accepted') {
   })
 }
 
-ReactDOM.createRoot(document.getElementById('root')!).render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
-)
+// Mount once the active language's bundle has loaded (non-English locales are
+// lazy chunks), so the first render is already translated. Mount anyway if the
+// load fails: i18next falls back to the bundled English.
+const mount = () => {
+  ReactDOM.createRoot(document.getElementById('root')!).render(
+    <React.StrictMode>
+      <App />
+    </React.StrictMode>,
+  )
+}
+i18nReady.then(mount, (error) => {
+  console.error('[i18n] Failed to initialize:', error)
+  mount()
+})
