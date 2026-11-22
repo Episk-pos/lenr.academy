@@ -19,6 +19,17 @@ vi.mock('../i18n/config', () => ({
     ko: { name: 'Korean', nativeName: '한국어', flag: '🇰🇷' },
     hi: { name: 'Hindi', nativeName: 'हिन्दी', flag: '🇮🇳' },
     ar: { name: 'Arabic', nativeName: 'العربية', flag: '🇸🇦' },
+    nl: { name: 'Dutch', nativeName: 'Nederlands', flag: '🇳🇱' },
+    sv: { name: 'Swedish', nativeName: 'Svenska', flag: '🇸🇪' },
+    da: { name: 'Danish', nativeName: 'Dansk', flag: '🇩🇰' },
+    nb: { name: 'Norwegian (Bokmål)', nativeName: 'Norsk bokmål', flag: '🇳🇴' },
+    fi: { name: 'Finnish', nativeName: 'Suomi', flag: '🇫🇮' },
+    cs: { name: 'Czech', nativeName: 'Čeština', flag: '🇨🇿' },
+    hu: { name: 'Hungarian', nativeName: 'Magyar', flag: '🇭🇺' },
+    tr: { name: 'Turkish', nativeName: 'Türkçe', flag: '🇹🇷' },
+    id: { name: 'Indonesian', nativeName: 'Bahasa Indonesia', flag: '🇮🇩' },
+    vi: { name: 'Vietnamese', nativeName: 'Tiếng Việt', flag: '🇻🇳' },
+    sw: { name: 'Swahili', nativeName: 'Kiswahili', flag: '🇹🇿' },
   },
   DEFAULT_LANGUAGE: 'en',
 }))
@@ -70,6 +81,17 @@ describe('LanguageContext', () => {
       expect(langs).toContain('ko')
       expect(langs).toContain('hi')
       expect(langs).toContain('ar')
+      expect(langs).toContain('nl')
+      expect(langs).toContain('sv')
+      expect(langs).toContain('da')
+      expect(langs).toContain('nb')
+      expect(langs).toContain('fi')
+      expect(langs).toContain('cs')
+      expect(langs).toContain('hu')
+      expect(langs).toContain('tr')
+      expect(langs).toContain('id')
+      expect(langs).toContain('vi')
+      expect(langs).toContain('sw')
     })
 
     it('detects first visit when no language selected key exists', () => {

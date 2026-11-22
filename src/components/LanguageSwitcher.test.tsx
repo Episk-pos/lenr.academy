@@ -112,5 +112,13 @@ describe('LanguageSwitcher', () => {
       const menu = openWithTriggerAt(4, 40, 'above');
       expect(menu.style.left).toBe('8px');
     });
+
+    it('below: caps the menu height to the viewport space so the long list scrolls', () => {
+      vi.spyOn(window, 'innerHeight', 'get').mockReturnValue(400);
+      const menu = openWithTriggerAt(280, 40, 'below');
+      // trigger bottom 50px, 8px margins above and below the menu
+      expect(menu.style.maxHeight).toBe(`${400 - 50 - 16}px`);
+      expect(menu.className).toContain('overflow-y-auto');
+    });
   });
 });

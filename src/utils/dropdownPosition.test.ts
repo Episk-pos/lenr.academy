@@ -1,5 +1,10 @@
 import { describe, it, expect } from 'vitest';
-import { computeDropdownPosition } from './dropdownPosition';
+import {
+  computeDropdownMaxHeight,
+  computeDropdownPosition,
+  MAX_DROPDOWN_HEIGHT,
+  MIN_DROPDOWN_HEIGHT,
+} from './dropdownPosition';
 
 const rect = (left: number, width: number, top = 10, height = 40) => ({
   left,
@@ -58,5 +63,24 @@ describe('computeDropdownPosition', () => {
 
   it('pins to the left margin when the viewport is narrower than the menu', () => {
     expect(computeDropdownPosition(rect(10, 40), 'below', true, 150).left).toBe(8);
+  });
+});
+
+describe('computeDropdownMaxHeight', () => {
+  it('below: limits the menu to the space under the trigger on a small phone', () => {
+    // 400px-tall viewport (phone in landscape), header trigger bottom at 50px
+    expect(computeDropdownMaxHeight({ top: 10, bottom: 50 }, 'below', 400)).toBe(400 - 50 - 16);
+  });
+
+  it('above: limits the menu to the space over the trigger', () => {
+    expect(computeDropdownMaxHeight({ top: 300, bottom: 340 }, 'above', 400)).toBe(300 - 16);
+  });
+
+  it('caps the height on tall viewports so the list scrolls', () => {
+    expect(computeDropdownMaxHeight({ top: 1300, bottom: 1340 }, 'above', 1400)).toBe(MAX_DROPDOWN_HEIGHT);
+  });
+
+  it('never shrinks below the minimum height', () => {
+    expect(computeDropdownMaxHeight({ top: 60, bottom: 100 }, 'above', 800)).toBe(MIN_DROPDOWN_HEIGHT);
   });
 });

@@ -43,19 +43,44 @@ describe('i18n browser language detection', () => {
     ['ja-JP', 'ja'],
     ['de-AT', 'de'],
     ['en-US', 'en'],
+    ['nl-NL', 'nl'],
+    ['nl-BE', 'nl'],
+    ['sv-SE', 'sv'],
+    ['sv-FI', 'sv'],
+    ['da-DK', 'da'],
+    ['nb-NO', 'nb'],
+    ['fi-FI', 'fi'],
+    ['cs-CZ', 'cs'],
+    ['hu-HU', 'hu'],
+    ['tr-TR', 'tr'],
+    ['id-ID', 'id'],
+    ['vi-VN', 'vi'],
+    ['sw-KE', 'sw'],
+    ['sw-TZ', 'sw'],
   ])('maps region-coded browser language %s to %s', async (browserLang, expected) => {
     const i18n = await initWithBrowserLanguages([browserLang]);
     expect(i18n.language).toBe(expected);
     expect(i18n.resolvedLanguage).toBe(expected);
   });
 
+  // getBestMatchFromCodes alone would fall back to English for these: `no` and
+  // `nn` are different language codes from `nb`.
+  it.each(['no', 'no-NO', 'nn', 'nn-NO', 'nb'])(
+    'maps Norwegian browser language %s to Bokmål (nb)',
+    async (browserLang) => {
+      const i18n = await initWithBrowserLanguages([browserLang]);
+      expect(i18n.language).toBe('nb');
+      expect(i18n.resolvedLanguage).toBe('nb');
+    },
+  );
+
   it('picks the first supported language from the browser preference list', async () => {
-    const i18n = await initWithBrowserLanguages(['nl-NL', 'pt-BR', 'en-US']);
+    const i18n = await initWithBrowserLanguages(['th-TH', 'pt-BR', 'en-US']);
     expect(i18n.language).toBe('pt');
   });
 
   it('falls back to English for unsupported browser languages', async () => {
-    const i18n = await initWithBrowserLanguages(['nl-NL', 'sv-SE']);
+    const i18n = await initWithBrowserLanguages(['th-TH', 'he-IL']);
     expect(i18n.language).toBe('en');
   });
 

@@ -56,7 +56,7 @@ export default defineConfig({
         globPatterns: ['**/*.{js,css,html,ico,png,svg,wasm}'],
 
         // Increase maximum file size for sql-wasm.wasm (~44KB)
-        maximumFileSizeToCacheInBytes: 5 * 1024 * 1024, // 5MB
+        maximumFileSizeToCacheInBytes: 8 * 1024 * 1024, // 8MB (main bundle inlines all locale JSON)
 
         // Runtime caching strategies
         runtimeCaching: [

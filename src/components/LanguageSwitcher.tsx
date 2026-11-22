@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { Globe, Check, ChevronDown } from 'lucide-react'
 import { useLanguage } from '../contexts/LanguageContext'
 import type { SupportedLanguage } from '../i18n/config'
-import { computeDropdownPosition } from '../utils/dropdownPosition'
+import { computeDropdownMaxHeight, computeDropdownPosition } from '../utils/dropdownPosition'
 
 interface LanguageSwitcherProps {
   className?: string
@@ -18,19 +18,16 @@ export default function LanguageSwitcher({ className = '', compact = false, posi
   const [isOpen, setIsOpen] = useState(false)
   const buttonRef = useRef<HTMLButtonElement>(null)
   const dropdownRef = useRef<HTMLDivElement>(null)
-  const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0, width: 0 })
+  const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0, width: 0, maxHeight: 0 })
 
   // Update dropdown position when opening (direction-aware, clamped to the viewport)
   useEffect(() => {
     if (isOpen && buttonRef.current) {
-      setDropdownPosition(
-        computeDropdownPosition(
-          buttonRef.current.getBoundingClientRect(),
-          position,
-          document.documentElement.dir === 'rtl',
-          window.innerWidth,
-        )
-      )
+      const rect = buttonRef.current.getBoundingClientRect()
+      setDropdownPosition({
+        ...computeDropdownPosition(rect, position, document.documentElement.dir === 'rtl', window.innerWidth),
+        maxHeight: computeDropdownMaxHeight(rect, position, window.innerHeight),
+      })
     }
   }, [isOpen, position])
 
@@ -66,11 +63,12 @@ export default function LanguageSwitcher({ className = '', compact = false, posi
   const dropdownContent = (
     <div
       ref={dropdownRef}
-      className="fixed bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-[9999] max-h-[calc(100vh-200px)] overflow-y-auto"
+      className="fixed bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-[9999] overflow-y-auto overscroll-contain"
       style={{
         top: dropdownPosition.top,
         left: dropdownPosition.left,
         width: dropdownPosition.width,
+        maxHeight: dropdownPosition.maxHeight,
         // Desktop sidebar (position='above'): translate up to appear above button
         // Mobile header (position='below'): no transform needed, already positioned below
         transform: position === 'below' ? undefined : 'translateY(-100%)'
