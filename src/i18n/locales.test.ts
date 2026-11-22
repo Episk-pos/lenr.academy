@@ -28,6 +28,10 @@ import tr from './locales/tr.json';
 import id from './locales/id.json';
 import vi from './locales/vi.json';
 import sw from './locales/sw.json';
+import bn from './locales/bn.json';
+import th from './locales/th.json';
+import fa from './locales/fa.json';
+import ur from './locales/ur.json';
 
 /**
  * Recursively get all keys from a nested object as dot-notation paths
@@ -75,6 +79,7 @@ const EXTRA_PLURAL_SUFFIX = /^(.*)_(zero|two|few|many)$/;
 const locales = {
   de, es, fr, ja, ru, zh, it: it_, pt, uk, pl, ko, hi, ar,
   nl, sv, da, nb, fi, cs, hu, tr, id, vi, sw,
+  bn, th, fa, ur,
 };
 const enKeys = getAllKeys(en as Record<string, unknown>);
 const enFlat = flatten(en as Record<string, unknown>);

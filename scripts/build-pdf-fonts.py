@@ -3,7 +3,8 @@
 Build the subset Noto Sans fonts used by PDF export (src/utils/pdfFonts.ts).
 
 jsPDF's built-in fonts only cover Latin-1, so PDF exports that contain
-Cyrillic, Greek, CJK, Hangul, Devanagari, Arabic or symbols such as "→"
+Cyrillic, Greek, CJK, Hangul, Devanagari, Bengali, Thai, Arabic or symbols
+such as "→"
 need an embedded Unicode TrueType font. The fonts are served as static
 assets from public/fonts/pdf/ and fetched lazily at export time, so they never
 enter the JS bundle.
@@ -14,11 +15,12 @@ math operators) because jsPDF cannot fall back between fonts per glyph.
 OpenType layout tables (GSUB/GPOS/GDEF) are dropped: jsPDF does not apply
 them, so they would only add weight. Hinting is dropped as well.
 
-Exception: NotoSansDevanagari-Shaping.ttf is NOT given to jsPDF. It is loaded
-as a CSS FontFace and used to rasterise Devanagari text on a <canvas>, where
-the browser's shaping engine (HarfBuzz) needs GSUB/GPOS/GDEF to reorder
-matras and form conjuncts. It keeps those tables and is not merged with the
-base (the canvas falls back to other fonts per glyph on its own).
+Exception: the *-Shaping.ttf fonts (Devanagari, Bengali, Thai) are NOT given
+to jsPDF. They are loaded as CSS FontFaces and used to rasterise those scripts
+on a <canvas>, where the browser's shaping engine (HarfBuzz) needs
+GSUB/GPOS/GDEF to reorder matras, form conjuncts and stack Thai marks. They
+keep those tables and are not merged with the base (the canvas falls back to
+other fonts per glyph on its own).
 
 CJK/Hangul coverage = a broad common-character set derived from the legacy
 national encodings (JIS X 0208 level 1, GB2312 level 1, KS X 1001 Hangul)
@@ -104,7 +106,12 @@ def encoding_chars(encoding: str, rows: range, cells: range = range(0xA1, 0xFF))
 
 
 def locale_chars(locale: str) -> set[int]:
-    data = json.loads((LOCALES_DIR / f"{locale}.json").read_text(encoding="utf-8"))
+    path = LOCALES_DIR / f"{locale}.json"
+    if not path.exists():
+        # The font coverage test in src/utils/pdfFonts.test.ts catches any gap.
+        print(f"warning: {path.name} not found, building without its characters", file=sys.stderr)
+        return set()
+    data = json.loads(path.read_text(encoding="utf-8"))
     out: set[int] = set()
 
     def walk(v):
@@ -132,6 +139,10 @@ CJK_COMMON = (
     rng(0x3000, 0x303F)      # CJK Symbols and Punctuation
     | rng(0xFF00, 0xFFEF)    # Halfwidth and Fullwidth Forms
 )
+
+# Bengali block plus the dandas (। ॥) Bengali shares with Devanagari.
+BENGALI_CODEPOINTS = rng(0x0980, 0x09FF) | {0x0964, 0x0965, 0x200C, 0x200D, 0x25CC}
+THAI_CODEPOINTS = rng(0x0E00, 0x0E7F) | {0x25CC}
 
 # (output file, source file, codepoints beyond BASE)
 TARGETS: list[tuple[str, str | None, set[int]]] = [
@@ -168,14 +179,27 @@ TARGETS: list[tuple[str, str | None, set[int]]] = [
         | locale_chars("hi"),
     ),
     (
+        "NotoSansBengali-Regular.ttf",
+        "NotoSansBengali[wdth,wght].ttf",
+        BENGALI_CODEPOINTS | locale_chars("bn"),
+    ),
+    (
+        "NotoSansThai-Regular.ttf",
+        "NotoSansThai[wdth,wght].ttf",
+        THAI_CODEPOINTS | locale_chars("th"),
+    ),
+    (
         "NotoSansArabic-Regular.ttf",
         "NotoSansArabic[wdth,wght].ttf",
+        # Whole Arabic block: includes the Persian/Urdu letters (پ چ ژ گ ک ی ے
+        # ٹ ڈ ڑ ں ھ ۀ ہ ۂ ۃ) and Extended Arabic-Indic (Persian/Urdu) digits.
         rng(0x0600, 0x06FF) | rng(0x0750, 0x077F)
         # Presentation forms: jsPDF's processArabic() shapes text by mapping
         # letters to these code points, so they MUST stay in the cmap.
         | rng(0xFB50, 0xFDFF) | rng(0xFE70, 0xFEFF)
+        # ZWNJ is part of Persian spelling (e.g. می‌شود); ZWJ, LRM/RLM
         | {0x200C, 0x200D, 0x200E, 0x200F}
-        | locale_chars("ar"),
+        | locale_chars("ar") | locale_chars("fa") | locale_chars("ur"),
     ),
 ]
 
@@ -190,6 +214,20 @@ SHAPING_TARGETS: list[tuple[str, str, set[int]]] = [
         | rng(0x0900, 0x097F) | rng(0xA8E0, 0xA8FF) | rng(0x1CD0, 0x1CFF)
         | rng(0x2010, 0x2027) | {0x200B, 0x200C, 0x200D, 0x25CC}
         | locale_chars("hi"),
+    ),
+    (
+        "NotoSansBengali-Shaping.ttf",
+        "NotoSansBengali[wdth,wght].ttf",
+        rng(0x0020, 0x007E) | {0x00A0, 0x00D7}
+        | BENGALI_CODEPOINTS | rng(0x2010, 0x2027) | {0x200B}
+        | locale_chars("bn"),
+    ),
+    (
+        "NotoSansThai-Shaping.ttf",
+        "NotoSansThai[wdth,wght].ttf",
+        rng(0x0020, 0x007E) | {0x00A0, 0x00D7}
+        | THAI_CODEPOINTS | rng(0x2010, 0x2027)
+        | locale_chars("th"),
     ),
 ]
 

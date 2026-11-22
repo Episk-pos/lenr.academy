@@ -30,6 +30,10 @@ vi.mock('../i18n/config', () => ({
     id: { name: 'Indonesian', nativeName: 'Bahasa Indonesia', flag: '🇮🇩' },
     vi: { name: 'Vietnamese', nativeName: 'Tiếng Việt', flag: '🇻🇳' },
     sw: { name: 'Swahili', nativeName: 'Kiswahili', flag: '🇹🇿' },
+    bn: { name: 'Bengali', nativeName: 'বাংলা', flag: '🇧🇩' },
+    th: { name: 'Thai', nativeName: 'ไทย', flag: '🇹🇭' },
+    fa: { name: 'Persian', nativeName: 'فارسی', flag: '🇮🇷' },
+    ur: { name: 'Urdu', nativeName: 'اردو', flag: '🇵🇰' },
   },
   DEFAULT_LANGUAGE: 'en',
 }))
@@ -92,6 +96,10 @@ describe('LanguageContext', () => {
       expect(langs).toContain('id')
       expect(langs).toContain('vi')
       expect(langs).toContain('sw')
+      expect(langs).toContain('bn')
+      expect(langs).toContain('th')
+      expect(langs).toContain('fa')
+      expect(langs).toContain('ur')
     })
 
     it('detects first visit when no language selected key exists', () => {

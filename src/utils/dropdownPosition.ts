@@ -48,7 +48,7 @@ export const MIN_DROPDOWN_HEIGHT = 160
 
 /**
  * Max height for a dropdown anchored like computeDropdownPosition, so a long
- * list (25 languages) scrolls inside the viewport instead of running off it:
+ * list (29 languages) scrolls inside the viewport instead of running off it:
  * the space below the trigger for 'below', above it for 'above'.
  */
 export function computeDropdownMaxHeight(

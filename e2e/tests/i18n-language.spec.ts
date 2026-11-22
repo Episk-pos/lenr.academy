@@ -22,8 +22,8 @@ function navLabel(locale: string, key: 'fusionReactions'): string {
  * - Language switcher in the header
  * - Translation persistence across page reloads
  * - Multiple language support (en, de, es, fr, ja, ru, zh, it, pt, uk, pl, ko, hi, ar,
- *   nl, sv, da, nb, fi, cs, hu, tr, id, vi, sw)
- * - Right-to-left layout direction for Arabic
+ *   nl, sv, da, nb, fi, cs, hu, tr, id, vi, sw, bn, th, fa, ur)
+ * - Right-to-left layout direction for Arabic, Persian and Urdu
  * - Cascade simulation tab translations
  */
 
@@ -418,7 +418,11 @@ test.describe('All Supported Languages', () => {
     { code: 'tr', name: 'Türkçe', navItem: navLabel('tr', 'fusionReactions') },
     { code: 'id', name: 'Bahasa Indonesia', navItem: navLabel('id', 'fusionReactions') },
     { code: 'vi', name: 'Tiếng Việt', navItem: navLabel('vi', 'fusionReactions') },
-    { code: 'sw', name: 'Kiswahili', navItem: navLabel('sw', 'fusionReactions') }
+    { code: 'sw', name: 'Kiswahili', navItem: navLabel('sw', 'fusionReactions') },
+    { code: 'bn', name: 'বাংলা', navItem: navLabel('bn', 'fusionReactions') },
+    { code: 'th', name: 'ไทย', navItem: navLabel('th', 'fusionReactions') },
+    { code: 'fa', name: 'فارسی', navItem: navLabel('fa', 'fusionReactions') },
+    { code: 'ur', name: 'اردو', navItem: navLabel('ur', 'fusionReactions') }
   ];
 
   for (const lang of languages) {
@@ -455,6 +459,19 @@ test.describe('Right-to-left layout', () => {
     await expect(page.locator('html')).toHaveAttribute('dir', 'ltr');
     await expect(page.locator('html')).toHaveAttribute('lang', 'en');
   });
+
+  for (const lang of ['fa', 'ur']) {
+    test(`sets dir="rtl" for ${lang}`, async ({ page }) => {
+      await setLanguagePreference(page, lang);
+      await acceptPrivacyConsent(page);
+      await page.goto('/');
+      await acceptMeteredWarningIfPresent(page);
+      await waitForDatabaseReady(page);
+
+      await expect(page.locator('html')).toHaveAttribute('dir', 'rtl');
+      await expect(page.locator('html')).toHaveAttribute('lang', lang);
+    });
+  }
 });
 
 test.describe('Mobile Language Dropdown Positioning', () => {
@@ -563,20 +580,21 @@ test.describe('Mobile Language Dropdown Positioning', () => {
     const dropdown = page.locator('div.fixed').filter({ hasText: /English|日本語|中文/ });
     await expect(dropdown).toBeVisible({ timeout: 3000 });
 
-    // 25 languages do not fit on a 667px screen: the menu must end inside the viewport and scroll
+    // 29 languages do not fit on a 667px screen: the menu must end inside the viewport and scroll
     const box = await dropdown.boundingBox();
     expect(box).not.toBeNull();
     expect(box!.y + box!.height).toBeLessThanOrEqual(667);
     const scrolls = await dropdown.evaluate((el) => el.scrollHeight > el.clientHeight);
     expect(scrolls).toBe(true);
 
-    const swahili = dropdown.getByText('Kiswahili');
-    await swahili.scrollIntoViewIfNeeded();
-    await expect(swahili).toBeInViewport();
-    await swahili.click();
+    // Urdu is the last entry in the list
+    const urdu = dropdown.getByText('اردو');
+    await urdu.scrollIntoViewIfNeeded();
+    await expect(urdu).toBeInViewport();
+    await urdu.click();
 
     const preference = await page.evaluate(() => localStorage.getItem('lenr-language-preference'));
-    expect(preference).toBe('sw');
+    expect(preference).toBe('ur');
   });
 });
 

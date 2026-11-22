@@ -237,7 +237,7 @@ type Align = 'left' | 'center' | 'right'
 const PT_TO_MM = 25.4 / 72
 /** Baseline-to-baseline distance for wrapped jsPDF text, in em. */
 const TEXT_LINE_HEIGHT_EM = 1.25
-/** Widest a Devanagari table cell asks its column to be before wrapping (mm). */
+/** Widest a shaped (Devanagari, Bengali, Thai) table cell asks its column to be before wrapping (mm). */
 const MAX_SHAPED_CELL_WIDTH = 40
 const SITE_URL = 'https://lenr.academy'
 
@@ -256,7 +256,7 @@ function setTextColor(doc: JsPDF, color: Color | undefined) {
 }
 
 /**
- * Text drawing that sends Devanagari runs through the canvas shaper (see
+ * Text drawing that sends Devanagari, Bengali and Thai runs through the canvas shaper (see
  * ./pdfShaping.ts) and everything else through doc.text(). If the shaper is
  * missing or throws, the run falls back to unshaped doc.text().
  * Exported for tests only.
@@ -356,7 +356,7 @@ export function createTextRenderer(
     return (lines.length - 1) * advance
   }
 
-  // autotable hooks: Devanagari cells are blanked during parsing (so jsPDF does
+  // autotable hooks: shaped cells are blanked during parsing (so jsPDF does
   // not draw unshaped glyphs), sized to fit the shaped text, then drawn as images.
   // The lines wrapped at parse time are the ones the reserved height was
   // computed for, and are reused when drawing.
@@ -441,7 +441,7 @@ export function createTextRenderer(
  * Export query results as PDF with table.
  *
  * Every string comes from i18n. Text outside Latin-1 (e.g. "→", Cyrillic,
- * CJK) needs an embedded Unicode font, and Devanagari is shaped on a canvas;
+ * CJK) needs an embedded Unicode font, and Devanagari, Bengali and Thai are shaped on a canvas;
  * see ./pdfFonts.ts and ./pdfShaping.ts.
  */
 export async function exportToPDF(
@@ -494,10 +494,10 @@ export async function exportToPDF(
     ...head.flat().map((cell) => (cell.content == null ? '' : String(cell.content))),
     ...body.flatMap((row) => row.map((cell) => (cell == null ? '' : String(cell)))),
   ]
-  const needsShaping = allText.some((s) => shaping.needsCanvasShaping(s))
+  const shapingFonts = shaping.shapingFontsFor(allText)
   const [applied, shaper] = await Promise.all([
     pdfFonts.applyPdfFont(doc, allText, language),
-    needsShaping ? shaping.createCanvasShaper() : Promise.resolve(null),
+    shapingFonts.length > 0 ? shaping.createCanvasShaper(shapingFonts) : Promise.resolve(null),
   ])
 
   if (applied.fallback) {
@@ -510,7 +510,7 @@ export async function exportToPDF(
     doc,
     shaping,
     shaper,
-    !applied.fallback && applied.spec?.id === 'devanagari',
+    !applied.fallback && applied.spec?.shaping === 'canvas',
   )
   const maxTextWidth = pageWidth - 28 // 14mm margin each side
 
@@ -549,7 +549,7 @@ export async function exportToPDF(
     alternateRowStyles: {
       fillColor: [245, 247, 250],
     },
-    // Shaped (Devanagari) rows can be taller than autotable's estimate; never split a row
+    // Shaped (Devanagari, Bengali, Thai) rows can be taller than autotable's estimate; never split a row
     rowPageBreak: 'avoid',
     didParseCell: renderer.didParseCell,
     didDrawCell: renderer.didDrawCell,
