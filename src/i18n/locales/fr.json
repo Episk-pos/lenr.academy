@@ -1269,7 +1269,149 @@
       "dimer": {
         "term": "Dimère",
         "definition": "Molécule formée de deux atomes ou unités identiques, comme H₂, N₂, O₂ et les halogènes diatomiques F₂, Cl₂, Br₂ et I₂. L'option « Permettre la formation de dimères » du simulateur de cascade s'applique à ces éléments naturellement diatomiques."
+      },
+      "nuclide": {
+        "term": "Nucléide",
+        "definition": "Espèce nucléaire particulière, caractérisée par son numéro atomique (Z) et son nombre de masse (A). Par exemple, le carbone 12 et le carbone 14 sont deux nucléides distincts du même élément."
+      },
+      "isotope": {
+        "term": "Isotope",
+        "definition": "Atomes d'un même élément (même Z) possédant des nombres de neutrons différents (A différent). Par exemple, H-1 (protium), H-2 (deutérium) et H-3 (tritium) sont des isotopes de l'hydrogène."
+      },
+      "atomicNumber": {
+        "term": "Numéro atomique (Z)",
+        "definition": "Nombre de protons contenus dans un noyau. Il détermine la nature de l'élément. Par exemple, Z=1 correspond à l'hydrogène et Z=26 au fer."
+      },
+      "massNumber": {
+        "term": "Nombre de masse (A)",
+        "definition": "Nombre total de protons et de neutrons (nucléons) d'un noyau. A = Z + N, où N est le nombre de neutrons."
+      },
+      "bindingEnergy": {
+        "term": "Énergie de liaison (BE)",
+        "definition": "Énergie nécessaire pour dissocier un noyau en ses protons et neutrons constitutifs. Plus l'énergie de liaison par nucléon est élevée, plus le noyau est stable. Exprimée en MeV."
+      },
+      "bindingEnergyPerNucleon": {
+        "term": "Énergie de liaison par nucléon (BEN)",
+        "definition": "Énergie de liaison divisée par le nombre de masse (BE/A). Le fer 56 possède la BEN la plus élevée (~8,8 MeV), ce qui en fait le noyau le plus fortement lié. Les réactions qui tendent vers Fe-56 libèrent de l'énergie."
+      },
+      "halfLife": {
+        "term": "Demi-vie",
+        "definition": "Temps nécessaire pour que la moitié d'un échantillon radioactif se désintègre. Elle va de fractions de seconde à des milliards d'années. Dans cette base de données, un nucléide dont le log₁₀(demi-vie en années) > 9 est considéré comme stable."
+      },
+      "stableNuclide": {
+        "term": "Nucléide stable",
+        "definition": "Nucléide qui ne subit pas de désintégration radioactive (ou dont la demi-vie dépasse 1 milliard d'années). Dans cette base de données, la stabilité est définie par LHL > 9."
+      },
+      "boson": {
+        "term": "Boson",
+        "definition": "Particule de spin entier (0, 1, 2...). Les nucléides de nombre de masse A pair sont des bosons nucléaires. Plusieurs bosons peuvent occuper le même état quantique, ce qui rend possibles des phénomènes comme la condensation de Bose-Einstein."
+      },
+      "fermion": {
+        "term": "Fermion",
+        "definition": "Particule de spin demi-entier (1/2, 3/2...). Les nucléides de nombre de masse A impair sont des fermions nucléaires. Les fermions obéissent au principe d'exclusion de Pauli."
+      },
+      "neutrino": {
+        "term": "Neutrino",
+        "definition": "Particule subatomique de masse quasi nulle, interagissant faiblement, produite lors des réactions nucléaires faisant intervenir l'interaction faible (par ex. la désintégration bêta). Notée ν (gauche) ou ν̄ (antineutrino droit)."
+      },
+      "radioactiveDecay": {
+        "term": "Désintégration radioactive",
+        "definition": "Transformation spontanée d'un noyau instable vers une configuration plus stable. Les modes courants sont la désintégration alpha (A), bêta moins (B-), bêta plus (B+), la capture électronique (EC) et la transition isomérique (IT)."
+      },
+      "alphaDecay": {
+        "term": "Désintégration alpha",
+        "definition": "Émission d'un noyau d'hélium 4 (2 protons + 2 neutrons). Elle diminue Z de 2 et A de 4. Fréquente chez les éléments lourds comme l'uranium et le radium."
+      },
+      "betaDecay": {
+        "term": "Désintégration bêta",
+        "definition": "Transformation d'un neutron en proton (β⁻, Z+1) ou d'un proton en neutron (β⁺, Z-1). A reste inchangé. Elle s'accompagne de l'émission d'un neutrino ou d'un antineutrino."
+      },
+      "electronCapture": {
+        "term": "Capture électronique (EC)",
+        "definition": "Un électron d'une orbitale interne est capturé par le noyau, ce qui convertit un proton en neutron. Z diminue de 1, A reste inchangé. Ce processus est en concurrence avec la désintégration β⁺."
+      },
+      "isomericTransition": {
+        "term": "Transition isomérique (IT)",
+        "definition": "Un état nucléaire excité métastable se désexcite vers un état d'énergie inférieure en émettant un rayon gamma. Z et A restent inchangés. Le symbole du nucléide reçoit le suffixe « m » (par ex. Tc-99m)."
+      },
+      "lenr": {
+        "term": "LENR",
+        "definition": "Réactions nucléaires à basse énergie (Low Energy Nuclear Reactions). Classe de réactions nucléaires se produisant à température ambiante ou proche, à la différence de la fusion « chaude » conventionnelle, qui exige des millions de degrés. Historiquement aussi appelée « fusion froide »."
+      },
+      "transmutation": {
+        "term": "Transmutation",
+        "definition": "Conversion d'un élément chimique ou d'un isotope en un autre. Elle peut se produire par fusion, fission ou réactions deux-à-deux. Cette base de données recense les voies de transmutation calculées par le Dr Alexander Parkhomov."
+      },
+      "fusion": {
+        "term": "Fusion",
+        "definition": "Réaction nucléaire dans laquelle deux noyaux légers s'unissent pour former un noyau plus lourd (A + B → C). Elle libère de l'énergie lorsque le produit a une énergie de liaison par nucléon supérieure à celle des réactifs. Cette base de données contient 3 921 réactions de fusion, dont 1 505 sans neutrino."
+      },
+      "fission": {
+        "term": "Fission",
+        "definition": "Réaction nucléaire dans laquelle un noyau lourd se scinde en deux noyaux plus légers (A → B + C). Elle libère de l'énergie lorsque les produits ont une énergie de liaison par nucléon plus élevée. Cette base de données contient 1 733 réactions de fission, dont 818 sans neutrino."
+      },
+      "twoToTwo": {
+        "term": "Deux-à-deux",
+        "definition": "Réaction nucléaire dans laquelle deux noyaux interagissent pour produire deux noyaux différents (A + B → C + D). C'est le type de réaction le plus répandu dans la base de données, avec 1 215 374 réactions (dont 518 657 sans neutrino)."
+      },
+      "cascade": {
+        "term": "Cascade",
+        "definition": "Chaîne de réactions nucléaires dans laquelle les produits d'une réaction deviennent les réactifs des réactions suivantes. Le moteur de simulation en cascade modélise des voies de réaction sur plusieurs générations à partir de nucléides combustibles initiaux."
+      },
+      "feedbackLoop": {
+        "term": "Boucle de rétroaction",
+        "definition": "Situation où un nucléide produit lors d'une étape ultérieure réapparaît comme réactif d'une étape antérieure, créant un cycle auto-entretenu. Comparable au cycle CNO de la nucléosynthèse stellaire."
+      },
+      "mev": {
+        "term": "MeV",
+        "definition": "Mégaélectronvolt (10⁶ eV). Unité d'énergie couramment utilisée en physique nucléaire. 1 MeV = 1,602 × 10⁻¹³ joule. L'énergie libérée par une réaction nucléaire est la valeur Q, exprimée en MeV."
+      },
+      "kev": {
+        "term": "keV",
+        "definition": "Kiloélectronvolt (10³ eV). 1 MeV = 1000 keV. Utilisé pour les énergies de désintégration et de rayonnement dans la table RadioNuclides."
+      },
+      "amu": {
+        "term": "AMU",
+        "definition": "Unité de masse atomique (Atomic Mass Unit). Définie comme 1/12 de la masse d'un atome de carbone 12. 1 AMU = 931,494 MeV/c². Sert à exprimer les masses nucléaires et atomiques."
+      },
+      "nBorF": {
+        "term": "nBorF",
+        "definition": "Classification nucléaire boson ou fermion. Fondée sur le nombre de masse A : A pair = boson (b), A impair = fermion (f). Pertinente pour le comportement statistique quantique du noyau."
+      },
+      "aBorF": {
+        "term": "aBorF",
+        "definition": "Classification atomique boson ou fermion. Fondée sur le nombre de neutrons (A - Z) : nombre pair de neutrons = boson (b), nombre impair = fermion (f). Décrit la statistique quantique de l'atome entier."
+      },
+      "lhl": {
+        "term": "LHL",
+        "definition": "Log₁₀ de la demi-vie en années. Représentation compacte de la demi-vie. LHL = 0 correspond à 1 an, LHL = 9 à 1 milliard d'années (seuil de stabilité). Les valeurs négatives indiquent des demi-vies inférieures à un an."
+      },
+      "sus": {
+        "term": "SUS",
+        "definition": "Champ de statut indiquant l'origine du nucléide. SPN = stable primordial (Stable Primordial, présent à l'état naturel), UPN = instable primordial (Unstable Primordial, radioactif mais naturel), SYN = synthétique (Synthetic, uniquement artificiel)."
+      },
+      "rdm": {
+        "term": "RDM",
+        "definition": "Mode de désintégration radioactive principal. Voie de désintégration dominante des nucléides instables. Les valeurs possibles sont A (alpha), B- (bêta moins), B+ (bêta plus), EC (capture électronique) et IT (transition isomérique)."
+      },
+      "deuterium": {
+        "term": "Deutérium (D)",
+        "definition": "Hydrogène 2 (un proton + un neutron). Dans la base de données, le deutérium est noté « D » plutôt que « H » avec A=2. Important dans la recherche sur les LENR, où il est un combustible courant."
+      },
+      "tritium": {
+        "term": "Tritium (T)",
+        "definition": "Hydrogène 3 (un proton + deux neutrons). Radioactif, avec une demi-vie de 12,3 ans. Dans la base de données, le tritium est noté « T » plutôt que « H » avec A=3."
+      },
+      "protium": {
+        "term": "Protium (H)",
+        "definition": "Hydrogène 1 (un proton, aucun neutron). L'isotope le plus courant de l'hydrogène (abondance de 99,98 %). Dans la base de données, il est noté « H »."
       }
+    },
+    "glossaryRelated": {
+      "neutron": "Neutron",
+      "element": "Élément",
+      "nucleon": "Nucléon",
+      "weakForce": "Interaction faible"
     }
   },
   "mullerResonance": {

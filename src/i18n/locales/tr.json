@@ -1267,7 +1267,149 @@
       "dimer": {
         "term": "Dimer",
         "definition": "H₂, N₂, O₂ ve iki atomlu halojenler F₂, Cl₂, Br₂ ve I₂ gibi iki özdeş atom veya birimden oluşan molekül. Kaskad simülatörünün \"Dimer Oluşumuna İzin Ver\" seçeneği bu doğal olarak iki atomlu elementlere uygulanır."
+      },
+      "nuclide": {
+        "term": "Nüklid",
+        "definition": "Atom numarası (Z) ve kütle numarası (A) ile tanımlanan belirli bir çekirdek türü. Örneğin Karbon-12 ve Karbon-14, aynı elementin farklı nüklidleridir."
+      },
+      "isotope": {
+        "term": "İzotop",
+        "definition": "Aynı elementin (aynı Z) farklı sayıda nötron içeren (farklı A) atomları. Örneğin H-1 (protyum), H-2 (döteryum) ve H-3 (trityum) hidrojenin izotoplarıdır."
+      },
+      "atomicNumber": {
+        "term": "Atom Numarası (Z)",
+        "definition": "Bir çekirdekteki proton sayısı. Atomun hangi element olduğunu belirler. Örneğin Z=1 hidrojen, Z=26 demirdir."
+      },
+      "massNumber": {
+        "term": "Kütle Numarası (A)",
+        "definition": "Bir çekirdekteki proton ve nötronların (nükleonların) toplam sayısı. A = Z + N; burada N nötron sayısıdır."
+      },
+      "bindingEnergy": {
+        "term": "Bağlanma Enerjisi (BE)",
+        "definition": "Bir çekirdeği onu oluşturan proton ve nötronlara ayırmak için gereken enerji. Nükleon başına bağlanma enerjisi ne kadar yüksekse çekirdek o kadar kararlıdır. MeV cinsinden ölçülür."
+      },
+      "bindingEnergyPerNucleon": {
+        "term": "Nükleon Başına Bağlanma Enerjisi (BEN)",
+        "definition": "Bağlanma enerjisinin kütle numarasına bölümü (BE/A). Demir-56 en yüksek BEN değerine (~8,8 MeV) sahiptir ve bu da onu en sıkı bağlı çekirdek yapar. Fe-56'ya doğru ilerleyen reaksiyonlar enerji açığa çıkarır."
+      },
+      "halfLife": {
+        "term": "Yarı Ömür",
+        "definition": "Radyoaktif bir örneğin yarısının bozunması için geçen süre. Saniyenin kesirlerinden milyarlarca yıla kadar değişir. Bu veritabanında log₁₀(yıl cinsinden yarı ömür) > 9 olan bir nüklid kararlı kabul edilir."
+      },
+      "stableNuclide": {
+        "term": "Kararlı Nüklid",
+        "definition": "Radyoaktif bozunmaya uğramayan (veya yarı ömrü 1 milyar yılı aşan) nüklid. Bu veritabanında kararlılık LHL > 9 olarak tanımlanır."
+      },
+      "boson": {
+        "term": "Bozon",
+        "definition": "Tam sayı spinli (0, 1, 2...) bir parçacık. Kütle numarası A çift olan nüklidler nükleer bozonlardır. Bozonlar aynı kuantum durumunu paylaşabilir; bu da Bose-Einstein yoğuşması gibi olayları mümkün kılar."
+      },
+      "fermion": {
+        "term": "Fermiyon",
+        "definition": "Yarım tam sayı spinli (1/2, 3/2...) bir parçacık. Kütle numarası A tek olan nüklidler nükleer fermiyonlardır. Fermiyonlar Pauli dışarlama ilkesine uyar."
+      },
+      "neutrino": {
+        "term": "Nötrino",
+        "definition": "Zayıf kuvvetin rol oynadığı nükleer reaksiyonlarda (ör. beta bozunması) üretilen, neredeyse kütlesiz ve zayıf etkileşen bir atomaltı parçacık. ν (solak) veya ν̄ (sağlak antinötrino) ile gösterilir."
+      },
+      "radioactiveDecay": {
+        "term": "Radyoaktif Bozunma",
+        "definition": "Kararsız bir çekirdeğin kendiliğinden daha kararlı bir yapılanmaya dönüşmesi. Yaygın türler arasında alfa (A), beta eksi (B-), beta artı (B+), elektron yakalama (EC) ve izomerik geçiş (IT) bulunur."
+      },
+      "alphaDecay": {
+        "term": "Alfa Bozunması",
+        "definition": "Bir helyum-4 çekirdeğinin (2 proton + 2 nötron) yayınlanması. Z'yi 2, A'yı 4 azaltır. Uranyum ve radyum gibi ağır elementlerde yaygındır."
+      },
+      "betaDecay": {
+        "term": "Beta Bozunması",
+        "definition": "Bir nötronun protona (β⁻, Z+1) ya da bir protonun nötrona (β⁺, Z-1) dönüşmesi. A değişmez. Bir nötrino veya antinötrino yayınlanmasını içerir."
+      },
+      "electronCapture": {
+        "term": "Elektron Yakalama (EC)",
+        "definition": "İç yörüngedeki bir elektron çekirdek tarafından yakalanır ve bir proton nötrona dönüşür. Z 1 azalır, A değişmez. β⁺ bozunmasıyla rekabet eder."
+      },
+      "isomericTransition": {
+        "term": "İzomerik Geçiş (IT)",
+        "definition": "Yarı kararlı uyarılmış bir çekirdek durumunun bir gama ışını yayınlayarak daha düşük enerjili bir duruma bozunması. Z ve A değişmez. Nüklid sembolüne \"m\" eki getirilir (ör. Tc-99m)."
+      },
+      "lenr": {
+        "term": "LENR",
+        "definition": "Düşük Enerjili Nükleer Reaksiyonlar (Low Energy Nuclear Reactions). Oda sıcaklığında veya buna yakın sıcaklıklarda gerçekleşen bir nükleer reaksiyon sınıfı; milyonlarca derece gerektiren geleneksel \"sıcak\" füzyondan farklıdır. Tarihsel olarak \"soğuk füzyon\" olarak da bilinir."
+      },
+      "transmutation": {
+        "term": "Transmutasyon",
+        "definition": "Bir kimyasal elementin veya izotopun bir başkasına dönüşmesi. Füzyon, fisyon veya ikiden ikiye reaksiyonlar yoluyla gerçekleşebilir. Bu veritabanı, Dr. Alexander Parkhomov tarafından hesaplanan transmutasyon yollarını kataloglar."
+      },
+      "fusion": {
+        "term": "Füzyon",
+        "definition": "İki hafif çekirdeğin birleşerek daha ağır bir çekirdek oluşturduğu nükleer reaksiyon (A + B → C). Ürünün nükleon başına bağlanma enerjisi tepkenlerinkinden yüksek olduğunda enerji açığa çıkar. Bu veritabanı 3.921 füzyon reaksiyonu içerir; bunlardan 1.505'i nötrino içermez."
+      },
+      "fission": {
+        "term": "Fisyon",
+        "definition": "Ağır bir çekirdeğin iki daha hafif çekirdeğe bölündüğü nükleer reaksiyon (A → B + C). Ürünlerin nükleon başına bağlanma enerjisi daha yüksek olduğunda enerji açığa çıkar. Bu veritabanı 1.733 fisyon reaksiyonu içerir; bunlardan 818'i nötrino içermez."
+      },
+      "twoToTwo": {
+        "term": "İkiden İkiye",
+        "definition": "İki çekirdeğin etkileşerek iki farklı çekirdek ürettiği nükleer reaksiyon (A + B → C + D). Veritabanındaki en yaygın reaksiyon türüdür: 1.215.374 reaksiyon (bunlardan 518.657'si nötrino içermez)."
+      },
+      "cascade": {
+        "term": "Kaskad",
+        "definition": "Bir reaksiyonun ürünlerinin sonraki reaksiyonlara girdi olduğu nükleer reaksiyon zinciri. Kaskad motoru, başlangıç yakıt nüklidlerinden yola çıkarak çok kuşaklı reaksiyon yollarını simüle eder."
+      },
+      "feedbackLoop": {
+        "term": "Geri Besleme Döngüsü",
+        "definition": "Daha sonraki bir reaksiyon adımında oluşan bir ürün nüklidin daha önceki bir adımda yeniden girdi olarak ortaya çıkması ve böylece kendini sürdüren bir döngü oluşturması. Yıldız nükleosentezindeki CNO döngüsüne benzer."
+      },
+      "mev": {
+        "term": "MeV",
+        "definition": "Megaelektronvolt (10⁶ eV). Nükleer fizikte yaygın olarak kullanılan bir enerji birimi. 1 MeV = 1,602 × 10⁻¹³ joule. Bir nükleer reaksiyonda açığa çıkan enerji Q değeridir ve MeV cinsinden ölçülür."
+      },
+      "kev": {
+        "term": "keV",
+        "definition": "Kiloelektronvolt (10³ eV). 1 MeV = 1000 keV. RadioNuclides tablosunda bozunma enerjileri ve radyasyon enerjileri için kullanılır."
+      },
+      "amu": {
+        "term": "AMU",
+        "definition": "Atomik Kütle Birimi (Atomic Mass Unit). Bir Karbon-12 atomunun kütlesinin 1/12'si olarak tanımlanır. 1 AMU = 931,494 MeV/c². Nükleer ve atomik kütleleri ifade etmek için kullanılır."
+      },
+      "nBorF": {
+        "term": "nBorF",
+        "definition": "Nükleer Bozon veya Fermiyon sınıflandırması. Kütle numarası A'ya dayanır: çift A = bozon (b), tek A = fermiyon (f). Çekirdeğin kuantum istatistiksel davranışıyla ilgilidir."
+      },
+      "aBorF": {
+        "term": "aBorF",
+        "definition": "Atomik Bozon veya Fermiyon sınıflandırması. Nötron sayısına (A - Z) dayanır: çift nötron sayısı = bozon (b), tek nötron sayısı = fermiyon (f). Atomun bütününün kuantum istatistiğini tanımlar."
+      },
+      "lhl": {
+        "term": "LHL",
+        "definition": "Yıl cinsinden yarı ömrün log₁₀ değeri. Yarı ömrün kompakt bir gösterimi. LHL = 0, 1 yıl; LHL = 9, 1 milyar yıl (kararlılık eşiği) anlamına gelir. Negatif değerler bir yıldan kısa yarı ömürleri gösterir."
+      },
+      "sus": {
+        "term": "SUS",
+        "definition": "Nüklidin kökenini belirten durum alanı. SPN = Kararlı İlkel (Stable Primordial; doğada bulunur), UPN = Kararsız İlkel (Unstable Primordial; radyoaktif ancak doğal), SYN = Sentetik (Synthetic; yalnızca yapay olarak üretilir)."
+      },
+      "rdm": {
+        "term": "RDM",
+        "definition": "Birincil Radyoaktif Bozunma Türü (Radioactive Decay Mode). Kararsız nüklidler için baskın bozunma yolu. Değerler arasında A (alfa), B- (beta eksi), B+ (beta artı), EC (elektron yakalama), IT (izomerik geçiş) bulunur."
+      },
+      "deuterium": {
+        "term": "Döteryum (D)",
+        "definition": "Hidrojen-2 (bir proton + bir nötron). Veritabanında döteryum, A=2 ile \"H\" yerine \"D\" sembolüyle gösterilir. Yaygın bir yakıt seçeneği olarak LENR araştırmalarında önemlidir."
+      },
+      "tritium": {
+        "term": "Trityum (T)",
+        "definition": "Hidrojen-3 (bir proton + iki nötron). Yarı ömrü 12,3 yıl olan radyoaktif bir izotop. Veritabanında trityum, A=3 ile \"H\" yerine \"T\" sembolüyle gösterilir."
+      },
+      "protium": {
+        "term": "Protyum (H)",
+        "definition": "Hidrojen-1 (bir proton, nötron yok). En yaygın hidrojen izotopu (%99,98 bolluk). Veritabanında \"H\" sembolünü kullanır."
       }
+    },
+    "glossaryRelated": {
+      "neutron": "Nötron",
+      "element": "Element",
+      "nucleon": "Nükleon",
+      "weakForce": "Zayıf kuvvet"
     }
   },
   "mullerResonance": {

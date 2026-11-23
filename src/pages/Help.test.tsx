@@ -101,4 +101,42 @@ describe('Help', () => {
     expect(screen.getByRole('heading', { name: en.help.glossaryTerms.nae.term })).toBeInTheDocument();
     expect(screen.queryByRole('heading', { name: en.help.glossaryTerms.dimer.term })).not.toBeInTheDocument();
   });
+
+  it('renders related-term chips with the localized term of the referenced entry', () => {
+    render(<Help />);
+    fireEvent.change(screen.getByLabelText(en.help.searchGlossary), {
+      target: { value: 'muller resonance' },
+    });
+    // Only the Muller entry is listed; its chip refers to the NAE entry
+    expect(screen.queryByRole('heading', { name: en.help.glossaryTerms.nae.term })).not.toBeInTheDocument();
+    expect(screen.getByText(en.help.glossaryTerms.nae.term)).toBeInTheDocument();
+  });
+});
+
+describe('Help in a non-English locale', () => {
+  it('finds an entry by its English term', async () => {
+    vi.resetModules();
+    vi.doMock('react-i18next', () => ({
+      ...mockReactI18next,
+      useTranslation: () => ({
+        // Fake locale: every glossary string is replaced, so only the English
+        // term (the stable ID) can match an English query.
+        t: (key: string, params?: Record<string, unknown>) =>
+          key.startsWith('help.glossaryTerms.')
+            ? `xx-${key}`
+            : mockReactI18next.useTranslation().t(key, params),
+        i18n: { language: 'xx', resolvedLanguage: 'xx', changeLanguage: () => Promise.resolve() },
+      }),
+    }));
+    const { default: LocalizedHelp } = await import('./Help');
+    render(<LocalizedHelp />);
+    fireEvent.change(screen.getByLabelText(en.help.searchGlossary), {
+      target: { value: 'Half-Life' },
+    });
+    expect(screen.getByRole('heading', { name: 'xx-help.glossaryTerms.halfLife.term' })).toBeInTheDocument();
+    expect(screen.queryByRole('heading', { name: 'xx-help.glossaryTerms.nuclide.term' })).not.toBeInTheDocument();
+    // Chips are localized too
+    expect(screen.getAllByText('xx-help.glossaryTerms.stableNuclide.term').length).toBeGreaterThanOrEqual(1);
+    vi.doUnmock('react-i18next');
+  });
 });

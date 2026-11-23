@@ -1267,7 +1267,149 @@
       "dimer": {
         "term": "Dimer",
         "definition": "Két azonos atomból vagy egységből álló molekula, például H₂, N₂, O₂ és a kétatomos halogének: F₂, Cl₂, Br₂ és I₂. A kaszkádszimulátor „Dimerképződés engedélyezése” beállítása ezekre a természetesen kétatomos elemekre vonatkozik."
+      },
+      "nuclide": {
+        "term": "Nuklid",
+        "definition": "Egy meghatározott atommagfajta, amelyet a rendszáma (Z) és a tömegszáma (A) jellemez. Például a szén-12 és a szén-14 ugyanannak az elemnek két különböző nuklidja."
+      },
+      "isotope": {
+        "term": "Izotóp",
+        "definition": "Ugyanazon elem (azonos Z) atomjai eltérő neutronszámmal (eltérő A). Például a H-1 (prócium), a H-2 (deutérium) és a H-3 (trícium) a hidrogén izotópjai."
+      },
+      "atomicNumber": {
+        "term": "Rendszám (Z)",
+        "definition": "Az atommagban lévő protonok száma, amely meghatározza, melyik elemről van szó. Például Z=1 a hidrogén, Z=26 a vas."
+      },
+      "massNumber": {
+        "term": "Tömegszám (A)",
+        "definition": "Az atommagban lévő protonok és neutronok (nukleonok) teljes száma. A = Z + N, ahol N a neutronszám."
+      },
+      "bindingEnergy": {
+        "term": "Kötési energia (BE)",
+        "definition": "Az az energia, amely ahhoz szükséges, hogy egy atommagot alkotó protonjaira és neutronjaira bontsunk. A nagyobb nukleononkénti kötési energia stabilabb atommagot jelent. Mértékegysége a MeV."
+      },
+      "bindingEnergyPerNucleon": {
+        "term": "Nukleononkénti kötési energia (BEN)",
+        "definition": "A kötési energia osztva a tömegszámmal (BE/A). A vas-56 rendelkezik a legnagyobb BEN-értékkel (~8,8 MeV), így ez a legerősebben kötött atommag. A Fe-56 felé haladó reakciók energiát szabadítanak fel."
+      },
+      "halfLife": {
+        "term": "Felezési idő",
+        "definition": "Az az idő, amely alatt egy radioaktív minta fele elbomlik. A másodperc törtrészétől több milliárd évig terjedhet. Ebben az adatbázisban stabilnak tekintünk egy nuklidot, ha log₁₀(felezési idő években) > 9."
+      },
+      "stableNuclide": {
+        "term": "Stabil nuklid",
+        "definition": "Olyan nuklid, amely nem szenved radioaktív bomlást (vagy felezési ideje meghaladja az 1 milliárd évet). Ebben az adatbázisban a stabilitás feltétele: LHL > 9."
+      },
+      "boson": {
+        "term": "Bozon",
+        "definition": "Egész spinű (0, 1, 2...) részecske. A páros A tömegszámú nuklidok nukleáris bozonok. A bozonok ugyanabban a kvantumállapotban is lehetnek, ami olyan jelenségeket tesz lehetővé, mint a Bose–Einstein-kondenzáció."
+      },
+      "fermion": {
+        "term": "Fermion",
+        "definition": "Feles spinű (1/2, 3/2...) részecske. A páratlan A tömegszámú nuklidok nukleáris fermionok. A fermionokra érvényes a Pauli-féle kizárási elv."
+      },
+      "neutrino": {
+        "term": "Neutrínó",
+        "definition": "Közel tömeg nélküli, gyengén kölcsönható szubatomi részecske, amely a gyenge kölcsönhatással járó magreakciókban (pl. béta-bomlásban) keletkezik. Jele ν (balkezes) vagy ν̄ (jobbkezes antineutrínó)."
+      },
+      "radioactiveDecay": {
+        "term": "Radioaktív bomlás",
+        "definition": "Egy instabil atommag spontán átalakulása stabilabb konfigurációvá. Gyakori bomlási módok: alfa (A), béta-mínusz (B-), béta-plusz (B+), elektronbefogás (EC) és izomer átmenet (IT)."
+      },
+      "alphaDecay": {
+        "term": "Alfa-bomlás",
+        "definition": "Egy hélium-4 atommag (2 proton + 2 neutron) kibocsátása. A Z értéke 2-vel, az A értéke 4-gyel csökken. Nehéz elemeknél, például az uránnál és a rádiumnál gyakori."
+      },
+      "betaDecay": {
+        "term": "Béta-bomlás",
+        "definition": "Egy neutron protonná (β⁻, Z+1) vagy egy proton neutronná (β⁺, Z-1) alakulása. Az A változatlan marad. A folyamat során neutrínó vagy antineutrínó távozik."
+      },
+      "electronCapture": {
+        "term": "Elektronbefogás (EC)",
+        "definition": "Az atommag befog egy belső héjon lévő elektront, és ezzel egy protonja neutronná alakul. A Z értéke 1-gyel csökken, az A változatlan marad. A β⁺-bomlás versengő folyamata."
+      },
+      "isomericTransition": {
+        "term": "Izomer átmenet (IT)",
+        "definition": "Egy metastabil gerjesztett magállapot gamma-foton kibocsátásával alacsonyabb energiájú állapotba bomlik. A Z és az A változatlan marad. A nuklid jele „m” utótagot kap (pl. Tc-99m)."
+      },
+      "lenr": {
+        "term": "LENR",
+        "definition": "Alacsony energiájú magreakciók (Low Energy Nuclear Reactions). Olyan magreakciók osztálya, amelyek szobahőmérsékleten vagy ahhoz közel mennek végbe, szemben a hagyományos, több millió fokot igénylő „forró” fúzióval. Történetileg „hidegfúzió” néven is ismert."
+      },
+      "transmutation": {
+        "term": "Transzmutáció",
+        "definition": "Egy kémiai elem vagy izotóp átalakulása egy másikká. Létrejöhet fúzió, hasadás vagy kettő-kettő reakciók révén. Ez az adatbázis a Dr. Alexander Parkhomov által kiszámított transzmutációs útvonalakat tartalmazza."
+      },
+      "fusion": {
+        "term": "Fúzió",
+        "definition": "Olyan magreakció, amelyben két könnyebb atommag egy nehezebbé egyesül (A + B → C). Akkor szabadít fel energiát, ha a termék nukleononkénti kötési energiája nagyobb, mint a kiindulási magoké. Az adatbázis 3921 fúziós reakciót tartalmaz, ezek közül 1505-ben nem vesz részt neutrínó."
+      },
+      "fission": {
+        "term": "Hasadás",
+        "definition": "Olyan magreakció, amelyben egy nehezebb atommag két könnyebbre hasad (A → B + C). Akkor szabadít fel energiát, ha a termékek nukleononkénti kötési energiája nagyobb. Az adatbázis 1733 hasadási reakciót tartalmaz, ezek közül 818-ban nem vesz részt neutrínó."
+      },
+      "twoToTwo": {
+        "term": "Kettő-kettő",
+        "definition": "Olyan magreakció, amelyben két atommag kölcsönhatása két másik atommagot eredményez (A + B → C + D). Ez a leggyakoribb reakciótípus az adatbázisban: 1 215 374 reakció, amelyek közül 518 657-ben nem vesz részt neutrínó."
+      },
+      "cascade": {
+        "term": "Kaszkád",
+        "definition": "Magreakciók láncolata, amelyben egy reakció termékei a további reakciók kiindulási anyagaivá válnak. A kaszkádmotor a kezdeti üzemanyag-nuklidokból kiinduló, több generáción átívelő reakcióútvonalakat szimulálja."
+      },
+      "feedbackLoop": {
+        "term": "Visszacsatolási hurok",
+        "definition": "Akkor jön létre, ha egy későbbi reakciólépés termék-nuklidja egy korábbi lépés kiindulási anyagaként jelenik meg újra, önfenntartó ciklust alkotva. Hasonló a csillagok nukleoszintézisében zajló CNO-ciklushoz."
+      },
+      "mev": {
+        "term": "MeV",
+        "definition": "Megaelektronvolt (10⁶ eV). A magfizikában általánosan használt energiaegység. 1 MeV = 1,602 × 10⁻¹³ joule. A magreakcióban felszabaduló energia a Q-érték, amelyet MeV-ben adunk meg."
+      },
+      "kev": {
+        "term": "keV",
+        "definition": "Kiloelektronvolt (10³ eV). 1 MeV = 1000 keV. A RadioNuclides táblában a bomlási és sugárzási energiák kifejezésére szolgál."
+      },
+      "amu": {
+        "term": "AMU",
+        "definition": "Atomi tömegegység (Atomic Mass Unit). Értéke a szén-12 atom tömegének 1/12 része. 1 AMU = 931,494 MeV/c². Mag- és atomtömegek kifejezésére használják."
+      },
+      "nBorF": {
+        "term": "nBorF",
+        "definition": "Nukleáris bozon/fermion besorolás. A tömegszám (A) alapján: páros A = bozon (b), páratlan A = fermion (f). Az atommag kvantumstatisztikai viselkedése szempontjából releváns."
+      },
+      "aBorF": {
+        "term": "aBorF",
+        "definition": "Atomi bozon/fermion besorolás. A neutronszám (A - Z) alapján: páros neutronszám = bozon (b), páratlan neutronszám = fermion (f). A teljes atom kvantumstatisztikáját írja le."
+      },
+      "lhl": {
+        "term": "LHL",
+        "definition": "Az években kifejezett felezési idő log₁₀-értéke. A felezési idő tömör megadási módja. LHL = 0 jelentése 1 év, LHL = 9 jelentése 1 milliárd év (a stabilitási küszöb). A negatív értékek egy évnél rövidebb felezési időt jeleznek."
+      },
+      "sus": {
+        "term": "SUS",
+        "definition": "A nuklid eredetét jelző állapotmező. SPN = stabil ősi (Stable Primordial; a természetben előfordul), UPN = instabil ősi (Unstable Primordial; radioaktív, de természetes), SYN = szintetikus (Synthetic; csak mesterségesen állítható elő)."
+      },
+      "rdm": {
+        "term": "RDM",
+        "definition": "Elsődleges radioaktív bomlási mód (Radioactive Decay Mode). Az instabil nuklidok domináns bomlási útja. Lehetséges értékek: A (alfa), B- (béta-mínusz), B+ (béta-plusz), EC (elektronbefogás), IT (izomer átmenet)."
+      },
+      "deuterium": {
+        "term": "Deutérium (D)",
+        "definition": "Hidrogén-2 (egy proton + egy neutron). Az adatbázisban a deutérium jele „D”, nem pedig A=2 tömegszámú „H”. A LENR-kutatásban fontos, gyakran választott üzemanyag."
+      },
+      "tritium": {
+        "term": "Trícium (T)",
+        "definition": "Hidrogén-3 (egy proton + két neutron). Radioaktív, felezési ideje 12,3 év. Az adatbázisban a trícium jele „T”, nem pedig A=3 tömegszámú „H”."
+      },
+      "protium": {
+        "term": "Prócium (H)",
+        "definition": "Hidrogén-1 (egy proton, neutron nélkül). A leggyakoribb hidrogénizotóp (99,98%-os gyakoriság). Az adatbázisban jele „H”."
       }
+    },
+    "glossaryRelated": {
+      "neutron": "Neutron",
+      "element": "Elem",
+      "nucleon": "Nukleon",
+      "weakForce": "Gyenge kölcsönhatás"
     }
   },
   "mullerResonance": {

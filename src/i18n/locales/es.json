@@ -1269,7 +1269,149 @@
       "dimer": {
         "term": "Dímero",
         "definition": "Molécula formada por dos átomos o unidades idénticos, como H₂, N₂, O₂ y los halógenos diatómicos F₂, Cl₂, Br₂ e I₂. La opción «Permitir formación de dímeros» del simulador de cascadas se aplica a estos elementos naturalmente diatómicos."
+      },
+      "nuclide": {
+        "term": "Nucleido",
+        "definition": "Especie nuclear concreta caracterizada por su número atómico (Z) y su número másico (A). Por ejemplo, el carbono-12 y el carbono-14 son nucleidos distintos del mismo elemento."
+      },
+      "isotope": {
+        "term": "Isótopo",
+        "definition": "Átomos del mismo elemento (mismo Z) con distinto número de neutrones (distinto A). Por ejemplo, H-1 (protio), H-2 (deuterio) y H-3 (tritio) son isótopos del hidrógeno."
+      },
+      "atomicNumber": {
+        "term": "Número atómico (Z)",
+        "definition": "Número de protones del núcleo. Determina de qué elemento se trata. Por ejemplo, Z=1 es el hidrógeno y Z=26 es el hierro."
+      },
+      "massNumber": {
+        "term": "Número másico (A)",
+        "definition": "Número total de protones y neutrones (nucleones) del núcleo. A = Z + N, donde N es el número de neutrones."
+      },
+      "bindingEnergy": {
+        "term": "Energía de enlace (BE)",
+        "definition": "Energía necesaria para descomponer un núcleo en los protones y neutrones que lo forman. Una mayor energía de enlace por nucleón implica un núcleo más estable. Se mide en MeV."
+      },
+      "bindingEnergyPerNucleon": {
+        "term": "Energía de enlace por nucleón (BEN)",
+        "definition": "Energía de enlace dividida por el número másico (BE/A). El hierro-56 tiene la BEN más alta (~8,8 MeV), lo que lo convierte en el núcleo más fuertemente ligado. Las reacciones que se aproximan al Fe-56 liberan energía."
+      },
+      "halfLife": {
+        "term": "Vida media",
+        "definition": "Tiempo necesario para que se desintegre la mitad de una muestra radiactiva. Va desde fracciones de segundo hasta miles de millones de años. En esta base de datos, un nucleido con log₁₀(vida media en años) > 9 se considera estable."
+      },
+      "stableNuclide": {
+        "term": "Nucleido estable",
+        "definition": "Nucleido que no experimenta desintegración radiactiva (o cuya vida media supera los 1000 millones de años). En esta base de datos, la estabilidad se define como LHL > 9."
+      },
+      "boson": {
+        "term": "Bosón",
+        "definition": "Partícula de espín entero (0, 1, 2...). Los nucleidos con número másico A par son bosones nucleares. Varios bosones pueden ocupar el mismo estado cuántico, lo que da lugar a fenómenos como la condensación de Bose-Einstein."
+      },
+      "fermion": {
+        "term": "Fermión",
+        "definition": "Partícula de espín semientero (1/2, 3/2...). Los nucleidos con número másico A impar son fermiones nucleares. Los fermiones obedecen el principio de exclusión de Pauli."
+      },
+      "neutrino": {
+        "term": "Neutrino",
+        "definition": "Partícula subatómica de masa casi nula y de interacción débil, producida en reacciones nucleares mediadas por la fuerza débil (p. ej., la desintegración beta). Se denota ν (levógiro) o ν̄ (antineutrino dextrógiro)."
+      },
+      "radioactiveDecay": {
+        "term": "Desintegración radiactiva",
+        "definition": "Transformación espontánea de un núcleo inestable en una configuración más estable. Los modos habituales son alfa (A), beta menos (B-), beta más (B+), captura electrónica (EC) y transición isomérica (IT)."
+      },
+      "alphaDecay": {
+        "term": "Desintegración alfa",
+        "definition": "Emisión de un núcleo de helio-4 (2 protones + 2 neutrones). Reduce Z en 2 y A en 4. Es frecuente en elementos pesados como el uranio y el radio."
+      },
+      "betaDecay": {
+        "term": "Desintegración beta",
+        "definition": "Transformación de un neutrón en un protón (β⁻, Z+1) o de un protón en un neutrón (β⁺, Z-1). A no cambia. Conlleva la emisión de un neutrino o un antineutrino."
+      },
+      "electronCapture": {
+        "term": "Captura electrónica (EC)",
+        "definition": "El núcleo captura un electrón de una capa interna, lo que convierte un protón en un neutrón. Z disminuye en 1 y A no cambia. Compite con la desintegración β⁺."
+      },
+      "isomericTransition": {
+        "term": "Transición isomérica (IT)",
+        "definition": "Un estado nuclear excitado metaestable decae a un estado de menor energía emitiendo un rayo gamma. Z y A no cambian. El símbolo del nucleido lleva el sufijo «m» (p. ej., Tc-99m)."
+      },
+      "lenr": {
+        "term": "LENR",
+        "definition": "Reacciones nucleares de baja energía (Low Energy Nuclear Reactions). Clase de reacciones nucleares que se producen a temperatura ambiente o cercana a ella, a diferencia de la fusión «caliente» convencional, que requiere millones de grados. Históricamente también se conocen como «fusión fría»."
+      },
+      "transmutation": {
+        "term": "Transmutación",
+        "definition": "Conversión de un elemento químico o isótopo en otro. Puede producirse mediante reacciones de fusión, de fisión o dos a dos. Esta base de datos recoge las vías de transmutación calculadas por el Dr. Alexander Parkhomov."
+      },
+      "fusion": {
+        "term": "Fusión",
+        "definition": "Reacción nuclear en la que dos núcleos más ligeros se combinan para formar uno más pesado (A + B → C). Libera energía cuando el producto tiene mayor energía de enlace por nucleón que los reactivos. Esta base de datos contiene 3.921 reacciones de fusión, de las cuales 1.505 no involucran neutrinos."
+      },
+      "fission": {
+        "term": "Fisión",
+        "definition": "Reacción nuclear en la que un núcleo más pesado se divide en dos núcleos más ligeros (A → B + C). Libera energía cuando los productos tienen mayor energía de enlace por nucleón. Esta base de datos contiene 1.733 reacciones de fisión, de las cuales 818 no involucran neutrinos."
+      },
+      "twoToTwo": {
+        "term": "Dos a dos",
+        "definition": "Reacción nuclear en la que dos núcleos interactúan y producen otros dos núcleos distintos (A + B → C + D). Es el tipo de reacción más numeroso de la base de datos, con 1.215.374 reacciones (518.657 de ellas sin neutrinos)."
+      },
+      "cascade": {
+        "term": "Cascada",
+        "definition": "Cadena de reacciones nucleares en la que los productos de una reacción pasan a ser reactivos de las siguientes. El motor de cascadas simula vías de reacción multigeneracionales a partir de los nucleidos de combustible iniciales."
+      },
+      "feedbackLoop": {
+        "term": "Bucle de retroalimentación",
+        "definition": "Situación en la que un nucleido producido en un paso posterior de la reacción reaparece como reactivo en un paso anterior, creando un ciclo autosostenido. Es análogo al ciclo CNO de la nucleosíntesis estelar."
+      },
+      "mev": {
+        "term": "MeV",
+        "definition": "Megaelectronvoltio (10⁶ eV). Unidad de energía de uso habitual en física nuclear. 1 MeV = 1,602 × 10⁻¹³ julios. La energía liberada en una reacción nuclear es el valor Q, que se mide en MeV."
+      },
+      "kev": {
+        "term": "keV",
+        "definition": "Kiloelectronvoltio (10³ eV). 1 MeV = 1000 keV. Se utiliza para las energías de desintegración y de radiación de la tabla RadioNuclides."
+      },
+      "amu": {
+        "term": "AMU",
+        "definition": "Unidad de masa atómica (Atomic Mass Unit). Se define como 1/12 de la masa de un átomo de carbono-12. 1 AMU = 931,494 MeV/c². Se usa para expresar masas nucleares y atómicas."
+      },
+      "nBorF": {
+        "term": "nBorF",
+        "definition": "Clasificación nuclear como bosón o fermión. Se basa en el número másico A: A par = bosón (b), A impar = fermión (f). Es relevante para el comportamiento estadístico cuántico del núcleo."
+      },
+      "aBorF": {
+        "term": "aBorF",
+        "definition": "Clasificación atómica como bosón o fermión. Se basa en el número de neutrones (A - Z): número par de neutrones = bosón (b), impar = fermión (f). Describe la estadística cuántica del átomo completo."
+      },
+      "lhl": {
+        "term": "LHL",
+        "definition": "Log₁₀ de la vida media en años. Representación compacta de la vida media. LHL = 0 corresponde a 1 año y LHL = 9 a 1000 millones de años (umbral de estabilidad). Los valores negativos indican vidas medias inferiores a un año."
+      },
+      "sus": {
+        "term": "SUS",
+        "definition": "Campo de estado que indica el origen del nucleido. SPN = primordial estable (Stable Primordial; existe de forma natural), UPN = primordial inestable (Unstable Primordial; radiactivo pero natural), SYN = sintético (Synthetic; solo de origen artificial)."
+      },
+      "rdm": {
+        "term": "RDM",
+        "definition": "Modo de desintegración radiactiva principal. Vía de desintegración dominante de los nucleidos inestables. Sus valores incluyen A (alfa), B- (beta menos), B+ (beta más), EC (captura electrónica) e IT (transición isomérica)."
+      },
+      "deuterium": {
+        "term": "Deuterio (D)",
+        "definition": "Hidrógeno-2 (un protón + un neutrón). En la base de datos, el deuterio usa el símbolo «D» en lugar de «H» con A=2. Es importante en la investigación LENR como combustible habitual."
+      },
+      "tritium": {
+        "term": "Tritio (T)",
+        "definition": "Hidrógeno-3 (un protón + dos neutrones). Es radiactivo, con una vida media de 12,3 años. En la base de datos, el tritio usa el símbolo «T» en lugar de «H» con A=3."
+      },
+      "protium": {
+        "term": "Protio (H)",
+        "definition": "Hidrógeno-1 (un protón, sin neutrones). Es el isótopo de hidrógeno más abundante (99,98 % de abundancia). En la base de datos usa el símbolo «H»."
       }
+    },
+    "glossaryRelated": {
+      "neutron": "Neutrón",
+      "element": "Elemento",
+      "nucleon": "Nucleón",
+      "weakForce": "Fuerza débil"
     }
   },
   "mullerResonance": {

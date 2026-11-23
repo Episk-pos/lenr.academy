@@ -1,7 +1,8 @@
 import { describe, it, expect } from 'vitest';
-import { GLOSSARY, localizeGlossaryEntry } from './glossary';
+import { GLOSSARY, localizeGlossaryEntry, localizeRelatedTerm, matchesGlossarySearch } from './glossary';
 import en from '../i18n/locales/en.json';
 import de from '../i18n/locales/de.json';
+import ja from '../i18n/locales/ja.json';
 
 describe('glossary', () => {
   it('has a non-empty glossary', () => {
@@ -76,13 +77,6 @@ describe('glossary', () => {
       });
     });
 
-    it('English locale text matches the glossary source text', () => {
-      GLOSSARY.filter(e => e.i18nKey).forEach(entry => {
-        expect(lookup(en, `${entry.i18nKey}.term`)).toBe(entry.term);
-        expect(lookup(en, `${entry.i18nKey}.definition`)).toBe(entry.definition);
-      });
-    });
-
     it('states the Muller resonance ratio and octave gap', () => {
       const muller = GLOSSARY.find(e => e.term === 'Muller Resonance')!;
       expect(muller.definition).toContain('Z₁/Z₂ ≈ 2^ΔN / 1836.15');
@@ -91,23 +85,94 @@ describe('glossary', () => {
 
     it('related terms of new entries point at existing glossary terms', () => {
       const terms = new Set(GLOSSARY.map(e => e.term));
-      GLOSSARY.filter(e => e.i18nKey).forEach(entry => {
+      GLOSSARY.filter(e => NEW_TERMS.includes(e.term)).forEach(entry => {
         entry.relatedTerms?.forEach(rel => expect(terms.has(rel), `${entry.term} -> ${rel}`).toBe(true));
       });
     });
 
-    it('localizeGlossaryEntry resolves translated text, falling back to English source', () => {
+    it('localizeGlossaryEntry resolves translated text', () => {
       const translateDe = (key: string) => String(lookup(de, key) ?? key);
       const nae = GLOSSARY.find(e => e.term === 'NAE (Nuclear Active Environment)')!;
       const localized = localizeGlossaryEntry(nae, translateDe);
       expect(localized.term).toBe(lookup(de, 'help.glossaryTerms.nae.term'));
       expect(localized.definition).not.toBe(nae.definition);
+    });
+  });
 
-      const nuclide = GLOSSARY.find(e => e.term === 'Nuclide')!;
-      expect(localizeGlossaryEntry(nuclide, translateDe)).toEqual({
-        term: nuclide.term,
-        definition: nuclide.definition,
+  describe('localization', () => {
+    const lookup = (locale: unknown, key: string): unknown =>
+      key.split('.').reduce<unknown>(
+        (node, part) => (node && typeof node === 'object' ? (node as Record<string, unknown>)[part] : undefined),
+        locale
+      );
+    const translateEn = (key: string) => String(lookup(en, key) ?? key);
+    // Stand-in for a translated locale: prefixes every glossary string so it is
+    // distinguishable from the English source.
+    const translateXx = (key: string) => `xx:${translateEn(key)}`;
+
+    it('every entry has a unique help.glossaryTerms i18n key', () => {
+      const keys = GLOSSARY.map(e => e.i18nKey);
+      keys.forEach(key => expect(key).toMatch(/^help\.glossaryTerms\.[a-z][A-Za-z]*$/));
+      expect(new Set(keys).size).toBe(keys.length);
+    });
+
+    it('English locale text matches the glossary source text for every entry', () => {
+      GLOSSARY.forEach(entry => {
+        expect(lookup(en, `${entry.i18nKey}.term`), entry.term).toBe(entry.term);
+        expect(lookup(en, `${entry.i18nKey}.definition`), entry.term).toBe(entry.definition);
       });
+    });
+
+    it('localizeGlossaryEntry returns the translated term and definition', () => {
+      const nuclide = GLOSSARY.find(e => e.term === 'Nuclide')!;
+      expect(localizeGlossaryEntry(nuclide, translateXx)).toEqual({
+        term: `xx:${nuclide.term}`,
+        definition: `xx:${nuclide.definition}`,
+      });
+    });
+
+    it('localizeRelatedTerm shows the localized term of the referenced entry', () => {
+      expect(localizeRelatedTerm('Isotope', translateXx)).toBe('xx:Isotope');
+      expect(localizeRelatedTerm('NAE (Nuclear Active Environment)', translateEn)).toBe(
+        en.help.glossaryTerms.nae.term
+      );
+    });
+
+    it('only the known dangling related terms have no glossary entry', () => {
+      // These chips are translated via help.glossaryRelated instead.
+      const terms = new Set(GLOSSARY.map(e => e.term));
+      const dangling = new Set(GLOSSARY.flatMap(e => e.relatedTerms ?? []).filter(rel => !terms.has(rel)));
+      expect([...dangling].sort()).toEqual(['Element', 'Neutron', 'Nucleon', 'Weak Force']);
+    });
+
+    it('localizeRelatedTerm translates related terms that have no glossary entry', () => {
+      const translateDe = (key: string) => String(lookup(de, key) ?? key);
+      const translateJa = (key: string) => String(lookup(ja, key) ?? key);
+      const cases: [string, string, string][] = [
+        ['Neutron', 'Neutron', '中性子'],
+        ['Element', 'Element', '元素'],
+        ['Nucleon', 'Nukleon', '核子'],
+        ['Weak Force', 'Schwache Wechselwirkung', '弱い力'],
+      ];
+      cases.forEach(([term, deLabel, jaLabel]) => {
+        expect(localizeRelatedTerm(term, translateEn)).toBe(term);
+        expect(localizeRelatedTerm(term, translateDe)).toBe(deLabel);
+        expect(localizeRelatedTerm(term, translateJa)).toBe(jaLabel);
+      });
+    });
+
+    it('localizeRelatedTerm falls back to the raw string when no entry matches', () => {
+      expect(localizeRelatedTerm('Not A Glossary Term', translateXx)).toBe('Not A Glossary Term');
+    });
+
+    it('matchesGlossarySearch matches localized term, localized definition and English term', () => {
+      const fusion = GLOSSARY.find(e => e.term === 'Fusion')!;
+      const translate = (key: string) =>
+        key === `${fusion.i18nKey}.term` ? 'Kernfusion' : key === `${fusion.i18nKey}.definition` ? 'leichtere Kerne' : key;
+      expect(matchesGlossarySearch(fusion, 'kernfusion', translate)).toBe(true);
+      expect(matchesGlossarySearch(fusion, 'LEICHTERE', translate)).toBe(true);
+      expect(matchesGlossarySearch(fusion, 'fusion', translate)).toBe(true);
+      expect(matchesGlossarySearch(fusion, 'lighter nuclei', translate)).toBe(false);
     });
   });
 });

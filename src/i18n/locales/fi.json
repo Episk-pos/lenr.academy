@@ -1267,7 +1267,149 @@
       "dimer": {
         "term": "Dimeeri",
         "definition": "Kahdesta identtisestä atomista tai yksiköstä koostuva molekyyli, kuten H₂, N₂, O₂ sekä kaksiatomiset halogeenit F₂, Cl₂, Br₂ ja I₂. Kaskadisimulaattorin \"Salli dimeerien muodostuminen\" -asetus koskee näitä luonnostaan kaksiatomisia alkuaineita."
+      },
+      "nuclide": {
+        "term": "Nuklidi",
+        "definition": "Tietty ydinlaji, jonka määrittävät sen järjestysluku (Z) ja massaluku (A). Esimerkiksi hiili-12 ja hiili-14 ovat saman alkuaineen eri nuklideja."
+      },
+      "isotope": {
+        "term": "Isotooppi",
+        "definition": "Saman alkuaineen atomeja (sama Z), joissa on eri määrä neutroneja (eri A). Esimerkiksi H-1 (protium), H-2 (deuterium) ja H-3 (tritium) ovat vedyn isotooppeja."
+      },
+      "atomicNumber": {
+        "term": "Järjestysluku (Z)",
+        "definition": "Ytimen protonien lukumäärä. Se määrää, mikä alkuaine atomi on. Esimerkiksi Z=1 on vety ja Z=26 rauta."
+      },
+      "massNumber": {
+        "term": "Massaluku (A)",
+        "definition": "Ytimen protonien ja neutronien (nukleonien) yhteismäärä. A = Z + N, missä N on neutronien lukumäärä."
+      },
+      "bindingEnergy": {
+        "term": "Sidosenergia (BE)",
+        "definition": "Energia, joka tarvitaan ytimen hajottamiseen sen muodostaviksi protoneiksi ja neutroneiksi. Suurempi sidosenergia nukleonia kohden tarkoittaa stabiilimpaa ydintä. Ilmoitetaan yksikössä MeV."
+      },
+      "bindingEnergyPerNucleon": {
+        "term": "Sidosenergia nukleonia kohden (BEN)",
+        "definition": "Sidosenergia jaettuna massaluvulla (BE/A). Rauta-56:lla on suurin BEN (~8,8 MeV), joten se on kaikkein tiukimmin sitoutunut ydin. Kohti Fe-56:ta etenevät reaktiot vapauttavat energiaa."
+      },
+      "halfLife": {
+        "term": "Puoliintumisaika",
+        "definition": "Aika, jossa puolet radioaktiivisesta näytteestä hajoaa. Vaihtelee sekunnin murto-osista miljardeihin vuosiin. Tässä tietokannassa nuklidia pidetään stabiilina, jos log₁₀(puoliintumisaika vuosina) > 9."
+      },
+      "stableNuclide": {
+        "term": "Stabiili nuklidi",
+        "definition": "Nuklidi, joka ei hajoa radioaktiivisesti (tai jonka puoliintumisaika on yli miljardi vuotta). Tässä tietokannassa stabiilisuuden ehtona on LHL > 9."
+      },
+      "boson": {
+        "term": "Bosoni",
+        "definition": "Hiukkanen, jonka spin on kokonaisluku (0, 1, 2...). Nuklidit, joiden massaluku A on parillinen, ovat ydinbosoneja. Bosonit voivat olla samassa kvanttitilassa, mikä mahdollistaa esimerkiksi Bose–Einstein-kondensaation kaltaiset ilmiöt."
+      },
+      "fermion": {
+        "term": "Fermioni",
+        "definition": "Hiukkanen, jonka spin on puolikas kokonaisluku (1/2, 3/2...). Nuklidit, joiden massaluku A on pariton, ovat ydinfermioneja. Fermionit noudattavat Paulin kieltosääntöä."
+      },
+      "neutrino": {
+        "term": "Neutriino",
+        "definition": "Lähes massaton, heikosti vuorovaikuttava alkeishiukkanen, jota syntyy heikon vuorovaikutuksen ydinreaktioissa (esim. beetahajoamisessa). Merkitään ν (vasenkätinen) tai ν̄ (oikeakätinen antineutriino)."
+      },
+      "radioactiveDecay": {
+        "term": "Radioaktiivinen hajoaminen",
+        "definition": "Epästabiilin ytimen spontaani muuttuminen stabiilimpaan tilaan. Yleisiä hajoamistapoja ovat alfahajoaminen (A), beeta-miinus-hajoaminen (B-), beeta-plus-hajoaminen (B+), elektronisieppaus (EC) ja isomeerinen siirtymä (IT)."
+      },
+      "alphaDecay": {
+        "term": "Alfahajoaminen",
+        "definition": "Helium-4-ytimen (2 protonia + 2 neutronia) emissio. Pienentää Z:aa kahdella ja A:ta neljällä. Yleinen raskailla alkuaineilla, kuten uraanilla ja radiumilla."
+      },
+      "betaDecay": {
+        "term": "Beetahajoaminen",
+        "definition": "Neutronin muuttuminen protoniksi (β⁻, Z+1) tai protonin muuttuminen neutroniksi (β⁺, Z-1). A pysyy samana. Prosessissa emittoituu neutriino tai antineutriino."
+      },
+      "electronCapture": {
+        "term": "Elektronisieppaus (EC)",
+        "definition": "Ydin sieppaa sisäkuoren elektronin, jolloin protoni muuttuu neutroniksi. Z pienenee yhdellä, A pysyy samana. Kilpailee β⁺-hajoamisen kanssa."
+      },
+      "isomericTransition": {
+        "term": "Isomeerinen siirtymä (IT)",
+        "definition": "Metastabiili virittynyt ydintila purkautuu alempaan energiatilaan emittoimalla gammasäteen. Z ja A pysyvät muuttumattomina. Nuklidin tunnukseen lisätään \"m\"-pääte (esim. Tc-99m)."
+      },
+      "lenr": {
+        "term": "LENR",
+        "definition": "Matalaenergiset ydinreaktiot (Low Energy Nuclear Reactions). Ydinreaktioiden luokka, jonka reaktiot tapahtuvat huoneenlämmössä tai sen lähellä, toisin kuin tavanomainen \"kuuma\" fuusio, joka vaatii miljoonien asteiden lämpötiloja. Tunnetaan historiallisesti myös nimellä \"kylmäfuusio\"."
+      },
+      "transmutation": {
+        "term": "Transmutaatio",
+        "definition": "Alkuaineen tai isotoopin muuttuminen toiseksi. Voi tapahtua fuusio-, fissio- tai kaksi-kahteen-reaktioiden kautta. Tähän tietokantaan on luetteloitu tohtori Alexander Parkhomovin laskemia transmutaatioreittejä."
+      },
+      "fusion": {
+        "term": "Fuusio",
+        "definition": "Ydinreaktio, jossa kaksi kevyempää ydintä yhdistyy raskaammaksi ytimeksi (A + B → C). Vapauttaa energiaa, kun tuotteen sidosenergia nukleonia kohden on suurempi kuin lähtöaineiden. Tietokannassa on 3 921 fuusioreaktiota, joista 1 505 ei sisällä neutriinoja."
+      },
+      "fission": {
+        "term": "Fissio",
+        "definition": "Ydinreaktio, jossa raskaampi ydin halkeaa kahdeksi kevyemmäksi ytimeksi (A → B + C). Vapauttaa energiaa, kun tuotteiden sidosenergia nukleonia kohden on suurempi. Tietokannassa on 1 733 fissioreaktiota, joista 818 ei sisällä neutriinoja."
+      },
+      "twoToTwo": {
+        "term": "Kaksi-kahteen",
+        "definition": "Ydinreaktio, jossa kaksi ydintä vuorovaikuttaa ja tuottaa kaksi eri ydintä (A + B → C + D). Tietokannan yleisin reaktiotyyppi: 1 215 374 reaktiota, joista 518 657 ei sisällä neutriinoja."
+      },
+      "cascade": {
+        "term": "Kaskadi",
+        "definition": "Ydinreaktioiden ketju, jossa yhden reaktion tuotteista tulee seuraavien reaktioiden lähtöaineita. Kaskadimoottori simuloi monisukupolvisia reaktioreittejä alkuperäisistä polttoainenuklideista lähtien."
+      },
+      "feedbackLoop": {
+        "term": "Takaisinkytkentäsilmukka",
+        "definition": "Tilanne, jossa myöhemmän reaktiovaiheen tuotenuklidi esiintyy uudelleen aiemman vaiheen lähtöaineena, jolloin syntyy itseään ylläpitävä kierto. Muistuttaa tähtien nukleosynteesin CNO-sykliä."
+      },
+      "mev": {
+        "term": "MeV",
+        "definition": "Megaelektronivoltti (10⁶ eV). Ydinfysiikassa yleisesti käytetty energian yksikkö. 1 MeV = 1,602 × 10⁻¹³ joulea. Ydinreaktiossa vapautuva energia on Q-arvo, joka ilmoitetaan yksikössä MeV."
+      },
+      "kev": {
+        "term": "keV",
+        "definition": "Kiloelektronivoltti (10³ eV). 1 MeV = 1000 keV. Käytetään RadioNuclides-taulukossa hajoamisenergioille ja säteilyenergioille."
+      },
+      "amu": {
+        "term": "AMU",
+        "definition": "Atomimassayksikkö (Atomic Mass Unit). Määritelmä: 1/12 hiili-12-atomin massasta. 1 AMU = 931,494 MeV/c². Käytetään ydin- ja atomimassojen ilmaisemiseen."
+      },
+      "nBorF": {
+        "term": "nBorF",
+        "definition": "Ytimen bosoni- tai fermioniluokitus. Perustuu massalukuun A: parillinen A = bosoni (b), pariton A = fermioni (f). Liittyy ytimen kvanttistatistiseen käyttäytymiseen."
+      },
+      "aBorF": {
+        "term": "aBorF",
+        "definition": "Atomin bosoni- tai fermioniluokitus. Perustuu neutronien määrään (A - Z): parillinen neutronimäärä = bosoni (b), pariton neutronimäärä = fermioni (f). Kuvaa koko atomin kvanttistatistiikkaa."
+      },
+      "lhl": {
+        "term": "LHL",
+        "definition": "Puoliintumisajan (vuosina) log₁₀. Puoliintumisajan tiivis esitystapa. LHL = 0 tarkoittaa 1 vuotta, LHL = 9 tarkoittaa miljardia vuotta (stabiilisuuden raja). Negatiiviset arvot tarkoittavat alle vuoden puoliintumisaikoja."
+      },
+      "sus": {
+        "term": "SUS",
+        "definition": "Tilakenttä, joka kertoo nuklidin alkuperän. SPN = stabiili primordiaalinen (Stable Primordial, esiintyy luonnossa), UPN = epästabiili primordiaalinen (Unstable Primordial, radioaktiivinen mutta luonnollinen), SYN = synteettinen (Synthetic, vain ihmisen valmistama)."
+      },
+      "rdm": {
+        "term": "RDM",
+        "definition": "Ensisijainen radioaktiivinen hajoamistapa (Radioactive Decay Mode). Epästabiilin nuklidin hallitseva hajoamisreitti. Arvoja ovat A (alfa), B- (beeta-miinus), B+ (beeta-plus), EC (elektronisieppaus) ja IT (isomeerinen siirtymä)."
+      },
+      "deuterium": {
+        "term": "Deuterium (D)",
+        "definition": "Vety-2 (yksi protoni + yksi neutroni). Tietokannassa deuteriumilla on tunnus \"D\" eikä \"H\" massaluvulla A=2. Tärkeä LENR-tutkimuksessa yleisenä polttoainevalintana."
+      },
+      "tritium": {
+        "term": "Tritium (T)",
+        "definition": "Vety-3 (yksi protoni + kaksi neutronia). Radioaktiivinen, puoliintumisaika 12,3 vuotta. Tietokannassa tritiumilla on tunnus \"T\" eikä \"H\" massaluvulla A=3."
+      },
+      "protium": {
+        "term": "Protium (H)",
+        "definition": "Vety-1 (yksi protoni, ei neutroneja). Vedyn yleisin isotooppi (99,98 % runsaus). Tietokannassa sen tunnus on \"H\"."
       }
+    },
+    "glossaryRelated": {
+      "neutron": "Neutroni",
+      "element": "Alkuaine",
+      "nucleon": "Nukleoni",
+      "weakForce": "Heikko vuorovaikutus"
     }
   },
   "mullerResonance": {

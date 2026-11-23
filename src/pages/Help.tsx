@@ -2,7 +2,14 @@ import { useState, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 import { Search, BookOpen, Beaker, ArrowRight } from 'lucide-react'
-import { GLOSSARY, GLOSSARY_CATEGORIES, GlossaryEntry, localizeGlossaryEntry } from '../data/glossary'
+import {
+  GLOSSARY,
+  GLOSSARY_CATEGORIES,
+  GlossaryEntry,
+  localizeGlossaryEntry,
+  localizeRelatedTerm,
+  matchesGlossarySearch,
+} from '../data/glossary'
 import { EXAMPLE_QUERIES, ExampleQuery } from '../data/exampleQueries'
 import PageHeader from '../components/PageHeader'
 import { PAGE_ICONS } from '../constants/pageIcons'
@@ -42,16 +49,7 @@ export default function Help() {
       entries = entries.filter(e => e.category === selectedCategory);
     }
     if (searchTerm) {
-      const lower = searchTerm.toLowerCase();
-      entries = entries.filter(e => {
-        const { term, definition } = localizeGlossaryEntry(e, t);
-        return (
-          term.toLowerCase().includes(lower) ||
-          definition.toLowerCase().includes(lower) ||
-          e.term.toLowerCase().includes(lower) ||
-          e.definition.toLowerCase().includes(lower)
-        );
-      });
+      entries = entries.filter(e => matchesGlossarySearch(e, searchTerm, t));
     }
     return [...entries].sort((a, b) =>
       localizeGlossaryEntry(a, t).term.localeCompare(localizeGlossaryEntry(b, t).term)
@@ -253,12 +251,12 @@ function GlossaryItem({ entry }: { entry: GlossaryEntry }) {
           </p>
           {entry.relatedTerms && entry.relatedTerms.length > 0 && (
             <div className="flex flex-wrap gap-1 mt-1.5">
-              {entry.relatedTerms.map((term) => (
+              {entry.relatedTerms.map((related) => (
                 <span
-                  key={term}
+                  key={related}
                   className="text-xs px-1.5 py-0.5 rounded bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400"
                 >
-                  {term}
+                  {localizeRelatedTerm(related, t)}
                 </span>
               ))}
             </div>

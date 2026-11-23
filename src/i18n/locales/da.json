@@ -1267,7 +1267,149 @@
       "dimer": {
         "term": "Dimer",
         "definition": "Et molekyle bestående af to identiske atomer eller enheder, såsom H₂, N₂, O₂ og de toatomige halogener F₂, Cl₂, Br₂ og I₂. Kaskadesimulatorens indstilling \"Tillad dimerdannelse\" gælder for disse naturligt toatomige grundstoffer."
+      },
+      "nuclide": {
+        "term": "Nuklid",
+        "definition": "En bestemt kerneart, karakteriseret ved sit atomnummer (Z) og massetal (A). For eksempel er kulstof-12 og kulstof-14 to forskellige nuklider af samme grundstof."
+      },
+      "isotope": {
+        "term": "Isotop",
+        "definition": "Atomer af samme grundstof (samme Z) med forskelligt antal neutroner (forskelligt A). For eksempel er H-1 (protium), H-2 (deuterium) og H-3 (tritium) isotoper af brint."
+      },
+      "atomicNumber": {
+        "term": "Atomnummer (Z)",
+        "definition": "Antallet af protoner i en kerne. Det bestemmer, hvilket grundstof atomet er. For eksempel er Z=1 brint og Z=26 jern."
+      },
+      "massNumber": {
+        "term": "Massetal (A)",
+        "definition": "Det samlede antal protoner og neutroner (nukleoner) i en kerne. A = Z + N, hvor N er antallet af neutroner."
+      },
+      "bindingEnergy": {
+        "term": "Bindingsenergi (BE)",
+        "definition": "Den energi, der kræves for at skille en kerne ad i dens protoner og neutroner. Højere bindingsenergi pr. nukleon betyder en mere stabil kerne. Måles i MeV."
+      },
+      "bindingEnergyPerNucleon": {
+        "term": "Bindingsenergi pr. nukleon (BEN)",
+        "definition": "Bindingsenergien divideret med massetallet (BE/A). Jern-56 har den højeste BEN (~8,8 MeV) og er dermed den mest fast bundne kerne. Reaktioner, der bevæger sig mod Fe-56, frigiver energi."
+      },
+      "halfLife": {
+        "term": "Halveringstid",
+        "definition": "Den tid, det tager for halvdelen af en radioaktiv prøve at henfalde. Spænder fra brøkdele af et sekund til milliarder af år. I denne database regnes et nuklid med log₁₀(halveringstid i år) > 9 som stabilt."
+      },
+      "stableNuclide": {
+        "term": "Stabilt nuklid",
+        "definition": "Et nuklid, der ikke undergår radioaktivt henfald (eller har en halveringstid på over 1 milliard år). I denne database er stabilitet defineret som LHL > 9."
+      },
+      "boson": {
+        "term": "Boson",
+        "definition": "En partikel med heltalligt spin (0, 1, 2 …). Nuklider med lige massetal A er kernebosoner. Bosoner kan befinde sig i samme kvantetilstand, hvilket muliggør fænomener som Bose-Einstein-kondensation."
+      },
+      "fermion": {
+        "term": "Fermion",
+        "definition": "En partikel med halvtalligt spin (1/2, 3/2 …). Nuklider med ulige massetal A er kernefermioner. Fermioner adlyder Paulis udelukkelsesprincip."
+      },
+      "neutrino": {
+        "term": "Neutrino",
+        "definition": "En næsten masseløs, svagt vekselvirkende subatomar partikel, der dannes i kernereaktioner, som involverer den svage kernekraft (f.eks. betahenfald). Betegnes ν (venstrehåndet) eller ν̄ (højrehåndet antineutrino)."
+      },
+      "radioactiveDecay": {
+        "term": "Radioaktivt henfald",
+        "definition": "Den spontane omdannelse af en ustabil kerne til en mere stabil konfiguration. Almindelige henfaldstyper er alfa (A), beta minus (B-), beta plus (B+), elektronindfangning (EC) og isomer overgang (IT)."
+      },
+      "alphaDecay": {
+        "term": "Alfahenfald",
+        "definition": "Udsendelse af en helium-4-kerne (2 protoner + 2 neutroner). Mindsker Z med 2 og A med 4. Almindeligt i tunge grundstoffer som uran og radium."
+      },
+      "betaDecay": {
+        "term": "Betahenfald",
+        "definition": "Omdannelse af en neutron til en proton (β⁻, Z+1) eller af en proton til en neutron (β⁺, Z-1). A forbliver uændret. Indebærer udsendelse af en neutrino eller antineutrino."
+      },
+      "electronCapture": {
+        "term": "Elektronindfangning (EC)",
+        "definition": "En elektron fra en indre orbital indfanges af kernen, hvorved en proton omdannes til en neutron. Z falder med 1, mens A forbliver uændret. Konkurrerer med β⁺-henfald."
+      },
+      "isomericTransition": {
+        "term": "Isomer overgang (IT)",
+        "definition": "En metastabil exciteret kernetilstand henfalder til en lavere energitilstand ved at udsende et gammakvant. Z og A forbliver uændrede. Nuklidsymbolet får suffikset \"m\" (f.eks. Tc-99m)."
+      },
+      "lenr": {
+        "term": "LENR",
+        "definition": "Lavenergi-kernereaktioner (Low Energy Nuclear Reactions). En klasse af kernereaktioner, der finder sted ved eller nær stuetemperatur, i modsætning til konventionel \"varm\" fusion, som kræver millioner af grader. Historisk også kendt som \"kold fusion\"."
+      },
+      "transmutation": {
+        "term": "Transmutation",
+        "definition": "Omdannelsen af ét grundstof eller én isotop til et andet. Kan ske via fusion, fission eller to-til-to-reaktioner. Denne database katalogiserer transmutationsveje beregnet af Dr. Alexander Parkhomov."
+      },
+      "fusion": {
+        "term": "Fusion",
+        "definition": "En kernereaktion, hvor to lettere kerner smelter sammen til en tungere kerne (A + B → C). Frigiver energi, når produktet har højere bindingsenergi pr. nukleon end reaktanterne. Databasen indeholder 3.921 fusionsreaktioner, hvoraf 1.505 ikke involverer neutrinoer."
+      },
+      "fission": {
+        "term": "Fission",
+        "definition": "En kernereaktion, hvor en tungere kerne spaltes i to lettere kerner (A → B + C). Frigiver energi, når produkterne har højere bindingsenergi pr. nukleon. Databasen indeholder 1.733 fissionsreaktioner, hvoraf 818 ikke involverer neutrinoer."
+      },
+      "twoToTwo": {
+        "term": "To-til-to",
+        "definition": "En kernereaktion, hvor to kerner vekselvirker og danner to andre kerner (A + B → C + D). Den mest almindelige reaktionstype i databasen med 1.215.374 reaktioner (heraf 518.657 uden neutrinoer)."
+      },
+      "cascade": {
+        "term": "Kaskade",
+        "definition": "En kæde af kernereaktioner, hvor produkterne fra én reaktion bliver input til efterfølgende reaktioner. Kaskademotoren simulerer reaktionsveje over flere generationer ud fra de oprindelige brændselsnuklider."
+      },
+      "feedbackLoop": {
+        "term": "Tilbagekoblingsløkke",
+        "definition": "Når et produktnuklid fra et senere reaktionstrin igen optræder som input i et tidligere trin, så der opstår en selvopretholdende cyklus. Svarer til CNO-cyklussen i stjernernes nukleosyntese."
+      },
+      "mev": {
+        "term": "MeV",
+        "definition": "Megaelektronvolt (10⁶ eV). En energienhed, der ofte bruges i kernefysik. 1 MeV = 1,602 × 10⁻¹³ joule. Den energi, der frigives i en kernereaktion, er Q-værdien, som måles i MeV."
+      },
+      "kev": {
+        "term": "keV",
+        "definition": "Kiloelektronvolt (10³ eV). 1 MeV = 1000 keV. Bruges til henfaldsenergier og strålingsenergier i tabellen RadioNuclides."
+      },
+      "amu": {
+        "term": "AMU",
+        "definition": "Atommasseenhed (Atomic Mass Unit). Defineret som 1/12 af massen af et kulstof-12-atom. 1 AMU = 931,494 MeV/c². Bruges til at angive kerne- og atommasser."
+      },
+      "nBorF": {
+        "term": "nBorF",
+        "definition": "Klassifikation af kernen som boson eller fermion (Nuclear Boson or Fermion). Baseret på massetallet A: lige A = boson (b), ulige A = fermion (f). Relevant for kernens kvantestatistiske egenskaber."
+      },
+      "aBorF": {
+        "term": "aBorF",
+        "definition": "Klassifikation af atomet som boson eller fermion (Atomic Boson or Fermion). Baseret på antallet af neutroner (A - Z): lige antal neutroner = boson (b), ulige antal = fermion (f). Beskriver hele atomets kvantestatistik."
+      },
+      "lhl": {
+        "term": "LHL",
+        "definition": "Log₁₀ af halveringstiden i år. En kompakt måde at angive halveringstid på. LHL = 0 betyder 1 år, LHL = 9 betyder 1 milliard år (stabilitetsgrænsen). Negative værdier angiver halveringstider under et år."
+      },
+      "sus": {
+        "term": "SUS",
+        "definition": "Statusfelt, der angiver nuklidets oprindelse. SPN = stabil primordial (Stable Primordial; forekommer naturligt), UPN = ustabil primordial (Unstable Primordial; radioaktiv, men naturlig), SYN = syntetisk (Synthetic; kun menneskeskabt)."
+      },
+      "rdm": {
+        "term": "RDM",
+        "definition": "Primær radioaktiv henfaldstype (Radioactive Decay Mode). Den dominerende henfaldsvej for ustabile nuklider. Mulige værdier er A (alfa), B- (beta minus), B+ (beta plus), EC (elektronindfangning) og IT (isomer overgang)."
+      },
+      "deuterium": {
+        "term": "Deuterium (D)",
+        "definition": "Brint-2 (én proton + én neutron). I databasen har deuterium symbolet \"D\" i stedet for \"H\" med A=2. Vigtigt i LENR-forskning som et almindeligt valg af brændsel."
+      },
+      "tritium": {
+        "term": "Tritium (T)",
+        "definition": "Brint-3 (én proton + to neutroner). Radioaktivt med en halveringstid på 12,3 år. I databasen har tritium symbolet \"T\" i stedet for \"H\" med A=3."
+      },
+      "protium": {
+        "term": "Protium (H)",
+        "definition": "Brint-1 (én proton, ingen neutroner). Den mest almindelige brintisotop (99,98 % naturlig forekomst). Har symbolet \"H\" i databasen."
       }
+    },
+    "glossaryRelated": {
+      "neutron": "Neutron",
+      "element": "Grundstof",
+      "nucleon": "Nukleon",
+      "weakForce": "Svag kernekraft"
     }
   },
   "mullerResonance": {

@@ -1275,7 +1275,149 @@
       "dimer": {
         "term": "Dimer",
         "definition": "Cząsteczka złożona z dwóch identycznych atomów lub jednostek, np. H₂, N₂, O₂ oraz dwuatomowe halogeny F₂, Cl₂, Br₂ i I₂. Opcja symulatora kaskad „Zezwalaj na tworzenie dimerów” dotyczy tych naturalnie dwuatomowych pierwiastków."
+      },
+      "nuclide": {
+        "term": "Nuklid",
+        "definition": "Określony rodzaj jądra atomowego, scharakteryzowany przez liczbę atomową (Z) i liczbę masową (A). Na przykład węgiel-12 i węgiel-14 to różne nuklidy tego samego pierwiastka."
+      },
+      "isotope": {
+        "term": "Izotop",
+        "definition": "Atomy tego samego pierwiastka (to samo Z) o różnej liczbie neutronów (różne A). Na przykład H-1 (prot), H-2 (deuter) i H-3 (tryt) to izotopy wodoru."
+      },
+      "atomicNumber": {
+        "term": "Liczba atomowa (Z)",
+        "definition": "Liczba protonów w jądrze. Określa, jakim pierwiastkiem jest dany atom. Na przykład Z=1 to wodór, a Z=26 to żelazo."
+      },
+      "massNumber": {
+        "term": "Liczba masowa (A)",
+        "definition": "Łączna liczba protonów i neutronów (nukleonów) w jądrze. A = Z + N, gdzie N oznacza liczbę neutronów."
+      },
+      "bindingEnergy": {
+        "term": "Energia wiązania (BE)",
+        "definition": "Energia potrzebna do rozłożenia jądra na tworzące je protony i neutrony. Wyższa energia wiązania na nukleon oznacza trwalsze jądro. Wyrażana w MeV."
+      },
+      "bindingEnergyPerNucleon": {
+        "term": "Energia wiązania na nukleon (BEN)",
+        "definition": "Energia wiązania podzielona przez liczbę masową (BE/A). Żelazo-56 ma najwyższą wartość BEN (~8,8 MeV), co czyni je najsilniej związanym jądrem. Reakcje prowadzące w kierunku Fe-56 uwalniają energię."
+      },
+      "halfLife": {
+        "term": "Czas połowicznego rozpadu",
+        "definition": "Czas, po którym rozpada się połowa próbki promieniotwórczej. Waha się od ułamków sekundy do miliardów lat. W tej bazie danych nuklid, dla którego log₁₀(czasu połowicznego rozpadu w latach) > 9, uznaje się za stabilny."
+      },
+      "stableNuclide": {
+        "term": "Nuklid stabilny",
+        "definition": "Nuklid, który nie ulega rozpadowi promieniotwórczemu (lub którego czas połowicznego rozpadu przekracza 1 miliard lat). W tej bazie danych stabilność zdefiniowano jako LHL > 9."
+      },
+      "boson": {
+        "term": "Bozon",
+        "definition": "Cząstka o spinie całkowitym (0, 1, 2...). Nuklidy o parzystej liczbie masowej A są bozonami jądrowymi. Bozony mogą zajmować ten sam stan kwantowy, co umożliwia zjawiska takie jak kondensacja Bosego-Einsteina."
+      },
+      "fermion": {
+        "term": "Fermion",
+        "definition": "Cząstka o spinie połówkowym (1/2, 3/2...). Nuklidy o nieparzystej liczbie masowej A są fermionami jądrowymi. Fermiony podlegają zakazowi Pauliego."
+      },
+      "neutrino": {
+        "term": "Neutrino",
+        "definition": "Cząstka subatomowa o niemal zerowej masie, oddziałująca słabo, powstająca w reakcjach jądrowych z udziałem oddziaływania słabego (np. w rozpadzie beta). Oznaczana jako ν (lewoskrętne neutrino) lub ν̄ (prawoskrętne antyneutrino)."
+      },
+      "radioactiveDecay": {
+        "term": "Rozpad promieniotwórczy",
+        "definition": "Samorzutna przemiana niestabilnego jądra w trwalszą konfigurację. Typowe tryby rozpadu to alfa (A), beta minus (B-), beta plus (B+), wychwyt elektronu (EC) i przejście izomeryczne (IT)."
+      },
+      "alphaDecay": {
+        "term": "Rozpad alfa",
+        "definition": "Emisja jądra helu-4 (2 protony + 2 neutrony). Zmniejsza Z o 2, a A o 4. Częsty w przypadku ciężkich pierwiastków, takich jak uran i rad."
+      },
+      "betaDecay": {
+        "term": "Rozpad beta",
+        "definition": "Przemiana neutronu w proton (β⁻, Z+1) lub protonu w neutron (β⁺, Z-1). A pozostaje bez zmian. Towarzyszy jej emisja neutrina lub antyneutrina."
+      },
+      "electronCapture": {
+        "term": "Wychwyt elektronu (EC)",
+        "definition": "Elektron z wewnętrznej powłoki zostaje wychwycony przez jądro, przekształcając proton w neutron. Z maleje o 1, A pozostaje bez zmian. Proces konkurujący z rozpadem β⁺."
+      },
+      "isomericTransition": {
+        "term": "Przejście izomeryczne (IT)",
+        "definition": "Metastabilny wzbudzony stan jądra przechodzi do stanu o niższej energii, emitując kwant gamma. Z i A pozostają bez zmian. Symbol nuklidu otrzymuje przyrostek „m” (np. Tc-99m)."
+      },
+      "lenr": {
+        "term": "LENR",
+        "definition": "Niskoenergetyczne reakcje jądrowe (ang. Low Energy Nuclear Reactions). Klasa reakcji jądrowych zachodzących w temperaturze pokojowej lub zbliżonej, w odróżnieniu od konwencjonalnej „gorącej” syntezy, która wymaga milionów stopni. Historycznie znane również jako „zimna fuzja”."
+      },
+      "transmutation": {
+        "term": "Transmutacja",
+        "definition": "Przemiana jednego pierwiastka chemicznego lub izotopu w inny. Może zachodzić w wyniku syntezy, rozszczepienia lub reakcji dwa-na-dwa. Ta baza danych zawiera katalog ścieżek transmutacji obliczonych przez dr. Alexandra Parkhomova."
+      },
+      "fusion": {
+        "term": "Synteza",
+        "definition": "Reakcja jądrowa, w której dwa lżejsze jądra łączą się w cięższe jądro (A + B → C). Uwalnia energię, gdy produkt ma wyższą energię wiązania na nukleon niż substraty. Baza danych zawiera 3921 reakcji syntezy, z których 1505 nie obejmuje neutrin."
+      },
+      "fission": {
+        "term": "Rozszczepienie",
+        "definition": "Reakcja jądrowa, w której cięższe jądro rozpada się na dwa lżejsze jądra (A → B + C). Uwalnia energię, gdy produkty mają wyższą energię wiązania na nukleon. Baza danych zawiera 1733 reakcje rozszczepienia, z których 818 nie obejmuje neutrin."
+      },
+      "twoToTwo": {
+        "term": "Dwa-na-dwa",
+        "definition": "Reakcja jądrowa, w której dwa jądra oddziałują ze sobą i dają dwa inne jądra (A + B → C + D). Najliczniejszy typ reakcji w bazie danych: 1 215 374 reakcje (z czego 518 657 nie obejmuje neutrin)."
+      },
+      "cascade": {
+        "term": "Kaskada",
+        "definition": "Łańcuch reakcji jądrowych, w którym produkty jednej reakcji stają się substratami kolejnych. Silnik kaskad symuluje wielopokoleniowe ścieżki reakcji, począwszy od początkowych nuklidów paliwowych."
+      },
+      "feedbackLoop": {
+        "term": "Pętla sprzężenia zwrotnego",
+        "definition": "Sytuacja, w której nuklid powstały w późniejszym etapie reakcji pojawia się ponownie jako substrat we wcześniejszym etapie, tworząc samopodtrzymujący się cykl. Przypomina to cykl CNO w nukleosyntezie gwiazdowej."
+      },
+      "mev": {
+        "term": "MeV",
+        "definition": "Megaelektronowolt (10⁶ eV). Jednostka energii powszechnie stosowana w fizyce jądrowej. 1 MeV = 1,602 × 10⁻¹³ dżula. Energia uwalniana w reakcji jądrowej to ciepło reakcji Q (wartość Q), wyrażane w MeV."
+      },
+      "kev": {
+        "term": "keV",
+        "definition": "Kiloelektronowolt (10³ eV). 1 MeV = 1000 keV. Stosowany do wyrażania energii rozpadu i energii promieniowania w tabeli RadioNuclides."
+      },
+      "amu": {
+        "term": "AMU",
+        "definition": "Jednostka masy atomowej (ang. Atomic Mass Unit). Zdefiniowana jako 1/12 masy atomu węgla-12. 1 AMU = 931,494 MeV/c². Służy do wyrażania mas jąder i atomów."
+      },
+      "nBorF": {
+        "term": "nBorF",
+        "definition": "Jądrowa klasyfikacja bozon/fermion (ang. Nuclear Boson or Fermion). Oparta na liczbie masowej A: parzyste A = bozon (b), nieparzyste A = fermion (f). Istotna dla kwantowo-statystycznego zachowania jądra."
+      },
+      "aBorF": {
+        "term": "aBorF",
+        "definition": "Atomowa klasyfikacja bozon/fermion (ang. Atomic Boson or Fermion). Oparta na liczbie neutronów (A - Z): parzysta liczba neutronów = bozon (b), nieparzysta = fermion (f). Opisuje statystykę kwantową całego atomu."
+      },
+      "lhl": {
+        "term": "LHL",
+        "definition": "Log₁₀ czasu połowicznego rozpadu wyrażonego w latach (ang. Log Half-Life). Zwarta reprezentacja czasu połowicznego rozpadu. LHL = 0 oznacza 1 rok, LHL = 9 oznacza 1 miliard lat (próg stabilności). Wartości ujemne oznaczają czasy połowicznego rozpadu krótsze niż rok."
+      },
+      "sus": {
+        "term": "SUS",
+        "definition": "Pole statusu określające pochodzenie nuklidu. SPN = stabilny pierwotny (ang. Stable Primordial; występuje naturalnie), UPN = niestabilny pierwotny (ang. Unstable Primordial; promieniotwórczy, ale naturalny), SYN = syntetyczny (ang. Synthetic; wytwarzany wyłącznie sztucznie)."
+      },
+      "rdm": {
+        "term": "RDM",
+        "definition": "Główny tryb rozpadu promieniotwórczego (ang. Radioactive Decay Mode). Dominująca ścieżka rozpadu nuklidów niestabilnych. Możliwe wartości to A (alfa), B- (beta minus), B+ (beta plus), EC (wychwyt elektronu), IT (przejście izomeryczne)."
+      },
+      "deuterium": {
+        "term": "Deuter (D)",
+        "definition": "Wodór-2 (jeden proton + jeden neutron). W bazie danych deuter ma symbol „D”, a nie „H” z A=2. Ważny w badaniach LENR jako często wybierane paliwo."
+      },
+      "tritium": {
+        "term": "Tryt (T)",
+        "definition": "Wodór-3 (jeden proton + dwa neutrony). Promieniotwórczy, o czasie połowicznego rozpadu 12,3 roku. W bazie danych tryt ma symbol „T”, a nie „H” z A=3."
+      },
+      "protium": {
+        "term": "Prot (H)",
+        "definition": "Wodór-1 (jeden proton, bez neutronów). Najpowszechniejszy izotop wodoru (zawartość 99,98%). W bazie danych ma symbol „H”."
       }
+    },
+    "glossaryRelated": {
+      "neutron": "Neutron",
+      "element": "Pierwiastek",
+      "nucleon": "Nukleon",
+      "weakForce": "Oddziaływanie słabe"
     }
   },
   "mullerResonance": {

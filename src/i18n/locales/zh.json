@@ -262,7 +262,7 @@
     "selected": "已选择{{count}}个",
     "applySelection": "应用选择",
     "integrated": "集成",
-    "russellChart": "Russell",
+    "russellChart": "拉塞尔",
     "decays": "衰变",
     "period": "周期",
     "group": "族",
@@ -1203,7 +1203,7 @@
       },
       "niHFusion": {
         "name": "镍-氢聚变",
-        "description": "Rossi E-Cat 和 Parkhomov 重复实验中研究的反应。Ni + H 反应产生铜的同位素。"
+        "description": "罗西 E-Cat 和帕尔霍莫夫重复实验中研究的反应。Ni + H 反应产生铜的同位素。"
       },
       "uraniumFission": {
         "name": "铀裂变路径",
@@ -1211,7 +1211,7 @@
       },
       "palladiumFission": {
         "name": "钯裂变",
-        "description": "与使用钯电极的 Fleischmann-Pons 冷聚变实验相关的 Pd 裂变路径。"
+        "description": "与使用钯电极的弗莱施曼-庞斯冷聚变实验相关的 Pd 裂变路径。"
       },
       "protonBoron": {
         "name": "质子-硼反应",
@@ -1231,11 +1231,11 @@
       },
       "palladiumNae": {
         "name": "钯 NAE 分析",
-        "description": "探索钯的核活性环境（NAE）预测 — 这是 Fleischmann-Pons 氘加载实验的核心。"
+        "description": "探索钯的核活性环境（NAE）预测 — 这是弗莱施曼-庞斯氘加载实验的核心。"
       },
       "parkhomovCascade": {
-        "name": "Parkhomov Ni-LiAlH₄ 级联",
-        "description": "模拟 2014 年 Parkhomov 使用天然镍和氢化铝锂燃料对 Rossi 反应器的重复实验。"
+        "name": "帕尔霍莫夫 Ni-LiAlH₄ 级联",
+        "description": "模拟 2014 年帕尔霍莫夫使用天然镍和氢化铝锂燃料对罗西反应器的重复实验。"
       }
     },
     "exampleTypes": {
@@ -1267,7 +1267,149 @@
       "dimer": {
         "term": "二聚体",
         "definition": "由两个相同原子或单元组成的分子，例如 H₂、N₂、O₂ 以及双原子卤素 F₂、Cl₂、Br₂ 和 I₂。级联模拟器中的“允许形成二聚体”选项适用于这些天然以双原子形式存在的元素。"
+      },
+      "nuclide": {
+        "term": "核素",
+        "definition": "由原子序数（Z）和质量数（A）共同表征的一种特定原子核。例如，碳-12 和碳-14 是同一元素的不同核素。"
+      },
+      "isotope": {
+        "term": "同位素",
+        "definition": "同一元素（Z 相同）但中子数不同（A 不同）的原子。例如，H-1（氕）、H-2（氘）和 H-3（氚）都是氢的同位素。"
+      },
+      "atomicNumber": {
+        "term": "原子序数（Z）",
+        "definition": "原子核中的质子数，决定原子属于哪种元素。例如，Z=1 为氢，Z=26 为铁。"
+      },
+      "massNumber": {
+        "term": "质量数（A）",
+        "definition": "原子核中质子和中子（核子）的总数。A = Z + N，其中 N 为中子数。"
+      },
+      "bindingEnergy": {
+        "term": "结合能（BE）",
+        "definition": "将原子核拆分为组成它的质子和中子所需的能量。比结合能越高，原子核越稳定。单位为 MeV。"
+      },
+      "bindingEnergyPerNucleon": {
+        "term": "比结合能（BEN）",
+        "definition": "结合能除以质量数（BE/A），即每个核子的平均结合能。铁-56 的 BEN 最高（~8.8 MeV），是结合最紧密的原子核。趋向 Fe-56 的反应会释放能量。"
+      },
+      "halfLife": {
+        "term": "半衰期",
+        "definition": "放射性样品衰变掉一半所需的时间，从不到一秒到数十亿年不等。在本数据库中，log₁₀(以年计的半衰期) > 9 的核素被视为稳定核素。"
+      },
+      "stableNuclide": {
+        "term": "稳定核素",
+        "definition": "不发生放射性衰变（或半衰期超过 10 亿年）的核素。在本数据库中，稳定性定义为 LHL > 9。"
+      },
+      "boson": {
+        "term": "玻色子",
+        "definition": "自旋为整数（0, 1, 2...）的粒子。质量数 A 为偶数的核素属于核玻色子。玻色子可以占据同一量子态，从而产生玻色-爱因斯坦凝聚等现象。"
+      },
+      "fermion": {
+        "term": "费米子",
+        "definition": "自旋为半整数（1/2, 3/2...）的粒子。质量数 A 为奇数的核素属于核费米子。费米子遵守泡利不相容原理。"
+      },
+      "neutrino": {
+        "term": "中微子",
+        "definition": "一种质量近乎为零、相互作用极弱的亚原子粒子，产生于涉及弱相互作用的核反应（如 β 衰变）中。记作 ν（左旋）或 ν̄（右旋反中微子）。"
+      },
+      "radioactiveDecay": {
+        "term": "放射性衰变",
+        "definition": "不稳定原子核自发转变为更稳定构型的过程。常见衰变模式包括 α（A）、β⁻（B-）、β⁺（B+）、电子俘获（EC）和同质异能跃迁（IT）。"
+      },
+      "alphaDecay": {
+        "term": "α衰变",
+        "definition": "放出一个氦-4 原子核（2 个质子 + 2 个中子）。Z 减少 2，A 减少 4。常见于铀、镭等重元素。"
+      },
+      "betaDecay": {
+        "term": "β衰变",
+        "definition": "中子转变为质子（β⁻，Z+1）或质子转变为中子（β⁺，Z-1）。A 保持不变。伴随放出中微子或反中微子。"
+      },
+      "electronCapture": {
+        "term": "电子俘获（EC）",
+        "definition": "原子核俘获一个内层轨道电子，使一个质子转变为中子。Z 减少 1，A 保持不变。与 β⁺ 衰变相互竞争。"
+      },
+      "isomericTransition": {
+        "term": "同质异能跃迁（IT）",
+        "definition": "处于亚稳激发态的原子核通过放出 γ 射线跃迁到较低能态。Z 和 A 均不变。核素符号带有后缀“m”（例如 Tc-99m）。"
+      },
+      "lenr": {
+        "term": "LENR",
+        "definition": "低能核反应（Low Energy Nuclear Reactions）。一类在室温或接近室温下发生的核反应，有别于需要数百万度高温的传统“热”聚变。历史上也被称为“冷聚变”。"
+      },
+      "transmutation": {
+        "term": "嬗变",
+        "definition": "一种化学元素或同位素转变为另一种元素或同位素。可通过聚变、裂变或二对二反应发生。本数据库收录了亚历山大·帕尔霍莫夫博士计算的嬗变路径。"
+      },
+      "fusion": {
+        "term": "聚变",
+        "definition": "两个较轻的原子核结合成一个较重原子核的核反应（A + B → C）。当产物的比结合能高于反应物时释放能量。本数据库包含 3,921 个聚变反应，其中 1,505 个不涉及中微子。"
+      },
+      "fission": {
+        "term": "裂变",
+        "definition": "一个较重的原子核分裂为两个较轻原子核的核反应（A → B + C）。当产物的比结合能更高时释放能量。本数据库包含 1,733 个裂变反应，其中 818 个不涉及中微子。"
+      },
+      "twoToTwo": {
+        "term": "二对二",
+        "definition": "两个原子核相互作用并生成另外两个原子核的核反应（A + B → C + D）。这是数据库中最常见的反应类型，共 1,215,374 个反应（其中 518,657 个不涉及中微子）。"
+      },
+      "cascade": {
+        "term": "级联",
+        "definition": "一系列核反应的链条，其中一个反应的产物成为后续反应的输入。级联引擎从初始燃料核素出发，模拟多代反应路径。"
+      },
+      "feedbackLoop": {
+        "term": "反馈循环",
+        "definition": "后续反应步骤中的产物核素重新作为较早步骤的输入出现，从而形成自持循环。类似于恒星核合成中的 CNO 循环。"
+      },
+      "mev": {
+        "term": "MeV",
+        "definition": "兆电子伏特（10⁶ eV）。核物理中常用的能量单位。1 MeV = 1.602 × 10⁻¹³ 焦耳。核反应释放的能量称为 Q 值，以 MeV 为单位。"
+      },
+      "kev": {
+        "term": "keV",
+        "definition": "千电子伏特（10³ eV）。1 MeV = 1000 keV。用于 RadioNuclides 表中的衰变能量和辐射能量。"
+      },
+      "amu": {
+        "term": "AMU",
+        "definition": "原子质量单位。定义为一个碳-12 原子质量的 1/12。1 AMU = 931.494 MeV/c²。用于表示原子核和原子的质量。"
+      },
+      "nBorF": {
+        "term": "nBorF",
+        "definition": "原子核玻色子/费米子分类。依据质量数 A：A 为偶数是玻色子（b），A 为奇数是费米子（f）。与原子核的量子统计行为相关。"
+      },
+      "aBorF": {
+        "term": "aBorF",
+        "definition": "原子玻色子/费米子分类。依据中子数（A - Z）：中子数为偶数是玻色子（b），为奇数是费米子（f）。描述整个原子的量子统计性质。"
+      },
+      "lhl": {
+        "term": "LHL",
+        "definition": "以年为单位的半衰期的 Log₁₀，是半衰期的紧凑表示。LHL = 0 表示 1 年，LHL = 9 表示 10 亿年（稳定阈值）。负值表示半衰期不足一年。"
+      },
+      "sus": {
+        "term": "SUS",
+        "definition": "表示核素来源的状态字段。SPN = 稳定原生核素（天然存在），UPN = 不稳定原生核素（具放射性但天然存在），SYN = 人工合成（仅人工制造）。"
+      },
+      "rdm": {
+        "term": "RDM",
+        "definition": "主要放射性衰变模式，即不稳定核素占主导的衰变途径。取值包括 A（α）、B-（β⁻）、B+（β⁺）、EC（电子俘获）、IT（同质异能跃迁）。"
+      },
+      "deuterium": {
+        "term": "氘（D）",
+        "definition": "氢-2（一个质子 + 一个中子）。在数据库中，氘使用符号“D”，而不是 A=2 的“H”。作为常用燃料，在 LENR 研究中十分重要。"
+      },
+      "tritium": {
+        "term": "氚（T）",
+        "definition": "氢-3（一个质子 + 两个中子）。具有放射性，半衰期为 12.3 年。在数据库中，氚使用符号“T”，而不是 A=3 的“H”。"
+      },
+      "protium": {
+        "term": "氕（H）",
+        "definition": "氢-1（一个质子，没有中子）。最常见的氢同位素（丰度 99.98%）。在数据库中使用符号“H”。"
       }
+    },
+    "glossaryRelated": {
+      "neutron": "中子",
+      "element": "元素",
+      "nucleon": "核子",
+      "weakForce": "弱相互作用"
     }
   },
   "mullerResonance": {
@@ -1340,15 +1482,15 @@
       "naeOutside": "NAE 范围外的共振",
       "naeUncoloured": "未着色的元素没有计算出的电子共振波长。"
     },
-    "noReactionsTitle": "Parkhomov 表中没有此对的反应",
-    "noReactionsFootnote": "短横线（-）表示 Parkhomov 表中没有此对该类型的反应。许多共振对包含这些表中没有的元素，因此短横线很常见。",
+    "noReactionsTitle": "帕尔霍莫夫表中没有此对的反应",
+    "noReactionsFootnote": "短横线（-）表示帕尔霍莫夫表中没有此对该类型的反应。许多共振对包含这些表中没有的元素，因此短横线很常见。",
     "tabs": {
       "resonancePairs": "共振对",
       "naePredictions": "NAE预测"
     },
     "nae": {
       "title": "NAE晶格预测",
-      "description": "按电子共振波长与Edmund Storms（JCMNS 41, 2026）确定的~1 nm核活性环境（NAE）间隙的接近程度对元素进行排名。高亮元素在低八度具有0.5–2.0 nm范围的共振。",
+      "description": "按电子共振波长与埃德蒙·斯托姆斯（JCMNS 41, 2026）确定的~1 nm核活性环境（NAE）间隙的接近程度对元素进行排名。高亮元素在低八度具有0.5–2.0 nm范围的共振。",
       "element": "元素",
       "octave": "八度 (N)",
       "electronResonance": "e⁻共振",
@@ -1387,23 +1529,23 @@
       "lenrRefs": "LENR参考",
       "noNAEResonance": "低八度无NAE范围共振。",
       "aboutNAETitle": "关于NAE预测",
-      "aboutNAE1": "Edmund Storms确定冷聚变（LENR）发生在核活性环境（NAE）中——金属晶格中纳米级间隙，通常~1 nm宽（JCMNS 41, 2026）。",
+      "aboutNAE1": "埃德蒙·斯托姆斯确定冷聚变（LENR）发生在核活性环境（NAE）中——金属晶格中纳米级间隙，通常~1 nm宽（JCMNS 41, 2026）。",
       "aboutNAE2": "穆勒方程 L = Z × Cₑ × 2ᴺ 在低八度（N=3, N=4）预测各元素的电子共振波长。钯（Z=46）在N=3为0.89 nm，N=4为1.79 nm。",
       "aboutNAE3": "与氘的重叠引人注目：在质子八度N=20，氘的共振波长为1.39 nm——正好在NAE范围内。",
       "aboutNAE4": "已知的LENR活性金属（Pd, Ni, Pt, Ti）都在N=3或N=4处具有0.9–1.8 nm范围的电子共振长度。",
-      "naeDisclaimer": "此分析结合了穆勒的共振框架和Storms的NAE模型。两者均为理论模型。结果用于探索和假设生成。"
+      "naeDisclaimer": "此分析结合了穆勒的共振框架和斯托姆斯的NAE模型。两者均为理论模型。结果用于探索和假设生成。"
     }
   },
   "transmutations": {
     "title": "嬗变路径浏览器",
-    "subtitle": "来自一手文献的 LENR 嬗变报告，配以来自 Parkhomov 反应数据库的候选两步路径。",
+    "subtitle": "来自一手文献的 LENR 嬗变报告，配以来自帕尔霍莫夫反应数据库的候选两步路径。",
     "disclaimerTitle": "已记录的主张，并非已验证的机制。",
-    "disclaimerText": "下方列出的嬗变是在一手文献中报告的。Parkhomov 数据库可能显示允许这些净变换的 A+B → C+D 路径；这<0>并不</0>证明最初假设的机制是正确的。路径只是通过允许的基本反应的候选路线，而非实验证据。",
+    "disclaimerText": "下方列出的嬗变是在一手文献中报告的。帕尔霍莫夫数据库可能显示允许这些净变换的 A+B → C+D 路径；这<0>并不</0>证明最初假设的机制是正确的。路径只是通过允许的基本反应的候选路线，而非实验证据。",
     "filterAllCategories": "所有类别",
     "filterAllSources": "所有来源",
     "filterByLab": "按来源实验室筛选",
     "noResults": "没有变换匹配当前的筛选条件。",
-    "pathwayResultsHint": "来自 Parkhomov 表的候选路径将显示在此卡片下方。",
+    "pathwayResultsHint": "来自帕尔霍莫夫表的候选路径将显示在此卡片下方。",
     "curatedFrom": "整理自 <1>HumanScholars LENR 文献综述</1>。共 {{count}} 条。",
     "stepCount_one": "1 步",
     "stepCount_other": "{{count}} 步",
@@ -1421,14 +1563,14 @@
     },
     "buttons": {
       "searching": "搜索中…",
-      "findPathways": "查找 Parkhomov 路径",
+      "findPathways": "查找帕尔霍莫夫路径",
       "dismiss": "关闭",
       "dismissPathways": "关闭路径结果",
       "viewSource": "查看来源"
     },
     "pathwayResults": {
-      "notFound": "在 Parkhomov 数据库中未找到所列同位素的 1 步或 2 步路径。",
-      "explanation": "所报告的嬗变仍可能通过 Parkhomov 表之外的途径实现（深度 2 以上的多步、中子俘获链、β 衰变分支）。对于具有循环中间体的多步路径，请尝试<1>循环发现</1>工具。",
+      "notFound": "在帕尔霍莫夫数据库中未找到所列同位素的 1 步或 2 步路径。",
+      "explanation": "所报告的嬗变仍可能通过帕尔霍莫夫表之外的途径实现（深度 2 以上的多步、中子俘获链、β 衰变分支）。对于具有循环中间体的多步路径，请尝试<1>循环发现</1>工具。",
       "header": "候选路径 ({{count}})"
     },
     "errors": {
@@ -1476,13 +1618,13 @@
         "source": "Miley & Patterson (UIUC / CETI, 1996)",
         "setup": "Thin-film Ni cathodes electrolyzed in light-water solutions; ~50 product elements detected by SIMS/NAA",
         "hypothesizedMechanism": "Broad transmutation product spectrum; no single mechanism proposed (fission of compound nucleus suggested)",
-        "notes": "Catch-all entry: Miley reported a wide product distribution. Ni→Cu used here as the most-cited single pair; ~50 elements were observed."
+        "notes": "综合条目：迈利报告了广泛的产物分布。此处选用引用最多的单一配对 Ni→Cu；共观测到 ~50 种元素。"
       },
       "savvatimova-pd-ag": {
         "source": "Savvatimova et al. (Luch, Russia, 1990s-2000s)",
         "setup": "Glow-discharge bombardment of Pd cathodes in deuterium plasma",
         "hypothesizedMechanism": "Multiple pathways proposed including neutron-like processes and electron-screened weak interaction",
-        "notes": "Savvatimova reported Pd → Rh, Ru, Ag, Cd; Pd→Ag captured here."
+        "notes": "萨瓦季莫娃报告了 Pd → Rh、Ru、Ag、Cd；此处收录 Pd→Ag。"
       },
       "savvatimova-pd-rh": {
         "source": "Savvatimova et al. (Luch, Russia, 1990s-2000s)",
@@ -1699,7 +1841,7 @@
   "databaseLoading": {
     "downloadingTitle": "正在下载数据库",
     "loadingTitle": "正在加载数据库",
-    "downloadingMessage": "正在下载 Parkhomov 核反应数据库...",
+    "downloadingMessage": "正在下载帕尔霍莫夫核反应数据库...",
     "initializingMessage": "正在初始化数据库引擎...",
     "cachedNotice": "此数据库将被缓存，以后访问时可即时加载",
     "pleaseWait": "请稍候..."

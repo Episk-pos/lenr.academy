@@ -1267,7 +1267,149 @@
       "dimer": {
         "term": "Dimer",
         "definition": "Ein Molekül aus zwei identischen Atomen oder Einheiten, etwa H₂, N₂, O₂ und die zweiatomigen Halogene F₂, Cl₂, Br₂ und I₂. Die Option „Dimerbildung erlauben“ des Kaskadensimulators bezieht sich auf diese natürlich zweiatomigen Elemente."
+      },
+      "nuclide": {
+        "term": "Nuklid",
+        "definition": "Eine bestimmte Kernart, die durch ihre Ordnungszahl (Z) und Massenzahl (A) gekennzeichnet ist. Kohlenstoff-12 und Kohlenstoff-14 sind beispielsweise verschiedene Nuklide desselben Elements."
+      },
+      "isotope": {
+        "term": "Isotop",
+        "definition": "Atome desselben Elements (gleiches Z) mit unterschiedlicher Neutronenzahl (unterschiedliches A). So sind H-1 (Protium), H-2 (Deuterium) und H-3 (Tritium) Isotope des Wasserstoffs."
+      },
+      "atomicNumber": {
+        "term": "Ordnungszahl (Z)",
+        "definition": "Die Anzahl der Protonen in einem Atomkern. Sie bestimmt, um welches Element es sich handelt. Beispielsweise ist Z=1 Wasserstoff und Z=26 Eisen."
+      },
+      "massNumber": {
+        "term": "Massenzahl (A)",
+        "definition": "Die Gesamtzahl der Protonen und Neutronen (Nukleonen) in einem Atomkern. Es gilt A = Z + N, wobei N die Neutronenzahl ist."
+      },
+      "bindingEnergy": {
+        "term": "Bindungsenergie (BE)",
+        "definition": "Die Energie, die nötig ist, um einen Atomkern in seine einzelnen Protonen und Neutronen zu zerlegen. Eine höhere Bindungsenergie pro Nukleon bedeutet einen stabileren Kern. Angegeben in MeV."
+      },
+      "bindingEnergyPerNucleon": {
+        "term": "Bindungsenergie pro Nukleon (BEN)",
+        "definition": "Bindungsenergie geteilt durch die Massenzahl (BE/A). Eisen-56 hat die höchste BEN (~8,8 MeV) und ist damit der am stärksten gebundene Kern. Reaktionen in Richtung Fe-56 setzen Energie frei."
+      },
+      "halfLife": {
+        "term": "Halbwertszeit",
+        "definition": "Die Zeit, nach der die Hälfte einer radioaktiven Probe zerfallen ist. Sie reicht von Sekundenbruchteilen bis zu Milliarden von Jahren. In dieser Datenbank gilt ein Nuklid mit log₁₀(Halbwertszeit in Jahren) > 9 als stabil."
+      },
+      "stableNuclide": {
+        "term": "Stabiles Nuklid",
+        "definition": "Ein Nuklid, das keinem radioaktiven Zerfall unterliegt (oder dessen Halbwertszeit 1 Milliarde Jahre übersteigt). In dieser Datenbank ist Stabilität als LHL > 9 definiert."
+      },
+      "boson": {
+        "term": "Boson",
+        "definition": "Ein Teilchen mit ganzzahligem Spin (0, 1, 2 …). Nuklide mit gerader Massenzahl A sind Kernbosonen. Bosonen können denselben Quantenzustand besetzen, was Phänomene wie die Bose-Einstein-Kondensation ermöglicht."
+      },
+      "fermion": {
+        "term": "Fermion",
+        "definition": "Ein Teilchen mit halbzahligem Spin (1/2, 3/2 …). Nuklide mit ungerader Massenzahl A sind Kernfermionen. Fermionen unterliegen dem Pauli-Prinzip."
+      },
+      "neutrino": {
+        "term": "Neutrino",
+        "definition": "Ein nahezu masseloses, nur schwach wechselwirkendes subatomares Teilchen, das bei Kernreaktionen unter Beteiligung der schwachen Wechselwirkung entsteht (z. B. beim Betazerfall). Bezeichnet als ν (linkshändig) bzw. ν̄ (rechtshändiges Antineutrino)."
+      },
+      "radioactiveDecay": {
+        "term": "Radioaktiver Zerfall",
+        "definition": "Die spontane Umwandlung eines instabilen Atomkerns in eine stabilere Konfiguration. Häufige Zerfallsarten sind Alpha (A), Beta-minus (B-), Beta-plus (B+), Elektroneneinfang (EC) und Isomerieübergang (IT)."
+      },
+      "alphaDecay": {
+        "term": "Alphazerfall",
+        "definition": "Emission eines Helium-4-Kerns (2 Protonen + 2 Neutronen). Verringert Z um 2 und A um 4. Häufig bei schweren Elementen wie Uran und Radium."
+      },
+      "betaDecay": {
+        "term": "Betazerfall",
+        "definition": "Umwandlung eines Neutrons in ein Proton (β⁻, Z+1) oder eines Protons in ein Neutron (β⁺, Z-1). A bleibt unverändert. Dabei wird ein Neutrino oder Antineutrino emittiert."
+      },
+      "electronCapture": {
+        "term": "Elektroneneinfang (EC)",
+        "definition": "Ein Elektron einer inneren Schale wird vom Kern eingefangen und wandelt dabei ein Proton in ein Neutron um. Z sinkt um 1, A bleibt unverändert. Konkurriert mit dem β⁺-Zerfall."
+      },
+      "isomericTransition": {
+        "term": "Isomerieübergang (IT)",
+        "definition": "Ein metastabiler angeregter Kernzustand geht unter Aussendung eines Gammaquants in einen energetisch tieferen Zustand über. Z und A bleiben unverändert. Das Nuklidsymbol erhält das Suffix „m“ (z. B. Tc-99m)."
+      },
+      "lenr": {
+        "term": "LENR",
+        "definition": "Niederenergetische Kernreaktionen (Low Energy Nuclear Reactions). Eine Klasse von Kernreaktionen, die bei oder nahe Raumtemperatur ablaufen – im Unterschied zur konventionellen „heißen“ Fusion, die Millionen von Grad erfordert. Historisch auch als „Kalte Fusion“ bekannt."
+      },
+      "transmutation": {
+        "term": "Transmutation",
+        "definition": "Die Umwandlung eines chemischen Elements oder Isotops in ein anderes. Sie kann durch Fusion, Spaltung oder Zwei-zu-Zwei-Reaktionen erfolgen. Diese Datenbank katalogisiert die von Dr. Alexander Parkhomov berechneten Transmutationspfade."
+      },
+      "fusion": {
+        "term": "Fusion",
+        "definition": "Eine Kernreaktion, bei der zwei leichtere Kerne zu einem schwereren Kern verschmelzen (A + B → C). Sie setzt Energie frei, wenn das Produkt eine höhere Bindungsenergie pro Nukleon hat als die Ausgangskerne. Diese Datenbank enthält 3.921 Fusionsreaktionen, davon 1.505 ohne Neutrinos."
+      },
+      "fission": {
+        "term": "Spaltung",
+        "definition": "Eine Kernreaktion, bei der ein schwererer Kern in zwei leichtere Kerne zerfällt (A → B + C). Sie setzt Energie frei, wenn die Produkte eine höhere Bindungsenergie pro Nukleon haben. Diese Datenbank enthält 1.733 Spaltungsreaktionen, davon 818 ohne Neutrinos."
+      },
+      "twoToTwo": {
+        "term": "Zwei-zu-Zwei",
+        "definition": "Eine Kernreaktion, bei der zwei Kerne wechselwirken und zwei andere Kerne entstehen (A + B → C + D). Der häufigste Reaktionstyp in der Datenbank mit 1.215.374 Reaktionen (davon 518.657 ohne Neutrinos)."
+      },
+      "cascade": {
+        "term": "Kaskade",
+        "definition": "Eine Kette von Kernreaktionen, in der die Produkte einer Reaktion zu Ausgangsstoffen nachfolgender Reaktionen werden. Die Kaskaden-Engine simuliert mehrgenerationale Reaktionspfade ausgehend von den anfänglichen Brennstoffnukliden."
+      },
+      "feedbackLoop": {
+        "term": "Rückkopplungsschleife",
+        "definition": "Ein Produktnuklid aus einem späteren Reaktionsschritt tritt erneut als Ausgangsnuklid eines früheren Schritts auf und bildet so einen selbsterhaltenden Zyklus – ähnlich dem CNO-Zyklus der stellaren Nukleosynthese."
+      },
+      "mev": {
+        "term": "MeV",
+        "definition": "Megaelektronenvolt (10⁶ eV). Eine in der Kernphysik gebräuchliche Energieeinheit. 1 MeV = 1,602 × 10⁻¹³ Joule. Die bei einer Kernreaktion freigesetzte Energie ist der Q-Wert, angegeben in MeV."
+      },
+      "kev": {
+        "term": "keV",
+        "definition": "Kiloelektronenvolt (10³ eV). 1 MeV = 1000 keV. Wird für Zerfallsenergien und Strahlungsenergien in der Tabelle RadioNuclides verwendet."
+      },
+      "amu": {
+        "term": "AMU",
+        "definition": "Atomare Masseneinheit (Atomic Mass Unit). Definiert als 1/12 der Masse eines Kohlenstoff-12-Atoms. 1 AMU = 931,494 MeV/c². Dient zur Angabe von Kern- und Atommassen."
+      },
+      "nBorF": {
+        "term": "nBorF",
+        "definition": "Nukleare Boson-/Fermion-Klassifizierung. Basiert auf der Massenzahl A: gerades A = Boson (b), ungerades A = Fermion (f). Relevant für das quantenstatistische Verhalten des Kerns."
+      },
+      "aBorF": {
+        "term": "aBorF",
+        "definition": "Atomare Boson-/Fermion-Klassifizierung. Basiert auf der Neutronenzahl (A - Z): gerade Neutronenzahl = Boson (b), ungerade Neutronenzahl = Fermion (f). Beschreibt die Quantenstatistik des gesamten Atoms."
+      },
+      "lhl": {
+        "term": "LHL",
+        "definition": "Log₁₀ der Halbwertszeit in Jahren. Eine kompakte Darstellung der Halbwertszeit. LHL = 0 bedeutet 1 Jahr, LHL = 9 bedeutet 1 Milliarde Jahre (Stabilitätsschwelle). Negative Werte stehen für Halbwertszeiten unter einem Jahr."
+      },
+      "sus": {
+        "term": "SUS",
+        "definition": "Statusfeld zur Herkunft eines Nuklids. SPN = stabil primordial (Stable Primordial, natürlich vorkommend), UPN = instabil primordial (Unstable Primordial, radioaktiv, aber natürlich), SYN = synthetisch (Synthetic, nur künstlich erzeugt)."
+      },
+      "rdm": {
+        "term": "RDM",
+        "definition": "Primäre radioaktive Zerfallsart (Radioactive Decay Mode). Der dominierende Zerfallsweg instabiler Nuklide. Mögliche Werte sind A (Alpha), B- (Beta-minus), B+ (Beta-plus), EC (Elektroneneinfang) und IT (Isomerieübergang)."
+      },
+      "deuterium": {
+        "term": "Deuterium (D)",
+        "definition": "Wasserstoff-2 (ein Proton + ein Neutron). In der Datenbank trägt Deuterium das Symbol „D“ statt „H“ mit A=2. In der LENR-Forschung als gängiger Brennstoff von Bedeutung."
+      },
+      "tritium": {
+        "term": "Tritium (T)",
+        "definition": "Wasserstoff-3 (ein Proton + zwei Neutronen). Radioaktiv mit einer Halbwertszeit von 12,3 Jahren. In der Datenbank trägt Tritium das Symbol „T“ statt „H“ mit A=3."
+      },
+      "protium": {
+        "term": "Protium (H)",
+        "definition": "Wasserstoff-1 (ein Proton, keine Neutronen). Das häufigste Wasserstoffisotop (99,98 % Häufigkeit). In der Datenbank mit dem Symbol „H“ bezeichnet."
       }
+    },
+    "glossaryRelated": {
+      "neutron": "Neutron",
+      "element": "Element",
+      "nucleon": "Nukleon",
+      "weakForce": "Schwache Wechselwirkung"
     }
   },
   "mullerResonance": {

@@ -1267,7 +1267,149 @@
       "dimer": {
         "term": "Dima",
         "definition": "Molekuli iliyoundwa na atomi au vipande viwili vinavyofanana, kama H₂, N₂, O₂ na halojeni za atomi mbili F₂, Cl₂, Br₂ na I₂. Chaguo la kiigaji cha mfululizo \"Ruhusu Uundaji wa Dima\" linatumika kwa vipengele hivi ambavyo kiasili vina atomi mbili."
+      },
+      "nuclide": {
+        "term": "Nyuklidi",
+        "definition": "Aina mahususi ya kiini inayobainishwa kwa namba yake ya atomu (Z) na namba ya masi (A). Kwa mfano, Kaboni-12 na Kaboni-14 ni nyuklidi tofauti za kipengele kimoja."
+      },
+      "isotope": {
+        "term": "Isotopu",
+        "definition": "Atomu za kipengele kimoja (Z ileile) zenye idadi tofauti ya nyutroni (A tofauti). Kwa mfano, H-1 (protiamu), H-2 (deuteriamu) na H-3 (tritiamu) ni isotopu za hidrojeni."
+      },
+      "atomicNumber": {
+        "term": "Namba ya Atomu (Z)",
+        "definition": "Idadi ya protoni ndani ya kiini. Huamua atomu ni ya kipengele gani. Kwa mfano, Z=1 ni hidrojeni, Z=26 ni chuma."
+      },
+      "massNumber": {
+        "term": "Namba ya Masi (A)",
+        "definition": "Jumla ya protoni na nyutroni (nyukleoni) ndani ya kiini. A = Z + N, ambapo N ni idadi ya nyutroni."
+      },
+      "bindingEnergy": {
+        "term": "Nishati ya Kifungo (BE)",
+        "definition": "Nishati inayohitajika kutenganisha kiini kuwa protoni na nyutroni zinazokiunda. Nishati kubwa zaidi ya kifungo kwa kila nyukleoni humaanisha kiini thabiti zaidi. Hupimwa kwa MeV."
+      },
+      "bindingEnergyPerNucleon": {
+        "term": "Nishati ya Kifungo kwa Nyukleoni (BEN)",
+        "definition": "Nishati ya kifungo ikigawanywa kwa namba ya masi (BE/A). Chuma-56 ina BEN ya juu kabisa (~8.8 MeV), hivyo ni kiini kilichofungamana kwa nguvu zaidi. Miitikio inayoelekea Fe-56 hutoa nishati."
+      },
+      "halfLife": {
+        "term": "Nusu-maisha",
+        "definition": "Muda unaohitajika ili nusu ya sampuli yenye mionzi ioze. Huanzia sehemu ndogo za sekunde hadi mabilioni ya miaka. Katika hifadhidata hii, nyuklidi yenye log₁₀(nusu-maisha kwa miaka) > 9 huhesabiwa kuwa thabiti."
+      },
+      "stableNuclide": {
+        "term": "Nyuklidi Thabiti",
+        "definition": "Nyuklidi isiyopitia uozo wa mionzi (au yenye nusu-maisha yanayozidi miaka bilioni 1). Katika hifadhidata hii, uthabiti hufafanuliwa kama LHL > 9."
+      },
+      "boson": {
+        "term": "Bosoni",
+        "definition": "Chembe yenye spini ya namba kamili (0, 1, 2...). Nyuklidi zenye namba shufwa ya masi A ni bosoni za kinyuklia. Bosoni zinaweza kukaa katika hali moja ya kikwantamu, jambo linalowezesha matukio kama mgandamano wa Bose-Einstein."
+      },
+      "fermion": {
+        "term": "Fermioni",
+        "definition": "Chembe yenye spini ya nusu-namba kamili (1/2, 3/2...). Nyuklidi zenye namba witiri ya masi A ni fermioni za kinyuklia. Fermioni hufuata kanuni ya utengaji ya Pauli."
+      },
+      "neutrino": {
+        "term": "Nyutrino",
+        "definition": "Chembe ndogo ya kiatomu yenye masi karibu sifuri na mwingiliano dhaifu, inayozalishwa katika miitikio ya kinyuklia inayohusisha nguvu dhaifu (k.m. uozo wa beta). Huwakilishwa kwa ν (ya mkono wa kushoto) au ν̄ (antinyutrino ya mkono wa kulia)."
+      },
+      "radioactiveDecay": {
+        "term": "Uozo wa Mionzi",
+        "definition": "Mabadiliko ya kujitokeza yenyewe ya kiini kisicho thabiti kuwa muundo thabiti zaidi. Namna za kawaida ni pamoja na alfa (A), beta hasi (B-), beta chanya (B+), unasaji wa elektroni (EC) na mpito wa kiisomeri (IT)."
+      },
+      "alphaDecay": {
+        "term": "Uozo wa Alfa",
+        "definition": "Utoaji wa kiini cha heliamu-4 (protoni 2 + nyutroni 2). Hupunguza Z kwa 2 na A kwa 4. Ni wa kawaida katika vipengele vizito kama urani na radiamu."
+      },
+      "betaDecay": {
+        "term": "Uozo wa Beta",
+        "definition": "Mabadiliko ya nyutroni kuwa protoni (β⁻, Z+1) au protoni kuwa nyutroni (β⁺, Z-1). A haibadiliki. Huhusisha utoaji wa nyutrino au antinyutrino."
+      },
+      "electronCapture": {
+        "term": "Unasaji wa Elektroni (EC)",
+        "definition": "Elektroni ya obiti ya ndani hunaswa na kiini, na kubadilisha protoni kuwa nyutroni. Z hupungua kwa 1, A haibadiliki. Hushindana na uozo wa β⁺."
+      },
+      "isomericTransition": {
+        "term": "Mpito wa Kiisomeri (IT)",
+        "definition": "Hali ya kinyuklia iliyosisimka na isiyo thabiti kikamilifu (metastable) huoza kwenda hali ya nishati ya chini kwa kutoa mnururisho wa gamma. Z na A hubaki bila kubadilika. Alama ya nyuklidi huongezewa kiambishi \"m\" (k.m. Tc-99m)."
+      },
+      "lenr": {
+        "term": "LENR",
+        "definition": "Miitikio ya Kinyuklia ya Nishati Ndogo (Low Energy Nuclear Reactions). Kundi la miitikio ya kinyuklia inayotokea katika au karibu na halijoto ya chumba, tofauti na muunganiko wa kawaida wa \"moto\" unaohitaji mamilioni ya nyuzi. Kihistoria pia hujulikana kama \"muunganiko baridi\" (cold fusion)."
+      },
+      "transmutation": {
+        "term": "Ubadilishaji",
+        "definition": "Kugeuzwa kwa kipengele kimoja cha kemikali au isotopu moja kuwa nyingine. Kunaweza kutokea kupitia miitikio ya muunganiko, mgawanyiko au mbili-kwa-mbili. Hifadhidata hii inaorodhesha njia za ubadilishaji zilizokokotolewa na Dkt. Alexander Parkhomov."
+      },
+      "fusion": {
+        "term": "Muunganiko",
+        "definition": "Mwitikio wa kinyuklia ambapo viini viwili vyepesi huungana kuunda kiini kizito zaidi (A + B → C). Hutoa nishati pale zao linapokuwa na nishati ya kifungo kwa nyukleoni kubwa kuliko viitikio. Hifadhidata hii ina miitikio 3,921 ya muunganiko, ambapo 1,505 kati yake haihusishi nyutrino."
+      },
+      "fission": {
+        "term": "Mgawanyiko",
+        "definition": "Mwitikio wa kinyuklia ambapo kiini kizito zaidi hugawanyika kuwa viini viwili vyepesi zaidi (A → B + C). Hutoa nishati pale mazao yanapokuwa na nishati ya kifungo kwa nyukleoni kubwa zaidi. Hifadhidata hii ina miitikio 1,733 ya mgawanyiko, ambapo 818 kati yake haihusishi nyutrino."
+      },
+      "twoToTwo": {
+        "term": "Mbili-kwa-Mbili",
+        "definition": "Mwitikio wa kinyuklia ambapo viini viwili huingiliana na kuzalisha viini viwili tofauti (A + B → C + D). Ndiyo aina ya mwitikio inayopatikana zaidi katika hifadhidata, ikiwa na miitikio 1,215,374 (ambapo 518,657 kati yake haihusishi nyutrino)."
+      },
+      "cascade": {
+        "term": "Mfululizo",
+        "definition": "Mnyororo wa miitikio ya kinyuklia ambapo mazao ya mwitikio mmoja huwa pembejeo za miitikio inayofuata. Injini ya mfululizo huiga njia za miitikio za vizazi vingi kuanzia nyuklidi za awali za mafuta."
+      },
+      "feedbackLoop": {
+        "term": "Mzunguko wa Urejeshaji",
+        "definition": "Hali ambapo nyuklidi inayozalishwa katika hatua ya baadaye ya mwitikio hujitokeza tena kama pembejeo katika hatua ya awali, na kuunda mzunguko unaojiendeleza wenyewe. Ni sawa na mzunguko wa CNO katika usanisi wa viini ndani ya nyota."
+      },
+      "mev": {
+        "term": "MeV",
+        "definition": "Megaelektronivolti (10⁶ eV). Kipimo cha nishati kinachotumika sana katika fizikia ya kinyuklia. 1 MeV = 1.602 × 10⁻¹³ jouli. Nishati inayotolewa katika mwitikio wa kinyuklia ni thamani ya Q, hupimwa kwa MeV."
+      },
+      "kev": {
+        "term": "keV",
+        "definition": "Kiloelektronivolti (10³ eV). 1 MeV = 1000 keV. Hutumika kwa nishati za uozo na nishati za mnururisho katika jedwali la RadioNuclides."
+      },
+      "amu": {
+        "term": "AMU",
+        "definition": "Kipimo cha Masi ya Atomu (Atomic Mass Unit). Hufafanuliwa kama 1/12 ya masi ya atomu ya Kaboni-12. 1 AMU = 931.494 MeV/c². Hutumika kueleza masi za kinyuklia na za kiatomu."
+      },
+      "nBorF": {
+        "term": "nBorF",
+        "definition": "Uainishaji wa Bosoni au Fermioni wa kinyuklia. Hutegemea namba ya masi A: A shufwa = bosoni (b), A witiri = fermioni (f). Unahusiana na tabia ya kitakwimu ya kikwantamu ya kiini."
+      },
+      "aBorF": {
+        "term": "aBorF",
+        "definition": "Uainishaji wa Bosoni au Fermioni wa kiatomu. Hutegemea idadi ya nyutroni (A - Z): nyutroni shufwa = bosoni (b), nyutroni witiri = fermioni (f). Hueleza takwimu za kikwantamu za atomu nzima."
+      },
+      "lhl": {
+        "term": "LHL",
+        "definition": "Log₁₀ ya nusu-maisha kwa miaka. Uwakilishi mfupi wa nusu-maisha. LHL = 0 humaanisha mwaka 1, LHL = 9 humaanisha miaka bilioni 1 (kizingiti cha uthabiti). Thamani hasi huonyesha nusu-maisha ya chini ya mwaka mmoja."
+      },
+      "sus": {
+        "term": "SUS",
+        "definition": "Sehemu ya hali inayoonyesha asili ya nyuklidi. SPN = Thabiti ya Asili (Stable Primordial; hupatikana kiasili), UPN = Isiyo Thabiti ya Asili (Unstable Primordial; ina mionzi lakini ni ya asili), SYN = Sanisi (Synthetic; hutengenezwa na binadamu pekee)."
+      },
+      "rdm": {
+        "term": "RDM",
+        "definition": "Namna Kuu ya Uozo wa Mionzi. Njia kuu ya uozo kwa nyuklidi zisizo thabiti. Thamani ni pamoja na A (alfa), B- (beta hasi), B+ (beta chanya), EC (unasaji wa elektroni) na IT (mpito wa kiisomeri)."
+      },
+      "deuterium": {
+        "term": "Deuteriamu (D)",
+        "definition": "Hidrojeni-2 (protoni moja + nyutroni moja). Katika hifadhidata, deuteriamu hutumia alama \"D\" badala ya \"H\" yenye A=2. Ni muhimu katika utafiti wa LENR kama chaguo la kawaida la mafuta."
+      },
+      "tritium": {
+        "term": "Tritiamu (T)",
+        "definition": "Hidrojeni-3 (protoni moja + nyutroni mbili). Ina mionzi, na nusu-maisha ya miaka 12.3. Katika hifadhidata, tritiamu hutumia alama \"T\" badala ya \"H\" yenye A=3."
+      },
+      "protium": {
+        "term": "Protiamu (H)",
+        "definition": "Hidrojeni-1 (protoni moja, bila nyutroni). Isotopu ya hidrojeni inayopatikana zaidi (wingi wa 99.98%). Katika hifadhidata, hutumia alama \"H\"."
       }
+    },
+    "glossaryRelated": {
+      "neutron": "Nyutroni",
+      "element": "Kipengele",
+      "nucleon": "Nyukleoni",
+      "weakForce": "Nguvu dhaifu"
     }
   },
   "mullerResonance": {

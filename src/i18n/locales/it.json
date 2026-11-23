@@ -1271,7 +1271,149 @@
       "dimer": {
         "term": "Dimero",
         "definition": "Molecola formata da due atomi o unità identici, come H₂, N₂, O₂ e gli alogeni biatomici F₂, Cl₂, Br₂ e I₂. L'opzione «Consenti formazione di dimeri» del simulatore di cascata si applica a questi elementi naturalmente biatomici."
+      },
+      "nuclide": {
+        "term": "Nuclide",
+        "definition": "Specie nucleare specifica caratterizzata dal numero atomico (Z) e dal numero di massa (A). Ad esempio, il carbonio-12 e il carbonio-14 sono nuclidi diversi dello stesso elemento."
+      },
+      "isotope": {
+        "term": "Isotopo",
+        "definition": "Atomi dello stesso elemento (stesso Z) con un diverso numero di neutroni (A diverso). Ad esempio, H-1 (prozio), H-2 (deuterio) e H-3 (trizio) sono isotopi dell'idrogeno."
+      },
+      "atomicNumber": {
+        "term": "Numero atomico (Z)",
+        "definition": "Numero di protoni presenti nel nucleo. Determina di quale elemento si tratta. Ad esempio, Z=1 è l'idrogeno, Z=26 è il ferro."
+      },
+      "massNumber": {
+        "term": "Numero di massa (A)",
+        "definition": "Numero totale di protoni e neutroni (nucleoni) nel nucleo. A = Z + N, dove N è il numero di neutroni."
+      },
+      "bindingEnergy": {
+        "term": "Energia di legame (BE)",
+        "definition": "Energia necessaria per scomporre un nucleo nei protoni e neutroni che lo costituiscono. Un'energia di legame per nucleone più elevata indica un nucleo più stabile. Si misura in MeV."
+      },
+      "bindingEnergyPerNucleon": {
+        "term": "Energia di legame per nucleone (BEN)",
+        "definition": "Energia di legame divisa per il numero di massa (BE/A). Il ferro-56 ha la BEN più alta (~8,8 MeV) ed è quindi il nucleo più fortemente legato. Le reazioni che procedono verso Fe-56 rilasciano energia."
+      },
+      "halfLife": {
+        "term": "Emivita",
+        "definition": "Tempo necessario affinché metà di un campione radioattivo decada. Varia da frazioni di secondo a miliardi di anni. In questo database un nuclide con log₁₀(emivita in anni) > 9 è considerato stabile."
+      },
+      "stableNuclide": {
+        "term": "Nuclide stabile",
+        "definition": "Nuclide che non subisce decadimento radioattivo (o con emivita superiore a 1 miliardo di anni). In questo database la stabilità è definita come LHL > 9."
+      },
+      "boson": {
+        "term": "Bosone",
+        "definition": "Particella con spin intero (0, 1, 2...). I nuclidi con numero di massa A pari sono bosoni nucleari. I bosoni possono occupare lo stesso stato quantistico, il che rende possibili fenomeni come la condensazione di Bose-Einstein."
+      },
+      "fermion": {
+        "term": "Fermione",
+        "definition": "Particella con spin semintero (1/2, 3/2...). I nuclidi con numero di massa A dispari sono fermioni nucleari. I fermioni obbediscono al principio di esclusione di Pauli."
+      },
+      "neutrino": {
+        "term": "Neutrino",
+        "definition": "Particella subatomica quasi priva di massa e debolmente interagente, prodotta nelle reazioni nucleari mediate dall'interazione debole (ad es. il decadimento beta). Si indica con ν (sinistrorso) o ν̄ (antineutrino destrorso)."
+      },
+      "radioactiveDecay": {
+        "term": "Decadimento radioattivo",
+        "definition": "Trasformazione spontanea di un nucleo instabile in una configurazione più stabile. I modi più comuni sono alfa (A), beta meno (B-), beta più (B+), cattura elettronica (EC) e transizione isomerica (IT)."
+      },
+      "alphaDecay": {
+        "term": "Decadimento alfa",
+        "definition": "Emissione di un nucleo di elio-4 (2 protoni + 2 neutroni). Riduce Z di 2 e A di 4. Comune negli elementi pesanti come uranio e radio."
+      },
+      "betaDecay": {
+        "term": "Decadimento beta",
+        "definition": "Trasformazione di un neutrone in protone (β⁻, Z+1) o di un protone in neutrone (β⁺, Z-1). A rimane invariato. Comporta l'emissione di un neutrino o di un antineutrino."
+      },
+      "electronCapture": {
+        "term": "Cattura elettronica (EC)",
+        "definition": "Un elettrone di un orbitale interno viene catturato dal nucleo, convertendo un protone in neutrone. Z diminuisce di 1, A rimane invariato. È in competizione con il decadimento β⁺."
+      },
+      "isomericTransition": {
+        "term": "Transizione isomerica (IT)",
+        "definition": "Uno stato nucleare eccitato metastabile decade verso uno stato di energia inferiore emettendo un raggio gamma. Z e A restano invariati. Il simbolo del nuclide riceve il suffisso «m» (ad es. Tc-99m)."
+      },
+      "lenr": {
+        "term": "LENR",
+        "definition": "Reazioni nucleari a bassa energia (Low Energy Nuclear Reactions). Classe di reazioni nucleari che avvengono a temperatura ambiente o prossima a essa, distinte dalla fusione «calda» convenzionale che richiede milioni di gradi. Storicamente note anche come «fusione fredda»."
+      },
+      "transmutation": {
+        "term": "Trasmutazione",
+        "definition": "Conversione di un elemento chimico o isotopo in un altro. Può avvenire tramite reazioni di fusione, fissione o due-a-due. Questo database cataloga i percorsi di trasmutazione calcolati dal Dr. Alexander Parkhomov."
+      },
+      "fusion": {
+        "term": "Fusione",
+        "definition": "Reazione nucleare in cui due nuclei più leggeri si combinano formando un nucleo più pesante (A + B → C). Rilascia energia quando il prodotto ha un'energia di legame per nucleone maggiore dei reagenti. Questo database contiene 3.921 reazioni di fusione, di cui 1.505 non coinvolgono neutrini."
+      },
+      "fission": {
+        "term": "Fissione",
+        "definition": "Reazione nucleare in cui un nucleo più pesante si divide in due nuclei più leggeri (A → B + C). Rilascia energia quando i prodotti hanno un'energia di legame per nucleone maggiore. Questo database contiene 1.733 reazioni di fissione, di cui 818 non coinvolgono neutrini."
+      },
+      "twoToTwo": {
+        "term": "Due-a-due",
+        "definition": "Reazione nucleare in cui due nuclei interagiscono producendo due nuclei diversi (A + B → C + D). È il tipo di reazione più comune nel database, con 1.215.374 reazioni (di cui 518.657 non coinvolgono neutrini)."
+      },
+      "cascade": {
+        "term": "Cascata",
+        "definition": "Catena di reazioni nucleari in cui i prodotti di una reazione diventano i reagenti delle reazioni successive. Il motore di cascata simula percorsi di reazione su più generazioni a partire dai nuclidi combustibili iniziali."
+      },
+      "feedbackLoop": {
+        "term": "Ciclo di retroazione",
+        "definition": "Situazione in cui un nuclide prodotto in un passaggio di reazione successivo ricompare come reagente in un passaggio precedente, creando un ciclo autosostenuto. Analogo al ciclo CNO della nucleosintesi stellare."
+      },
+      "mev": {
+        "term": "MeV",
+        "definition": "Megaelettronvolt (10⁶ eV). Unità di energia di uso comune in fisica nucleare. 1 MeV = 1,602 × 10⁻¹³ joule. L'energia rilasciata in una reazione nucleare è il valore Q, misurato in MeV."
+      },
+      "kev": {
+        "term": "keV",
+        "definition": "Kiloelettronvolt (10³ eV). 1 MeV = 1000 keV. Usato per le energie di decadimento e di radiazione nella tabella RadioNuclides."
+      },
+      "amu": {
+        "term": "AMU",
+        "definition": "Unità di massa atomica (Atomic Mass Unit). Definita come 1/12 della massa di un atomo di carbonio-12. 1 AMU = 931,494 MeV/c². Usata per esprimere le masse nucleari e atomiche."
+      },
+      "nBorF": {
+        "term": "nBorF",
+        "definition": "Classificazione nucleare bosone/fermione. Basata sul numero di massa A: A pari = bosone (b), A dispari = fermione (f). Rilevante per il comportamento statistico quantistico del nucleo."
+      },
+      "aBorF": {
+        "term": "aBorF",
+        "definition": "Classificazione atomica bosone/fermione. Basata sul numero di neutroni (A - Z): neutroni pari = bosone (b), neutroni dispari = fermione (f). Descrive la statistica quantistica dell'atomo nel suo insieme."
+      },
+      "lhl": {
+        "term": "LHL",
+        "definition": "Log₁₀ dell'emivita espressa in anni. Rappresentazione compatta dell'emivita. LHL = 0 corrisponde a 1 anno, LHL = 9 a 1 miliardo di anni (soglia di stabilità). Valori negativi indicano emivite inferiori a un anno."
+      },
+      "sus": {
+        "term": "SUS",
+        "definition": "Campo di stato che indica l'origine del nuclide. SPN = stabile primordiale (Stable Primordial, presente in natura), UPN = instabile primordiale (Unstable Primordial, radioattivo ma naturale), SYN = sintetico (Synthetic, solo artificiale)."
+      },
+      "rdm": {
+        "term": "RDM",
+        "definition": "Modo di decadimento radioattivo primario (Radioactive Decay Mode). Il percorso di decadimento dominante per i nuclidi instabili. I valori includono A (alfa), B- (beta meno), B+ (beta più), EC (cattura elettronica), IT (transizione isomerica)."
+      },
+      "deuterium": {
+        "term": "Deuterio (D)",
+        "definition": "Idrogeno-2 (un protone + un neutrone). Nel database il deuterio usa il simbolo «D» invece di «H» con A=2. Importante nella ricerca LENR come combustibile di uso comune."
+      },
+      "tritium": {
+        "term": "Trizio (T)",
+        "definition": "Idrogeno-3 (un protone + due neutroni). Radioattivo, con un'emivita di 12,3 anni. Nel database il trizio usa il simbolo «T» invece di «H» con A=3."
+      },
+      "protium": {
+        "term": "Prozio (H)",
+        "definition": "Idrogeno-1 (un protone, nessun neutrone). L'isotopo dell'idrogeno più comune (abbondanza del 99,98%). Nel database usa il simbolo «H»."
       }
+    },
+    "glossaryRelated": {
+      "neutron": "Neutrone",
+      "element": "Elemento",
+      "nucleon": "Nucleone",
+      "weakForce": "Interazione debole"
     }
   },
   "mullerResonance": {

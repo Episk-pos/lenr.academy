@@ -1267,7 +1267,149 @@
       "dimer": {
         "term": "Dimer",
         "definition": "Phân tử gồm hai nguyên tử hoặc đơn vị giống nhau, như H₂, N₂, O₂ và các halogen hai nguyên tử F₂, Cl₂, Br₂ và I₂. Tùy chọn \"Cho phép tạo dimer\" của trình mô phỏng phản ứng dây chuyền áp dụng cho các nguyên tố vốn tồn tại ở dạng hai nguyên tử này."
+      },
+      "nuclide": {
+        "term": "Nuclide",
+        "definition": "Một loại hạt nhân cụ thể được xác định bởi số nguyên tử (Z) và số khối (A). Ví dụ, cacbon-12 và cacbon-14 là hai nuclide khác nhau của cùng một nguyên tố."
+      },
+      "isotope": {
+        "term": "Đồng vị",
+        "definition": "Các nguyên tử của cùng một nguyên tố (cùng Z) nhưng có số neutron khác nhau (khác A). Ví dụ, H-1 (proti), H-2 (đơteri) và H-3 (triti) là các đồng vị của hiđro."
+      },
+      "atomicNumber": {
+        "term": "Số nguyên tử (Z)",
+        "definition": "Số proton trong hạt nhân, quyết định nguyên tử thuộc nguyên tố nào. Ví dụ, Z=1 là hiđro, Z=26 là sắt."
+      },
+      "massNumber": {
+        "term": "Số khối (A)",
+        "definition": "Tổng số proton và neutron (nucleon) trong hạt nhân. A = Z + N, trong đó N là số neutron."
+      },
+      "bindingEnergy": {
+        "term": "Năng lượng liên kết (BE)",
+        "definition": "Năng lượng cần thiết để tách một hạt nhân thành các proton và neutron cấu thành. Năng lượng liên kết trên mỗi nucleon càng cao thì hạt nhân càng bền. Đo bằng MeV."
+      },
+      "bindingEnergyPerNucleon": {
+        "term": "Năng lượng liên kết mỗi nucleon (BEN)",
+        "definition": "Năng lượng liên kết chia cho số khối (BE/A). Sắt-56 có BEN cao nhất (~8,8 MeV), là hạt nhân liên kết chặt chẽ nhất. Các phản ứng dịch chuyển về phía Fe-56 sẽ giải phóng năng lượng."
+      },
+      "halfLife": {
+        "term": "Chu kỳ bán rã",
+        "definition": "Thời gian cần thiết để một nửa lượng mẫu phóng xạ bị phân rã, trải dài từ một phần nhỏ của giây đến hàng tỷ năm. Trong cơ sở dữ liệu này, nuclide có log₁₀(chu kỳ bán rã tính bằng năm) > 9 được coi là bền."
+      },
+      "stableNuclide": {
+        "term": "Nuclide bền",
+        "definition": "Nuclide không trải qua phân rã phóng xạ (hoặc có chu kỳ bán rã vượt quá 1 tỷ năm). Trong cơ sở dữ liệu này, tính bền được định nghĩa là LHL > 9."
+      },
+      "boson": {
+        "term": "Boson",
+        "definition": "Hạt có spin nguyên (0, 1, 2...). Các nuclide có số khối A chẵn là boson hạt nhân. Các boson có thể cùng chiếm một trạng thái lượng tử, dẫn đến những hiện tượng như ngưng tụ Bose-Einstein."
+      },
+      "fermion": {
+        "term": "Fermion",
+        "definition": "Hạt có spin bán nguyên (1/2, 3/2...). Các nuclide có số khối A lẻ là fermion hạt nhân. Các fermion tuân theo nguyên lý loại trừ Pauli."
+      },
+      "neutrino": {
+        "term": "Neutrino",
+        "definition": "Hạt hạ nguyên tử gần như không có khối lượng, tương tác yếu, sinh ra trong các phản ứng hạt nhân liên quan đến tương tác yếu (ví dụ phân rã beta). Ký hiệu ν (thuận tay trái) hoặc ν̄ (phản neutrino thuận tay phải)."
+      },
+      "radioactiveDecay": {
+        "term": "Phân rã phóng xạ",
+        "definition": "Sự biến đổi tự phát của một hạt nhân không bền thành một cấu hình bền hơn. Các kiểu phân rã phổ biến gồm alpha (A), beta trừ (B-), beta cộng (B+), bắt electron (EC) và chuyển dời đồng phân (IT)."
+      },
+      "alphaDecay": {
+        "term": "Phân rã alpha",
+        "definition": "Phát ra một hạt nhân heli-4 (2 proton + 2 neutron), làm Z giảm 2 và A giảm 4. Thường gặp ở các nguyên tố nặng như urani và rađi."
+      },
+      "betaDecay": {
+        "term": "Phân rã beta",
+        "definition": "Sự biến đổi một neutron thành proton (β⁻, Z+1) hoặc một proton thành neutron (β⁺, Z-1). A không đổi. Kèm theo sự phát ra neutrino hoặc phản neutrino."
+      },
+      "electronCapture": {
+        "term": "Bắt electron (EC)",
+        "definition": "Hạt nhân bắt một electron ở lớp quỹ đạo bên trong, biến một proton thành neutron. Z giảm 1, A không đổi. Cạnh tranh với phân rã β⁺."
+      },
+      "isomericTransition": {
+        "term": "Chuyển dời đồng phân (IT)",
+        "definition": "Một trạng thái hạt nhân kích thích giả bền chuyển xuống trạng thái năng lượng thấp hơn bằng cách phát ra tia gamma. Z và A không đổi. Ký hiệu nuclide được thêm hậu tố \"m\" (ví dụ Tc-99m)."
+      },
+      "lenr": {
+        "term": "LENR",
+        "definition": "Phản ứng hạt nhân năng lượng thấp (Low Energy Nuclear Reactions). Một nhóm phản ứng hạt nhân xảy ra ở hoặc gần nhiệt độ phòng, khác với nhiệt hạch \"nóng\" thông thường vốn đòi hỏi nhiệt độ hàng triệu độ. Trong lịch sử còn được gọi là \"nhiệt hạch lạnh\"."
+      },
+      "transmutation": {
+        "term": "Biến đổi hạt nhân",
+        "definition": "Sự chuyển đổi một nguyên tố hóa học hoặc đồng vị thành một nguyên tố hoặc đồng vị khác. Có thể xảy ra qua phản ứng nhiệt hạch, phân hạch hoặc hai-thành-hai. Cơ sở dữ liệu này liệt kê các con đường biến đổi hạt nhân do TS. Alexander Parkhomov tính toán."
+      },
+      "fusion": {
+        "term": "Nhiệt hạch",
+        "definition": "Phản ứng hạt nhân trong đó hai hạt nhân nhẹ hơn kết hợp thành một hạt nhân nặng hơn (A + B → C). Giải phóng năng lượng khi sản phẩm có năng lượng liên kết mỗi nucleon cao hơn các chất tham gia. Cơ sở dữ liệu này chứa 3.921 phản ứng nhiệt hạch, trong đó 1.505 phản ứng không có neutrino."
+      },
+      "fission": {
+        "term": "Phân hạch",
+        "definition": "Phản ứng hạt nhân trong đó một hạt nhân nặng hơn tách thành hai hạt nhân nhẹ hơn (A → B + C). Giải phóng năng lượng khi các sản phẩm có năng lượng liên kết mỗi nucleon cao hơn. Cơ sở dữ liệu này chứa 1.733 phản ứng phân hạch, trong đó 818 phản ứng không có neutrino."
+      },
+      "twoToTwo": {
+        "term": "Hai-thành-hai",
+        "definition": "Phản ứng hạt nhân trong đó hai hạt nhân tương tác và tạo ra hai hạt nhân khác (A + B → C + D). Đây là loại phản ứng phổ biến nhất trong cơ sở dữ liệu, với 1.215.374 phản ứng (trong đó 518.657 phản ứng không có neutrino)."
+      },
+      "cascade": {
+        "term": "Phản ứng dây chuyền",
+        "definition": "Chuỗi phản ứng hạt nhân trong đó sản phẩm của một phản ứng trở thành chất tham gia của các phản ứng tiếp theo. Bộ mô phỏng phản ứng dây chuyền tái hiện các con đường phản ứng nhiều thế hệ xuất phát từ các nuclide nhiên liệu ban đầu."
+      },
+      "feedbackLoop": {
+        "term": "Vòng hồi tiếp",
+        "definition": "Khi một nuclide sản phẩm từ một bước phản ứng sau xuất hiện trở lại làm chất tham gia ở một bước trước đó, tạo thành một chu trình tự duy trì. Tương tự chu trình CNO trong quá trình tổng hợp hạt nhân ở các ngôi sao."
+      },
+      "mev": {
+        "term": "MeV",
+        "definition": "Megaelectronvolt (10⁶ eV), đơn vị năng lượng thường dùng trong vật lý hạt nhân. 1 MeV = 1,602 × 10⁻¹³ jun. Năng lượng giải phóng trong một phản ứng hạt nhân là giá trị Q, đo bằng MeV."
+      },
+      "kev": {
+        "term": "keV",
+        "definition": "Kiloelectronvolt (10³ eV). 1 MeV = 1000 keV. Dùng cho năng lượng phân rã và năng lượng bức xạ trong bảng RadioNuclides."
+      },
+      "amu": {
+        "term": "AMU",
+        "definition": "Đơn vị khối lượng nguyên tử (Atomic Mass Unit), được định nghĩa bằng 1/12 khối lượng của một nguyên tử cacbon-12. 1 AMU = 931,494 MeV/c². Dùng để biểu thị khối lượng hạt nhân và nguyên tử."
+      },
+      "nBorF": {
+        "term": "nBorF",
+        "definition": "Phân loại boson hoặc fermion theo hạt nhân, dựa trên số khối A: A chẵn = boson (b), A lẻ = fermion (f). Liên quan đến hành vi thống kê lượng tử của hạt nhân."
+      },
+      "aBorF": {
+        "term": "aBorF",
+        "definition": "Phân loại boson hoặc fermion theo nguyên tử, dựa trên số neutron (A - Z): số neutron chẵn = boson (b), số neutron lẻ = fermion (f). Mô tả thống kê lượng tử của toàn bộ nguyên tử."
+      },
+      "lhl": {
+        "term": "LHL",
+        "definition": "Log₁₀ của chu kỳ bán rã tính bằng năm, một cách biểu diễn gọn chu kỳ bán rã. LHL = 0 nghĩa là 1 năm, LHL = 9 nghĩa là 1 tỷ năm (ngưỡng bền). Giá trị âm biểu thị chu kỳ bán rã ngắn hơn một năm."
+      },
+      "sus": {
+        "term": "SUS",
+        "definition": "Trường trạng thái cho biết nguồn gốc của nuclide. SPN = bền nguyên thủy (Stable Primordial, tồn tại tự nhiên), UPN = không bền nguyên thủy (Unstable Primordial, có tính phóng xạ nhưng tồn tại tự nhiên), SYN = tổng hợp (Synthetic, chỉ do con người tạo ra)."
+      },
+      "rdm": {
+        "term": "RDM",
+        "definition": "Kiểu phân rã phóng xạ chính (Radioactive Decay Mode), tức con đường phân rã chiếm ưu thế của các nuclide không bền. Các giá trị gồm A (alpha), B- (beta trừ), B+ (beta cộng), EC (bắt electron), IT (chuyển dời đồng phân)."
+      },
+      "deuterium": {
+        "term": "Đơteri (D)",
+        "definition": "Hiđro-2 (một proton + một neutron). Trong cơ sở dữ liệu, đơteri dùng ký hiệu \"D\" thay vì \"H\" với A=2. Đóng vai trò quan trọng trong nghiên cứu LENR như một lựa chọn nhiên liệu phổ biến."
+      },
+      "tritium": {
+        "term": "Triti (T)",
+        "definition": "Hiđro-3 (một proton + hai neutron). Có tính phóng xạ với chu kỳ bán rã 12,3 năm. Trong cơ sở dữ liệu, triti dùng ký hiệu \"T\" thay vì \"H\" với A=3."
+      },
+      "protium": {
+        "term": "Proti (H)",
+        "definition": "Hiđro-1 (một proton, không có neutron). Đồng vị hiđro phổ biến nhất (độ phổ biến 99,98%). Trong cơ sở dữ liệu, dùng ký hiệu \"H\"."
       }
+    },
+    "glossaryRelated": {
+      "neutron": "Neutron",
+      "element": "Nguyên tố",
+      "nucleon": "Nucleon",
+      "weakForce": "Tương tác yếu"
     }
   },
   "mullerResonance": {

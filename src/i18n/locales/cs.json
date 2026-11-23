@@ -1275,7 +1275,149 @@
       "dimer": {
         "term": "Dimer",
         "definition": "Molekula tvořená dvěma stejnými atomy nebo jednotkami, například H₂, N₂, O₂ a dvouatomové halogeny F₂, Cl₂, Br₂ a I₂. Volba simulátoru kaskád „Povolit tvorbu dimerů“ se týká právě těchto přirozeně dvouatomových prvků."
+      },
+      "nuclide": {
+        "term": "Nuklid",
+        "definition": "Konkrétní druh atomového jádra charakterizovaný protonovým číslem (Z) a nukleonovým číslem (A). Například uhlík-12 a uhlík-14 jsou různé nuklidy téhož prvku."
+      },
+      "isotope": {
+        "term": "Izotop",
+        "definition": "Atomy téhož prvku (stejné Z) s různým počtem neutronů (různé A). Například H-1 (protium), H-2 (deuterium) a H-3 (tritium) jsou izotopy vodíku."
+      },
+      "atomicNumber": {
+        "term": "Protonové číslo (Z)",
+        "definition": "Počet protonů v jádře. Určuje, o který prvek jde. Například Z=1 je vodík, Z=26 je železo."
+      },
+      "massNumber": {
+        "term": "Nukleonové číslo (A)",
+        "definition": "Celkový počet protonů a neutronů (nukleonů) v jádře. A = Z + N, kde N je počet neutronů."
+      },
+      "bindingEnergy": {
+        "term": "Vazebná energie (BE)",
+        "definition": "Energie potřebná k rozložení jádra na jednotlivé protony a neutrony. Vyšší vazebná energie na nukleon znamená stabilnější jádro. Udává se v MeV."
+      },
+      "bindingEnergyPerNucleon": {
+        "term": "Vazebná energie na nukleon (BEN)",
+        "definition": "Vazebná energie dělená nukleonovým číslem (BE/A). Železo-56 má nejvyšší BEN (~8,8 MeV), a je tedy nejpevněji vázaným jádrem. Reakce směřující k Fe-56 uvolňují energii."
+      },
+      "halfLife": {
+        "term": "Poločas rozpadu",
+        "definition": "Doba, za kterou se rozpadne polovina radioaktivního vzorku. Pohybuje se od zlomků sekundy po miliardy let. V této databázi se nuklid s log₁₀(poločasu rozpadu v letech) > 9 považuje za stabilní."
+      },
+      "stableNuclide": {
+        "term": "Stabilní nuklid",
+        "definition": "Nuklid, který nepodléhá radioaktivnímu rozpadu (nebo má poločas rozpadu delší než 1 miliarda let). V této databázi je stabilita definována jako LHL > 9."
+      },
+      "boson": {
+        "term": "Boson",
+        "definition": "Částice s celočíselným spinem (0, 1, 2…). Nuklidy se sudým nukleonovým číslem A jsou jaderné bosony. Bosony mohou obsadit tentýž kvantový stav, což umožňuje jevy jako Boseho–Einsteinova kondenzace."
+      },
+      "fermion": {
+        "term": "Fermion",
+        "definition": "Částice s poločíselným spinem (1/2, 3/2…). Nuklidy s lichým nukleonovým číslem A jsou jaderné fermiony. Fermiony se řídí Pauliho vylučovacím principem."
+      },
+      "neutrino": {
+        "term": "Neutrino",
+        "definition": "Téměř nehmotná, slabě interagující subatomární částice vznikající v jaderných reakcích, na nichž se podílí slabá interakce (např. rozpad beta). Značí se ν (levotočivé) nebo ν̄ (pravotočivé antineutrino)."
+      },
+      "radioactiveDecay": {
+        "term": "Radioaktivní rozpad",
+        "definition": "Samovolná přeměna nestabilního jádra na stabilnější konfiguraci. Mezi běžné typy patří rozpad alfa (A), beta minus (B-), beta plus (B+), elektronový záchyt (EC) a izomerní přechod (IT)."
+      },
+      "alphaDecay": {
+        "term": "Rozpad alfa",
+        "definition": "Emise jádra helia-4 (2 protony + 2 neutrony). Snižuje Z o 2 a A o 4. Běžný u těžkých prvků, jako je uran a radium."
+      },
+      "betaDecay": {
+        "term": "Rozpad beta",
+        "definition": "Přeměna neutronu na proton (β⁻, Z+1) nebo protonu na neutron (β⁺, Z-1). A zůstává stejné. Je doprovázen emisí neutrina nebo antineutrina."
+      },
+      "electronCapture": {
+        "term": "Elektronový záchyt (EC)",
+        "definition": "Jádro zachytí elektron z vnitřní orbitalové slupky, čímž se proton přemění na neutron. Z se sníží o 1, A zůstává stejné. Konkuruje rozpadu β⁺."
+      },
+      "isomericTransition": {
+        "term": "Izomerní přechod (IT)",
+        "definition": "Metastabilní excitovaný stav jádra přechází do stavu s nižší energií emisí záření gama. Z ani A se nemění. Symbol nuklidu dostává příponu „m“ (např. Tc-99m)."
+      },
+      "lenr": {
+        "term": "LENR",
+        "definition": "Nízkoenergetické jaderné reakce (Low Energy Nuclear Reactions). Třída jaderných reakcí probíhajících při pokojové teplotě nebo blízko ní, odlišná od konvenční „horké“ fúze, která vyžaduje miliony stupňů. Historicky známé také jako „studená fúze“."
+      },
+      "transmutation": {
+        "term": "Transmutace",
+        "definition": "Přeměna jednoho chemického prvku nebo izotopu na jiný. Může probíhat fúzí, štěpením nebo reakcemi dva na dva. Tato databáze katalogizuje transmutační cesty vypočtené Dr. Alexandrem Parkhomovem."
+      },
+      "fusion": {
+        "term": "Fúze",
+        "definition": "Jaderná reakce, při níž se dvě lehčí jádra spojí v jedno těžší (A + B → C). Uvolňuje energii, pokud má produkt vyšší vazebnou energii na nukleon než reaktanty. Databáze obsahuje 3 921 fúzních reakcí, z nichž 1 505 nezahrnuje neutrina."
+      },
+      "fission": {
+        "term": "Štěpení",
+        "definition": "Jaderná reakce, při níž se těžší jádro rozdělí na dvě lehčí (A → B + C). Uvolňuje energii, pokud mají produkty vyšší vazebnou energii na nukleon. Databáze obsahuje 1 733 štěpných reakcí, z nichž 818 nezahrnuje neutrina."
+      },
+      "twoToTwo": {
+        "term": "Dva na dva",
+        "definition": "Jaderná reakce, při níž dvě jádra interagují a vzniknou dvě jiná jádra (A + B → C + D). Nejčastější typ reakce v databázi – celkem 1 215 374 reakcí (z nich 518 657 nezahrnuje neutrina)."
+      },
+      "cascade": {
+        "term": "Kaskáda",
+        "definition": "Řetězec jaderných reakcí, v němž se produkty jedné reakce stávají vstupy následujících reakcí. Kaskádový engine simuluje vícegenerační reakční cesty z výchozích palivových nuklidů."
+      },
+      "feedbackLoop": {
+        "term": "Zpětnovazební smyčka",
+        "definition": "Situace, kdy se produktový nuklid z pozdějšího reakčního kroku znovu objeví jako vstup v dřívějším kroku, čímž vzniká samoudržující se cyklus. Podobá se cyklu CNO při hvězdné nukleosyntéze."
+      },
+      "mev": {
+        "term": "MeV",
+        "definition": "Megaelektronvolt (10⁶ eV). Jednotka energie běžně používaná v jaderné fyzice. 1 MeV = 1,602 × 10⁻¹³ joulu. Energie uvolněná při jaderné reakci je Q-hodnota, udávaná v MeV."
+      },
+      "kev": {
+        "term": "keV",
+        "definition": "Kiloelektronvolt (10³ eV). 1 MeV = 1000 keV. Používá se pro energie rozpadu a energie záření v tabulce RadioNuclides."
+      },
+      "amu": {
+        "term": "AMU",
+        "definition": "Atomová hmotnostní jednotka (Atomic Mass Unit). Definována jako 1/12 hmotnosti atomu uhlíku-12. 1 AMU = 931,494 MeV/c². Používá se k vyjádření jaderných a atomových hmotností."
+      },
+      "nBorF": {
+        "term": "nBorF",
+        "definition": "Jaderná klasifikace boson/fermion (nuclear Boson or Fermion). Vychází z nukleonového čísla A: sudé A = boson (b), liché A = fermion (f). Souvisí s kvantově statistickým chováním jádra."
+      },
+      "aBorF": {
+        "term": "aBorF",
+        "definition": "Atomová klasifikace boson/fermion (atomic Boson or Fermion). Vychází z počtu neutronů (A - Z): sudý počet neutronů = boson (b), lichý počet neutronů = fermion (f). Popisuje kvantovou statistiku celého atomu."
+      },
+      "lhl": {
+        "term": "LHL",
+        "definition": "Log₁₀ poločasu rozpadu v letech. Kompaktní vyjádření poločasu rozpadu. LHL = 0 znamená 1 rok, LHL = 9 znamená 1 miliardu let (práh stability). Záporné hodnoty označují poločasy rozpadu kratší než jeden rok."
+      },
+      "sus": {
+        "term": "SUS",
+        "definition": "Stavové pole udávající původ nuklidu. SPN = stabilní primordiální (Stable Primordial, vyskytuje se přirozeně), UPN = nestabilní primordiální (Unstable Primordial, radioaktivní, ale přírodní), SYN = syntetický (Synthetic, pouze uměle vytvořený)."
+      },
+      "rdm": {
+        "term": "RDM",
+        "definition": "Primární typ radioaktivního rozpadu (Radioactive Decay Mode). Převažující rozpadová cesta nestabilních nuklidů. Hodnoty zahrnují A (alfa), B- (beta minus), B+ (beta plus), EC (elektronový záchyt) a IT (izomerní přechod)."
+      },
+      "deuterium": {
+        "term": "Deuterium (D)",
+        "definition": "Vodík-2 (jeden proton + jeden neutron). V databázi se deuterium značí symbolem „D“, nikoli „H“ s A=2. Ve výzkumu LENR je důležité jako běžně volené palivo."
+      },
+      "tritium": {
+        "term": "Tritium (T)",
+        "definition": "Vodík-3 (jeden proton + dva neutrony). Radioaktivní s poločasem rozpadu 12,3 roku. V databázi se tritium značí symbolem „T“, nikoli „H“ s A=3."
+      },
+      "protium": {
+        "term": "Protium (H)",
+        "definition": "Vodík-1 (jeden proton, žádný neutron). Nejběžnější izotop vodíku (zastoupení 99,98 %). V databázi se značí symbolem „H“."
       }
+    },
+    "glossaryRelated": {
+      "neutron": "Neutron",
+      "element": "Prvek",
+      "nucleon": "Nukleon",
+      "weakForce": "Slabá interakce"
     }
   },
   "mullerResonance": {

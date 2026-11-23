@@ -1267,7 +1267,149 @@
       "dimer": {
         "term": "Dimer",
         "definition": "Molekul yang terdiri dari dua atom atau unit identik, seperti H₂, N₂, O₂ dan halogen diatomik F₂, Cl₂, Br₂ dan I₂. Opsi \"Izinkan Pembentukan Dimer\" pada simulator kaskade berlaku untuk unsur-unsur diatomik alami ini."
+      },
+      "nuclide": {
+        "term": "Nuklida",
+        "definition": "Spesies nuklir tertentu yang dicirikan oleh nomor atom (Z) dan nomor massanya (A). Misalnya, Karbon-12 dan Karbon-14 adalah dua nuklida berbeda dari unsur yang sama."
+      },
+      "isotope": {
+        "term": "Isotop",
+        "definition": "Atom-atom dari unsur yang sama (Z sama) dengan jumlah neutron berbeda (A berbeda). Misalnya, H-1 (protium), H-2 (deuterium), dan H-3 (tritium) adalah isotop hidrogen."
+      },
+      "atomicNumber": {
+        "term": "Nomor Atom (Z)",
+        "definition": "Jumlah proton dalam inti. Menentukan unsur dari atom tersebut. Misalnya, Z=1 adalah hidrogen, Z=26 adalah besi."
+      },
+      "massNumber": {
+        "term": "Nomor Massa (A)",
+        "definition": "Jumlah total proton dan neutron (nukleon) dalam inti. A = Z + N, dengan N adalah jumlah neutron."
+      },
+      "bindingEnergy": {
+        "term": "Energi Ikat (BE)",
+        "definition": "Energi yang diperlukan untuk memecah inti menjadi proton dan neutron penyusunnya. Energi ikat per nukleon yang lebih tinggi berarti inti yang lebih stabil. Diukur dalam MeV."
+      },
+      "bindingEnergyPerNucleon": {
+        "term": "Energi Ikat per Nukleon (BEN)",
+        "definition": "Energi ikat dibagi nomor massa (BE/A). Besi-56 memiliki BEN tertinggi (~8,8 MeV), sehingga menjadi inti yang paling kuat terikat. Reaksi yang bergerak menuju Fe-56 melepaskan energi."
+      },
+      "halfLife": {
+        "term": "Waktu Paruh",
+        "definition": "Waktu yang diperlukan agar separuh sampel radioaktif meluruh. Berkisar dari pecahan detik hingga miliaran tahun. Dalam basis data ini, nuklida dengan log₁₀(waktu paruh dalam tahun) > 9 dianggap stabil."
+      },
+      "stableNuclide": {
+        "term": "Nuklida Stabil",
+        "definition": "Nuklida yang tidak mengalami peluruhan radioaktif (atau memiliki waktu paruh lebih dari 1 miliar tahun). Dalam basis data ini, kestabilan didefinisikan sebagai LHL > 9."
+      },
+      "boson": {
+        "term": "Boson",
+        "definition": "Partikel dengan spin bilangan bulat (0, 1, 2...). Nuklida dengan nomor massa A genap adalah boson nuklir. Boson dapat menempati keadaan kuantum yang sama, sehingga memungkinkan fenomena seperti kondensasi Bose-Einstein."
+      },
+      "fermion": {
+        "term": "Fermion",
+        "definition": "Partikel dengan spin setengah bilangan bulat (1/2, 3/2...). Nuklida dengan nomor massa A ganjil adalah fermion nuklir. Fermion mematuhi prinsip larangan Pauli."
+      },
+      "neutrino": {
+        "term": "Neutrino",
+        "definition": "Partikel subatomik yang hampir tak bermassa dan berinteraksi lemah, dihasilkan dalam reaksi nuklir yang melibatkan gaya lemah (mis. peluruhan beta). Dilambangkan ν (tangan kiri) atau ν̄ (antineutrino tangan kanan)."
+      },
+      "radioactiveDecay": {
+        "term": "Peluruhan Radioaktif",
+        "definition": "Transformasi spontan inti yang tidak stabil menjadi konfigurasi yang lebih stabil. Mode yang umum meliputi alfa (A), beta minus (B-), beta plus (B+), tangkapan elektron (EC), dan transisi isomerik (IT)."
+      },
+      "alphaDecay": {
+        "term": "Peluruhan Alfa",
+        "definition": "Pemancaran inti helium-4 (2 proton + 2 neutron). Mengurangi Z sebesar 2 dan A sebesar 4. Umum terjadi pada unsur berat seperti uranium dan radium."
+      },
+      "betaDecay": {
+        "term": "Peluruhan Beta",
+        "definition": "Perubahan neutron menjadi proton (β⁻, Z+1) atau proton menjadi neutron (β⁺, Z-1). A tetap sama. Disertai pemancaran neutrino atau antineutrino."
+      },
+      "electronCapture": {
+        "term": "Tangkapan Elektron (EC)",
+        "definition": "Elektron orbital dalam ditangkap oleh inti sehingga sebuah proton berubah menjadi neutron. Z berkurang 1, A tetap sama. Bersaing dengan peluruhan β⁺."
+      },
+      "isomericTransition": {
+        "term": "Transisi Isomerik (IT)",
+        "definition": "Keadaan nuklir tereksitasi metastabil meluruh ke keadaan berenergi lebih rendah dengan memancarkan sinar gamma. Z dan A tidak berubah. Simbol nuklida diberi akhiran \"m\" (mis. Tc-99m)."
+      },
+      "lenr": {
+        "term": "LENR",
+        "definition": "Reaksi Nuklir Energi Rendah (Low Energy Nuclear Reactions). Golongan reaksi nuklir yang terjadi pada atau mendekati suhu ruang, berbeda dari fusi \"panas\" konvensional yang memerlukan suhu jutaan derajat. Secara historis juga dikenal sebagai \"fusi dingin\"."
+      },
+      "transmutation": {
+        "term": "Transmutasi",
+        "definition": "Perubahan satu unsur kimia atau isotop menjadi unsur atau isotop lain. Dapat terjadi melalui reaksi fusi, fisi, atau dua-ke-dua. Basis data ini mengatalogkan jalur transmutasi yang dihitung oleh Dr. Alexander Parkhomov."
+      },
+      "fusion": {
+        "term": "Fusi",
+        "definition": "Reaksi nuklir di mana dua inti yang lebih ringan bergabung membentuk inti yang lebih berat (A + B → C). Melepaskan energi jika produknya memiliki energi ikat per nukleon lebih tinggi daripada reaktannya. Basis data ini berisi 3.921 reaksi fusi, 1.505 di antaranya tidak melibatkan neutrino."
+      },
+      "fission": {
+        "term": "Fisi",
+        "definition": "Reaksi nuklir di mana inti yang lebih berat terbelah menjadi dua inti yang lebih ringan (A → B + C). Melepaskan energi jika produknya memiliki energi ikat per nukleon lebih tinggi. Basis data ini berisi 1.733 reaksi fisi, 818 di antaranya tidak melibatkan neutrino."
+      },
+      "twoToTwo": {
+        "term": "Dua-ke-Dua",
+        "definition": "Reaksi nuklir di mana dua inti berinteraksi dan menghasilkan dua inti yang berbeda (A + B → C + D). Jenis reaksi paling umum dalam basis data, dengan 1.215.374 reaksi (518.657 di antaranya tidak melibatkan neutrino)."
+      },
+      "cascade": {
+        "term": "Kaskade",
+        "definition": "Rantai reaksi nuklir di mana produk dari satu reaksi menjadi masukan bagi reaksi berikutnya. Mesin kaskade menyimulasikan jalur reaksi multigenerasi yang berawal dari nuklida bahan bakar awal."
+      },
+      "feedbackLoop": {
+        "term": "Putaran Umpan Balik",
+        "definition": "Kondisi ketika nuklida produk dari langkah reaksi selanjutnya muncul kembali sebagai masukan pada langkah sebelumnya, sehingga membentuk siklus yang menopang dirinya sendiri. Mirip dengan siklus CNO dalam nukleosintesis bintang."
+      },
+      "mev": {
+        "term": "MeV",
+        "definition": "Megaelektronvolt (10⁶ eV). Satuan energi yang umum digunakan dalam fisika nuklir. 1 MeV = 1,602 × 10⁻¹³ joule. Energi yang dilepaskan dalam reaksi nuklir adalah nilai Q, diukur dalam MeV."
+      },
+      "kev": {
+        "term": "keV",
+        "definition": "Kiloelektronvolt (10³ eV). 1 MeV = 1000 keV. Digunakan untuk energi peluruhan dan energi radiasi dalam tabel RadioNuclides."
+      },
+      "amu": {
+        "term": "AMU",
+        "definition": "Satuan massa atom (Atomic Mass Unit). Didefinisikan sebagai 1/12 massa atom Karbon-12. 1 AMU = 931,494 MeV/c². Digunakan untuk menyatakan massa nuklir dan massa atom."
+      },
+      "nBorF": {
+        "term": "nBorF",
+        "definition": "Klasifikasi boson atau fermion nuklir. Berdasarkan nomor massa A: A genap = boson (b), A ganjil = fermion (f). Relevan bagi perilaku statistik kuantum inti."
+      },
+      "aBorF": {
+        "term": "aBorF",
+        "definition": "Klasifikasi boson atau fermion atomik. Berdasarkan jumlah neutron (A - Z): jumlah neutron genap = boson (b), ganjil = fermion (f). Menggambarkan statistik kuantum atom secara keseluruhan."
+      },
+      "lhl": {
+        "term": "LHL",
+        "definition": "Log₁₀ waktu paruh dalam tahun. Representasi ringkas dari waktu paruh. LHL = 0 berarti 1 tahun, LHL = 9 berarti 1 miliar tahun (ambang kestabilan). Nilai negatif menunjukkan waktu paruh kurang dari satu tahun."
+      },
+      "sus": {
+        "term": "SUS",
+        "definition": "Bidang status yang menunjukkan asal-usul nuklida. SPN = Primordial Stabil (Stable Primordial; ada secara alami), UPN = Primordial Tidak Stabil (Unstable Primordial; radioaktif tetapi alami), SYN = Sintetis (Synthetic; hanya buatan manusia)."
+      },
+      "rdm": {
+        "term": "RDM",
+        "definition": "Mode peluruhan radioaktif utama (Radioactive Decay Mode). Jalur peluruhan dominan bagi nuklida tidak stabil. Nilainya meliputi A (alfa), B- (beta minus), B+ (beta plus), EC (tangkapan elektron), IT (transisi isomerik)."
+      },
+      "deuterium": {
+        "term": "Deuterium (D)",
+        "definition": "Hidrogen-2 (satu proton + satu neutron). Dalam basis data, deuterium menggunakan simbol \"D\", bukan \"H\" dengan A=2. Penting dalam riset LENR sebagai pilihan bahan bakar yang umum."
+      },
+      "tritium": {
+        "term": "Tritium (T)",
+        "definition": "Hidrogen-3 (satu proton + dua neutron). Bersifat radioaktif dengan waktu paruh 12,3 tahun. Dalam basis data, tritium menggunakan simbol \"T\", bukan \"H\" dengan A=3."
+      },
+      "protium": {
+        "term": "Protium (H)",
+        "definition": "Hidrogen-1 (satu proton, tanpa neutron). Isotop hidrogen yang paling umum (kelimpahan 99,98%). Dalam basis data, menggunakan simbol \"H\"."
       }
+    },
+    "glossaryRelated": {
+      "neutron": "Neutron",
+      "element": "Unsur",
+      "nucleon": "Nukleon",
+      "weakForce": "Gaya lemah"
     }
   },
   "mullerResonance": {

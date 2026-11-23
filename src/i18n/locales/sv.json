@@ -1267,7 +1267,149 @@
       "dimer": {
         "term": "Dimer",
         "definition": "En molekyl av två identiska atomer eller enheter, till exempel H₂, N₂, O₂ och de diatomära halogenerna F₂, Cl₂, Br₂ och I₂. Kaskadsimulatorns alternativ \"Tillåt dimerbildning\" gäller dessa naturligt diatomära grundämnen."
+      },
+      "nuclide": {
+        "term": "Nuklid",
+        "definition": "En specifik kärnart som kännetecknas av sitt atomnummer (Z) och masstal (A). Till exempel är kol-12 och kol-14 olika nuklider av samma grundämne."
+      },
+      "isotope": {
+        "term": "Isotop",
+        "definition": "Atomer av samma grundämne (samma Z) med olika antal neutroner (olika A). Till exempel är H-1 (protium), H-2 (deuterium) och H-3 (tritium) isotoper av väte."
+      },
+      "atomicNumber": {
+        "term": "Atomnummer (Z)",
+        "definition": "Antalet protoner i en atomkärna. Avgör vilket grundämne atomen tillhör. Till exempel är Z=1 väte och Z=26 järn."
+      },
+      "massNumber": {
+        "term": "Masstal (A)",
+        "definition": "Det totala antalet protoner och neutroner (nukleoner) i en atomkärna. A = Z + N, där N är antalet neutroner."
+      },
+      "bindingEnergy": {
+        "term": "Bindningsenergi (BE)",
+        "definition": "Den energi som krävs för att dela upp en atomkärna i dess ingående protoner och neutroner. Högre bindningsenergi per nukleon innebär en stabilare kärna. Mäts i MeV."
+      },
+      "bindingEnergyPerNucleon": {
+        "term": "Bindningsenergi per nukleon (BEN)",
+        "definition": "Bindningsenergin dividerad med masstalet (BE/A). Järn-56 har den högsta BEN (~8,8 MeV) och är därmed den hårdast bundna kärnan. Reaktioner som rör sig mot Fe-56 frigör energi."
+      },
+      "halfLife": {
+        "term": "Halveringstid",
+        "definition": "Den tid det tar för hälften av ett radioaktivt prov att sönderfalla. Varierar från bråkdelar av en sekund till miljarder år. I denna databas betraktas en nuklid med log₁₀(halveringstid i år) > 9 som stabil."
+      },
+      "stableNuclide": {
+        "term": "Stabil nuklid",
+        "definition": "En nuklid som inte genomgår radioaktivt sönderfall (eller har en halveringstid över 1 miljard år). I denna databas definieras stabilitet som LHL > 9."
+      },
+      "boson": {
+        "term": "Boson",
+        "definition": "En partikel med heltalsspinn (0, 1, 2 …). Nuklider med jämnt masstal A är kärnbosoner. Bosoner kan befinna sig i samma kvanttillstånd, vilket möjliggör fenomen som Bose–Einstein-kondensation."
+      },
+      "fermion": {
+        "term": "Fermion",
+        "definition": "En partikel med halvtaligt spinn (1/2, 3/2 …). Nuklider med udda masstal A är kärnfermioner. Fermioner lyder Paulis uteslutningsprincip."
+      },
+      "neutrino": {
+        "term": "Neutrino",
+        "definition": "En nästan masslös, svagt växelverkande subatomär partikel som bildas i kärnreaktioner där den svaga kraften är inblandad (t.ex. betasönderfall). Betecknas ν (vänsterhänt) eller ν̄ (högerhänt antineutrino)."
+      },
+      "radioactiveDecay": {
+        "term": "Radioaktivt sönderfall",
+        "definition": "Den spontana omvandlingen av en instabil atomkärna till en stabilare konfiguration. Vanliga sönderfallsmoder är alfa (A), beta-minus (B-), beta-plus (B+), elektroninfångning (EC) och isomerövergång (IT)."
+      },
+      "alphaDecay": {
+        "term": "Alfasönderfall",
+        "definition": "Emission av en helium-4-kärna (2 protoner + 2 neutroner). Minskar Z med 2 och A med 4. Vanligt hos tunga grundämnen som uran och radium."
+      },
+      "betaDecay": {
+        "term": "Betasönderfall",
+        "definition": "Omvandling av en neutron till en proton (β⁻, Z+1) eller av en proton till en neutron (β⁺, Z-1). A förblir oförändrat. Innebär emission av en neutrino eller antineutrino."
+      },
+      "electronCapture": {
+        "term": "Elektroninfångning (EC)",
+        "definition": "En elektron i ett inre skal fångas in av atomkärnan, varvid en proton omvandlas till en neutron. Z minskar med 1 och A förblir oförändrat. Konkurrerar med β⁺-sönderfall."
+      },
+      "isomericTransition": {
+        "term": "Isomerövergång (IT)",
+        "definition": "Ett metastabilt exciterat kärntillstånd sönderfaller till ett lägre energitillstånd genom att sända ut en gammafoton. Z och A förblir oförändrade. Nuklidsymbolen får suffixet ”m” (t.ex. Tc-99m)."
+      },
+      "lenr": {
+        "term": "LENR",
+        "definition": "Lågenergetiska kärnreaktioner (Low Energy Nuclear Reactions). En klass av kärnreaktioner som sker vid eller nära rumstemperatur, till skillnad från konventionell ”het” fusion som kräver miljontals grader. Historiskt även känt som ”kall fusion”."
+      },
+      "transmutation": {
+        "term": "Transmutation",
+        "definition": "Omvandlingen av ett grundämne eller en isotop till ett annat. Kan ske genom fusion, fission eller två-till-två-reaktioner. Denna databas katalogiserar transmutationsvägar beräknade av Dr. Alexander Parkhomov."
+      },
+      "fusion": {
+        "term": "Fusion",
+        "definition": "En kärnreaktion där två lättare atomkärnor slås samman till en tyngre (A + B → C). Frigör energi när produkten har högre bindningsenergi per nukleon än reaktanterna. Denna databas innehåller 3 921 fusionsreaktioner, varav 1 505 inte involverar några neutriner."
+      },
+      "fission": {
+        "term": "Fission",
+        "definition": "En kärnreaktion där en tyngre atomkärna klyvs i två lättare (A → B + C). Frigör energi när produkterna har högre bindningsenergi per nukleon. Denna databas innehåller 1 733 fissionsreaktioner, varav 818 inte involverar några neutriner."
+      },
+      "twoToTwo": {
+        "term": "Två-till-två",
+        "definition": "En kärnreaktion där två atomkärnor växelverkar och ger två andra kärnor (A + B → C + D). Den vanligaste reaktionstypen i databasen, med 1 215 374 reaktioner (varav 518 657 inte involverar några neutriner)."
+      },
+      "cascade": {
+        "term": "Kaskad",
+        "definition": "En kedja av kärnreaktioner där produkterna från en reaktion blir indata till efterföljande reaktioner. Kaskadmotorn simulerar reaktionsvägar över flera generationer utifrån inledande bränslenuklider."
+      },
+      "feedbackLoop": {
+        "term": "Återkopplingsloop",
+        "definition": "När en produktnuklid från ett senare reaktionssteg återkommer som indata i ett tidigare steg och skapar en självunderhållande cykel. Liknar CNO-cykeln i stellär nukleosyntes."
+      },
+      "mev": {
+        "term": "MeV",
+        "definition": "Megaelektronvolt (10⁶ eV). En energienhet som ofta används inom kärnfysik. 1 MeV = 1,602 × 10⁻¹³ joule. Den energi som frigörs i en kärnreaktion är Q-värdet, som mäts i MeV."
+      },
+      "kev": {
+        "term": "keV",
+        "definition": "Kiloelektronvolt (10³ eV). 1 MeV = 1000 keV. Används för sönderfallsenergier och strålningsenergier i tabellen RadioNuclides."
+      },
+      "amu": {
+        "term": "AMU",
+        "definition": "Atommassenhet (Atomic Mass Unit). Definieras som 1/12 av massan hos en kol-12-atom. 1 AMU = 931,494 MeV/c². Används för att uttrycka kärn- och atommassor."
+      },
+      "nBorF": {
+        "term": "nBorF",
+        "definition": "Klassificering som kärnboson eller kärnfermion (Nuclear Boson or Fermion). Baseras på masstalet A: jämnt A = boson (b), udda A = fermion (f). Har betydelse för kärnans kvantstatistiska beteende."
+      },
+      "aBorF": {
+        "term": "aBorF",
+        "definition": "Klassificering som atomär boson eller fermion (Atomic Boson or Fermion). Baseras på antalet neutroner (A - Z): jämnt antal neutroner = boson (b), udda antal neutroner = fermion (f). Beskriver kvantstatistiken för hela atomen."
+      },
+      "lhl": {
+        "term": "LHL",
+        "definition": "Log₁₀ av halveringstiden i år (Log Half-Life). Ett kompakt sätt att ange halveringstid. LHL = 0 motsvarar 1 år, LHL = 9 motsvarar 1 miljard år (stabilitetsgränsen). Negativa värden anger halveringstider kortare än ett år."
+      },
+      "sus": {
+        "term": "SUS",
+        "definition": "Statusfält som anger nuklidens ursprung. SPN = stabil primordial (Stable Primordial, förekommer naturligt), UPN = instabil primordial (Unstable Primordial, radioaktiv men naturlig), SYN = syntetisk (Synthetic, endast framställd av människan)."
+      },
+      "rdm": {
+        "term": "RDM",
+        "definition": "Primär radioaktiv sönderfallsmod (Radioactive Decay Mode). Den dominerande sönderfallsvägen för instabila nuklider. Värdena omfattar A (alfa), B- (beta-minus), B+ (beta-plus), EC (elektroninfångning) och IT (isomerövergång)."
+      },
+      "deuterium": {
+        "term": "Deuterium (D)",
+        "definition": "Väte-2 (en proton + en neutron). I databasen används symbolen ”D” för deuterium i stället för ”H” med A=2. Viktigt inom LENR-forskning som ett vanligt bränsleval."
+      },
+      "tritium": {
+        "term": "Tritium (T)",
+        "definition": "Väte-3 (en proton + två neutroner). Radioaktivt med en halveringstid på 12,3 år. I databasen används symbolen ”T” för tritium i stället för ”H” med A=3."
+      },
+      "protium": {
+        "term": "Protium (H)",
+        "definition": "Väte-1 (en proton, inga neutroner). Den vanligaste väteisotopen (99,98 % förekomst). I databasen används symbolen ”H”."
       }
+    },
+    "glossaryRelated": {
+      "neutron": "Neutron",
+      "element": "Grundämne",
+      "nucleon": "Nukleon",
+      "weakForce": "Svag kraft"
     }
   },
   "mullerResonance": {
