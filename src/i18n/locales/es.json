@@ -1406,6 +1406,12 @@
         "term": "Protio (H)",
         "definition": "Hidrógeno-1 (un protón, sin neutrones). Es el isótopo de hidrógeno más abundante (99,98 % de abundancia). En la base de datos usa el símbolo «H»."
       }
+    },
+    "glossaryRelated": {
+      "neutron": "Neutrón",
+      "element": "Elemento",
+      "nucleon": "Nucleón",
+      "weakForce": "Fuerza débil"
     }
   },
   "mullerResonance": {

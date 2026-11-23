@@ -1404,6 +1404,12 @@
         "term": "Protium (H)",
         "definition": "Waterstof-1 (één proton, geen neutronen). De meest voorkomende waterstofisotoop (99,98% natuurlijke abundantie). In de database wordt het symbool \"H\" gebruikt."
       }
+    },
+    "glossaryRelated": {
+      "neutron": "Neutron",
+      "element": "Element",
+      "nucleon": "Nucleon",
+      "weakForce": "Zwakke kernkracht"
     }
   },
   "mullerResonance": {

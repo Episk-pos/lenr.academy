@@ -1406,6 +1406,12 @@
         "term": "Protium (H)",
         "definition": "Hydrogène 1 (un proton, aucun neutron). L'isotope le plus courant de l'hydrogène (abondance de 99,98 %). Dans la base de données, il est noté « H »."
       }
+    },
+    "glossaryRelated": {
+      "neutron": "Neutron",
+      "element": "Élément",
+      "nucleon": "Nucléon",
+      "weakForce": "Interaction faible"
     }
   },
   "mullerResonance": {

@@ -1412,6 +1412,12 @@
         "term": "Prot (H)",
         "definition": "Wodór-1 (jeden proton, bez neutronów). Najpowszechniejszy izotop wodoru (zawartość 99,98%). W bazie danych ma symbol „H”."
       }
+    },
+    "glossaryRelated": {
+      "neutron": "Neutron",
+      "element": "Pierwiastek",
+      "nucleon": "Nukleon",
+      "weakForce": "Oddziaływanie słabe"
     }
   },
   "mullerResonance": {

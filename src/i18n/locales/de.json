@@ -1404,6 +1404,12 @@
         "term": "Protium (H)",
         "definition": "Wasserstoff-1 (ein Proton, keine Neutronen). Das häufigste Wasserstoffisotop (99,98 % Häufigkeit). In der Datenbank mit dem Symbol „H“ bezeichnet."
       }
+    },
+    "glossaryRelated": {
+      "neutron": "Neutron",
+      "element": "Element",
+      "nucleon": "Nukleon",
+      "weakForce": "Schwache Wechselwirkung"
     }
   },
   "mullerResonance": {

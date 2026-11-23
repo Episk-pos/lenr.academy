@@ -1404,6 +1404,12 @@
         "term": "Protium (H)",
         "definition": "Väte-1 (en proton, inga neutroner). Den vanligaste väteisotopen (99,98 % förekomst). I databasen används symbolen ”H”."
       }
+    },
+    "glossaryRelated": {
+      "neutron": "Neutron",
+      "element": "Grundämne",
+      "nucleon": "Nukleon",
+      "weakForce": "Svag kraft"
     }
   },
   "mullerResonance": {

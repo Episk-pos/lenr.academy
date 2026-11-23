@@ -1404,6 +1404,12 @@
         "term": "Protiamu (H)",
         "definition": "Hidrojeni-1 (protoni moja, bila nyutroni). Isotopu ya hidrojeni inayopatikana zaidi (wingi wa 99.98%). Katika hifadhidata, hutumia alama \"H\"."
       }
+    },
+    "glossaryRelated": {
+      "neutron": "Nyutroni",
+      "element": "Kipengele",
+      "nucleon": "Nyukleoni",
+      "weakForce": "Nguvu dhaifu"
     }
   },
   "mullerResonance": {

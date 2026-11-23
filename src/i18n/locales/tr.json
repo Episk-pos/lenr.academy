@@ -1404,6 +1404,12 @@
         "term": "Protyum (H)",
         "definition": "Hidrojen-1 (bir proton, nötron yok). En yaygın hidrojen izotopu (%99,98 bolluk). Veritabanında \"H\" sembolünü kullanır."
       }
+    },
+    "glossaryRelated": {
+      "neutron": "Nötron",
+      "element": "Element",
+      "nucleon": "Nükleon",
+      "weakForce": "Zayıf kuvvet"
     }
   },
   "mullerResonance": {

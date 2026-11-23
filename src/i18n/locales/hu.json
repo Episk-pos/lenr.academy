@@ -1404,6 +1404,12 @@
         "term": "Prócium (H)",
         "definition": "Hidrogén-1 (egy proton, neutron nélkül). A leggyakoribb hidrogénizotóp (99,98%-os gyakoriság). Az adatbázisban jele „H”."
       }
+    },
+    "glossaryRelated": {
+      "neutron": "Neutron",
+      "element": "Elem",
+      "nucleon": "Nukleon",
+      "weakForce": "Gyenge kölcsönhatás"
     }
   },
   "mullerResonance": {

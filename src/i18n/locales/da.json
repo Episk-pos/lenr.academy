@@ -1404,6 +1404,12 @@
         "term": "Protium (H)",
         "definition": "Brint-1 (én proton, ingen neutroner). Den mest almindelige brintisotop (99,98 % naturlig forekomst). Har symbolet \"H\" i databasen."
       }
+    },
+    "glossaryRelated": {
+      "neutron": "Neutron",
+      "element": "Grundstof",
+      "nucleon": "Nukleon",
+      "weakForce": "Svag kernekraft"
     }
   },
   "mullerResonance": {

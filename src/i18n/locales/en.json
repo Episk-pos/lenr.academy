@@ -1404,6 +1404,12 @@
         "term": "Protium (H)",
         "definition": "Hydrogen-1 (one proton, no neutrons). The most common hydrogen isotope (99.98% abundance). In the database, uses symbol \"H\"."
       }
+    },
+    "glossaryRelated": {
+      "neutron": "Neutron",
+      "element": "Element",
+      "nucleon": "Nucleon",
+      "weakForce": "Weak Force"
     }
   },
   "mullerResonance": {

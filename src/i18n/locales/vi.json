@@ -1404,6 +1404,12 @@
         "term": "Proti (H)",
         "definition": "Hiđro-1 (một proton, không có neutron). Đồng vị hiđro phổ biến nhất (độ phổ biến 99,98%). Trong cơ sở dữ liệu, dùng ký hiệu \"H\"."
       }
+    },
+    "glossaryRelated": {
+      "neutron": "Neutron",
+      "element": "Nguyên tố",
+      "nucleon": "Nucleon",
+      "weakForce": "Tương tác yếu"
     }
   },
   "mullerResonance": {

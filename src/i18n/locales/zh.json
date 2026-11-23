@@ -1404,6 +1404,12 @@
         "term": "氕（H）",
         "definition": "氢-1（一个质子，没有中子）。最常见的氢同位素（丰度 99.98%）。在数据库中使用符号“H”。"
       }
+    },
+    "glossaryRelated": {
+      "neutron": "中子",
+      "element": "元素",
+      "nucleon": "核子",
+      "weakForce": "弱相互作用"
     }
   },
   "mullerResonance": {

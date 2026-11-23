@@ -1404,6 +1404,12 @@
         "term": "경수소 (H)",
         "definition": "수소-1(양성자 1개, 중성자 없음). 가장 흔한 수소 동위원소입니다(존재비 99.98%). 데이터베이스에서는 기호 \"H\"를 사용합니다."
       }
+    },
+    "glossaryRelated": {
+      "neutron": "중성자",
+      "element": "원소",
+      "nucleon": "핵자",
+      "weakForce": "약한 상호작용"
     }
   },
   "mullerResonance": {

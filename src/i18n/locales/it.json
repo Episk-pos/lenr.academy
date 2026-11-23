@@ -1408,6 +1408,12 @@
         "term": "Prozio (H)",
         "definition": "Idrogeno-1 (un protone, nessun neutrone). L'isotopo dell'idrogeno più comune (abbondanza del 99,98%). Nel database usa il simbolo «H»."
       }
+    },
+    "glossaryRelated": {
+      "neutron": "Neutrone",
+      "element": "Elemento",
+      "nucleon": "Nucleone",
+      "weakForce": "Interazione debole"
     }
   },
   "mullerResonance": {

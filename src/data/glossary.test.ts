@@ -2,6 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { GLOSSARY, localizeGlossaryEntry, localizeRelatedTerm, matchesGlossarySearch } from './glossary';
 import en from '../i18n/locales/en.json';
 import de from '../i18n/locales/de.json';
+import ja from '../i18n/locales/ja.json';
 
 describe('glossary', () => {
   it('has a non-empty glossary', () => {
@@ -138,10 +139,26 @@ describe('glossary', () => {
     });
 
     it('only the known dangling related terms have no glossary entry', () => {
-      // These chips fall back to the raw English string until entries exist.
+      // These chips are translated via help.glossaryRelated instead.
       const terms = new Set(GLOSSARY.map(e => e.term));
       const dangling = new Set(GLOSSARY.flatMap(e => e.relatedTerms ?? []).filter(rel => !terms.has(rel)));
       expect([...dangling].sort()).toEqual(['Element', 'Neutron', 'Nucleon', 'Weak Force']);
+    });
+
+    it('localizeRelatedTerm translates related terms that have no glossary entry', () => {
+      const translateDe = (key: string) => String(lookup(de, key) ?? key);
+      const translateJa = (key: string) => String(lookup(ja, key) ?? key);
+      const cases: [string, string, string][] = [
+        ['Neutron', 'Neutron', '中性子'],
+        ['Element', 'Element', '元素'],
+        ['Nucleon', 'Nukleon', '核子'],
+        ['Weak Force', 'Schwache Wechselwirkung', '弱い力'],
+      ];
+      cases.forEach(([term, deLabel, jaLabel]) => {
+        expect(localizeRelatedTerm(term, translateEn)).toBe(term);
+        expect(localizeRelatedTerm(term, translateDe)).toBe(deLabel);
+        expect(localizeRelatedTerm(term, translateJa)).toBe(jaLabel);
+      });
     });
 
     it('localizeRelatedTerm falls back to the raw string when no entry matches', () => {

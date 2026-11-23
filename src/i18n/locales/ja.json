@@ -1404,6 +1404,12 @@
         "term": "軽水素（H）",
         "definition": "水素1（陽子1個、中性子なし）。最も一般的な水素同位体（存在比 99.98%）。データベースでは記号「H」で表されます。"
       }
+    },
+    "glossaryRelated": {
+      "neutron": "中性子",
+      "element": "元素",
+      "nucleon": "核子",
+      "weakForce": "弱い力"
     }
   },
   "mullerResonance": {

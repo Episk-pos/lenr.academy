@@ -1412,6 +1412,12 @@
         "term": "Protium (H)",
         "definition": "Vodík-1 (jeden proton, žádný neutron). Nejběžnější izotop vodíku (zastoupení 99,98 %). V databázi se značí symbolem „H“."
       }
+    },
+    "glossaryRelated": {
+      "neutron": "Neutron",
+      "element": "Prvek",
+      "nucleon": "Nukleon",
+      "weakForce": "Slabá interakce"
     }
   },
   "mullerResonance": {

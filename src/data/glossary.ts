@@ -315,16 +315,27 @@ export function localizeGlossaryEntry(
 
 const GLOSSARY_BY_TERM = new Map(GLOSSARY.map(entry => [entry.term, entry]));
 
+/** Translation keys for related terms that have no glossary entry of their own. */
+const RELATED_TERM_KEYS: Record<string, string> = {
+  Neutron: 'help.glossaryRelated.neutron',
+  Element: 'help.glossaryRelated.element',
+  Nucleon: 'help.glossaryRelated.nucleon',
+  'Weak Force': 'help.glossaryRelated.weakForce',
+};
+
 /**
  * Display label for a related-term chip: the localized term of the glossary
- * entry whose English `term` matches, or the raw string if none matches.
+ * entry whose English `term` matches, else a `help.glossaryRelated` string,
+ * else the raw string.
  */
 export function localizeRelatedTerm(
   relatedTerm: string,
   translate: (key: string) => string
 ): string {
   const entry = GLOSSARY_BY_TERM.get(relatedTerm);
-  return entry ? localizeGlossaryEntry(entry, translate).term : relatedTerm;
+  if (entry) return localizeGlossaryEntry(entry, translate).term;
+  const key = RELATED_TERM_KEYS[relatedTerm];
+  return key ? translate(key) : relatedTerm;
 }
 
 /**

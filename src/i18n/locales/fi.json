@@ -1404,6 +1404,12 @@
         "term": "Protium (H)",
         "definition": "Vety-1 (yksi protoni, ei neutroneja). Vedyn yleisin isotooppi (99,98 % runsaus). Tietokannassa sen tunnus on \"H\"."
       }
+    },
+    "glossaryRelated": {
+      "neutron": "Neutroni",
+      "element": "Alkuaine",
+      "nucleon": "Nukleoni",
+      "weakForce": "Heikko vuorovaikutus"
     }
   },
   "mullerResonance": {

@@ -1404,6 +1404,12 @@
         "term": "Protium (H)",
         "definition": "Hidrogen-1 (satu proton, tanpa neutron). Isotop hidrogen yang paling umum (kelimpahan 99,98%). Dalam basis data, menggunakan simbol \"H\"."
       }
+    },
+    "glossaryRelated": {
+      "neutron": "Neutron",
+      "element": "Unsur",
+      "nucleon": "Nukleon",
+      "weakForce": "Gaya lemah"
     }
   },
   "mullerResonance": {
