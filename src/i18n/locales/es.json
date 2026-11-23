@@ -146,10 +146,11 @@
       "fissionReactions": "Reacciones de fisión",
       "twoToTwoReactions": "Reacciones dos a dos"
     },
-    "cascadeSimulations": {
-      "title": "Simulaciones en cascada",
-      "description": "Modele reacciones en cadena con un catálogo de materiales, ramificación ponderada y visualización de flujo Sankey",
-      "runSimulations": "Ejecutar simulaciones en cascada"
+    "simulations": {
+      "title": "Simulaciones de reacciones",
+      "description": "Descubra ciclos catalíticos autorregenerativos o modele reacciones en cadena ramificadas con un catálogo de materiales y visualización de flujo Sankey",
+      "cycleDiscovery": "Descubrimiento de ciclos catalíticos",
+      "cascades": "Simulaciones en cascada"
     },
     "elementData": {
       "title": "Elementos, nucleidos y desintegración",

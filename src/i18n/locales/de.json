@@ -146,10 +146,11 @@
       "fissionReactions": "Spaltungsreaktionen",
       "twoToTwoReactions": "Zwei-zu-Zwei-Reaktionen"
     },
-    "cascadeSimulations": {
-      "title": "Kaskadensimulationen",
-      "description": "Modellieren Sie Kettenreaktionen mit einem Materialkatalog, gewichteter Verzweigung und Sankey-Flussvisualisierung",
-      "runSimulations": "Kaskadensimulationen ausführen"
+    "simulations": {
+      "title": "Reaktionssimulationen",
+      "description": "Entdecken Sie sich selbst regenerierende katalytische Zyklen oder modellieren Sie verzweigte Kettenreaktionen mit einem Materialkatalog und Sankey-Flussvisualisierung",
+      "cycleDiscovery": "Katalytische Zyklen entdecken",
+      "cascades": "Kaskadensimulationen"
     },
     "elementData": {
       "title": "Elemente, Nuklide & Zerfall",

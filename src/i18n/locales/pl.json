@@ -146,10 +146,11 @@
       "fissionReactions": "Reakcje rozszczepienia",
       "twoToTwoReactions": "Reakcje dwa-na-dwa"
     },
-    "cascadeSimulations": {
-      "title": "Symulacje kaskad",
-      "description": "Modeluj reakcje łańcuchowe z katalogiem materiałów, ważonym rozgałęzianiem i wizualizacją przepływu Sankeya",
-      "runSimulations": "Uruchom symulacje kaskad"
+    "simulations": {
+      "title": "Symulacje reakcji",
+      "description": "Odkrywaj samoregenerujące się cykle katalityczne lub modeluj rozgałęzione reakcje łańcuchowe z katalogiem materiałów i wizualizacją przepływu Sankeya",
+      "cycleDiscovery": "Wykrywanie cykli katalitycznych",
+      "cascades": "Symulacje kaskad"
     },
     "elementData": {
       "title": "Pierwiastki, nuklidy i rozpady",

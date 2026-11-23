@@ -146,10 +146,11 @@
       "fissionReactions": "Fisyon Reaksiyonları",
       "twoToTwoReactions": "İkiden İkiye Reaksiyonlar"
     },
-    "cascadeSimulations": {
-      "title": "Kaskad Simülasyonları",
-      "description": "Malzeme kataloğu, ağırlıklı dallanma ve Sankey akış görselleştirmesiyle zincirleme reaksiyonları modelleyin",
-      "runSimulations": "Kaskad Simülasyonlarını Çalıştır"
+    "simulations": {
+      "title": "Reaksiyon Simülasyonları",
+      "description": "Kendini yenileyen katalitik döngüleri keşfedin veya malzeme kataloğu ve Sankey akış görselleştirmesiyle dallanan zincirleme reaksiyonları modelleyin",
+      "cycleDiscovery": "Katalitik Döngü Keşfi",
+      "cascades": "Kaskad Simülasyonları"
     },
     "elementData": {
       "title": "Elementler, Nüklidler ve Bozunma",

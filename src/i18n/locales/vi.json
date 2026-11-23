@@ -146,10 +146,11 @@
       "fissionReactions": "Phản ứng phân hạch",
       "twoToTwoReactions": "Phản ứng hai-thành-hai"
     },
-    "cascadeSimulations": {
-      "title": "Mô phỏng phản ứng dây chuyền",
-      "description": "Mô hình hóa phản ứng dây chuyền với danh mục vật liệu, phân nhánh có trọng số và trực quan hóa dòng Sankey",
-      "runSimulations": "Chạy mô phỏng dây chuyền"
+    "simulations": {
+      "title": "Mô phỏng phản ứng",
+      "description": "Khám phá các chu trình xúc tác tự tái tạo, hoặc mô hình hóa phản ứng dây chuyền phân nhánh với danh mục vật liệu và trực quan hóa dòng Sankey",
+      "cycleDiscovery": "Khám phá chu trình xúc tác",
+      "cascades": "Mô phỏng phản ứng dây chuyền"
     },
     "elementData": {
       "title": "Nguyên tố, nuclide & phân rã",

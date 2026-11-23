@@ -146,10 +146,11 @@
       "fissionReactions": "Fission Reactions",
       "twoToTwoReactions": "Two-To-Two Reactions"
     },
-    "cascadeSimulations": {
-      "title": "Cascade Simulations",
-      "description": "Model chain reactions with a materials catalog, weighted branching, and Sankey flow visualization",
-      "runSimulations": "Run Cascade Simulations"
+    "simulations": {
+      "title": "Reaction Simulations",
+      "description": "Discover self-regenerating catalytic cycles, or model branching chain reactions with a materials catalog and Sankey flow visualization",
+      "cycleDiscovery": "Catalytic Cycle Discovery",
+      "cascades": "Cascade Simulations"
     },
     "elementData": {
       "title": "Elements, Nuclides & Decay",

@@ -32,9 +32,9 @@ describe('Home', () => {
     expect(screen.getByText(en.home.queryReactions.title)).toBeInTheDocument();
   });
 
-  it('renders cascade simulations section', () => {
+  it('renders reaction simulations section', () => {
     renderWithRouter();
-    expect(screen.getByText(en.home.cascadeSimulations.title)).toBeInTheDocument();
+    expect(screen.getByText(en.home.simulations.title)).toBeInTheDocument();
   });
 
   it('renders element data section', () => {

@@ -146,10 +146,11 @@
       "fissionReactions": "Fissionsreaktioner",
       "twoToTwoReactions": "To-til-to-reaktioner"
     },
-    "cascadeSimulations": {
-      "title": "Kaskadesimuleringer",
-      "description": "Modeller kædereaktioner med et materialekatalog, vægtet forgrening og Sankey-flowvisualisering",
-      "runSimulations": "Kør kaskadesimuleringer"
+    "simulations": {
+      "title": "Reaktionssimuleringer",
+      "description": "Opdag selvregenererende katalytiske cyklusser, eller modeller forgrenede kædereaktioner med et materialekatalog og Sankey-flowvisualisering",
+      "cycleDiscovery": "Opdagelse af katalytiske cyklusser",
+      "cascades": "Kaskadesimuleringer"
     },
     "elementData": {
       "title": "Grundstoffer, nuklider og henfald",

@@ -146,10 +146,11 @@
       "fissionReactions": "Hasadási reakciók",
       "twoToTwoReactions": "Kettő-kettő reakciók"
     },
-    "cascadeSimulations": {
-      "title": "Kaszkádszimulációk",
-      "description": "Láncreakciók modellezése anyagkatalógussal, súlyozott elágazással és Sankey-folyamdiagrammal",
-      "runSimulations": "Kaszkádszimulációk futtatása"
+    "simulations": {
+      "title": "Reakciószimulációk",
+      "description": "Önregeneráló katalitikus ciklusok felderítése, vagy elágazó láncreakciók modellezése anyagkatalógussal és Sankey-folyamdiagrammal",
+      "cycleDiscovery": "Katalitikus ciklusok felderítése",
+      "cascades": "Kaszkádszimulációk"
     },
     "elementData": {
       "title": "Elemek, nuklidok és bomlás",

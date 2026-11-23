@@ -146,10 +146,11 @@
       "fissionReactions": "Reaksi Fisi",
       "twoToTwoReactions": "Reaksi Dua-ke-Dua"
     },
-    "cascadeSimulations": {
-      "title": "Simulasi Kaskade",
-      "description": "Modelkan reaksi berantai dengan katalog material, percabangan berbobot, dan visualisasi aliran Sankey",
-      "runSimulations": "Jalankan Simulasi Kaskade"
+    "simulations": {
+      "title": "Simulasi Reaksi",
+      "description": "Temukan siklus katalitik yang meregenerasi diri, atau modelkan reaksi berantai bercabang dengan katalog material dan visualisasi aliran Sankey",
+      "cycleDiscovery": "Penemuan Siklus Katalitik",
+      "cascades": "Simulasi Kaskade"
     },
     "elementData": {
       "title": "Unsur, Nuklida & Peluruhan",

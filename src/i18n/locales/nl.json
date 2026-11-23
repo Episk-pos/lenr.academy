@@ -146,10 +146,11 @@
       "fissionReactions": "Splijtingsreacties",
       "twoToTwoReactions": "Twee-naar-twee-reacties"
     },
-    "cascadeSimulations": {
-      "title": "Cascadesimulaties",
-      "description": "Modelleer kettingreacties met een materialencatalogus, gewogen vertakkingen en Sankey-stroomvisualisatie",
-      "runSimulations": "Cascadesimulaties uitvoeren"
+    "simulations": {
+      "title": "Reactiesimulaties",
+      "description": "Ontdek zichzelf regenererende katalytische cycli of modelleer vertakte kettingreacties met een materialencatalogus en Sankey-stroomvisualisatie",
+      "cycleDiscovery": "Katalytische cycli ontdekken",
+      "cascades": "Cascadesimulaties"
     },
     "elementData": {
       "title": "Elementen, nucliden & verval",
