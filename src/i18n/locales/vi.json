@@ -159,10 +159,13 @@
       "tablesInDetail": "Chi tiết các bảng",
       "allTables": "Truy vấn SQL tùy chỉnh"
     },
-    "mullerResonance": {
-      "title": "Khám phá cộng hưởng Muller",
-      "description": "Nghiên cứu cộng hưởng bước sóng electron-proton và dự đoán môi trường hoạt động hạt nhân (NAE)",
-      "explore": "Khám phá cộng hưởng"
+    "patterns": {
+      "title": "Mẫu hình & con đường",
+      "description": "Các biến đổi hạt nhân đã được ghi nhận, mẫu hình cộng hưởng và biểu đồ nuclide",
+      "transmutations": "Trình khám phá con đường biến đổi hạt nhân",
+      "mullerResonance": "Trình khám phá cộng hưởng Muller",
+      "russellChart": "Biểu đồ Russell",
+      "segreChart": "Biểu đồ Segrè"
     },
     "aboutData": {
       "title": "Về dữ liệu",

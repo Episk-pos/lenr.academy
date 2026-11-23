@@ -159,10 +159,13 @@
       "tablesInDetail": "테이블 상세",
       "allTables": "사용자 지정 SQL 쿼리"
     },
-    "mullerResonance": {
-      "title": "뮐러 공명 탐색기",
-      "description": "전자-양성자 파장 공명을 연구하고 핵 활성 환경(NAE)을 예측하세요",
-      "explore": "공명 탐색"
+    "patterns": {
+      "title": "패턴과 경로",
+      "description": "기록된 핵변환, 공명 패턴 및 핵종 도표",
+      "transmutations": "핵변환 경로 탐색기",
+      "mullerResonance": "뮐러 공명 탐색기",
+      "russellChart": "러셀 도표",
+      "segreChart": "세그레 도표"
     },
     "aboutData": {
       "title": "데이터 소개",

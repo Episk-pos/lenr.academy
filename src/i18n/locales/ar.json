@@ -159,10 +159,13 @@
       "tablesInDetail": "الجداول بالتفصيل",
       "allTables": "استعلامات SQL مخصصة"
     },
-    "mullerResonance": {
-      "title": "مستكشف رنين مولر",
-      "description": "ادرس رنينات الطول الموجي بين الإلكترون والبروتون وتنبّأ بالبيئات النووية النشطة (NAE)",
-      "explore": "استكشاف الرنينات"
+    "patterns": {
+      "title": "الأنماط والمسارات",
+      "description": "تحوّلات موثّقة وأنماط رنين ومخططات النويدات",
+      "transmutations": "مستكشف مسارات التحوّل",
+      "mullerResonance": "مستكشف رنين مولر",
+      "russellChart": "مخطط راسل",
+      "segreChart": "مخطط Segrè"
     },
     "aboutData": {
       "title": "حول البيانات",

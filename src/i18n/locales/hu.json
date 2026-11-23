@@ -159,10 +159,13 @@
       "tablesInDetail": "Táblák részletesen",
       "allTables": "Egyéni SQL-lekérdezések"
     },
-    "mullerResonance": {
-      "title": "Muller-rezonancia felfedező",
-      "description": "Elektron–proton hullámhossz-rezonanciák vizsgálata és nukleárisan aktív környezetek (NAE) előrejelzése",
-      "explore": "Rezonanciák felfedezése"
+    "patterns": {
+      "title": "Mintázatok és útvonalak",
+      "description": "Dokumentált transzmutációk, rezonanciamintázatok és nuklidtérképek",
+      "transmutations": "Transzmutációs útvonal-felfedező",
+      "mullerResonance": "Muller-rezonancia felfedező",
+      "russellChart": "Russell-diagram",
+      "segreChart": "Segrè-diagram"
     },
     "aboutData": {
       "title": "Az adatokról",

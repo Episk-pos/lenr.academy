@@ -159,10 +159,13 @@
       "tablesInDetail": "Tabelle in dettaglio",
       "allTables": "Query SQL personalizzate"
     },
-    "mullerResonance": {
-      "title": "Esplora la risonanza di Muller",
-      "description": "Studia le risonanze tra le lunghezze d'onda di elettrone e protone e prevedi gli ambienti nucleari attivi (NAE)",
-      "explore": "Esplora le risonanze"
+    "patterns": {
+      "title": "Schemi e percorsi",
+      "description": "Trasmutazioni documentate, schemi di risonanza e carte dei nuclidi",
+      "transmutations": "Esplora i percorsi di trasmutazione",
+      "mullerResonance": "Esplora la risonanza di Muller",
+      "russellChart": "Carta di Russell",
+      "segreChart": "Carta di Segrè"
     },
     "aboutData": {
       "title": "Informazioni sui dati",

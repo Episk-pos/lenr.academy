@@ -159,10 +159,13 @@
       "tablesInDetail": "Tabele szczegółowo",
       "allTables": "Własne zapytania SQL"
     },
-    "mullerResonance": {
-      "title": "Eksplorator rezonansów Mullera",
-      "description": "Badaj rezonanse długości fal elektronu i protonu oraz przewiduj jądrowo aktywne środowiska (NAE)",
-      "explore": "Badaj rezonanse"
+    "patterns": {
+      "title": "Wzorce i ścieżki",
+      "description": "Udokumentowane transmutacje, wzorce rezonansowe i mapy nuklidów",
+      "transmutations": "Eksplorator ścieżek transmutacji",
+      "mullerResonance": "Eksplorator rezonansów Mullera",
+      "russellChart": "Wykres Russella",
+      "segreChart": "Wykres Segrè"
     },
     "aboutData": {
       "title": "O danych",

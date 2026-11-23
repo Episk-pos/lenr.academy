@@ -18,7 +18,7 @@ test.describe('Home Page', () => {
       /Query Nuclear Reactions/i,
       /Reaction Simulations/i,
       /Elements.*Nuclides.*Decay/i,
-      /Muller Resonance/i,
+      /Patterns.*Pathways/i,
     ];
     for (const heading of featureHeadings) {
       await expect(page.getByRole('heading', { name: heading })).toBeVisible();

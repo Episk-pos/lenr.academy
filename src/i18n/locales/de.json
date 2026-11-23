@@ -159,10 +159,13 @@
       "tablesInDetail": "Detaillierte Tabellen",
       "allTables": "Benutzerdefinierte SQL-Abfragen"
     },
-    "mullerResonance": {
-      "title": "Muller-Resonanz-Explorer",
-      "description": "Untersuchen Sie Elektron-Proton-Wellenlängenresonanzen und prognostizieren Sie nuklear aktive Umgebungen (NAE)",
-      "explore": "Resonanzen erkunden"
+    "patterns": {
+      "title": "Muster & Pfade",
+      "description": "Dokumentierte Transmutationen, Resonanzmuster und Nuklidkarten",
+      "transmutations": "Transmutationspfad-Explorer",
+      "mullerResonance": "Muller-Resonanz-Explorer",
+      "russellChart": "Russell-Diagramm",
+      "segreChart": "Segrè-Diagramm"
     },
     "aboutData": {
       "title": "Über die Daten",

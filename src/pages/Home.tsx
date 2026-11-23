@@ -115,14 +115,23 @@ export default function Home() {
             </div>
             <div className="flex-1">
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-                {t('home.mullerResonance.title')}
+                {t('home.patterns.title')}
               </h3>
               <p className="text-gray-600 dark:text-gray-400 text-sm mb-4">
-                {t('home.mullerResonance.description')}
+                {t('home.patterns.description')}
               </p>
               <div className="space-y-2">
+                <Link to="/transmutations" className="block text-primary-600 hover:text-primary-700 text-sm font-medium">
+                  → {t('home.patterns.transmutations')}
+                </Link>
                 <Link to="/muller-resonance" className="block text-primary-600 hover:text-primary-700 text-sm font-medium">
-                  → {t('home.mullerResonance.explore')}
+                  → {t('home.patterns.mullerResonance')}
+                </Link>
+                <Link to="/element-data?tab=russell" className="block text-primary-600 hover:text-primary-700 text-sm font-medium">
+                  → {t('home.patterns.russellChart')}
+                </Link>
+                <Link to="/element-data?tab=integrated" className="block text-primary-600 hover:text-primary-700 text-sm font-medium">
+                  → {t('home.patterns.segreChart')}
                 </Link>
               </div>
             </div>

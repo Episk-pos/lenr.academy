@@ -159,10 +159,13 @@
       "tablesInDetail": "Ayrıntılı Tablolar",
       "allTables": "Özel SQL Sorguları"
     },
-    "mullerResonance": {
-      "title": "Muller Rezonansı Gezgini",
-      "description": "Elektron-proton dalga boyu rezonanslarını inceleyin ve nükleer aktif ortamları (NAE) tahmin edin",
-      "explore": "Rezonansları Keşfet"
+    "patterns": {
+      "title": "Örüntüler ve Yollar",
+      "description": "Belgelenmiş transmutasyonlar, rezonans örüntüleri ve nüklid diyagramları",
+      "transmutations": "Transmutasyon Yolu Gezgini",
+      "mullerResonance": "Muller Rezonans Gezgini",
+      "russellChart": "Russell Diyagramı",
+      "segreChart": "Segrè Diyagramı"
     },
     "aboutData": {
       "title": "Veriler Hakkında",

@@ -159,10 +159,13 @@
       "tablesInDetail": "Tabeller i detalj",
       "allTables": "Anpassade SQL-frågor"
     },
-    "mullerResonance": {
-      "title": "Utforskare för Muller-resonans",
-      "description": "Undersök resonanser mellan elektron- och protonvåglängder och förutsäg nukleärt aktiva miljöer (NAE)",
-      "explore": "Utforska resonanser"
+    "patterns": {
+      "title": "Mönster och vägar",
+      "description": "Dokumenterade transmutationer, resonansmönster och nuklidkartor",
+      "transmutations": "Utforskare för transmutationsvägar",
+      "mullerResonance": "Utforskare för Muller-resonans",
+      "russellChart": "Russell-diagram",
+      "segreChart": "Segrè-diagram"
     },
     "aboutData": {
       "title": "Om datan",

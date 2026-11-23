@@ -72,8 +72,21 @@ describe('Home', () => {
     expect(screen.getByText(en.home.aboutData.title)).toBeInTheDocument();
   });
 
-  it('renders Muller Resonance section', () => {
+  it('renders patterns & pathways section', () => {
     renderWithRouter();
-    expect(screen.getByText(en.home.mullerResonance.title)).toBeInTheDocument();
+    expect(screen.getByText(en.home.patterns.title)).toBeInTheDocument();
+    expect(screen.getByText(en.home.patterns.description)).toBeInTheDocument();
+  });
+
+  it('renders patterns & pathways links in order with correct hrefs', () => {
+    renderWithRouter();
+    const card = screen.getByText(en.home.patterns.title).closest('.card') as HTMLElement;
+    const links = Array.from(card.querySelectorAll('a')).map((a) => [a.textContent, a.getAttribute('href')]);
+    expect(links).toEqual([
+      [`→ ${en.home.patterns.transmutations}`, '/transmutations'],
+      [`→ ${en.home.patterns.mullerResonance}`, '/muller-resonance'],
+      [`→ ${en.home.patterns.russellChart}`, '/element-data?tab=russell'],
+      [`→ ${en.home.patterns.segreChart}`, '/element-data?tab=integrated'],
+    ]);
   });
 });

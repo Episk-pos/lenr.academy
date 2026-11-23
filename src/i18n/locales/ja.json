@@ -159,10 +159,13 @@
       "tablesInDetail": "詳細テーブル",
       "allTables": "カスタムSQLクエリ"
     },
-    "mullerResonance": {
-      "title": "ミュラー共鳴エクスプローラー",
-      "description": "電子-陽子波長共鳴を調査し、核活性環境（NAE）を予測",
-      "explore": "共鳴を探索"
+    "patterns": {
+      "title": "パターンと経路",
+      "description": "記録された変換、共鳴パターン、核種図",
+      "transmutations": "変換経路エクスプローラー",
+      "mullerResonance": "ミュラー共鳴エクスプローラー",
+      "russellChart": "ラッセル図表",
+      "segreChart": "セグレ図"
     },
     "aboutData": {
       "title": "データについて",

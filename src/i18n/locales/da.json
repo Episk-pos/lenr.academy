@@ -159,10 +159,13 @@
       "tablesInDetail": "Tabeller i detaljer",
       "allTables": "Brugerdefinerede SQL-forespørgsler"
     },
-    "mullerResonance": {
-      "title": "Muller-resonansudforsker",
-      "description": "Undersøg elektron-proton-bølgelængderesonanser og forudsig nukleart aktive miljøer (NAE)",
-      "explore": "Udforsk resonanser"
+    "patterns": {
+      "title": "Mønstre og veje",
+      "description": "Dokumenterede transmutationer, resonansmønstre og nukliddiagrammer",
+      "transmutations": "Udforsker af transmutationsveje",
+      "mullerResonance": "Muller-resonansudforsker",
+      "russellChart": "Russell-diagram",
+      "segreChart": "Segrè-diagram"
     },
     "aboutData": {
       "title": "Om dataene",
