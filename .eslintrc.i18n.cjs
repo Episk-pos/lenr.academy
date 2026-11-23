@@ -1,6 +1,8 @@
 // Standalone ESLint config for the i18n literal-string audit (`npm run lint:i18n`).
 // Kept separate from .eslintrc.cjs so the main `npm run lint` (--max-warnings 0)
 // is not affected. Reports hardcoded JSX text that should go through t().
+// CI gates it through scripts/i18n/lint-baseline.mjs (`npm run lint:i18n:ci`):
+// anything not in src/i18n/hardcoded-baseline.json fails.
 module.exports = {
   root: true,
   env: { browser: true, es2020: true },
@@ -56,6 +58,8 @@ module.exports = {
             'aria-haspopup', 'aria-current', 'aria-expanded', 'aria-pressed', 'aria-orientation',
             'aria-autocomplete', 'tabIndex', 'loading', 'decoding', 'referrerPolicy', 'crossOrigin',
             'field', 'currentQueryType', 'reactionType', 'anchorX', 'anchorY',
+            // react-router route props and Sentry boundary names
+            'path', 'element', 'errorBoundary',
           ],
         },
         // Object keys whose values are identifiers/CSS, not UI text

@@ -1,0 +1,52 @@
+name: i18n
+
+# Translation guardrails (see CLAUDE.md → Contributor Knowledge → "i18n guardrails").
+# No browsers and no database: runs in ~1-2 minutes.
+on:
+  pull_request:
+    branches:
+      - '**'
+  push:
+    branches:
+      - main
+
+concurrency:
+  group: i18n-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  i18n:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # the stale-translation ratchet diffs against the PR base
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies (skip the 161 MB database download)
+        run: npm ci
+        env:
+          SKIP_DB_DOWNLOAD: '1'
+
+      - name: Locale parity, placeholders, identical-to-English, data tables, undefined keys, source hashes
+        run: npx vitest run src/i18n
+
+      - name: Hard-coded user-facing strings (shrink-only baseline)
+        run: npm run lint:i18n:ci
+
+      - name: Stale translations (PR must translate or ack every en edit)
+        if: github.event_name == 'pull_request'
+        run: npm run i18n:stale -- --ci --base "origin/${{ github.base_ref }}" --summary
+
+      - name: Stale translations (ledger report)
+        if: github.event_name != 'pull_request'
+        run: npm run i18n:stale -- --summary
+        env:
+          I18N_STALE_STRICT: ${{ vars.I18N_STALE_STRICT }}
