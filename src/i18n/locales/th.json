@@ -39,7 +39,7 @@
   "navigation": {
     "home": "หน้าแรก",
     "showElementData": "แสดงข้อมูลธาตุ",
-    "segreChart": "แผนภูมิ Segrè",
+    "segreChart": "แผนภูมิเซเกร",
     "fusionReactions": "ปฏิกิริยาฟิวชัน",
     "fissionReactions": "ปฏิกิริยาฟิชชัน",
     "twoToTwoReactions": "ปฏิกิริยาสองต่อสอง",
@@ -51,7 +51,7 @@
     "help": "ความช่วยเหลือและอภิธานศัพท์",
     "openMenu": "เปิดเมนู",
     "closeMenu": "ปิดเมนู",
-    "mullerResonance": "เรโซแนนซ์ของ Muller",
+    "mullerResonance": "เรโซแนนซ์ของมุลเลอร์",
     "transmutations": "การแปรธาตุ"
   },
   "theme": {
@@ -64,7 +64,7 @@
     "collapse": "ยุบแถบด้านข้าง"
   },
   "footer": {
-    "basedOnWork": "อ้างอิงจากผลงานของ <parkhomovLink>Dr. Alexander Parkhomov</parkhomovLink>",
+    "basedOnWork": "อ้างอิงจากผลงานของ <parkhomovLink>ดร. อเล็กซานเดอร์ ปาร์โคมอฟ</parkhomovLink>",
     "project": "<mfmpLink>Martin Fleischmann Memorial Project</mfmpLink>"
   },
   "language": {
@@ -138,17 +138,17 @@
   "home": {
     "title": "LENR Academy",
     "subtitle": "สำรวจปฏิกิริยาการแปรธาตุนิวเคลียร์พลังงานต่ำ จำลองกระบวนการปฏิกิริยาลูกโซ่ แสดงภาพห่วงโซ่การสลายตัว และศึกษาปรากฏการณ์การสั่นพ้อง ทั้งหมดในเบราว์เซอร์ของคุณ",
-    "basedOn": "การพัฒนาขึ้นใหม่ในรูปแบบสมัยใหม่ของ <nanosoftLink>Nanosoft Package</nanosoftLink> ต้นฉบับโดย R.W. Greenyer และ P.W. Power ซึ่งสร้างบน<parkhomovLink>ตาราง Parkhomov</parkhomovLink>",
+    "basedOn": "การพัฒนาขึ้นใหม่ในรูปแบบสมัยใหม่ของ <nanosoftLink>Nanosoft Package</nanosoftLink> ต้นฉบับโดยอาร์.ดับเบิลยู. กรีนเยอร์ และ พี.ดับเบิลยู. พาวเวอร์ ซึ่งสร้างบน<parkhomovLink>ตารางปาร์โคมอฟ</parkhomovLink>",
     "queryReactions": {
       "title": "สืบค้นปฏิกิริยานิวเคลียร์",
-      "description": "ค้นหาปฏิกิริยาการแปรธาตุแบบคายความร้อนหลายพันรายการ ทั้งฟิวชัน ฟิชชัน และสองต่อสอง จากตาราง Parkhomov",
+      "description": "ค้นหาปฏิกิริยาการแปรธาตุแบบคายความร้อนหลายพันรายการ ทั้งฟิวชัน ฟิชชัน และสองต่อสอง จากตารางปาร์โคมอฟ",
       "fusionReactions": "ปฏิกิริยาฟิวชัน",
       "fissionReactions": "ปฏิกิริยาฟิชชัน",
       "twoToTwoReactions": "ปฏิกิริยาสองต่อสอง"
     },
     "simulations": {
       "title": "การจำลองปฏิกิริยา",
-      "description": "ค้นพบวัฏจักรเร่งปฏิกิริยาที่สร้างตัวเองใหม่ได้ หรือจำลองปฏิกิริยาลูกโซ่ที่แตกแขนงด้วยแคตตาล็อกวัสดุและการแสดงภาพการไหลแบบ Sankey",
+      "description": "ค้นพบวัฏจักรเร่งปฏิกิริยาที่สร้างตัวเองใหม่ได้ หรือจำลองปฏิกิริยาลูกโซ่ที่แตกแขนงด้วยแคตตาล็อกวัสดุและการแสดงภาพการไหลแบบ แซงคีย์",
       "cycleDiscovery": "การค้นหาวัฏจักรเร่งปฏิกิริยา",
       "cascades": "การจำลองคาสเคด"
     },
@@ -160,13 +160,13 @@
       "allTables": "คำสั่ง SQL แบบกำหนดเอง"
     },
     "mullerResonance": {
-      "title": "เครื่องมือสำรวจเรโซแนนซ์ของ Muller",
+      "title": "เครื่องมือสำรวจเรโซแนนซ์ของมุลเลอร์",
       "description": "ศึกษาการสั่นพ้องของความยาวคลื่นอิเล็กตรอน-โปรตอน และทำนายสภาพแวดล้อมที่มีกิจกรรมนิวเคลียร์ (NAE)",
       "explore": "สำรวจเรโซแนนซ์"
     },
     "aboutData": {
       "title": "เกี่ยวกับข้อมูล",
-      "description": "ฐานข้อมูลปฏิกิริยามาจากการวิเคราะห์ปฏิกิริยานิวเคลียร์แบบคายความร้อนระหว่างนิวไคลด์เสถียรของ<strong>Dr. Alexander Parkhomov</strong>ในปี 2018 ซึ่งเป็นเส้นทางที่เอื้ออำนวยทางอุณหพลศาสตร์สำหรับการแปรธาตุนิวเคลียร์ที่พลังงานต่ำ ประกอบด้วยปฏิกิริยา<strong>ฟิวชัน 3,921 รายการ</strong> <strong>ฟิชชัน 1,733 รายการ</strong> และ<strong>สองต่อสอง 1,215,374 รายการ</strong> รวมถึงปฏิกิริยาที่เกี่ยวข้องกับนิวทริโน ในจำนวนนี้ ปฏิกิริยาฟิวชัน 1,505 รายการ ฟิชชัน 818 รายการ และสองต่อสอง 518,657 รายการไม่เกี่ยวข้องกับนิวทริโน เดิมพัฒนาขึ้นเป็น <nanosoftLink>Nanosoft Package</nanosoftLink> โดย R.W. Greenyer และ P.W. Power สำหรับ Martin Fleischmann Memorial Project",
+      "description": "ฐานข้อมูลปฏิกิริยามาจากการวิเคราะห์ปฏิกิริยานิวเคลียร์แบบคายความร้อนระหว่างนิวไคลด์เสถียรของ<strong>ดร. อเล็กซานเดอร์ ปาร์โคมอฟ</strong>ในปี 2018 ซึ่งเป็นเส้นทางที่เอื้ออำนวยทางอุณหพลศาสตร์สำหรับการแปรธาตุนิวเคลียร์ที่พลังงานต่ำ ประกอบด้วยปฏิกิริยา<strong>ฟิวชัน 3,921 รายการ</strong> <strong>ฟิชชัน 1,733 รายการ</strong> และ<strong>สองต่อสอง 1,215,374 รายการ</strong> รวมถึงปฏิกิริยาที่เกี่ยวข้องกับนิวทริโน ในจำนวนนี้ ปฏิกิริยาฟิวชัน 1,505 รายการ ฟิชชัน 818 รายการ และสองต่อสอง 518,657 รายการไม่เกี่ยวข้องกับนิวทริโน เดิมพัฒนาขึ้นเป็น <nanosoftLink>Nanosoft Package</nanosoftLink> โดยอาร์.ดับเบิลยู. กรีนเยอร์ และ พี.ดับเบิลยู. พาวเวอร์ สำหรับ Martin Fleischmann Memorial Project",
       "visitNanosoft": "เยี่ยมชม Nanosoft Package ต้นฉบับ"
     },
     "openSource": {
@@ -262,7 +262,7 @@
     "selected": "เลือกแล้ว {{count}} รายการ",
     "applySelection": "ใช้การเลือก",
     "integrated": "รวม",
-    "russellChart": "Russell",
+    "russellChart": "รัสเซลล์",
     "decays": "การสลายตัว",
     "period": "คาบ",
     "group": "หมู่",
@@ -531,8 +531,8 @@
     "expand": "ขยายฮิสโทแกรม"
   },
   "russellChart": {
-    "title": "แผนภูมิ Russell — ตารางธาตุเก้าอ็อกเทฟ",
-    "description": "การจัดเรียงธาตุตามแนวคิดคลื่นของ Walter Russell ออกเป็น 9 อ็อกเทฟในรูปแบบคดเคี้ยว แสดงด้านการกำเนิด (การอัดประจุ) และด้านการแผ่รังสี (การคายประจุ) โดยมีแก๊สเฉื่อยอยู่ที่จุดสมดุล",
+    "title": "แผนภูมิรัสเซลล์ — ตารางธาตุเก้าอ็อกเทฟ",
+    "description": "การจัดเรียงธาตุตามแนวคิดคลื่นของวอลเตอร์ รัสเซลล์ ออกเป็น 9 อ็อกเทฟในรูปแบบคดเคี้ยว แสดงด้านการกำเนิด (การอัดประจุ) และด้านการแผ่รังสี (การคายประจุ) โดยมีแก๊สเฉื่อยอยู่ที่จุดสมดุล",
     "generationSide": "การกำเนิด (การอัดประจุ)",
     "radiationSide": "การแผ่รังสี (การคายประจุ)",
     "inertGasLabel": "แก๊สเฉื่อย (จุดสมดุล)",
@@ -542,7 +542,7 @@
     "legendRadiation": "การแผ่รังสี (ด้านคายประจุ)",
     "legendInertGas": "แก๊สเฉื่อย (จุดสมดุล)",
     "legendCarbon": "คาร์บอน (การอัดตัวสูงสุด)",
-    "legendPredicted": "ทำนายโดย Russell",
+    "legendPredicted": "ทำนายโดยรัสเซลล์",
     "legendHypothetical": "ธาตุสมมุติ",
     "legendSerpentine": "เส้นทางการไหลแบบคดเคี้ยว",
     "clickToView": "คลิกธาตุที่รู้จักใดก็ได้เพื่อดูคุณสมบัติและไอโซโทปในฐานข้อมูล",
@@ -550,34 +550,34 @@
     "zoomControls": "เลื่อนเพื่อซูม ลากเพื่อเลื่อนมุมมอง ดับเบิลคลิกเพื่อซูมเข้า",
     "gridView": "มุมมองตาราง",
     "waveView": "มุมมองคลื่น",
-    "waveDescription": "ธาตุถูกพล็อตเป็นจุดบนคลื่นอ็อกเทฟของ Russell — แอมพลิจูดเพิ่มขึ้นผ่านการกำเนิด (การอัดตัว) จนถึงคาร์บอนที่จุดยอด แล้วลดลงผ่านการแผ่รังสี (การขยายตัว)",
+    "waveDescription": "ธาตุถูกพล็อตเป็นจุดบนคลื่นอ็อกเทฟของรัสเซลล์ — แอมพลิจูดเพิ่มขึ้นผ่านการกำเนิด (การอัดตัว) จนถึงคาร์บอนที่จุดยอด แล้วลดลงผ่านการแผ่รังสี (การขยายตัว)",
     "amplitude": "แอมพลิจูด",
     "octaveAxis": "อ็อกเทฟ",
     "carbonPeak": "คาร์บอน (จุดยอด)",
-    "predictionsTitle": "การทำนายของ Russell",
-    "predictionsDescription": "Walter Russell ทำนายธาตุหลายชนิดก่อนการค้นพบอย่างเป็นทางการ ซึ่งแสดงให้เห็นถึงพลังการทำนายของระบบตารางธาตุที่อิงคลื่นของเขา",
-    "aboutTitle": "เกี่ยวกับตารางธาตุของ Russell",
-    "aboutParagraph1": "Walter Russell (1871–1963) ตีพิมพ์ตารางธาตุเก้าอ็อกเทฟของเขาใน \"The Universal One\" (1926) โดยจัดเรียงธาตุทั้งหมดเป็นระบบอ็อกเทฟที่อิงคลื่น แต่ละอ็อกเทฟมีด้านการกำเนิด (การอัดประจุ) และด้านการแผ่รังสี (การคายประจุ) โดยมีแก๊สเฉื่อยอยู่ที่จุดสมดุล — จุดหมุนของคลื่น",
-    "aboutParagraph2": "ในจักรวาลวิทยาของ Russell สสารถูกสร้างขึ้นจากกระแสวนเกลียวที่ตรงข้ามกันของการอัดตัว (การกำเนิด) และการขยายตัว (การแผ่รังสี) คาร์บอนอยู่ที่แอมพลิจูด — จุดที่มีการอัดตัวสูงสุด — ทำให้เป็นธาตุที่สมดุลและเสถียรที่สุด รูปแบบเส้นโค้ง S แบบคดเคี้ยวแสดงให้เห็นว่าแต่ละอ็อกเทฟกลับทิศทางอย่างไร ก่อให้เกิดคลื่นต่อเนื่องตั้งแต่สารสมมุติที่เบาที่สุดไปจนถึงธาตุที่หนักที่สุดที่รู้จัก",
-    "aboutParagraph3": "Russell ทำนายการมีอยู่ของดิวเทอเรียม (ซึ่งเขาเรียกว่า \"Ethlogen\") ทริเทียม (\"Bebegen\") เนปทูเนียม และพลูโทเนียมไว้หลายปีก่อนการค้นพบอย่างเป็นทางการในห้องปฏิบัติการ — ยืนยันความสามารถในการทำนายของแบบจำลองที่อิงคลื่นของเขา",
+    "predictionsTitle": "การทำนายของรัสเซลล์",
+    "predictionsDescription": "วอลเตอร์ รัสเซลล์ ทำนายธาตุหลายชนิดก่อนการค้นพบอย่างเป็นทางการ ซึ่งแสดงให้เห็นถึงพลังการทำนายของระบบตารางธาตุที่อิงคลื่นของเขา",
+    "aboutTitle": "เกี่ยวกับตารางธาตุของรัสเซลล์",
+    "aboutParagraph1": "วอลเตอร์ รัสเซลล์ (1871–1963) ตีพิมพ์ตารางธาตุเก้าอ็อกเทฟของเขาใน \"The Universal One\" (1926) โดยจัดเรียงธาตุทั้งหมดเป็นระบบอ็อกเทฟที่อิงคลื่น แต่ละอ็อกเทฟมีด้านการกำเนิด (การอัดประจุ) และด้านการแผ่รังสี (การคายประจุ) โดยมีแก๊สเฉื่อยอยู่ที่จุดสมดุล — จุดหมุนของคลื่น",
+    "aboutParagraph2": "ในจักรวาลวิทยาของรัสเซลล์ สสารถูกสร้างขึ้นจากกระแสวนเกลียวที่ตรงข้ามกันของการอัดตัว (การกำเนิด) และการขยายตัว (การแผ่รังสี) คาร์บอนอยู่ที่แอมพลิจูด — จุดที่มีการอัดตัวสูงสุด — ทำให้เป็นธาตุที่สมดุลและเสถียรที่สุด รูปแบบเส้นโค้ง S แบบคดเคี้ยวแสดงให้เห็นว่าแต่ละอ็อกเทฟกลับทิศทางอย่างไร ก่อให้เกิดคลื่นต่อเนื่องตั้งแต่สารสมมุติที่เบาที่สุดไปจนถึงธาตุที่หนักที่สุดที่รู้จัก",
+    "aboutParagraph3": "รัสเซลล์ ทำนายการมีอยู่ของดิวเทอเรียม (ซึ่งเขาเรียกว่า \"Ethlogen\") ทริเทียม (\"Bebegen\") เนปทูเนียม และพลูโทเนียมไว้หลายปีก่อนการค้นพบอย่างเป็นทางการในห้องปฏิบัติการ — ยืนยันความสามารถในการทำนายของแบบจำลองที่อิงคลื่นของเขา",
     "view3D": "มุมมอง 3 มิติ",
     "view3DControls": "ลากเพื่อหมุน เลื่อนเพื่อซูม",
-    "experimentalNote": "การแสดงภาพนี้อิงจากแผนภูมิต้นฉบับของ Russell ในปี 1926 ระบบของ Russell แตกต่างจากตารางธาตุสมัยใหม่อย่างมาก — เป็นแบบจำลองเชิงปรัชญาและจักรวาลวิทยาของสสาร ไม่ใช่แบบจำลองกลศาสตร์ควอนตัมที่ใช้ในเคมีร่วมสมัย",
+    "experimentalNote": "การแสดงภาพนี้อิงจากแผนภูมิต้นฉบับของรัสเซลล์ ในปี 1926 ระบบของรัสเซลล์ แตกต่างจากตารางธาตุสมัยใหม่อย่างมาก — เป็นแบบจำลองเชิงปรัชญาและจักรวาลวิทยาของสสาร ไม่ใช่แบบจำลองกลศาสตร์ควอนตัมที่ใช้ในเคมีร่วมสมัย",
     "predictionFormat": "{{russellName}} → {{modernName}} ({{symbol}})",
     "notes": {
       "hypotheticalFirstInertGas": "แก๊สเฉื่อยสมมุติตัวแรก — จุดเริ่มต้นของสสาร",
       "hypotheticalSecondInertGas": "แก๊สเฉื่อยสมมุติตัวที่สอง",
       "hypotheticalThirdInertGas": "แก๊สเฉื่อยสมมุติตัวที่สาม",
-      "hypotheticalElement": "ธาตุสมมุติในระบบของ Russell",
-      "hypotheticalTransUranicInSystem": "ธาตุทรานส์ยูเรเนียมสมมุติในระบบของ Russell",
+      "hypotheticalElement": "ธาตุสมมุติในระบบของรัสเซลล์",
+      "hypotheticalTransUranicInSystem": "ธาตุทรานส์ยูเรเนียมสมมุติในระบบของรัสเซลล์",
       "hypotheticalTransUranic": "ธาตุทรานส์ยูเรเนียมสมมุติ",
       "hypotheticalFinalInertGas": "แก๊สเฉื่อยสมมุติตัวสุดท้าย — จุดสิ้นสุดของสสาร",
-      "ethlogenPrediction": "Russell ทำนาย \"Ethlogen\" — ระบุภายหลังว่าเป็นดิวเทอเรียม (1931)",
-      "bebegenPrediction": "Russell ทำนาย \"Bebegen\" — ระบุภายหลังว่าเป็นทริเทียม (1934)",
-      "heliumPlacement": "Russell จัดให้ฮีเลียมเป็นแก๊สเฉื่อยของอ็อกเทฟที่ 4",
+      "ethlogenPrediction": "รัสเซลล์ ทำนาย \"Ethlogen\" — ระบุภายหลังว่าเป็นดิวเทอเรียม (1931)",
+      "bebegenPrediction": "รัสเซลล์ ทำนาย \"Bebegen\" — ระบุภายหลังว่าเป็นทริเทียม (1934)",
+      "heliumPlacement": "รัสเซลล์ จัดให้ฮีเลียมเป็นแก๊สเฉื่อยของอ็อกเทฟที่ 4",
       "carbonAmplitude": "คาร์บอน — แอมพลิจูดของคลื่น จุดที่มีการอัดตัวสูงสุด",
-      "neptuniumPrediction": "Russell ทำนายธาตุที่ 93 ในปี 1926 — ค้นพบเป็นเนปทูเนียมในปี 1940",
-      "plutoniumPrediction": "Russell ทำนายธาตุที่ 94 ในปี 1926 — ค้นพบเป็นพลูโทเนียมในปี 1941"
+      "neptuniumPrediction": "รัสเซลล์ ทำนายธาตุที่ 93 ในปี 1926 — ค้นพบเป็นเนปทูเนียมในปี 1940",
+      "plutoniumPrediction": "รัสเซลล์ ทำนายธาตุที่ 94 ในปี 1926 — ค้นพบเป็นพลูโทเนียมในปี 1941"
     }
   },
   "networkGraph": {
@@ -595,9 +595,9 @@
     "graphStats": "{{nodes}} ธาตุ, {{links}} การเชื่อมต่อ"
   },
   "segreChart": {
-    "title": "แผนภูมิ Segrè (แผนภาพ N-Z)",
+    "title": "แผนภูมิเซเกร (แผนภาพ N-Z)",
     "description": "แผนภูมินิวไคลด์แบบโต้ตอบที่พล็อตตามจำนวนโปรตอน (Z) เทียบกับจำนวนนิวตรอน (N) แยกสีตามเสถียรภาพ",
-    "sectionTitle": "แผนภูมินิวไคลด์ (แผนภูมิ Segrè)",
+    "sectionTitle": "แผนภูมินิวไคลด์ (แผนภูมิเซเกร)",
     "stable": "เสถียร (>10⁹ ปี)",
     "longHalfLife": "ครึ่งชีวิตยาว (>100 ปี)",
     "shortHalfLife": "ครึ่งชีวิตสั้น (<100 ปี)",
@@ -787,7 +787,7 @@
       "feedbackLoopsOnly": "เฉพาะลูปป้อนกลับ (ตรงกัน {{count}} รายการ)",
       "minFreqFilter": "ความถี่ต่ำสุด ≥{{freq}}× (ตรงกัน {{count}} รายการ)",
       "renderError": "ข้อผิดพลาดในการแสดงผลแผนภาพ",
-      "renderErrorDescription": "แผนภาพ Sankey เกิดข้อผิดพลาดขณะแสดงผล ซึ่งมักเกิดขึ้นเมื่อมีเส้นทางมากเกินไป",
+      "renderErrorDescription": "แผนภาพแซงคีย์ เกิดข้อผิดพลาดขณะแสดงผล ซึ่งมักเกิดขึ้นเมื่อมีเส้นทางมากเกินไป",
       "renderErrorHint": "ลองลดจำนวนเส้นทางหรือใช้ตัวกรองเพื่อทำให้ข้อมูลง่ายขึ้น",
       "technicalDetails": "รายละเอียดทางเทคนิค",
       "type": "ประเภท",
@@ -918,7 +918,7 @@
     },
     "constantan": {
       "name": "คอนสแตนแตน",
-      "description": "โลหะผสม Cu-Ni ที่ใช้ในการทดลองของ Celani (Cu 55%, Ni 45%)"
+      "description": "โลหะผสม Cu-Ni ที่ใช้ในการทดลองของเชลานี (Cu 55%, Ni 45%)"
     },
     "ti-6al-4v": {
       "name": "Ti-6Al-4V",
@@ -941,32 +941,32 @@
       "description": "PdD (ขั้วไฟฟ้าแพลเลเดียมที่บรรจุดิวเทอเรียม)"
     },
     "parkhomov-2014": {
-      "name": "Parkhomov Ni-LiAlH4",
-      "description": "การทำซ้ำเครื่องปฏิกรณ์ของ Rossi โดย Alexander Parkhomov ในปี 2014"
+      "name": "Ni-LiAlH4 ของปาร์โคมอฟ",
+      "description": "การทำซ้ำเครื่องปฏิกรณ์ของรอสซี โดยอเล็กซานเดอร์ ปาร์โคมอฟ ในปี 2014"
     },
     "piantelli-1990": {
-      "name": "ระบบ Ni-H ของ Piantelli",
-      "description": "การทดลองนิกเกิล-ไฮโดรเจนของ Francesco Piantelli (ทศวรรษ 1990)"
+      "name": "ระบบ Ni-H ของเปียนเตลลี",
+      "description": "การทดลองนิกเกิล-ไฮโดรเจนของฟรันเชสโก เปียนเตลลี (ทศวรรษ 1990)"
     },
     "celani-2012": {
-      "name": "ลวดคอนสแตนแตนของ Celani",
-      "description": "การทดลองลวดคอนสแตนแตนที่บรรจุไฮโดรเจนของ Francesco Celani"
+      "name": "ลวดคอนสแตนแตนของเชลานี",
+      "description": "การทดลองลวดคอนสแตนแตนที่บรรจุไฮโดรเจนของฟรันเชสโก เชลานี"
     },
     "shoulders-evo": {
-      "name": "ไทเทเนียม EVO ของ Shoulders",
-      "description": "การทดลอง Exotic Vacuum Objects (EVO) กับไทเทเนียมของ Ken Shoulders"
+      "name": "ไทเทเนียม EVO ของโชลเดอร์ส",
+      "description": "การทดลอง Exotic Vacuum Objects (EVO) กับไทเทเนียมของเคน โชลเดอร์ส"
     },
     "urutskoev-2000": {
-      "name": "การระเบิดแผ่นฟอยล์ Ti ของ Urutskoev",
-      "description": "การทดลองระเบิดแผ่นฟอยล์ไทเทเนียมของ L.I. Urutskoev"
+      "name": "การระเบิดแผ่นฟอยล์ Ti ของอูรุตสโคเยฟ",
+      "description": "การทดลองระเบิดแผ่นฟอยล์ไทเทเนียมของแอล.ไอ. อูรุตสโคเยฟ"
     },
     "matsumoto-1992": {
-      "name": "อาร์กคาร์บอนของ Matsumoto",
-      "description": "การทดลองการปล่อยประจุอาร์กคาร์บอนของ Takaaki Matsumoto"
+      "name": "อาร์กคาร์บอนของมัตสึโมโตะ",
+      "description": "การทดลองการปล่อยประจุอาร์กคาร์บอนของทาคาอากิ มัตสึโมโตะ"
     },
     "mizuno-pd-d": {
-      "name": "การแยกสลายด้วยไฟฟ้า Pd-D ของ Mizuno",
-      "description": "การทดลองการแยกสลายด้วยไฟฟ้าแพลเลเดียม-ดิวเทอเรียมของ Tadahiko Mizuno"
+      "name": "การแยกสลายด้วยไฟฟ้า Pd-D ของมิซูโนะ",
+      "description": "การทดลองการแยกสลายด้วยไฟฟ้าแพลเลเดียม-ดิวเทอเรียมของทาดาฮิโกะ มิซูโนะ"
     }
   },
   "tables": {
@@ -1203,7 +1203,7 @@
       },
       "niHFusion": {
         "name": "ฟิวชันนิกเกิล-ไฮโดรเจน",
-        "description": "ได้รับการศึกษาในการทดลอง E-Cat ของ Rossi และการทดลองซ้ำของ Parkhomov ปฏิกิริยา Ni + H ให้ไอโซโทปของทองแดง"
+        "description": "ได้รับการศึกษาในการทดลอง E-Cat ของรอสซี และการทดลองซ้ำของปาร์โคมอฟ ปฏิกิริยา Ni + H ให้ไอโซโทปของทองแดง"
       },
       "uraniumFission": {
         "name": "เส้นทางฟิชชันของยูเรเนียม",
@@ -1211,7 +1211,7 @@
       },
       "palladiumFission": {
         "name": "ฟิชชันของแพลเลเดียม",
-        "description": "เส้นทางฟิชชันของ Pd ที่เกี่ยวข้องกับการทดลองฟิวชันเย็นของ Fleischmann-Pons ซึ่งใช้ขั้วไฟฟ้าแพลเลเดียม"
+        "description": "เส้นทางฟิชชันของ Pd ที่เกี่ยวข้องกับการทดลองฟิวชันเย็นของฟลายช์มันน์-พอนส์ ซึ่งใช้ขั้วไฟฟ้าแพลเลเดียม"
       },
       "protonBoron": {
         "name": "ปฏิกิริยาโปรตอน-โบรอน",
@@ -1231,11 +1231,11 @@
       },
       "palladiumNae": {
         "name": "การวิเคราะห์ NAE ของแพลเลเดียม",
-        "description": "สำรวจการทำนายสภาพแวดล้อมที่ว่องไวทางนิวเคลียร์ของแพลเลเดียม ซึ่งเป็นหัวใจของการทดลองบรรจุดิวเทอเรียมของ Fleischmann-Pons"
+        "description": "สำรวจการทำนายสภาพแวดล้อมที่ว่องไวทางนิวเคลียร์ของแพลเลเดียม ซึ่งเป็นหัวใจของการทดลองบรรจุดิวเทอเรียมของฟลายช์มันน์-พอนส์"
       },
       "parkhomovCascade": {
-        "name": "คาสเคด Ni-LiAlH₄ ของ Parkhomov",
-        "description": "จำลองการทดลองซ้ำเครื่องปฏิกรณ์ของ Rossi โดย Parkhomov ในปี 2014 ซึ่งใช้นิกเกิลธรรมชาติกับเชื้อเพลิงลิเทียมอะลูมิเนียมไฮไดรด์"
+        "name": "คาสเคด Ni-LiAlH₄ ของปาร์โคมอฟ",
+        "description": "จำลองการทดลองซ้ำเครื่องปฏิกรณ์ของรอสซี โดยปาร์โคมอฟ ในปี 2014 ซึ่งใช้นิกเกิลธรรมชาติกับเชื้อเพลิงลิเทียมอะลูมิเนียมไฮไดรด์"
       }
     },
     "exampleTypes": {
@@ -1250,15 +1250,15 @@
     "glossaryTerms": {
       "nae": {
         "term": "NAE (สภาพแวดล้อมที่ว่องไวทางนิวเคลียร์)",
-        "definition": "คำของ Edmund Storms ที่หมายถึงตำแหน่งพิเศษระดับนาโนในวัสดุ เช่น รอยร้าว ช่องว่าง หรือลักษณะพื้นผิวในโลหะไฮไดรด์ ซึ่งเสนอว่าเป็นที่เกิด LENR แทนที่จะเกิดทั่วทั้งโครงผลึก"
+        "definition": "คำของเอ็ดมันด์ สตอร์มส์ ที่หมายถึงตำแหน่งพิเศษระดับนาโนในวัสดุ เช่น รอยร้าว ช่องว่าง หรือลักษณะพื้นผิวในโลหะไฮไดรด์ ซึ่งเสนอว่าเป็นที่เกิด LENR แทนที่จะเกิดทั่วทั้งโครงผลึก"
       },
       "comptonWavelength": {
         "term": "ความยาวคลื่นคอมป์ตัน",
         "definition": "λ = h/(mc): ความยาวคลื่นของโฟตอนที่มีพลังงานเท่ากับพลังงานมวลนิ่งของอนุภาค สำหรับอิเล็กตรอน Cₑ ≈ 2.426 pm และสำหรับโปรตอน Cₚ ≈ 1.321 fm อัตราส่วนของทั้งสองคืออัตราส่วนมวลโปรตอนต่ออิเล็กตรอน ≈ 1836.15"
       },
       "mullerResonance": {
-        "term": "เรโซแนนซ์ของ Muller",
-        "definition": "แบบจำลองของ Frithjof Muller ซึ่งแต่ละธาตุมีบันไดความยาวคลื่น L = Z × C × 2ᴺ ที่สร้างจากความยาวคลื่นคอมป์ตันของอิเล็กตรอน (Cₑ) และโปรตอน (Cₚ) ธาตุ Z₁ และ Z₂ เกิดเรโซแนนซ์เมื่อ Z₁ · Cₑ · 2ᴺ = Z₂ · Cₚ · 2^(N+ΔN) นั่นคือ Z₁/Z₂ ≈ 2^ΔN / 1836.15 เรโซแนนซ์กำหนดเพียงช่วงห่างของอ็อกเทฟ ΔN ส่วนอ็อกเทฟสัมบูรณ์ N เป็นอิสระ"
+        "term": "เรโซแนนซ์ของมุลเลอร์",
+        "definition": "แบบจำลองของฟริทยอฟ มุลเลอร์ ซึ่งแต่ละธาตุมีบันไดความยาวคลื่น L = Z × C × 2ᴺ ที่สร้างจากความยาวคลื่นคอมป์ตันของอิเล็กตรอน (Cₑ) และโปรตอน (Cₚ) ธาตุ Z₁ และ Z₂ เกิดเรโซแนนซ์เมื่อ Z₁ · Cₑ · 2ᴺ = Z₂ · Cₚ · 2^(N+ΔN) นั่นคือ Z₁/Z₂ ≈ 2^ΔN / 1836.15 เรโซแนนซ์กำหนดเพียงช่วงห่างของอ็อกเทฟ ΔN ส่วนอ็อกเทฟสัมบูรณ์ N เป็นอิสระ"
       },
       "catalyticCycle": {
         "term": "วัฏจักรเร่งปฏิกิริยา",
@@ -1269,152 +1269,152 @@
         "definition": "โมเลกุลที่ประกอบด้วยอะตอมหรือหน่วยที่เหมือนกันสองหน่วย เช่น H₂, N₂, O₂ และแฮโลเจนอะตอมคู่ F₂, Cl₂, Br₂ และ I₂ ตัวเลือก \"อนุญาตการเกิดไดเมอร์\" ของเครื่องจำลองคาสเคดใช้กับธาตุที่เป็นอะตอมคู่ตามธรรมชาติเหล่านี้"
       },
       "nuclide": {
-        "term": "Nuclide",
-        "definition": "A specific nuclear species characterized by its atomic number (Z) and mass number (A). For example, Carbon-12 and Carbon-14 are different nuclides of the same element."
+        "term": "นิวไคลด์",
+        "definition": "ชนิดของนิวเคลียสที่จำเพาะซึ่งระบุด้วยเลขอะตอม (Z) และเลขมวล (A) ตัวอย่างเช่น คาร์บอน-12 และคาร์บอน-14 เป็นนิวไคลด์ต่างชนิดกันของธาตุเดียวกัน"
       },
       "isotope": {
-        "term": "Isotope",
-        "definition": "Atoms of the same element (same Z) with different numbers of neutrons (different A). For example, H-1 (protium), H-2 (deuterium), and H-3 (tritium) are isotopes of hydrogen."
+        "term": "ไอโซโทป",
+        "definition": "อะตอมของธาตุเดียวกัน (Z เท่ากัน) ที่มีจำนวนนิวตรอนต่างกัน (A ต่างกัน) ตัวอย่างเช่น H-1 (โพรเทียม), H-2 (ดิวเทอเรียม) และ H-3 (ทริเทียม) เป็นไอโซโทปของไฮโดรเจน"
       },
       "atomicNumber": {
-        "term": "Atomic Number (Z)",
-        "definition": "The number of protons in a nucleus. Determines which element the atom is. For example, Z=1 is hydrogen, Z=26 is iron."
+        "term": "เลขอะตอม (Z)",
+        "definition": "จำนวนโปรตอนในนิวเคลียส ซึ่งเป็นตัวกำหนดว่าอะตอมนั้นเป็นธาตุใด ตัวอย่างเช่น Z=1 คือไฮโดรเจน Z=26 คือเหล็ก"
       },
       "massNumber": {
-        "term": "Mass Number (A)",
-        "definition": "The total number of protons and neutrons (nucleons) in a nucleus. A = Z + N, where N is the neutron count."
+        "term": "เลขมวล (A)",
+        "definition": "จำนวนรวมของโปรตอนและนิวตรอน (นิวคลีออน) ในนิวเคลียส A = Z + N โดย N คือจำนวนนิวตรอน"
       },
       "bindingEnergy": {
-        "term": "Binding Energy (BE)",
-        "definition": "The energy required to disassemble a nucleus into its constituent protons and neutrons. Higher binding energy per nucleon means a more stable nucleus. Measured in MeV."
+        "term": "พลังงานยึดเหนี่ยว (BE)",
+        "definition": "พลังงานที่ต้องใช้ในการแยกนิวเคลียสออกเป็นโปรตอนและนิวตรอนที่เป็นองค์ประกอบ พลังงานยึดเหนี่ยวต่อนิวคลีออนที่สูงกว่าหมายถึงนิวเคลียสที่เสถียรกว่า วัดในหน่วย MeV"
       },
       "bindingEnergyPerNucleon": {
-        "term": "Binding Energy per Nucleon (BEN)",
-        "definition": "Binding energy divided by mass number (BE/A). Iron-56 has the highest BEN (~8.8 MeV), making it the most tightly bound nucleus. Reactions moving toward Fe-56 release energy."
+        "term": "พลังงานยึดเหนี่ยวต่อนิวคลีออน (BEN)",
+        "definition": "พลังงานยึดเหนี่ยวหารด้วยเลขมวล (BE/A) เหล็ก-56 มีค่า BEN สูงที่สุด (~8.8 MeV) จึงเป็นนิวเคลียสที่ยึดเหนี่ยวกันแน่นที่สุด ปฏิกิริยาที่เคลื่อนเข้าหา Fe-56 จะปลดปล่อยพลังงาน"
       },
       "halfLife": {
-        "term": "Half-Life",
-        "definition": "The time required for half of a radioactive sample to decay. Ranges from fractions of a second to billions of years. In this database, a nuclide with log₁₀(half-life in years) > 9 is considered stable."
+        "term": "ครึ่งชีวิต",
+        "definition": "เวลาที่ใช้ให้ตัวอย่างกัมมันตรังสีสลายตัวไปครึ่งหนึ่ง มีค่าตั้งแต่เศษเสี้ยววินาทีไปจนถึงหลายพันล้านปี ในฐานข้อมูลนี้ นิวไคลด์ที่มีค่า log₁₀(ครึ่งชีวิตในหน่วยปี) > 9 ถือว่าเสถียร"
       },
       "stableNuclide": {
-        "term": "Stable Nuclide",
-        "definition": "A nuclide that does not undergo radioactive decay (or has a half-life exceeding 1 billion years). In this database, stability is defined as LHL > 9."
+        "term": "นิวไคลด์เสถียร",
+        "definition": "นิวไคลด์ที่ไม่เกิดการสลายตัวกัมมันตรังสี (หรือมีครึ่งชีวิตเกิน 1 พันล้านปี) ในฐานข้อมูลนี้ ความเสถียรนิยามว่า LHL > 9"
       },
       "boson": {
-        "term": "Boson",
-        "definition": "A particle with integer spin (0, 1, 2...). Nuclides with even mass number A are nuclear bosons. Bosons can occupy the same quantum state, enabling phenomena like Bose-Einstein condensation."
+        "term": "โบซอน",
+        "definition": "อนุภาคที่มีสปินเป็นจำนวนเต็ม (0, 1, 2...) นิวไคลด์ที่มีเลขมวล A เป็นเลขคู่เป็นโบซอนเชิงนิวเคลียร์ โบซอนสามารถอยู่ในสถานะควอนตัมเดียวกันได้ ทำให้เกิดปรากฏการณ์อย่างการควบแน่นแบบโบส-ไอน์สไตน์"
       },
       "fermion": {
-        "term": "Fermion",
-        "definition": "A particle with half-integer spin (1/2, 3/2...). Nuclides with odd mass number A are nuclear fermions. Fermions obey the Pauli exclusion principle."
+        "term": "เฟอร์มิออน",
+        "definition": "อนุภาคที่มีสปินเป็นครึ่งจำนวนเต็ม (1/2, 3/2...) นิวไคลด์ที่มีเลขมวล A เป็นเลขคี่เป็นเฟอร์มิออนเชิงนิวเคลียร์ เฟอร์มิออนเป็นไปตามหลักการกีดกันของเพาลี"
       },
       "neutrino": {
-        "term": "Neutrino",
-        "definition": "A nearly massless, weakly interacting subatomic particle produced in nuclear reactions involving the weak force (e.g., beta decay). Denoted ν (left-handed) or ν̄ (right-handed antineutrino)."
+        "term": "นิวทริโน",
+        "definition": "อนุภาคย่อยของอะตอมที่แทบไม่มีมวลและมีอันตรกิริยาอย่างอ่อน เกิดขึ้นในปฏิกิริยานิวเคลียร์ที่เกี่ยวข้องกับแรงอย่างอ่อน (เช่น การสลายตัวแบบบีตา) ใช้สัญลักษณ์ ν (ถนัดซ้าย) หรือ ν̄ (แอนตินิวทริโนถนัดขวา)"
       },
       "radioactiveDecay": {
-        "term": "Radioactive Decay",
-        "definition": "The spontaneous transformation of an unstable nucleus into a more stable configuration. Common modes include alpha (A), beta-minus (B-), beta-plus (B+), electron capture (EC), and isomeric transition (IT)."
+        "term": "การสลายตัวกัมมันตรังสี",
+        "definition": "การเปลี่ยนแปลงโดยธรรมชาติของนิวเคลียสที่ไม่เสถียรไปสู่โครงแบบที่เสถียรกว่า รูปแบบที่พบบ่อย ได้แก่ แอลฟา (A), บีตาลบ (B-), บีตาบวก (B+), การจับอิเล็กตรอน (EC) และการเปลี่ยนสถานะไอโซเมอร์ (IT)"
       },
       "alphaDecay": {
-        "term": "Alpha Decay",
-        "definition": "Emission of a helium-4 nucleus (2 protons + 2 neutrons). Reduces Z by 2 and A by 4. Common in heavy elements like uranium and radium."
+        "term": "การสลายตัวแบบแอลฟา",
+        "definition": "การปล่อยนิวเคลียสฮีเลียม-4 (2 โปรตอน + 2 นิวตรอน) ทำให้ Z ลดลง 2 และ A ลดลง 4 พบบ่อยในธาตุหนัก เช่น ยูเรเนียมและเรเดียม"
       },
       "betaDecay": {
-        "term": "Beta Decay",
-        "definition": "Transformation of a neutron into a proton (β⁻, Z+1) or proton into neutron (β⁺, Z-1). A stays the same. Involves emission of a neutrino or antineutrino."
+        "term": "การสลายตัวแบบบีตา",
+        "definition": "การเปลี่ยนนิวตรอนเป็นโปรตอน (β⁻, Z+1) หรือโปรตอนเป็นนิวตรอน (β⁺, Z-1) โดย A คงเดิม เกี่ยวข้องกับการปล่อยนิวทริโนหรือแอนตินิวทริโน"
       },
       "electronCapture": {
-        "term": "Electron Capture (EC)",
-        "definition": "An inner orbital electron is captured by the nucleus, converting a proton to a neutron. Z decreases by 1, A stays the same. Competes with β⁺ decay."
+        "term": "การจับอิเล็กตรอน (EC)",
+        "definition": "นิวเคลียสจับอิเล็กตรอนในวงโคจรชั้นใน ทำให้โปรตอนเปลี่ยนเป็นนิวตรอน Z ลดลง 1 และ A คงเดิม เป็นกระบวนการที่แข่งขันกับการสลายตัวแบบ β⁺"
       },
       "isomericTransition": {
-        "term": "Isomeric Transition (IT)",
-        "definition": "A metastable excited nuclear state decays to a lower energy state by emitting a gamma ray. Z and A remain unchanged. The nuclide symbol gets an \"m\" suffix (e.g., Tc-99m)."
+        "term": "การเปลี่ยนสถานะไอโซเมอร์ (IT)",
+        "definition": "สถานะกระตุ้นกึ่งเสถียรของนิวเคลียสสลายตัวไปสู่สถานะพลังงานต่ำกว่าโดยการปล่อยรังสีแกมมา Z และ A ไม่เปลี่ยนแปลง สัญลักษณ์นิวไคลด์จะมีคำต่อท้าย \"m\" (เช่น Tc-99m)"
       },
       "lenr": {
         "term": "LENR",
-        "definition": "Low Energy Nuclear Reactions. A class of nuclear reactions that occur at or near room temperature, distinct from conventional \"hot\" fusion which requires millions of degrees. Also historically known as \"cold fusion.\""
+        "definition": "ปฏิกิริยานิวเคลียร์พลังงานต่ำ (Low Energy Nuclear Reactions) กลุ่มของปฏิกิริยานิวเคลียร์ที่เกิดขึ้นที่อุณหภูมิห้องหรือใกล้เคียง ซึ่งแตกต่างจากฟิวชัน \"ร้อน\" แบบดั้งเดิมที่ต้องใช้อุณหภูมิหลายล้านองศา ในอดีตยังเป็นที่รู้จักในชื่อ \"ฟิวชันเย็น\""
       },
       "transmutation": {
-        "term": "Transmutation",
-        "definition": "The conversion of one chemical element or isotope into another. Can occur through fusion, fission, or two-to-two reactions. This database catalogs transmutation pathways computed by Dr. Alexander Parkhomov."
+        "term": "การแปรธาตุ",
+        "definition": "การเปลี่ยนธาตุเคมีหรือไอโซโทปหนึ่งไปเป็นอีกชนิดหนึ่ง อาจเกิดผ่านปฏิกิริยาฟิวชัน ฟิชชัน หรือสองต่อสอง ฐานข้อมูลนี้รวบรวมเส้นทางการแปรธาตุที่คำนวณโดยดร. อเล็กซานเดอร์ ปาร์โคมอฟ"
       },
       "fusion": {
-        "term": "Fusion",
-        "definition": "A nuclear reaction where two lighter nuclei combine to form a heavier nucleus (A + B → C). Releases energy when the product has higher binding energy per nucleon than the reactants. This database contains 3,921 fusion reactions, of which 1,505 involve no neutrinos."
+        "term": "ฟิวชัน",
+        "definition": "ปฏิกิริยานิวเคลียร์ที่นิวเคลียสเบาสองตัวรวมกันเป็นนิวเคลียสที่หนักกว่า (A + B → C) ปลดปล่อยพลังงานเมื่อผลิตภัณฑ์มีพลังงานยึดเหนี่ยวต่อนิวคลีออนสูงกว่าสารตั้งต้น ฐานข้อมูลนี้มีปฏิกิริยาฟิวชัน 3,921 รายการ ซึ่ง 1,505 รายการไม่เกี่ยวข้องกับนิวทริโน"
       },
       "fission": {
-        "term": "Fission",
-        "definition": "A nuclear reaction where a heavier nucleus splits into two lighter nuclei (A → B + C). Releases energy when the products have higher binding energy per nucleon. This database contains 1,733 fission reactions, of which 818 involve no neutrinos."
+        "term": "ฟิชชัน",
+        "definition": "ปฏิกิริยานิวเคลียร์ที่นิวเคลียสที่หนักกว่าแตกออกเป็นนิวเคลียสที่เบากว่าสองตัว (A → B + C) ปลดปล่อยพลังงานเมื่อผลิตภัณฑ์มีพลังงานยึดเหนี่ยวต่อนิวคลีออนสูงกว่า ฐานข้อมูลนี้มีปฏิกิริยาฟิชชัน 1,733 รายการ ซึ่ง 818 รายการไม่เกี่ยวข้องกับนิวทริโน"
       },
       "twoToTwo": {
-        "term": "Two-to-Two",
-        "definition": "A nuclear reaction where two nuclei interact and produce two different nuclei (A + B → C + D). The most common reaction type in the database, with 1,215,374 reactions (518,657 of which involve no neutrinos)."
+        "term": "สองต่อสอง",
+        "definition": "ปฏิกิริยานิวเคลียร์ที่นิวเคลียสสองตัวทำอันตรกิริยากันและให้นิวเคลียสใหม่สองตัวที่ต่างออกไป (A + B → C + D) เป็นประเภทปฏิกิริยาที่พบมากที่สุดในฐานข้อมูล มีทั้งหมด 1,215,374 รายการ (ในจำนวนนี้ 518,657 รายการไม่เกี่ยวข้องกับนิวทริโน)"
       },
       "cascade": {
-        "term": "Cascade",
-        "definition": "A chain of nuclear reactions where products of one reaction become inputs to subsequent reactions. The cascade engine simulates multi-generation reaction pathways from initial fuel nuclides."
+        "term": "คาสเคด",
+        "definition": "ลำดับต่อเนื่องของปฏิกิริยานิวเคลียร์ที่ผลิตภัณฑ์ของปฏิกิริยาหนึ่งกลายเป็นสารตั้งต้นของปฏิกิริยาถัดไป เอนจินคาสเคดจำลองเส้นทางปฏิกิริยาหลายรุ่นจากนิวไคลด์เชื้อเพลิงเริ่มต้น"
       },
       "feedbackLoop": {
-        "term": "Feedback Loop",
-        "definition": "When a product nuclide from a later reaction step reappears as an input in an earlier step, creating a self-sustaining cycle. Similar to the CNO cycle in stellar nucleosynthesis."
+        "term": "ลูปป้อนกลับ",
+        "definition": "กรณีที่นิวไคลด์ผลิตภัณฑ์จากขั้นปฏิกิริยาภายหลังปรากฏอีกครั้งเป็นสารตั้งต้นในขั้นก่อนหน้า ทำให้เกิดวัฏจักรที่ค้ำจุนตัวเองได้ คล้ายกับวัฏจักร CNO ในการสังเคราะห์นิวเคลียสในดาวฤกษ์"
       },
       "mev": {
         "term": "MeV",
-        "definition": "Megaelectronvolt (10⁶ eV). A unit of energy commonly used in nuclear physics. 1 MeV = 1.602 × 10⁻¹³ joules. The energy released in a nuclear reaction is the Q-value, measured in MeV."
+        "definition": "เมกะอิเล็กตรอนโวลต์ (10⁶ eV) หน่วยพลังงานที่ใช้กันทั่วไปในฟิสิกส์นิวเคลียร์ 1 MeV = 1.602 × 10⁻¹³ จูล พลังงานที่ปลดปล่อยในปฏิกิริยานิวเคลียร์คือค่า Q ซึ่งวัดในหน่วย MeV"
       },
       "kev": {
         "term": "keV",
-        "definition": "Kiloelectronvolt (10³ eV). 1 MeV = 1000 keV. Used for decay energies and radiation energies in the RadioNuclides table."
+        "definition": "กิโลอิเล็กตรอนโวลต์ (10³ eV) 1 MeV = 1000 keV ใช้สำหรับพลังงานการสลายตัวและพลังงานรังสีในตาราง RadioNuclides"
       },
       "amu": {
         "term": "AMU",
-        "definition": "Atomic Mass Unit. Defined as 1/12 of the mass of a Carbon-12 atom. 1 AMU = 931.494 MeV/c². Used to express nuclear and atomic masses."
+        "definition": "หน่วยมวลอะตอม (Atomic Mass Unit) นิยามเป็น 1/12 ของมวลอะตอมคาร์บอน-12 1 AMU = 931.494 MeV/c² ใช้แสดงมวลของนิวเคลียสและอะตอม"
       },
       "nBorF": {
         "term": "nBorF",
-        "definition": "Nuclear Boson or Fermion classification. Based on mass number A: even A = boson (b), odd A = fermion (f). Relevant to quantum statistical behavior of the nucleus."
+        "definition": "การจำแนกโบซอนหรือเฟอร์มิออนเชิงนิวเคลียร์ อิงตามเลขมวล A: A คู่ = โบซอน (b), A คี่ = เฟอร์มิออน (f) เกี่ยวข้องกับพฤติกรรมทางสถิติควอนตัมของนิวเคลียส"
       },
       "aBorF": {
         "term": "aBorF",
-        "definition": "Atomic Boson or Fermion classification. Based on neutron count (A - Z): even neutrons = boson (b), odd neutrons = fermion (f). Describes the quantum statistics of the whole atom."
+        "definition": "การจำแนกโบซอนหรือเฟอร์มิออนเชิงอะตอม อิงตามจำนวนนิวตรอน (A - Z): จำนวนนิวตรอนคู่ = โบซอน (b), จำนวนนิวตรอนคี่ = เฟอร์มิออน (f) อธิบายสถิติควอนตัมของอะตอมทั้งอะตอม"
       },
       "lhl": {
         "term": "LHL",
-        "definition": "Log₁₀ of Half-Life in years. A compact representation of half-life. LHL = 0 means 1 year, LHL = 9 means 1 billion years (stable threshold). Negative values indicate sub-year half-lives."
+        "definition": "ค่า log₁₀ ของครึ่งชีวิตในหน่วยปี เป็นการแสดงครึ่งชีวิตในรูปแบบกะทัดรัด LHL = 0 หมายถึง 1 ปี LHL = 9 หมายถึง 1 พันล้านปี (เกณฑ์ความเสถียร) ค่าลบแสดงครึ่งชีวิตที่สั้นกว่าหนึ่งปี"
       },
       "sus": {
         "term": "SUS",
-        "definition": "Status field indicating nuclide origin. SPN = Stable Primordial (exists naturally), UPN = Unstable Primordial (radioactive but natural), SYN = Synthetic (only man-made)."
+        "definition": "ฟิลด์สถานะที่ระบุที่มาของนิวไคลด์ SPN = เสถียรและมีมาแต่ดั้งเดิม (มีอยู่ในธรรมชาติ), UPN = ไม่เสถียรแต่มีมาแต่ดั้งเดิม (กัมมันตรังสีแต่พบในธรรมชาติ), SYN = สังเคราะห์ (มนุษย์สร้างขึ้นเท่านั้น)"
       },
       "rdm": {
         "term": "RDM",
-        "definition": "Primary Radioactive Decay Mode. The dominant decay pathway for unstable nuclides. Values include A (alpha), B- (beta minus), B+ (beta plus), EC (electron capture), IT (isomeric transition)."
+        "definition": "รูปแบบการสลายตัวกัมมันตรังสีหลัก เส้นทางการสลายตัวที่เด่นที่สุดของนิวไคลด์ที่ไม่เสถียร ค่าที่เป็นไปได้ ได้แก่ A (แอลฟา), B- (บีตาลบ), B+ (บีตาบวก), EC (การจับอิเล็กตรอน), IT (การเปลี่ยนสถานะไอโซเมอร์)"
       },
       "deuterium": {
-        "term": "Deuterium (D)",
-        "definition": "Hydrogen-2 (one proton + one neutron). In the database, deuterium uses the symbol \"D\" rather than \"H\" with A=2. Important in LENR research as a common fuel choice."
+        "term": "ดิวเทอเรียม (D)",
+        "definition": "ไฮโดรเจน-2 (หนึ่งโปรตอน + หนึ่งนิวตรอน) ในฐานข้อมูล ดิวเทอเรียมใช้สัญลักษณ์ \"D\" แทนที่จะเป็น \"H\" ที่มี A=2 มีความสำคัญในการวิจัย LENR เนื่องจากเป็นเชื้อเพลิงที่นิยมใช้"
       },
       "tritium": {
-        "term": "Tritium (T)",
-        "definition": "Hydrogen-3 (one proton + two neutrons). Radioactive with a half-life of 12.3 years. In the database, tritium uses the symbol \"T\" rather than \"H\" with A=3."
+        "term": "ทริเทียม (T)",
+        "definition": "ไฮโดรเจน-3 (หนึ่งโปรตอน + สองนิวตรอน) เป็นกัมมันตรังสีโดยมีครึ่งชีวิต 12.3 ปี ในฐานข้อมูล ทริเทียมใช้สัญลักษณ์ \"T\" แทนที่จะเป็น \"H\" ที่มี A=3"
       },
       "protium": {
-        "term": "Protium (H)",
-        "definition": "Hydrogen-1 (one proton, no neutrons). The most common hydrogen isotope (99.98% abundance). In the database, uses symbol \"H\"."
+        "term": "โพรเทียม (H)",
+        "definition": "ไฮโดรเจน-1 (หนึ่งโปรตอน ไม่มีนิวตรอน) ไอโซโทปของไฮโดรเจนที่พบมากที่สุด (ความอุดมสมบูรณ์ 99.98%) ในฐานข้อมูลใช้สัญลักษณ์ \"H\""
       }
     }
   },
   "mullerResonance": {
-    "title": "เครื่องมือสำรวจเรโซแนนซ์ของ Muller",
-    "description": "สำรวจเรโซแนนซ์ของความยาวคลื่นอิเล็กตรอน-โปรตอนระหว่างธาตุด้วยสมการของ Frithjof Muller L = Z × Cₑ × 2ᴺ โดยอ้างอิงไขว้กับฐานข้อมูลปฏิกิริยานิวเคลียร์ของ Parkhomov",
+    "title": "เครื่องมือสำรวจเรโซแนนซ์ของมุลเลอร์",
+    "description": "สำรวจเรโซแนนซ์ของความยาวคลื่นอิเล็กตรอน-โปรตอนระหว่างธาตุด้วยสมการของฟริทยอฟ มุลเลอร์ L = Z × Cₑ × 2ᴺ โดยอ้างอิงไขว้กับฐานข้อมูลปฏิกิริยานิวเคลียร์ของปาร์โคมอฟ",
     "equationExplanation": "L = ความยาวคลื่นเรโซแนนซ์, Z = เลขอะตอม, C = ความยาวคลื่นคอมป์ตันของอิเล็กตรอน (Cₑ) หรือโปรตอน (Cₚ), N = เลขอ็อกเทฟ (จำนวนเต็ม ≥ 0) เรโซแนนซ์ข้ามอนุภาคกำหนดช่วงห่างของอ็อกเทฟ ΔN ระหว่างบันไดของอิเล็กตรอนและโปรตอน ส่วนอ็อกเทฟสัมบูรณ์ N เป็นอิสระ",
     "threshold": "เกณฑ์ความคลาดเคลื่อน",
     "selectElement": "เลือกธาตุเพื่อค้นหาคู่เรโซแนนซ์",
     "resonantPartners": "คู่เรโซแนนซ์",
     "exactMatches": "ตรงกันพอดี (<0.01%)",
-    "withReactions": "มีปฏิกิริยาของ Parkhomov",
+    "withReactions": "มีปฏิกิริยาของปาร์โคมอฟ",
     "totalReactions": "ปฏิกิริยาทั้งหมด",
     "resonancePairs": "คู่เรโซแนนซ์",
     "topGlobalPairs": "คู่เรโซแนนซ์อันดับต้นจากธาตุทั้งหมด",
@@ -1462,10 +1462,10 @@
       "protonN": "N โปรตอนของ {{element}}"
     },
     "aboutTitle": "เกี่ยวกับเครื่องมือนี้",
-    "about1": "สมการของ Frithjof Muller L = Z × C × 2ᴺ ให้บันไดความยาวคลื่นแก่ทุกธาตุ หนึ่งค่าต่ออ็อกเทฟ N ทั้งสำหรับความยาวคลื่นคอมป์ตันของอิเล็กตรอน (Cₑ) และโปรตอน (Cₚ) ธาตุสองธาตุเกิดเรโซแนนซ์เมื่อบันไดอิเล็กตรอนของธาตุหนึ่งตรงกับบันไดโปรตอนของอีกธาตุหนึ่ง: Z₁ · Cₑ · 2^N = Z₂ · Cₚ · 2^(N+ΔN) N ถูกตัดออกจากเงื่อนไขนี้ ดังนั้นเรโซแนนซ์จึงกำหนดเพียงช่วงห่างของอ็อกเทฟ ΔN (และความใกล้เคียงของอัตราส่วน) ไม่ใช่อ็อกเทฟสัมบูรณ์ — หากเป็นจริงที่อ็อกเทฟหนึ่งก็เป็นจริงที่ทุกอ็อกเทฟ เลือกแถบความยาวคลื่นด้านบนเพื่อดูว่าอ็อกเทฟใดของแต่ละคู่ตกอยู่ภายในแถบนั้น",
+    "about1": "สมการของฟริทยอฟ มุลเลอร์ L = Z × C × 2ᴺ ให้บันไดความยาวคลื่นแก่ทุกธาตุ หนึ่งค่าต่ออ็อกเทฟ N ทั้งสำหรับความยาวคลื่นคอมป์ตันของอิเล็กตรอน (Cₑ) และโปรตอน (Cₚ) ธาตุสองธาตุเกิดเรโซแนนซ์เมื่อบันไดอิเล็กตรอนของธาตุหนึ่งตรงกับบันไดโปรตอนของอีกธาตุหนึ่ง: Z₁ · Cₑ · 2^N = Z₂ · Cₚ · 2^(N+ΔN) N ถูกตัดออกจากเงื่อนไขนี้ ดังนั้นเรโซแนนซ์จึงกำหนดเพียงช่วงห่างของอ็อกเทฟ ΔN (และความใกล้เคียงของอัตราส่วน) ไม่ใช่อ็อกเทฟสัมบูรณ์ — หากเป็นจริงที่อ็อกเทฟหนึ่งก็เป็นจริงที่ทุกอ็อกเทฟ เลือกแถบความยาวคลื่นด้านบนเพื่อดูว่าอ็อกเทฟใดของแต่ละคู่ตกอยู่ภายในแถบนั้น",
     "about2": "ตัวอย่าง: อิเล็กตรอนของทองแดง (Z=29) และโปรตอนของเหล็ก (Z=26) เกิดเรโซแนนซ์ด้วยช่วงห่างของอ็อกเทฟ ΔN = 11 โดยคลาดเคลื่อนไม่เกิน 0.0008% เนื่องจาก 29 × 1836.15 ≈ 26 × 2¹¹ ช่วงห่างนี้กำหนดโดยอัตราส่วนมวลอิเล็กตรอน/โปรตอน (log₂(1836.15) ≈ 10.84) การตรงกันเดียวกันปรากฏในทุกขั้นของบันได: ที่ N = 20 / 31 ความยาวคลื่นร่วมคือ 73.78 µm ที่ N = 31 / 42 คือ 151.10 mm และแต่ละอ็อกเทฟถัดไปจะเพิ่มเป็นสองเท่า มีเพียง 8 จาก 4,186 คู่ธาตุที่เป็นไปได้ที่ตรงกันภายใน < 0.01%",
-    "about3": "จำนวนปฏิกิริยาที่แสดงมาจากตารางปฏิกิริยานิวเคลียร์แบบคายพลังงานของ Dr. Alexander Parkhomov จำนวนเหล่านี้บ่งบอกว่ามีปฏิกิริยาที่เป็นไปได้ทางพลังงานกี่ปฏิกิริยาระหว่างแต่ละคู่ ไม่ใช่อัตราการเกิดปฏิกิริยาหรือความน่าจะเป็น การวิเคราะห์ทางสถิติไม่พบสหสัมพันธ์ที่มีนัยสำคัญระหว่างเรโซแนนซ์ของ Muller กับความหนาแน่นของปฏิกิริยาของ Parkhomov — ฐานข้อมูลถูกกำหนดโดยพลังงานยึดเหนี่ยวนิวเคลียร์ ไม่ใช่เรโซแนนซ์ของความยาวคลื่น เครื่องมือนี้มีไว้เพื่อการสำรวจ",
-    "disclaimer": "หมายเหตุ: สมการของ Muller ให้คณิตศาสตร์ที่สง่างาม แต่ยังขาดการยืนยันเชิงทดลองที่เป็นอิสระสำหรับกลไกเรโซแนนซ์ เครื่องมือนี้นำเสนอเพื่อการสำรวจและการตั้งสมมติฐาน ไม่ใช่แบบจำลองการทำนายที่ผ่านการตรวจสอบแล้ว",
+    "about3": "จำนวนปฏิกิริยาที่แสดงมาจากตารางปฏิกิริยานิวเคลียร์แบบคายพลังงานของดร. อเล็กซานเดอร์ ปาร์โคมอฟ จำนวนเหล่านี้บ่งบอกว่ามีปฏิกิริยาที่เป็นไปได้ทางพลังงานกี่ปฏิกิริยาระหว่างแต่ละคู่ ไม่ใช่อัตราการเกิดปฏิกิริยาหรือความน่าจะเป็น การวิเคราะห์ทางสถิติไม่พบสหสัมพันธ์ที่มีนัยสำคัญระหว่างเรโซแนนซ์ของมุลเลอร์ กับความหนาแน่นของปฏิกิริยาของปาร์โคมอฟ — ฐานข้อมูลถูกกำหนดโดยพลังงานยึดเหนี่ยวนิวเคลียร์ ไม่ใช่เรโซแนนซ์ของความยาวคลื่น เครื่องมือนี้มีไว้เพื่อการสำรวจ",
+    "disclaimer": "หมายเหตุ: สมการของมุลเลอร์ ให้คณิตศาสตร์ที่สง่างาม แต่ยังขาดการยืนยันเชิงทดลองที่เป็นอิสระสำหรับกลไกเรโซแนนซ์ เครื่องมือนี้นำเสนอเพื่อการสำรวจและการตั้งสมมติฐาน ไม่ใช่แบบจำลองการทำนายที่ผ่านการตรวจสอบแล้ว",
     "legend": {
       "title": "สเกลสี",
       "weaker": "เรโซแนนซ์อ่อนกว่า",
@@ -1476,15 +1476,15 @@
       "naeOutside": "เรโซแนนซ์อยู่นอกช่วง NAE",
       "naeUncoloured": "ธาตุที่ไม่มีสีไม่มีค่าความยาวคลื่นเรโซแนนซ์อิเล็กตรอนที่คำนวณได้"
     },
-    "noReactionsTitle": "ไม่มีปฏิกิริยาสำหรับคู่นี้ในตารางของ Parkhomov",
-    "noReactionsFootnote": "ขีด (-) หมายความว่าตารางของ Parkhomov ไม่มีปฏิกิริยาประเภทนั้นสำหรับคู่นี้ คู่เรโซแนนซ์จำนวนมากเกี่ยวข้องกับธาตุที่ไม่อยู่ในตารางดังกล่าว จึงพบขีดได้บ่อย",
+    "noReactionsTitle": "ไม่มีปฏิกิริยาสำหรับคู่นี้ในตารางของปาร์โคมอฟ",
+    "noReactionsFootnote": "ขีด (-) หมายความว่าตารางของปาร์โคมอฟ ไม่มีปฏิกิริยาประเภทนั้นสำหรับคู่นี้ คู่เรโซแนนซ์จำนวนมากเกี่ยวข้องกับธาตุที่ไม่อยู่ในตารางดังกล่าว จึงพบขีดได้บ่อย",
     "tabs": {
       "resonancePairs": "คู่เรโซแนนซ์",
       "naePredictions": "การทำนาย NAE"
     },
     "nae": {
       "title": "การทำนายโครงผลึก NAE",
-      "description": "จัดอันดับธาตุตามความใกล้เคียงของความยาวคลื่นเรโซแนนซ์อิเล็กตรอนกับช่องว่างสภาพแวดล้อมที่ว่องไวทางนิวเคลียร์ (NAE) ขนาด ~1 nm ที่ระบุโดย Edmund Storms (JCMNS 41, 2026) ธาตุที่ถูกเน้นมีเรโซแนนซ์ในช่วง 0.5–2.0 nm ที่อ็อกเทฟต่ำ",
+      "description": "จัดอันดับธาตุตามความใกล้เคียงของความยาวคลื่นเรโซแนนซ์อิเล็กตรอนกับช่องว่างสภาพแวดล้อมที่ว่องไวทางนิวเคลียร์ (NAE) ขนาด ~1 nm ที่ระบุโดยเอ็ดมันด์ สตอร์มส์ (JCMNS 41, 2026) ธาตุที่ถูกเน้นมีเรโซแนนซ์ในช่วง 0.5–2.0 nm ที่อ็อกเทฟต่ำ",
       "element": "ธาตุ",
       "octave": "อ็อกเทฟ (N)",
       "electronResonance": "เรโซแนนซ์ e⁻",
@@ -1495,7 +1495,7 @@
       "deuteriumMismatch": "ความคลาดเคลื่อน D",
       "phononFrequency": "ความถี่โฟนอน",
       "knownLENR": "LENR ที่ทราบ",
-      "parkhomovReactions": "ปฏิกิริยา Parkhomov",
+      "parkhomovReactions": "ปฏิกิริยาปาร์โคมอฟ",
       "showNAEOnly": "แสดงเฉพาะธาตุที่มีเรโซแนนซ์ในช่วง NAE",
       "searchPlaceholder": "กรองตามธาตุ (คั่นด้วยจุลภาค)...",
       "elementsInRange": "ธาตุในช่วง NAE (0.5–2.0 nm)",
@@ -1523,23 +1523,23 @@
       "lenrRefs": "เอกสารอ้างอิง LENR",
       "noNAEResonance": "ไม่มีเรโซแนนซ์ในช่วง NAE ที่อ็อกเทฟต่ำ",
       "aboutNAETitle": "เกี่ยวกับการทำนาย NAE",
-      "aboutNAE1": "Edmund Storms ระบุว่าฟิวชันเย็น (LENR) เกิดขึ้นในสภาพแวดล้อมที่ว่องไวทางนิวเคลียร์ (NAE) — ช่องว่างหรือรอยร้าวระดับนาโนในโครงผลึกโลหะ ซึ่งโดยทั่วไปกว้างประมาณ ~1 nm (JCMNS 41, 2026) คำถามที่ยังไม่มีคำตอบคือ: เหตุใดช่องว่างในโครงผลึกจึงต้องมีขนาดประมาณ ~1 nm?",
-      "aboutNAE2": "สมการของ Muller L = Z × Cₑ × 2ᴺ ที่เลขอ็อกเทฟต่ำ (N=3, N=4) ทำนายความยาวคลื่นเรโซแนนซ์อิเล็กตรอนของแต่ละธาตุ แพลเลเดียม (Z=46) ที่ N=3 ให้ 0.89 nm และที่ N=4 ให้ 1.79 nm — ช่องว่าง NAE อยู่ระหว่างสองอ็อกเทฟนี้พอดี",
+      "aboutNAE1": "เอ็ดมันด์ สตอร์มส์ ระบุว่าฟิวชันเย็น (LENR) เกิดขึ้นในสภาพแวดล้อมที่ว่องไวทางนิวเคลียร์ (NAE) — ช่องว่างหรือรอยร้าวระดับนาโนในโครงผลึกโลหะ ซึ่งโดยทั่วไปกว้างประมาณ ~1 nm (JCMNS 41, 2026) คำถามที่ยังไม่มีคำตอบคือ: เหตุใดช่องว่างในโครงผลึกจึงต้องมีขนาดประมาณ ~1 nm?",
+      "aboutNAE2": "สมการของมุลเลอร์ L = Z × Cₑ × 2ᴺ ที่เลขอ็อกเทฟต่ำ (N=3, N=4) ทำนายความยาวคลื่นเรโซแนนซ์อิเล็กตรอนของแต่ละธาตุ แพลเลเดียม (Z=46) ที่ N=3 ให้ 0.89 nm และที่ N=4 ให้ 1.79 nm — ช่องว่าง NAE อยู่ระหว่างสองอ็อกเทฟนี้พอดี",
       "aboutNAE3": "การซ้อนทับกับดิวเทอเรียมนั้นน่าสนใจอย่างยิ่ง: ที่อ็อกเทฟโปรตอน N=20 ดิวเทอเรียมมีความยาวคลื่นเรโซแนนซ์ 1.39 nm — อยู่ในช่วง NAE พอดี เมื่อทั้งเรโซแนนซ์อิเล็กตรอนของโลหะเจ้าบ้านและเรโซแนนซ์โปรตอนของเชื้อเพลิงอยู่ใกล้ 1 nm ระบบอาจเกิดเรโซแนนซ์คู่ได้",
       "aboutNAE4": "โลหะที่ทราบว่าว่องไวต่อ LENR (Pd, Ni, Pt, Ti) ล้วนมีความยาวเรโซแนนซ์อิเล็กตรอนที่ครอบช่วง 0.9–1.8 nm ที่ N=3 หรือ N=4 ธาตุที่ไม่มีรายงาน LENR (Al และธาตุเบาส่วนใหญ่) อยู่นอกช่วงนี้ทั้งหมด หากสหสัมพันธ์นี้เป็นจริง จะเป็นทฤษฎีโครงผลึกเชิงปริมาณแรกสำหรับฟิวชันเย็น",
-      "naeDisclaimer": "การวิเคราะห์นี้รวมกรอบเรโซแนนซ์ของ Muller เข้ากับแบบจำลอง NAE ของ Storms ทั้งสองเป็นแบบจำลองเชิงทฤษฎี สมการของ Muller ยังขาดการยืนยันเชิงทดลองที่เป็นอิสระสำหรับกลไกเรโซแนนซ์ ขนาดช่องว่าง NAE ของ Storms อนุมานจากสภาวะการทดลอง ไม่ได้วัดโดยตรง ผลลัพธ์นำเสนอเพื่อการสำรวจและการตั้งสมมติฐาน"
+      "naeDisclaimer": "การวิเคราะห์นี้รวมกรอบเรโซแนนซ์ของมุลเลอร์ เข้ากับแบบจำลอง NAE ของสตอร์มส์ ทั้งสองเป็นแบบจำลองเชิงทฤษฎี สมการของมุลเลอร์ ยังขาดการยืนยันเชิงทดลองที่เป็นอิสระสำหรับกลไกเรโซแนนซ์ ขนาดช่องว่าง NAE ของสตอร์มส์ อนุมานจากสภาวะการทดลอง ไม่ได้วัดโดยตรง ผลลัพธ์นำเสนอเพื่อการสำรวจและการตั้งสมมติฐาน"
     }
   },
   "transmutations": {
     "title": "เครื่องมือสำรวจเส้นทางการแปรธาตุ",
-    "subtitle": "ข้อกล่าวอ้างการแปรธาตุ LENR ที่บันทึกไว้จากแหล่งข้อมูลปฐมภูมิ จับคู่กับเส้นทางสองขั้นที่เป็นไปได้จากฐานข้อมูลปฏิกิริยาของ Parkhomov",
+    "subtitle": "ข้อกล่าวอ้างการแปรธาตุ LENR ที่บันทึกไว้จากแหล่งข้อมูลปฐมภูมิ จับคู่กับเส้นทางสองขั้นที่เป็นไปได้จากฐานข้อมูลปฏิกิริยาของปาร์โคมอฟ",
     "disclaimerTitle": "ข้อกล่าวอ้างที่บันทึกไว้ ไม่ใช่กลไกที่ได้รับการยืนยัน",
-    "disclaimerText": "การแปรธาตุที่แสดงด้านล่างได้รับการรายงานในเอกสารปฐมภูมิ ฐานข้อมูลของ Parkhomov อาจแสดงเส้นทาง A+B → C+D ที่ทำให้การเปลี่ยนแปลงสุทธิเหล่านี้เป็นไปได้ แต่สิ่งนี้<0>ไม่ได้</0>พิสูจน์ว่ากลไกที่ตั้งสมมติฐานไว้เดิมนั้นถูกต้อง เส้นทางเหล่านี้เป็นเพียงเส้นทางที่เป็นไปได้ผ่านปฏิกิริยามูลฐานที่อนุญาต ไม่ใช่หลักฐานเชิงทดลอง",
+    "disclaimerText": "การแปรธาตุที่แสดงด้านล่างได้รับการรายงานในเอกสารปฐมภูมิ ฐานข้อมูลของปาร์โคมอฟ อาจแสดงเส้นทาง A+B → C+D ที่ทำให้การเปลี่ยนแปลงสุทธิเหล่านี้เป็นไปได้ แต่สิ่งนี้<0>ไม่ได้</0>พิสูจน์ว่ากลไกที่ตั้งสมมติฐานไว้เดิมนั้นถูกต้อง เส้นทางเหล่านี้เป็นเพียงเส้นทางที่เป็นไปได้ผ่านปฏิกิริยามูลฐานที่อนุญาต ไม่ใช่หลักฐานเชิงทดลอง",
     "filterAllCategories": "ทุกหมวดหมู่",
     "filterAllSources": "ทุกแหล่งที่มา",
     "filterByLab": "กรองตามห้องปฏิบัติการต้นทาง",
     "noResults": "ไม่มีการแปรธาตุที่ตรงกับตัวกรองปัจจุบัน",
-    "pathwayResultsHint": "เส้นทางที่เป็นไปได้จากตารางของ Parkhomov จะแสดงอยู่ใต้การ์ดนี้",
+    "pathwayResultsHint": "เส้นทางที่เป็นไปได้จากตารางของปาร์โคมอฟ จะแสดงอยู่ใต้การ์ดนี้",
     "curatedFrom": "คัดสรรจาก<1>การทบทวนวรรณกรรม LENR ของ HumanScholars</1> จำนวน {{count}} รายการ",
     "stepCount_one": "1 ขั้น",
     "stepCount_other": "{{count}} ขั้น",
@@ -1557,14 +1557,14 @@
     },
     "buttons": {
       "searching": "กำลังค้นหา...",
-      "findPathways": "ค้นหาเส้นทางของ Parkhomov",
+      "findPathways": "ค้นหาเส้นทางของปาร์โคมอฟ",
       "dismiss": "ปิด",
       "dismissPathways": "ปิดผลลัพธ์เส้นทาง",
       "viewSource": "ดูแหล่งที่มา"
     },
     "pathwayResults": {
-      "notFound": "ไม่พบเส้นทาง 1 หรือ 2 ขั้นในฐานข้อมูลของ Parkhomov สำหรับไอโซโทปที่ระบุ",
-      "explanation": "การแปรธาตุที่มีการรายงานอาจยังเป็นไปได้ผ่านเส้นทางนอกตารางของ Parkhomov (หลายขั้นเกินความลึก 2, ห่วงโซ่การจับนิวตรอน, สาขาการสลายตัวแบบบีตา) สำหรับเส้นทางหลายขั้นที่มีสารตัวกลางหมุนเวียน ลองใช้เครื่องมือ<1>ค้นหาวัฏจักร</1>",
+      "notFound": "ไม่พบเส้นทาง 1 หรือ 2 ขั้นในฐานข้อมูลของปาร์โคมอฟ สำหรับไอโซโทปที่ระบุ",
+      "explanation": "การแปรธาตุที่มีการรายงานอาจยังเป็นไปได้ผ่านเส้นทางนอกตารางของปาร์โคมอฟ (หลายขั้นเกินความลึก 2, ห่วงโซ่การจับนิวตรอน, สาขาการสลายตัวแบบบีตา) สำหรับเส้นทางหลายขั้นที่มีสารตัวกลางหมุนเวียน ลองใช้เครื่องมือ<1>ค้นหาวัฏจักร</1>",
       "header": "เส้นทางที่เป็นไปได้ ({{count}})"
     },
     "errors": {
@@ -1574,26 +1574,26 @@
     },
     "entries": {
       "iwamura-cs-pr": {
-        "source": "Iwamura et al., Mitsubishi Heavy Industries (2002)",
+        "source": "Iwamura และคณะ, Mitsubishi Heavy Industries (2002)",
         "setup": "ฟิล์มบางหลายชั้น Pd/CaO พร้อมการซึมผ่านของแก๊สดิวเทอเรียม",
         "hypothesizedMechanism": "การจับแอลฟาต่อเนื่อง: $133Cs + 2 × 4He → 141Pr$",
         "sourceTag": "JJAP 2002",
         "replicatedBy": "Toyota Central R&D (2013), Osaka University (2003)"
       },
       "iwamura-sr-mo": {
-        "source": "Iwamura et al., Mitsubishi Heavy Industries (2002)",
+        "source": "Iwamura และคณะ, Mitsubishi Heavy Industries (2002)",
         "setup": "ฟิล์มบางหลายชั้น Pd/CaO พร้อมการซึมผ่านของดิวเทอเรียม",
         "hypothesizedMechanism": "การจับแอลฟาต่อเนื่อง: $88Sr + 2 × 4He → 96Mo$",
         "sourceTag": "JJAP 2002",
         "replicatedBy": "Toyota Central R&D (2013)"
       },
       "iwamura-ba-sm": {
-        "source": "Iwamura et al., Mitsubishi Heavy Industries (2006)",
+        "source": "Iwamura และคณะ, Mitsubishi Heavy Industries (2006)",
         "setup": "ฟิล์มบางหลายชั้น Pd/CaO พร้อมการซึมผ่านของดิวเทอเรียม",
         "hypothesizedMechanism": "การจับแอลฟาหลายขั้น: $138Ba + 3 × 4He → 150Sm$"
       },
       "iwamura-w-pt": {
-        "source": "Iwamura et al., Mitsubishi Heavy Industries (2007)",
+        "source": "Iwamura และคณะ, Mitsubishi Heavy Industries (2007)",
         "setup": "ฟิล์มบางหลายชั้น Pd/CaO พร้อมการซึมผ่านของดิวเทอเรียม",
         "hypothesizedMechanism": "การจับแอลฟาต่อเนื่อง: $184W + 2 × 4He → 192Pt$"
       },
@@ -1612,21 +1612,21 @@
         "source": "Miley & Patterson (UIUC / CETI, 1996)",
         "setup": "แคโทด Ni แบบฟิล์มบางที่ผ่านการอิเล็กโทรลิซิสในสารละลายน้ำธรรมดา ตรวจพบธาตุผลิตภัณฑ์ประมาณ ~50 ชนิดด้วย SIMS/NAA",
         "hypothesizedMechanism": "สเปกตรัมผลิตภัณฑ์การแปรธาตุที่กว้าง ไม่มีการเสนอกลไกเดียว (มีการเสนอฟิชชันของนิวเคลียสประกอบ)",
-        "notes": "รายการรวม: Miley รายงานการกระจายของผลิตภัณฑ์ที่กว้าง ในที่นี้ใช้ Ni→Cu ซึ่งเป็นคู่ที่ถูกอ้างอิงมากที่สุด โดยสังเกตพบธาตุประมาณ ~50 ชนิด"
+        "notes": "รายการรวม: ไมลีย์ รายงานการกระจายของผลิตภัณฑ์ที่กว้าง ในที่นี้ใช้ Ni→Cu ซึ่งเป็นคู่ที่ถูกอ้างอิงมากที่สุด โดยสังเกตพบธาตุประมาณ ~50 ชนิด"
       },
       "savvatimova-pd-ag": {
-        "source": "Savvatimova et al. (Luch, รัสเซีย, ทศวรรษ 1990–2000)",
+        "source": "Savvatimova และคณะ (Luch, รัสเซีย, ทศวรรษ 1990–2000)",
         "setup": "การระดมยิงแคโทด Pd ด้วยการปล่อยประจุแบบเรืองแสงในพลาสมาดิวเทอเรียม",
         "hypothesizedMechanism": "มีการเสนอหลายเส้นทาง รวมถึงกระบวนการคล้ายนิวตรอนและอันตรกิริยาอย่างอ่อนที่มีการกำบังด้วยอิเล็กตรอน",
-        "notes": "Savvatimova รายงาน Pd → Rh, Ru, Ag, Cd ในที่นี้บันทึก Pd→Ag"
+        "notes": "ซาวาติโมวา รายงาน Pd → Rh, Ru, Ag, Cd ในที่นี้บันทึก Pd→Ag"
       },
       "savvatimova-pd-rh": {
-        "source": "Savvatimova et al. (Luch, รัสเซีย, ทศวรรษ 1990–2000)",
+        "source": "Savvatimova และคณะ (Luch, รัสเซีย, ทศวรรษ 1990–2000)",
         "setup": "การระดมยิงแคโทด Pd ด้วยการปล่อยประจุแบบเรืองแสงในพลาสมาดิวเทอเรียม",
         "hypothesizedMechanism": "รายงานการสูญเสียสุทธิของ ($p + 2n$) กลไกยังไม่ได้รับการอธิบาย"
       },
       "spawar-tritium": {
-        "source": "Mosier-Boss et al., SPAWAR Systems Center (2007-2009)",
+        "source": "Mosier-Boss และคณะ, SPAWAR Systems Center (2007-2009)",
         "setup": "การตกสะสมร่วมของ Pd/D บนฐานรอง Au หรือ Ag ตัวตรวจวัด CR-39 บันทึกรอยอนุภาคมีประจุ และมีการวัดการสะสมของทริเทียม",
         "hypothesizedMechanism": "รายงาน $D + D → T + p$ ไม่ใช่การแปรธาตุโดยตรง แต่เป็นกระบวนการนิวเคลียร์ที่ผิดปกติ",
         "notes": "รวมไว้เป็นข้อกล่าวอ้างอ้างอิงเกี่ยวกับกระบวนการนิวเคลียร์ที่ผิดปกติ การแปรธาตุสุทธิคือ D → T (คล้ายการจับนิวตรอน)"
@@ -1707,7 +1707,7 @@
       "toyota-2013-replication": {
         "authors": "Hioki, T. et al. (Toyota Central R&D)",
         "institution": "Toyota Central R&D Labs",
-        "excerpt": "การทดลองซ้ำอย่างอิสระของผลการแปรธาตุ Cs → Pr ของ Iwamura ที่ Toyota Central R&D (และที่ Osaka U. ปี 2003)"
+        "excerpt": "การทดลองซ้ำอย่างอิสระของผลการแปรธาตุ Cs → Pr ของอิวามูระ ที่ Toyota Central R&D (และที่ Osaka U. ปี 2003)"
       },
       "vysotskii-1996-cs-ba": {
         "authors": "Vysotskii, V. I. & Kornilova, A. A.",
@@ -1835,7 +1835,7 @@
   "databaseLoading": {
     "downloadingTitle": "กำลังดาวน์โหลดฐานข้อมูล",
     "loadingTitle": "กำลังโหลดฐานข้อมูล",
-    "downloadingMessage": "กำลังดาวน์โหลดฐานข้อมูลปฏิกิริยานิวเคลียร์ของ Parkhomov...",
+    "downloadingMessage": "กำลังดาวน์โหลดฐานข้อมูลปฏิกิริยานิวเคลียร์ของปาร์โคมอฟ...",
     "initializingMessage": "กำลังเริ่มต้นเอนจินฐานข้อมูล...",
     "cachedNotice": "ฐานข้อมูลนี้จะถูกแคชไว้เพื่อให้โหลดได้ทันทีในการเข้าชมครั้งถัดไป",
     "pleaseWait": "โปรดรอสักครู่..."
@@ -2186,7 +2186,7 @@
       "maxEnergy": "พลังงานสูงสุด",
       "limit": "จำนวนจำกัด",
       "columnElement": "ธาตุ",
-      "footer": "{{brand}} · {{url}} | อ้างอิงจากงานของ ดร. Alexander Parkhomov",
+      "footer": "{{brand}} · {{url}} | อ้างอิงจากงานของดร. อเล็กซานเดอร์ ปาร์โคมอฟ",
       "pageNumber": "หน้า {{page}} จาก {{total}}"
     }
   }

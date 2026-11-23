@@ -1269,140 +1269,140 @@
         "definition": "Molekuli iliyoundwa na atomi au vipande viwili vinavyofanana, kama H₂, N₂, O₂ na halojeni za atomi mbili F₂, Cl₂, Br₂ na I₂. Chaguo la kiigaji cha mfululizo \"Ruhusu Uundaji wa Dima\" linatumika kwa vipengele hivi ambavyo kiasili vina atomi mbili."
       },
       "nuclide": {
-        "term": "Nuclide",
-        "definition": "A specific nuclear species characterized by its atomic number (Z) and mass number (A). For example, Carbon-12 and Carbon-14 are different nuclides of the same element."
+        "term": "Nyuklidi",
+        "definition": "Aina mahususi ya kiini inayobainishwa kwa namba yake ya atomu (Z) na namba ya masi (A). Kwa mfano, Kaboni-12 na Kaboni-14 ni nyuklidi tofauti za kipengele kimoja."
       },
       "isotope": {
-        "term": "Isotope",
-        "definition": "Atoms of the same element (same Z) with different numbers of neutrons (different A). For example, H-1 (protium), H-2 (deuterium), and H-3 (tritium) are isotopes of hydrogen."
+        "term": "Isotopu",
+        "definition": "Atomu za kipengele kimoja (Z ileile) zenye idadi tofauti ya nyutroni (A tofauti). Kwa mfano, H-1 (protiamu), H-2 (deuteriamu) na H-3 (tritiamu) ni isotopu za hidrojeni."
       },
       "atomicNumber": {
-        "term": "Atomic Number (Z)",
-        "definition": "The number of protons in a nucleus. Determines which element the atom is. For example, Z=1 is hydrogen, Z=26 is iron."
+        "term": "Namba ya Atomu (Z)",
+        "definition": "Idadi ya protoni ndani ya kiini. Huamua atomu ni ya kipengele gani. Kwa mfano, Z=1 ni hidrojeni, Z=26 ni chuma."
       },
       "massNumber": {
-        "term": "Mass Number (A)",
-        "definition": "The total number of protons and neutrons (nucleons) in a nucleus. A = Z + N, where N is the neutron count."
+        "term": "Namba ya Masi (A)",
+        "definition": "Jumla ya protoni na nyutroni (nyukleoni) ndani ya kiini. A = Z + N, ambapo N ni idadi ya nyutroni."
       },
       "bindingEnergy": {
-        "term": "Binding Energy (BE)",
-        "definition": "The energy required to disassemble a nucleus into its constituent protons and neutrons. Higher binding energy per nucleon means a more stable nucleus. Measured in MeV."
+        "term": "Nishati ya Kifungo (BE)",
+        "definition": "Nishati inayohitajika kutenganisha kiini kuwa protoni na nyutroni zinazokiunda. Nishati kubwa zaidi ya kifungo kwa kila nyukleoni humaanisha kiini thabiti zaidi. Hupimwa kwa MeV."
       },
       "bindingEnergyPerNucleon": {
-        "term": "Binding Energy per Nucleon (BEN)",
-        "definition": "Binding energy divided by mass number (BE/A). Iron-56 has the highest BEN (~8.8 MeV), making it the most tightly bound nucleus. Reactions moving toward Fe-56 release energy."
+        "term": "Nishati ya Kifungo kwa Nyukleoni (BEN)",
+        "definition": "Nishati ya kifungo ikigawanywa kwa namba ya masi (BE/A). Chuma-56 ina BEN ya juu kabisa (~8.8 MeV), hivyo ni kiini kilichofungamana kwa nguvu zaidi. Miitikio inayoelekea Fe-56 hutoa nishati."
       },
       "halfLife": {
-        "term": "Half-Life",
-        "definition": "The time required for half of a radioactive sample to decay. Ranges from fractions of a second to billions of years. In this database, a nuclide with log₁₀(half-life in years) > 9 is considered stable."
+        "term": "Nusu-maisha",
+        "definition": "Muda unaohitajika ili nusu ya sampuli yenye mionzi ioze. Huanzia sehemu ndogo za sekunde hadi mabilioni ya miaka. Katika hifadhidata hii, nyuklidi yenye log₁₀(nusu-maisha kwa miaka) > 9 huhesabiwa kuwa thabiti."
       },
       "stableNuclide": {
-        "term": "Stable Nuclide",
-        "definition": "A nuclide that does not undergo radioactive decay (or has a half-life exceeding 1 billion years). In this database, stability is defined as LHL > 9."
+        "term": "Nyuklidi Thabiti",
+        "definition": "Nyuklidi isiyopitia uozo wa mionzi (au yenye nusu-maisha yanayozidi miaka bilioni 1). Katika hifadhidata hii, uthabiti hufafanuliwa kama LHL > 9."
       },
       "boson": {
-        "term": "Boson",
-        "definition": "A particle with integer spin (0, 1, 2...). Nuclides with even mass number A are nuclear bosons. Bosons can occupy the same quantum state, enabling phenomena like Bose-Einstein condensation."
+        "term": "Bosoni",
+        "definition": "Chembe yenye spini ya namba kamili (0, 1, 2...). Nyuklidi zenye namba shufwa ya masi A ni bosoni za kinyuklia. Bosoni zinaweza kukaa katika hali moja ya kikwantamu, jambo linalowezesha matukio kama mgandamano wa Bose-Einstein."
       },
       "fermion": {
-        "term": "Fermion",
-        "definition": "A particle with half-integer spin (1/2, 3/2...). Nuclides with odd mass number A are nuclear fermions. Fermions obey the Pauli exclusion principle."
+        "term": "Fermioni",
+        "definition": "Chembe yenye spini ya nusu-namba kamili (1/2, 3/2...). Nyuklidi zenye namba witiri ya masi A ni fermioni za kinyuklia. Fermioni hufuata kanuni ya utengaji ya Pauli."
       },
       "neutrino": {
-        "term": "Neutrino",
-        "definition": "A nearly massless, weakly interacting subatomic particle produced in nuclear reactions involving the weak force (e.g., beta decay). Denoted ν (left-handed) or ν̄ (right-handed antineutrino)."
+        "term": "Nyutrino",
+        "definition": "Chembe ndogo ya kiatomu yenye masi karibu sifuri na mwingiliano dhaifu, inayozalishwa katika miitikio ya kinyuklia inayohusisha nguvu dhaifu (k.m. uozo wa beta). Huwakilishwa kwa ν (ya mkono wa kushoto) au ν̄ (antinyutrino ya mkono wa kulia)."
       },
       "radioactiveDecay": {
-        "term": "Radioactive Decay",
-        "definition": "The spontaneous transformation of an unstable nucleus into a more stable configuration. Common modes include alpha (A), beta-minus (B-), beta-plus (B+), electron capture (EC), and isomeric transition (IT)."
+        "term": "Uozo wa Mionzi",
+        "definition": "Mabadiliko ya kujitokeza yenyewe ya kiini kisicho thabiti kuwa muundo thabiti zaidi. Namna za kawaida ni pamoja na alfa (A), beta hasi (B-), beta chanya (B+), unasaji wa elektroni (EC) na mpito wa kiisomeri (IT)."
       },
       "alphaDecay": {
-        "term": "Alpha Decay",
-        "definition": "Emission of a helium-4 nucleus (2 protons + 2 neutrons). Reduces Z by 2 and A by 4. Common in heavy elements like uranium and radium."
+        "term": "Uozo wa Alfa",
+        "definition": "Utoaji wa kiini cha heliamu-4 (protoni 2 + nyutroni 2). Hupunguza Z kwa 2 na A kwa 4. Ni wa kawaida katika vipengele vizito kama urani na radiamu."
       },
       "betaDecay": {
-        "term": "Beta Decay",
-        "definition": "Transformation of a neutron into a proton (β⁻, Z+1) or proton into neutron (β⁺, Z-1). A stays the same. Involves emission of a neutrino or antineutrino."
+        "term": "Uozo wa Beta",
+        "definition": "Mabadiliko ya nyutroni kuwa protoni (β⁻, Z+1) au protoni kuwa nyutroni (β⁺, Z-1). A haibadiliki. Huhusisha utoaji wa nyutrino au antinyutrino."
       },
       "electronCapture": {
-        "term": "Electron Capture (EC)",
-        "definition": "An inner orbital electron is captured by the nucleus, converting a proton to a neutron. Z decreases by 1, A stays the same. Competes with β⁺ decay."
+        "term": "Unasaji wa Elektroni (EC)",
+        "definition": "Elektroni ya obiti ya ndani hunaswa na kiini, na kubadilisha protoni kuwa nyutroni. Z hupungua kwa 1, A haibadiliki. Hushindana na uozo wa β⁺."
       },
       "isomericTransition": {
-        "term": "Isomeric Transition (IT)",
-        "definition": "A metastable excited nuclear state decays to a lower energy state by emitting a gamma ray. Z and A remain unchanged. The nuclide symbol gets an \"m\" suffix (e.g., Tc-99m)."
+        "term": "Mpito wa Kiisomeri (IT)",
+        "definition": "Hali ya kinyuklia iliyosisimka na isiyo thabiti kikamilifu (metastable) huoza kwenda hali ya nishati ya chini kwa kutoa mnururisho wa gamma. Z na A hubaki bila kubadilika. Alama ya nyuklidi huongezewa kiambishi \"m\" (k.m. Tc-99m)."
       },
       "lenr": {
         "term": "LENR",
-        "definition": "Low Energy Nuclear Reactions. A class of nuclear reactions that occur at or near room temperature, distinct from conventional \"hot\" fusion which requires millions of degrees. Also historically known as \"cold fusion.\""
+        "definition": "Miitikio ya Kinyuklia ya Nishati Ndogo (Low Energy Nuclear Reactions). Kundi la miitikio ya kinyuklia inayotokea katika au karibu na halijoto ya chumba, tofauti na muunganiko wa kawaida wa \"moto\" unaohitaji mamilioni ya nyuzi. Kihistoria pia hujulikana kama \"muunganiko baridi\" (cold fusion)."
       },
       "transmutation": {
-        "term": "Transmutation",
-        "definition": "The conversion of one chemical element or isotope into another. Can occur through fusion, fission, or two-to-two reactions. This database catalogs transmutation pathways computed by Dr. Alexander Parkhomov."
+        "term": "Ubadilishaji",
+        "definition": "Kugeuzwa kwa kipengele kimoja cha kemikali au isotopu moja kuwa nyingine. Kunaweza kutokea kupitia miitikio ya muunganiko, mgawanyiko au mbili-kwa-mbili. Hifadhidata hii inaorodhesha njia za ubadilishaji zilizokokotolewa na Dkt. Alexander Parkhomov."
       },
       "fusion": {
-        "term": "Fusion",
-        "definition": "A nuclear reaction where two lighter nuclei combine to form a heavier nucleus (A + B → C). Releases energy when the product has higher binding energy per nucleon than the reactants. This database contains 3,921 fusion reactions, of which 1,505 involve no neutrinos."
+        "term": "Muunganiko",
+        "definition": "Mwitikio wa kinyuklia ambapo viini viwili vyepesi huungana kuunda kiini kizito zaidi (A + B → C). Hutoa nishati pale zao linapokuwa na nishati ya kifungo kwa nyukleoni kubwa kuliko viitikio. Hifadhidata hii ina miitikio 3,921 ya muunganiko, ambapo 1,505 kati yake haihusishi nyutrino."
       },
       "fission": {
-        "term": "Fission",
-        "definition": "A nuclear reaction where a heavier nucleus splits into two lighter nuclei (A → B + C). Releases energy when the products have higher binding energy per nucleon. This database contains 1,733 fission reactions, of which 818 involve no neutrinos."
+        "term": "Mgawanyiko",
+        "definition": "Mwitikio wa kinyuklia ambapo kiini kizito zaidi hugawanyika kuwa viini viwili vyepesi zaidi (A → B + C). Hutoa nishati pale mazao yanapokuwa na nishati ya kifungo kwa nyukleoni kubwa zaidi. Hifadhidata hii ina miitikio 1,733 ya mgawanyiko, ambapo 818 kati yake haihusishi nyutrino."
       },
       "twoToTwo": {
-        "term": "Two-to-Two",
-        "definition": "A nuclear reaction where two nuclei interact and produce two different nuclei (A + B → C + D). The most common reaction type in the database, with 1,215,374 reactions (518,657 of which involve no neutrinos)."
+        "term": "Mbili-kwa-Mbili",
+        "definition": "Mwitikio wa kinyuklia ambapo viini viwili huingiliana na kuzalisha viini viwili tofauti (A + B → C + D). Ndiyo aina ya mwitikio inayopatikana zaidi katika hifadhidata, ikiwa na miitikio 1,215,374 (ambapo 518,657 kati yake haihusishi nyutrino)."
       },
       "cascade": {
-        "term": "Cascade",
-        "definition": "A chain of nuclear reactions where products of one reaction become inputs to subsequent reactions. The cascade engine simulates multi-generation reaction pathways from initial fuel nuclides."
+        "term": "Mfululizo",
+        "definition": "Mnyororo wa miitikio ya kinyuklia ambapo mazao ya mwitikio mmoja huwa pembejeo za miitikio inayofuata. Injini ya mfululizo huiga njia za miitikio za vizazi vingi kuanzia nyuklidi za awali za mafuta."
       },
       "feedbackLoop": {
-        "term": "Feedback Loop",
-        "definition": "When a product nuclide from a later reaction step reappears as an input in an earlier step, creating a self-sustaining cycle. Similar to the CNO cycle in stellar nucleosynthesis."
+        "term": "Mzunguko wa Urejeshaji",
+        "definition": "Hali ambapo nyuklidi inayozalishwa katika hatua ya baadaye ya mwitikio hujitokeza tena kama pembejeo katika hatua ya awali, na kuunda mzunguko unaojiendeleza wenyewe. Ni sawa na mzunguko wa CNO katika usanisi wa viini ndani ya nyota."
       },
       "mev": {
         "term": "MeV",
-        "definition": "Megaelectronvolt (10⁶ eV). A unit of energy commonly used in nuclear physics. 1 MeV = 1.602 × 10⁻¹³ joules. The energy released in a nuclear reaction is the Q-value, measured in MeV."
+        "definition": "Megaelektronivolti (10⁶ eV). Kipimo cha nishati kinachotumika sana katika fizikia ya kinyuklia. 1 MeV = 1.602 × 10⁻¹³ jouli. Nishati inayotolewa katika mwitikio wa kinyuklia ni thamani ya Q, hupimwa kwa MeV."
       },
       "kev": {
         "term": "keV",
-        "definition": "Kiloelectronvolt (10³ eV). 1 MeV = 1000 keV. Used for decay energies and radiation energies in the RadioNuclides table."
+        "definition": "Kiloelektronivolti (10³ eV). 1 MeV = 1000 keV. Hutumika kwa nishati za uozo na nishati za mnururisho katika jedwali la RadioNuclides."
       },
       "amu": {
         "term": "AMU",
-        "definition": "Atomic Mass Unit. Defined as 1/12 of the mass of a Carbon-12 atom. 1 AMU = 931.494 MeV/c². Used to express nuclear and atomic masses."
+        "definition": "Kipimo cha Masi ya Atomu (Atomic Mass Unit). Hufafanuliwa kama 1/12 ya masi ya atomu ya Kaboni-12. 1 AMU = 931.494 MeV/c². Hutumika kueleza masi za kinyuklia na za kiatomu."
       },
       "nBorF": {
         "term": "nBorF",
-        "definition": "Nuclear Boson or Fermion classification. Based on mass number A: even A = boson (b), odd A = fermion (f). Relevant to quantum statistical behavior of the nucleus."
+        "definition": "Uainishaji wa Bosoni au Fermioni wa kinyuklia. Hutegemea namba ya masi A: A shufwa = bosoni (b), A witiri = fermioni (f). Unahusiana na tabia ya kitakwimu ya kikwantamu ya kiini."
       },
       "aBorF": {
         "term": "aBorF",
-        "definition": "Atomic Boson or Fermion classification. Based on neutron count (A - Z): even neutrons = boson (b), odd neutrons = fermion (f). Describes the quantum statistics of the whole atom."
+        "definition": "Uainishaji wa Bosoni au Fermioni wa kiatomu. Hutegemea idadi ya nyutroni (A - Z): nyutroni shufwa = bosoni (b), nyutroni witiri = fermioni (f). Hueleza takwimu za kikwantamu za atomu nzima."
       },
       "lhl": {
         "term": "LHL",
-        "definition": "Log₁₀ of Half-Life in years. A compact representation of half-life. LHL = 0 means 1 year, LHL = 9 means 1 billion years (stable threshold). Negative values indicate sub-year half-lives."
+        "definition": "Log₁₀ ya nusu-maisha kwa miaka. Uwakilishi mfupi wa nusu-maisha. LHL = 0 humaanisha mwaka 1, LHL = 9 humaanisha miaka bilioni 1 (kizingiti cha uthabiti). Thamani hasi huonyesha nusu-maisha ya chini ya mwaka mmoja."
       },
       "sus": {
         "term": "SUS",
-        "definition": "Status field indicating nuclide origin. SPN = Stable Primordial (exists naturally), UPN = Unstable Primordial (radioactive but natural), SYN = Synthetic (only man-made)."
+        "definition": "Sehemu ya hali inayoonyesha asili ya nyuklidi. SPN = Thabiti ya Asili (Stable Primordial; hupatikana kiasili), UPN = Isiyo Thabiti ya Asili (Unstable Primordial; ina mionzi lakini ni ya asili), SYN = Sanisi (Synthetic; hutengenezwa na binadamu pekee)."
       },
       "rdm": {
         "term": "RDM",
-        "definition": "Primary Radioactive Decay Mode. The dominant decay pathway for unstable nuclides. Values include A (alpha), B- (beta minus), B+ (beta plus), EC (electron capture), IT (isomeric transition)."
+        "definition": "Namna Kuu ya Uozo wa Mionzi. Njia kuu ya uozo kwa nyuklidi zisizo thabiti. Thamani ni pamoja na A (alfa), B- (beta hasi), B+ (beta chanya), EC (unasaji wa elektroni) na IT (mpito wa kiisomeri)."
       },
       "deuterium": {
-        "term": "Deuterium (D)",
-        "definition": "Hydrogen-2 (one proton + one neutron). In the database, deuterium uses the symbol \"D\" rather than \"H\" with A=2. Important in LENR research as a common fuel choice."
+        "term": "Deuteriamu (D)",
+        "definition": "Hidrojeni-2 (protoni moja + nyutroni moja). Katika hifadhidata, deuteriamu hutumia alama \"D\" badala ya \"H\" yenye A=2. Ni muhimu katika utafiti wa LENR kama chaguo la kawaida la mafuta."
       },
       "tritium": {
-        "term": "Tritium (T)",
-        "definition": "Hydrogen-3 (one proton + two neutrons). Radioactive with a half-life of 12.3 years. In the database, tritium uses the symbol \"T\" rather than \"H\" with A=3."
+        "term": "Tritiamu (T)",
+        "definition": "Hidrojeni-3 (protoni moja + nyutroni mbili). Ina mionzi, na nusu-maisha ya miaka 12.3. Katika hifadhidata, tritiamu hutumia alama \"T\" badala ya \"H\" yenye A=3."
       },
       "protium": {
-        "term": "Protium (H)",
-        "definition": "Hydrogen-1 (one proton, no neutrons). The most common hydrogen isotope (99.98% abundance). In the database, uses symbol \"H\"."
+        "term": "Protiamu (H)",
+        "definition": "Hidrojeni-1 (protoni moja, bila nyutroni). Isotopu ya hidrojeni inayopatikana zaidi (wingi wa 99.98%). Katika hifadhidata, hutumia alama \"H\"."
       }
     }
   },

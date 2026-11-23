@@ -262,7 +262,7 @@
     "selected": "{{count}}個選択",
     "applySelection": "選択を適用",
     "integrated": "統合",
-    "russellChart": "Russell",
+    "russellChart": "ラッセル",
     "decays": "崩壊",
     "period": "周期",
     "group": "族",
@@ -1203,7 +1203,7 @@
       },
       "niHFusion": {
         "name": "ニッケル-水素核融合",
-        "description": "Rossi E-Cat および Parkhomov の追試実験で研究されました。Ni + H 反応により銅の同位体が生成されます。"
+        "description": "ロッシの E-Cat およびパルホモフの追試実験で研究されました。Ni + H 反応により銅の同位体が生成されます。"
       },
       "uraniumFission": {
         "name": "ウランの核分裂経路",
@@ -1211,7 +1211,7 @@
       },
       "palladiumFission": {
         "name": "パラジウムの核分裂",
-        "description": "パラジウム電極を用いた Fleischmann-Pons 常温核融合実験に関連する Pd の核分裂経路。"
+        "description": "パラジウム電極を用いたフライシュマン・ポンズの常温核融合実験に関連する Pd の核分裂経路。"
       },
       "protonBoron": {
         "name": "陽子-ホウ素反応",
@@ -1231,11 +1231,11 @@
       },
       "palladiumNae": {
         "name": "パラジウムのNAE解析",
-        "description": "パラジウムの核活性環境（NAE）予測を探索します — Fleischmann-Pons の重水素充填実験の中心テーマです。"
+        "description": "パラジウムの核活性環境（NAE）予測を探索します — フライシュマン・ポンズの重水素充填実験の中心テーマです。"
       },
       "parkhomovCascade": {
-        "name": "Parkhomov Ni-LiAlH₄ カスケード",
-        "description": "天然ニッケルと水素化リチウムアルミニウム燃料を用いた、2014年の Parkhomov による Rossi 反応炉追試をシミュレートします。"
+        "name": "パルホモフ Ni-LiAlH₄ カスケード",
+        "description": "天然ニッケルと水素化リチウムアルミニウム燃料を用いた、2014年のパルホモフによるロッシ反応炉の追試をシミュレートします。"
       }
     },
     "exampleTypes": {
@@ -1269,140 +1269,140 @@
         "definition": "H₂、N₂、O₂ や二原子ハロゲン F₂、Cl₂、Br₂、I₂ のように、同一の原子または単位 2 個からなる分子。カスケードシミュレーターの「二量体形成を許可」オプションは、これら天然で二原子分子をつくる元素に適用されます。"
       },
       "nuclide": {
-        "term": "Nuclide",
-        "definition": "A specific nuclear species characterized by its atomic number (Z) and mass number (A). For example, Carbon-12 and Carbon-14 are different nuclides of the same element."
+        "term": "核種",
+        "definition": "原子番号（Z）と質量数（A）によって特徴づけられる特定の原子核の種類。たとえば、炭素12と炭素14は同じ元素の異なる核種です。"
       },
       "isotope": {
-        "term": "Isotope",
-        "definition": "Atoms of the same element (same Z) with different numbers of neutrons (different A). For example, H-1 (protium), H-2 (deuterium), and H-3 (tritium) are isotopes of hydrogen."
+        "term": "同位体",
+        "definition": "同じ元素（同じ Z）で中性子数が異なる（A が異なる）原子。たとえば、H-1（軽水素）、H-2（重水素）、H-3（三重水素）は水素の同位体です。"
       },
       "atomicNumber": {
-        "term": "Atomic Number (Z)",
-        "definition": "The number of protons in a nucleus. Determines which element the atom is. For example, Z=1 is hydrogen, Z=26 is iron."
+        "term": "原子番号（Z）",
+        "definition": "原子核に含まれる陽子の数。その原子がどの元素であるかを決定します。たとえば、Z=1 は水素、Z=26 は鉄です。"
       },
       "massNumber": {
-        "term": "Mass Number (A)",
-        "definition": "The total number of protons and neutrons (nucleons) in a nucleus. A = Z + N, where N is the neutron count."
+        "term": "質量数（A）",
+        "definition": "原子核に含まれる陽子と中性子（核子）の総数。A = Z + N（N は中性子数）。"
       },
       "bindingEnergy": {
-        "term": "Binding Energy (BE)",
-        "definition": "The energy required to disassemble a nucleus into its constituent protons and neutrons. Higher binding energy per nucleon means a more stable nucleus. Measured in MeV."
+        "term": "結合エネルギー（BE）",
+        "definition": "原子核を構成する陽子と中性子にばらばらにするのに必要なエネルギー。核子あたりの結合エネルギーが大きいほど、原子核は安定です。単位は MeV です。"
       },
       "bindingEnergyPerNucleon": {
-        "term": "Binding Energy per Nucleon (BEN)",
-        "definition": "Binding energy divided by mass number (BE/A). Iron-56 has the highest BEN (~8.8 MeV), making it the most tightly bound nucleus. Reactions moving toward Fe-56 release energy."
+        "term": "核子あたりの結合エネルギー（BEN）",
+        "definition": "結合エネルギーを質量数で割った値（BE/A）。鉄56 は BEN が最大（~8.8 MeV）で、最も強く結合した原子核です。Fe-56 に近づく反応はエネルギーを放出します。"
       },
       "halfLife": {
-        "term": "Half-Life",
-        "definition": "The time required for half of a radioactive sample to decay. Ranges from fractions of a second to billions of years. In this database, a nuclide with log₁₀(half-life in years) > 9 is considered stable."
+        "term": "半減期",
+        "definition": "放射性試料の半分が崩壊するのに要する時間。1秒未満から数十億年まで幅があります。このデータベースでは、log₁₀(半減期〔年〕) > 9 の核種を安定とみなします。"
       },
       "stableNuclide": {
-        "term": "Stable Nuclide",
-        "definition": "A nuclide that does not undergo radioactive decay (or has a half-life exceeding 1 billion years). In this database, stability is defined as LHL > 9."
+        "term": "安定核種",
+        "definition": "放射性崩壊を起こさない（または半減期が10億年を超える）核種。このデータベースでは、安定性を LHL > 9 と定義しています。"
       },
       "boson": {
-        "term": "Boson",
-        "definition": "A particle with integer spin (0, 1, 2...). Nuclides with even mass number A are nuclear bosons. Bosons can occupy the same quantum state, enabling phenomena like Bose-Einstein condensation."
+        "term": "ボソン",
+        "definition": "整数スピン（0, 1, 2...）をもつ粒子。質量数 A が偶数の核種は核ボソンです。ボソンは同じ量子状態を占めることができ、ボース＝アインシュタイン凝縮などの現象を可能にします。"
       },
       "fermion": {
-        "term": "Fermion",
-        "definition": "A particle with half-integer spin (1/2, 3/2...). Nuclides with odd mass number A are nuclear fermions. Fermions obey the Pauli exclusion principle."
+        "term": "フェルミオン",
+        "definition": "半整数スピン（1/2, 3/2...）をもつ粒子。質量数 A が奇数の核種は核フェルミオンです。フェルミオンはパウリの排他原理に従います。"
       },
       "neutrino": {
-        "term": "Neutrino",
-        "definition": "A nearly massless, weakly interacting subatomic particle produced in nuclear reactions involving the weak force (e.g., beta decay). Denoted ν (left-handed) or ν̄ (right-handed antineutrino)."
+        "term": "ニュートリノ",
+        "definition": "弱い力が関与する核反応（ベータ崩壊など）で生成される、質量がほぼゼロで相互作用の弱い素粒子。ν（左巻き）または ν̄（右巻き反ニュートリノ）で表します。"
       },
       "radioactiveDecay": {
-        "term": "Radioactive Decay",
-        "definition": "The spontaneous transformation of an unstable nucleus into a more stable configuration. Common modes include alpha (A), beta-minus (B-), beta-plus (B+), electron capture (EC), and isomeric transition (IT)."
+        "term": "放射性崩壊",
+        "definition": "不安定な原子核が、より安定な状態へ自発的に変化すること。主な崩壊モードは、アルファ（A）、ベータマイナス（B-）、ベータプラス（B+）、電子捕獲（EC）、核異性体転移（IT）です。"
       },
       "alphaDecay": {
-        "term": "Alpha Decay",
-        "definition": "Emission of a helium-4 nucleus (2 protons + 2 neutrons). Reduces Z by 2 and A by 4. Common in heavy elements like uranium and radium."
+        "term": "アルファ崩壊",
+        "definition": "ヘリウム4 原子核（陽子2個 + 中性子2個）の放出。Z が 2、A が 4 減少します。ウランやラジウムなどの重元素でよく見られます。"
       },
       "betaDecay": {
-        "term": "Beta Decay",
-        "definition": "Transformation of a neutron into a proton (β⁻, Z+1) or proton into neutron (β⁺, Z-1). A stays the same. Involves emission of a neutrino or antineutrino."
+        "term": "ベータ崩壊",
+        "definition": "中性子が陽子に（β⁻、Z+1）、または陽子が中性子に（β⁺、Z-1）変わること。A は変わりません。ニュートリノまたは反ニュートリノの放出を伴います。"
       },
       "electronCapture": {
-        "term": "Electron Capture (EC)",
-        "definition": "An inner orbital electron is captured by the nucleus, converting a proton to a neutron. Z decreases by 1, A stays the same. Competes with β⁺ decay."
+        "term": "電子捕獲（EC）",
+        "definition": "内殻軌道の電子が原子核に捕獲され、陽子が中性子に変わります。Z は 1 減少し、A は変わりません。β⁺ 崩壊と競合します。"
       },
       "isomericTransition": {
-        "term": "Isomeric Transition (IT)",
-        "definition": "A metastable excited nuclear state decays to a lower energy state by emitting a gamma ray. Z and A remain unchanged. The nuclide symbol gets an \"m\" suffix (e.g., Tc-99m)."
+        "term": "核異性体転移（IT）",
+        "definition": "準安定な励起状態の原子核が、ガンマ線を放出してより低いエネルギー状態へ遷移します。Z と A は変わりません。核種記号には接尾辞「m」が付きます（例: Tc-99m）。"
       },
       "lenr": {
         "term": "LENR",
-        "definition": "Low Energy Nuclear Reactions. A class of nuclear reactions that occur at or near room temperature, distinct from conventional \"hot\" fusion which requires millions of degrees. Also historically known as \"cold fusion.\""
+        "definition": "低エネルギー核反応（Low Energy Nuclear Reactions）。室温またはそれに近い温度で起こる核反応の一群で、数百万度を必要とする従来の「熱い」核融合とは異なります。歴史的には「常温核融合」とも呼ばれてきました。"
       },
       "transmutation": {
-        "term": "Transmutation",
-        "definition": "The conversion of one chemical element or isotope into another. Can occur through fusion, fission, or two-to-two reactions. This database catalogs transmutation pathways computed by Dr. Alexander Parkhomov."
+        "term": "核種変換",
+        "definition": "ある化学元素または同位体が別のものに変わること。核融合、核分裂、2対2反応によって起こり得ます。このデータベースには、アレクサンダー・パルホモフ博士が計算した核種変換経路が収録されています。"
       },
       "fusion": {
-        "term": "Fusion",
-        "definition": "A nuclear reaction where two lighter nuclei combine to form a heavier nucleus (A + B → C). Releases energy when the product has higher binding energy per nucleon than the reactants. This database contains 3,921 fusion reactions, of which 1,505 involve no neutrinos."
+        "term": "核融合",
+        "definition": "2つの軽い原子核が結合してより重い原子核を形成する核反応（A + B → C）。生成物の核子あたりの結合エネルギーが反応物より大きい場合にエネルギーを放出します。このデータベースには 3,921 件の核融合反応が含まれ、そのうち 1,505 件はニュートリノが関与しません。"
       },
       "fission": {
-        "term": "Fission",
-        "definition": "A nuclear reaction where a heavier nucleus splits into two lighter nuclei (A → B + C). Releases energy when the products have higher binding energy per nucleon. This database contains 1,733 fission reactions, of which 818 involve no neutrinos."
+        "term": "核分裂",
+        "definition": "重い原子核が2つの軽い原子核に分裂する核反応（A → B + C）。生成物の核子あたりの結合エネルギーが大きい場合にエネルギーを放出します。このデータベースには 1,733 件の核分裂反応が含まれ、そのうち 818 件はニュートリノが関与しません。"
       },
       "twoToTwo": {
-        "term": "Two-to-Two",
-        "definition": "A nuclear reaction where two nuclei interact and produce two different nuclei (A + B → C + D). The most common reaction type in the database, with 1,215,374 reactions (518,657 of which involve no neutrinos)."
+        "term": "2対2",
+        "definition": "2つの原子核が相互作用して、別の2つの原子核を生成する核反応（A + B → C + D）。データベースで最も多い反応タイプで、1,215,374 件（うち 518,657 件はニュートリノが関与しない）を収録しています。"
       },
       "cascade": {
-        "term": "Cascade",
-        "definition": "A chain of nuclear reactions where products of one reaction become inputs to subsequent reactions. The cascade engine simulates multi-generation reaction pathways from initial fuel nuclides."
+        "term": "カスケード",
+        "definition": "ある反応の生成物が次の反応の入力となる、核反応の連鎖。カスケードエンジンは、初期燃料核種から始まる多世代の反応経路をシミュレートします。"
       },
       "feedbackLoop": {
-        "term": "Feedback Loop",
-        "definition": "When a product nuclide from a later reaction step reappears as an input in an earlier step, creating a self-sustaining cycle. Similar to the CNO cycle in stellar nucleosynthesis."
+        "term": "フィードバックループ",
+        "definition": "後の反応ステップの生成核種が、より前のステップの入力として再び現れ、自己持続的なサイクルを形成すること。恒星内元素合成における CNO サイクルに似ています。"
       },
       "mev": {
         "term": "MeV",
-        "definition": "Megaelectronvolt (10⁶ eV). A unit of energy commonly used in nuclear physics. 1 MeV = 1.602 × 10⁻¹³ joules. The energy released in a nuclear reaction is the Q-value, measured in MeV."
+        "definition": "メガ電子ボルト（10⁶ eV）。原子核物理学で広く使われるエネルギーの単位。1 MeV = 1.602 × 10⁻¹³ ジュール。核反応で放出されるエネルギーは Q 値と呼ばれ、MeV で表されます。"
       },
       "kev": {
         "term": "keV",
-        "definition": "Kiloelectronvolt (10³ eV). 1 MeV = 1000 keV. Used for decay energies and radiation energies in the RadioNuclides table."
+        "definition": "キロ電子ボルト（10³ eV）。1 MeV = 1000 keV。RadioNuclides テーブルの崩壊エネルギーや放射線エネルギーに使われます。"
       },
       "amu": {
         "term": "AMU",
-        "definition": "Atomic Mass Unit. Defined as 1/12 of the mass of a Carbon-12 atom. 1 AMU = 931.494 MeV/c². Used to express nuclear and atomic masses."
+        "definition": "原子質量単位。炭素12 原子の質量の 1/12 と定義されます。1 AMU = 931.494 MeV/c²。原子核や原子の質量を表すのに使われます。"
       },
       "nBorF": {
         "term": "nBorF",
-        "definition": "Nuclear Boson or Fermion classification. Based on mass number A: even A = boson (b), odd A = fermion (f). Relevant to quantum statistical behavior of the nucleus."
+        "definition": "原子核のボソン／フェルミオン分類。質量数 A に基づき、A が偶数ならボソン（b）、奇数ならフェルミオン（f）です。原子核の量子統計的な振る舞いに関係します。"
       },
       "aBorF": {
         "term": "aBorF",
-        "definition": "Atomic Boson or Fermion classification. Based on neutron count (A - Z): even neutrons = boson (b), odd neutrons = fermion (f). Describes the quantum statistics of the whole atom."
+        "definition": "原子のボソン／フェルミオン分類。中性子数（A - Z）に基づき、中性子数が偶数ならボソン（b）、奇数ならフェルミオン（f）です。原子全体の量子統計を表します。"
       },
       "lhl": {
         "term": "LHL",
-        "definition": "Log₁₀ of Half-Life in years. A compact representation of half-life. LHL = 0 means 1 year, LHL = 9 means 1 billion years (stable threshold). Negative values indicate sub-year half-lives."
+        "definition": "年単位の半減期の Log₁₀。半減期をコンパクトに表したものです。LHL = 0 は 1 年、LHL = 9 は 10 億年（安定性のしきい値）を意味します。負の値は半減期が 1 年未満であることを示します。"
       },
       "sus": {
         "term": "SUS",
-        "definition": "Status field indicating nuclide origin. SPN = Stable Primordial (exists naturally), UPN = Unstable Primordial (radioactive but natural), SYN = Synthetic (only man-made)."
+        "definition": "核種の起源を示すステータス欄。SPN = 安定始原核種（天然に存在）、UPN = 不安定始原核種（放射性だが天然）、SYN = 合成（人工のみ）。"
       },
       "rdm": {
         "term": "RDM",
-        "definition": "Primary Radioactive Decay Mode. The dominant decay pathway for unstable nuclides. Values include A (alpha), B- (beta minus), B+ (beta plus), EC (electron capture), IT (isomeric transition)."
+        "definition": "主要な放射性崩壊モード。不安定核種の主な崩壊経路です。値には A（アルファ）、B-（ベータマイナス）、B+（ベータプラス）、EC（電子捕獲）、IT（核異性体転移）があります。"
       },
       "deuterium": {
-        "term": "Deuterium (D)",
-        "definition": "Hydrogen-2 (one proton + one neutron). In the database, deuterium uses the symbol \"D\" rather than \"H\" with A=2. Important in LENR research as a common fuel choice."
+        "term": "重水素（D）",
+        "definition": "水素2（陽子1個 + 中性子1個）。データベースでは、重水素は A=2 の「H」ではなく記号「D」で表されます。一般的な燃料として、LENR 研究で重要です。"
       },
       "tritium": {
-        "term": "Tritium (T)",
-        "definition": "Hydrogen-3 (one proton + two neutrons). Radioactive with a half-life of 12.3 years. In the database, tritium uses the symbol \"T\" rather than \"H\" with A=3."
+        "term": "三重水素（T）",
+        "definition": "水素3（陽子1個 + 中性子2個）。放射性で、半減期は 12.3 年です。データベースでは、三重水素は A=3 の「H」ではなく記号「T」で表されます。"
       },
       "protium": {
-        "term": "Protium (H)",
-        "definition": "Hydrogen-1 (one proton, no neutrons). The most common hydrogen isotope (99.98% abundance). In the database, uses symbol \"H\"."
+        "term": "軽水素（H）",
+        "definition": "水素1（陽子1個、中性子なし）。最も一般的な水素同位体（存在比 99.98%）。データベースでは記号「H」で表されます。"
       }
     }
   },
@@ -1476,15 +1476,15 @@
       "naeOutside": "NAE範囲外の共鳴",
       "naeUncoloured": "色のない元素には計算された電子共鳴波長がありません。"
     },
-    "noReactionsTitle": "Parkhomov 表にこのペアの反応はありません",
-    "noReactionsFootnote": "ダッシュ（-）は、Parkhomov 表にこのペアのその種類の反応が含まれていないことを示します。多くの共鳴ペアにはこれらの表にない元素が含まれるため、ダッシュがよく表示されます。",
+    "noReactionsTitle": "パルホモフ表にこのペアの反応はありません",
+    "noReactionsFootnote": "ダッシュ（-）は、パルホモフ表にこのペアのその種類の反応が含まれていないことを示します。多くの共鳴ペアにはこれらの表にない元素が含まれるため、ダッシュがよく表示されます。",
     "tabs": {
       "resonancePairs": "共鳴ペア",
       "naePredictions": "NAE予測"
     },
     "nae": {
       "title": "NAE格子予測",
-      "description": "Edmund Storms (JCMNS 41, 2026) が特定した ~1 nm の核活性環境 (NAE) ギャップに対する電子共鳴波長の近接度で元素をランク付け。ハイライトされた元素は低いオクターブで 0.5–2.0 nm 範囲に共鳴を持ちます。",
+      "description": "エドマンド・ストームズ (JCMNS 41, 2026) が特定した ~1 nm の核活性環境 (NAE) ギャップに対する電子共鳴波長の近接度で元素をランク付け。ハイライトされた元素は低いオクターブで 0.5–2.0 nm 範囲に共鳴を持ちます。",
       "element": "元素",
       "octave": "オクターブ (N)",
       "electronResonance": "e⁻共鳴",
@@ -1523,23 +1523,23 @@
       "lenrRefs": "LENR参考文献",
       "noNAEResonance": "低いオクターブでNAE範囲に共鳴なし。",
       "aboutNAETitle": "NAE予測について",
-      "aboutNAE1": "Edmund Stormsは、常温核融合（LENR）が核活性環境（NAE）で発生することを特定しました — 金属格子のナノスケールのギャップまたは亀裂、通常 ~1 nm幅（JCMNS 41, 2026）。",
+      "aboutNAE1": "エドマンド・ストームズは、常温核融合（LENR）が核活性環境（NAE）で発生することを特定しました — 金属格子のナノスケールのギャップまたは亀裂、通常 ~1 nm幅（JCMNS 41, 2026）。",
       "aboutNAE2": "ミュラーの方程式 L = Z × Cₑ × 2ᴺ は低いオクターブ（N=3, N=4）で各元素の電子共鳴波長を予測します。パラジウム（Z=46）はN=3で0.89 nm、N=4で1.79 nmです。",
       "aboutNAE3": "重水素との重複は顕著です：プロトンオクターブN=20で、重水素の共鳴波長は1.39 nm — NAE範囲内です。",
       "aboutNAE4": "既知のLENR活性金属（Pd, Ni, Pt, Ti）はすべてN=3またはN=4で0.9–1.8 nm範囲の電子共鳴長を持ちます。",
-      "naeDisclaimer": "この分析はミュラーの共鳴フレームワークとStormsのNAEモデルを組み合わせています。両方とも理論モデルです。結果は探索と仮説生成のために提示されています。"
+      "naeDisclaimer": "この分析はミュラーの共鳴フレームワークとストームズのNAEモデルを組み合わせています。両方とも理論モデルです。結果は探索と仮説生成のために提示されています。"
     }
   },
   "transmutations": {
     "title": "変換経路エクスプローラー",
-    "subtitle": "一次資料から得られた LENR 変換の報告例と、Parkhomov 反応データベース由来の候補 2 段階経路を組み合わせて表示します。",
+    "subtitle": "一次資料から得られた LENR 変換の報告例と、パルホモフ反応データベース由来の候補 2 段階経路を組み合わせて表示します。",
     "disclaimerTitle": "報告された主張であり、検証された機構ではありません。",
-    "disclaimerText": "以下に挙げる変換は一次文献で報告されたものです。Parkhomov データベースは A+B → C+D の経路を提示することがあり、これらの正味の変換を許容する場合があります。しかし、これは元々仮定された機構が正しいことを <0>証明するものではありません</0>。経路は許可された素反応を通る候補ルートであり、実験的証拠ではありません。",
+    "disclaimerText": "以下に挙げる変換は一次文献で報告されたものです。パルホモフ・データベースは A+B → C+D の経路を提示することがあり、これらの正味の変換を許容する場合があります。しかし、これは元々仮定された機構が正しいことを <0>証明するものではありません</0>。経路は許可された素反応を通る候補ルートであり、実験的証拠ではありません。",
     "filterAllCategories": "すべてのカテゴリ",
     "filterAllSources": "すべての出典",
     "filterByLab": "出典の研究機関で絞り込む",
     "noResults": "現在のフィルタに一致する変換はありません。",
-    "pathwayResultsHint": "Parkhomov 表から得られた候補経路はこのカードの下に表示されます。",
+    "pathwayResultsHint": "パルホモフ表から得られた候補経路はこのカードの下に表示されます。",
     "curatedFrom": "<1>HumanScholars の LENR 文献レビュー</1>から収集。{{count}} 件。",
     "stepCount_one": "1 ステップ",
     "stepCount_other": "{{count}} ステップ",
@@ -1557,14 +1557,14 @@
     },
     "buttons": {
       "searching": "検索中…",
-      "findPathways": "Parkhomov 経路を検索",
+      "findPathways": "パルホモフ経路を検索",
       "dismiss": "閉じる",
       "dismissPathways": "経路結果を閉じる",
       "viewSource": "出典を表示"
     },
     "pathwayResults": {
-      "notFound": "Parkhomov データベース内では、列挙された同位体に対して 1 段階または 2 段階の経路は見つかりませんでした。",
-      "explanation": "報告された変換は、Parkhomov の表に含まれない経路（深さ 2 を超える多段階、中性子捕獲連鎖、β 崩壊分岐など）を介しても有効である可能性があります。中間体を循環する多段階経路については <1>サイクル発見</1>ツールをお試しください。",
+      "notFound": "パルホモフ・データベース内では、列挙された同位体に対して 1 段階または 2 段階の経路は見つかりませんでした。",
+      "explanation": "報告された変換は、パルホモフの表に含まれない経路（深さ 2 を超える多段階、中性子捕獲連鎖、β 崩壊分岐など）を介しても有効である可能性があります。中間体を循環する多段階経路については <1>サイクル発見</1>ツールをお試しください。",
       "header": "候補経路 ({{count}})"
     },
     "errors": {
@@ -1612,13 +1612,13 @@
         "source": "Miley & Patterson (UIUC / CETI, 1996)",
         "setup": "Thin-film Ni cathodes electrolyzed in light-water solutions; ~50 product elements detected by SIMS/NAA",
         "hypothesizedMechanism": "Broad transmutation product spectrum; no single mechanism proposed (fission of compound nucleus suggested)",
-        "notes": "Catch-all entry: Miley reported a wide product distribution. Ni→Cu used here as the most-cited single pair; ~50 elements were observed."
+        "notes": "包括的なエントリ：マイリーは幅広い生成物分布を報告しました。ここでは最も多く引用される単一のペアとして Ni→Cu を採用しています。~50 の元素が観測されました。"
       },
       "savvatimova-pd-ag": {
         "source": "Savvatimova et al. (Luch, Russia, 1990s-2000s)",
         "setup": "Glow-discharge bombardment of Pd cathodes in deuterium plasma",
         "hypothesizedMechanism": "Multiple pathways proposed including neutron-like processes and electron-screened weak interaction",
-        "notes": "Savvatimova reported Pd → Rh, Ru, Ag, Cd; Pd→Ag captured here."
+        "notes": "サヴヴァチモワは Pd → Rh, Ru, Ag, Cd を報告しました。ここでは Pd→Ag を取り上げています。"
       },
       "savvatimova-pd-rh": {
         "source": "Savvatimova et al. (Luch, Russia, 1990s-2000s)",
@@ -1835,7 +1835,7 @@
   "databaseLoading": {
     "downloadingTitle": "データベースをダウンロード中",
     "loadingTitle": "データベースを読み込み中",
-    "downloadingMessage": "Parkhomov 核反応データベースをダウンロード中...",
+    "downloadingMessage": "パルホモフ核反応データベースをダウンロード中...",
     "initializingMessage": "データベースエンジンを初期化中...",
     "cachedNotice": "このデータベースはキャッシュされ、次回以降は即座に読み込まれます",
     "pleaseWait": "しばらくお待ちください..."

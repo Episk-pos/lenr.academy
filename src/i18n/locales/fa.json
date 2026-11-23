@@ -64,7 +64,7 @@
     "collapse": "جمع کردن نوار کناری"
   },
   "footer": {
-    "basedOnWork": "بر پایه کارهای <parkhomovLink>دکتر الکساندر پارخوموف (Alexander Parkhomov)</parkhomovLink>",
+    "basedOnWork": "بر پایه کارهای <parkhomovLink>دکتر الکساندر پارخوموف</parkhomovLink>",
     "project": "<mfmpLink>پروژه یادبود مارتین فلایشمن (Martin Fleischmann Memorial Project)</mfmpLink>"
   },
   "language": {
@@ -138,10 +138,10 @@
   "home": {
     "title": "LENR Academy",
     "subtitle": "واکنش‌های تبدیل هسته‌ای کم‌انرژی را کاوش کنید، فرایندهای آبشاری را مدل‌سازی کنید، زنجیره‌های واپاشی را مصورسازی کنید و پدیده‌های تشدید را بررسی کنید — همه در مرورگر شما",
-    "basedOn": "بازپیاده‌سازی مدرن <nanosoftLink>Nanosoft Package</nanosoftLink> اصلی اثر R.W. Greenyer و P.W. Power، ساخته‌شده بر پایه <parkhomovLink>جدول‌های پارخوموف (Parkhomov)</parkhomovLink>",
+    "basedOn": "بازپیاده‌سازی مدرن <nanosoftLink>Nanosoft Package</nanosoftLink> اصلی اثر آر. دبلیو. گرینیر و پی. دبلیو. پاور، ساخته‌شده بر پایه <parkhomovLink>جدول‌های پارخوموف</parkhomovLink>",
     "queryReactions": {
       "title": "جستجوی واکنش‌های هسته‌ای",
-      "description": "در میان هزاران واکنش گرماده همجوشی، شکافت و تبدیل هسته‌ای دوبه‌دو از جدول‌های پارخوموف (Parkhomov) پرس‌وجو کنید",
+      "description": "در میان هزاران واکنش گرماده همجوشی، شکافت و تبدیل هسته‌ای دوبه‌دو از جدول‌های پارخوموف پرس‌وجو کنید",
       "fusionReactions": "واکنش‌های همجوشی",
       "fissionReactions": "واکنش‌های شکافت",
       "twoToTwoReactions": "واکنش‌های دوبه‌دو"
@@ -166,7 +166,7 @@
     },
     "aboutData": {
       "title": "درباره داده‌ها",
-      "description": "پایگاه داده واکنش‌ها از تحلیل سال 2018 <strong>دکتر الکساندر پارخوموف (Alexander Parkhomov)</strong> درباره واکنش‌های هسته‌ای گرماده میان نوکلیدهای پایدار گرفته شده است — مسیرهایی که از نظر ترمودینامیکی برای تبدیل هسته‌ای در انرژی‌های پایین مساعدند. این پایگاه شامل <strong>3,921 واکنش همجوشی</strong>، <strong>1,733 واکنش شکافت</strong> و <strong>1,215,374 واکنش دوبه‌دو</strong> است، از جمله واکنش‌هایی که نوترینو در آن‌ها دخیل است؛ از این میان، 1,505 واکنش همجوشی، 818 واکنش شکافت و 518,657 واکنش دوبه‌دو بدون نوترینو هستند. این ابزار در اصل با نام <nanosoftLink>Nanosoft Package</nanosoftLink> توسط R.W. Greenyer و P.W. Power برای پروژه یادبود مارتین فلایشمن (Martin Fleischmann Memorial Project) توسعه یافت.",
+      "description": "پایگاه داده واکنش‌ها از تحلیل سال 2018 <strong>دکتر الکساندر پارخوموف</strong> درباره واکنش‌های هسته‌ای گرماده میان نوکلیدهای پایدار گرفته شده است — مسیرهایی که از نظر ترمودینامیکی برای تبدیل هسته‌ای در انرژی‌های پایین مساعدند. این پایگاه شامل <strong>3,921 واکنش همجوشی</strong>، <strong>1,733 واکنش شکافت</strong> و <strong>1,215,374 واکنش دوبه‌دو</strong> است، از جمله واکنش‌هایی که نوترینو در آن‌ها دخیل است؛ از این میان، 1,505 واکنش همجوشی، 818 واکنش شکافت و 518,657 واکنش دوبه‌دو بدون نوترینو هستند. این ابزار در اصل با نام <nanosoftLink>Nanosoft Package</nanosoftLink> توسط آر. دبلیو. گرینیر و پی. دبلیو. پاور برای پروژه یادبود مارتین فلایشمن (Martin Fleischmann Memorial Project) توسعه یافت.",
       "visitNanosoft": "بازدید از Nanosoft Package اصلی"
     },
     "openSource": {
@@ -918,7 +918,7 @@
     },
     "constantan": {
       "name": "کنستانتان",
-      "description": "آلیاژ Cu-Ni مورد استفاده در آزمایش‌های Celani (55% Cu، 45% Ni)"
+      "description": "آلیاژ Cu-Ni مورد استفاده در آزمایش‌های چلانی (55% Cu، 45% Ni)"
     },
     "ti-6al-4v": {
       "name": "Ti-6Al-4V",
@@ -941,32 +941,32 @@
       "description": "PdD (الکترود پالادیم بارگذاری‌شده)"
     },
     "parkhomov-2014": {
-      "name": "Parkhomov Ni-LiAlH4",
-      "description": "بازتولید راکتور Rossi توسط Alexander Parkhomov در سال 2014"
+      "name": "پارخوموف Ni-LiAlH4",
+      "description": "بازتولید راکتور روسی توسط الکساندر پارخوموف در سال 2014"
     },
     "piantelli-1990": {
-      "name": "سامانه Ni-H Piantelli",
-      "description": "آزمایش‌های نیکل-هیدروژن Francesco Piantelli (دهه 1990)"
+      "name": "سامانه Ni-H پیانتلی",
+      "description": "آزمایش‌های نیکل-هیدروژن فرانچسکو پیانتلی (دهه 1990)"
     },
     "celani-2012": {
-      "name": "سیم کنستانتان Celani",
-      "description": "آزمایش‌های سیم کنستانتان بارگذاری‌شده با هیدروژن Francesco Celani"
+      "name": "سیم کنستانتان چلانی",
+      "description": "آزمایش‌های سیم کنستانتان بارگذاری‌شده با هیدروژن فرانچسکو چلانی"
     },
     "shoulders-evo": {
-      "name": "تیتانیم EVO Shoulders",
-      "description": "آزمایش‌های اجسام خلأ عجیب (EVO) Ken Shoulders با تیتانیم"
+      "name": "تیتانیم EVO شولدرز",
+      "description": "آزمایش‌های اجسام خلأ عجیب (EVO) کن شولدرز با تیتانیم"
     },
     "urutskoev-2000": {
-      "name": "انفجار ورقه Ti Urutskoev",
-      "description": "آزمایش‌های انفجار ورقه تیتانیم L.I. Urutskoev"
+      "name": "انفجار ورقه Ti اوروتسکوف",
+      "description": "آزمایش‌های انفجار ورقه تیتانیم ال. آی. اوروتسکوف"
     },
     "matsumoto-1992": {
-      "name": "قوس کربنی Matsumoto",
-      "description": "آزمایش‌های تخلیه قوس کربنی Takaaki Matsumoto"
+      "name": "قوس کربنی ماتسوموتو",
+      "description": "آزمایش‌های تخلیه قوس کربنی تاکاآکی ماتسوموتو"
     },
     "mizuno-pd-d": {
-      "name": "الکترولیز Pd-D Mizuno",
-      "description": "آزمایش‌های الکترولیز پالادیم-دوتریم Tadahiko Mizuno"
+      "name": "الکترولیز Pd-D میزونو",
+      "description": "آزمایش‌های الکترولیز پالادیم-دوتریم تاداهیکو میزونو"
     }
   },
   "tables": {
@@ -1203,7 +1203,7 @@
       },
       "niHFusion": {
         "name": "همجوشی نیکل-هیدروژن",
-        "description": "در آزمایش‌های E-Cat ساخته Rossi و بازتولید Parkhomov بررسی شده است. واکنش‌های Ni + H ایزوتوپ‌های مس تولید می‌کنند."
+        "description": "در آزمایش‌های E-Cat ساخته روسی و بازتولید پارخوموف بررسی شده است. واکنش‌های Ni + H ایزوتوپ‌های مس تولید می‌کنند."
       },
       "uraniumFission": {
         "name": "مسیرهای شکافت اورانیم",
@@ -1211,7 +1211,7 @@
       },
       "palladiumFission": {
         "name": "شکافت پالادیم",
-        "description": "مسیرهای شکافت Pd مرتبط با آزمایش‌های همجوشی سرد Fleischmann-Pons با الکترودهای پالادیم."
+        "description": "مسیرهای شکافت Pd مرتبط با آزمایش‌های همجوشی سرد فلایشمن-پونز با الکترودهای پالادیم."
       },
       "protonBoron": {
         "name": "واکنش‌های پروتون-بور",
@@ -1231,11 +1231,11 @@
       },
       "palladiumNae": {
         "name": "تحلیل NAE پالادیم",
-        "description": "پیش‌بینی‌های محیط فعال هسته‌ای پالادیم را کاوش کنید — که در آزمایش‌های بارگذاری دوتریم Fleischmann-Pons نقشی محوری دارد."
+        "description": "پیش‌بینی‌های محیط فعال هسته‌ای پالادیم را کاوش کنید — که در آزمایش‌های بارگذاری دوتریم فلایشمن-پونز نقشی محوری دارد."
       },
       "parkhomovCascade": {
-        "name": "آبشار Parkhomov Ni-LiAlH₄",
-        "description": "بازتولید راکتور Rossi توسط Parkhomov در سال 2014 را با نیکل طبیعی و سوخت لیتیم آلومینیم هیدرید شبیه‌سازی کنید."
+        "name": "آبشار پارخوموف Ni-LiAlH₄",
+        "description": "بازتولید راکتور روسی توسط پارخوموف در سال 2014 را با نیکل طبیعی و سوخت لیتیم آلومینیم هیدرید شبیه‌سازی کنید."
       }
     },
     "exampleTypes": {
@@ -1250,15 +1250,15 @@
     "glossaryTerms": {
       "nae": {
         "term": "NAE (محیط فعال هسته‌ای)",
-        "definition": "اصطلاح Edmund Storms برای جایگاه‌های ویژه نانومقیاس در یک ماده، مانند ترک‌ها، شکاف‌ها یا عوارض سطحی در یک هیدرید فلزی، که پیشنهاد می‌شود LENR در آن‌ها رخ می‌دهد، نه در سراسر توده شبکه بلوری."
+        "definition": "اصطلاح ادموند استورمز برای جایگاه‌های ویژه نانومقیاس در یک ماده، مانند ترک‌ها، شکاف‌ها یا عوارض سطحی در یک هیدرید فلزی، که پیشنهاد می‌شود LENR در آن‌ها رخ می‌دهد، نه در سراسر توده شبکه بلوری."
       },
       "comptonWavelength": {
         "term": "طول موج کامپتون",
         "definition": "λ = h/(mc): طول موج فوتونی که انرژی آن برابر با انرژی جرم سکون یک ذره است. برای الکترون Cₑ ≈ 2.426 pm و برای پروتون Cₚ ≈ 1.321 fm است؛ نسبت آن‌ها همان نسبت جرم پروتون به الکترون، ≈ 1836.15، است."
       },
       "mullerResonance": {
-        "term": "تشدید Muller",
-        "definition": "مدل Frithjof Muller که در آن هر عنصر نردبان‌هایی از طول موج L = Z × C × 2ᴺ دارد که از طول موج‌های کامپتون الکترون (Cₑ) و پروتون (Cₚ) ساخته می‌شوند. عناصر Z₁ و Z₂ هنگامی تشدید می‌کنند که Z₁ · Cₑ · 2ᴺ = Z₂ · Cₚ · 2^(N+ΔN)، یعنی Z₁/Z₂ ≈ 2^ΔN / 1836.15. تشدید فقط فاصله اکتاو ΔN را تعیین می‌کند؛ اکتاو مطلق N آزاد است."
+        "term": "تشدید مولر",
+        "definition": "مدل فریتیوف مولر که در آن هر عنصر نردبان‌هایی از طول موج L = Z × C × 2ᴺ دارد که از طول موج‌های کامپتون الکترون (Cₑ) و پروتون (Cₚ) ساخته می‌شوند. عناصر Z₁ و Z₂ هنگامی تشدید می‌کنند که Z₁ · Cₑ · 2ᴺ = Z₂ · Cₚ · 2^(N+ΔN)، یعنی Z₁/Z₂ ≈ 2^ΔN / 1836.15. تشدید فقط فاصله اکتاو ΔN را تعیین می‌کند؛ اکتاو مطلق N آزاد است."
       },
       "catalyticCycle": {
         "term": "چرخه کاتالیزوری",
@@ -1269,152 +1269,152 @@
         "definition": "مولکولی متشکل از دو اتم یا واحد یکسان، مانند H₂، N₂، O₂ و هالوژن‌های دواتمی F₂، Cl₂، Br₂ و I₂. گزینه «اجازه تشکیل دیمر» در شبیه‌ساز آبشاری به این عناصر طبیعتاً دواتمی مربوط می‌شود."
       },
       "nuclide": {
-        "term": "Nuclide",
-        "definition": "A specific nuclear species characterized by its atomic number (Z) and mass number (A). For example, Carbon-12 and Carbon-14 are different nuclides of the same element."
+        "term": "نوکلید",
+        "definition": "گونه هسته‌ای مشخصی که با عدد اتمی (Z) و عدد جرمی (A) آن تعریف می‌شود. برای نمونه، کربن-12 و کربن-14 دو نوکلید متفاوت از یک عنصر هستند."
       },
       "isotope": {
-        "term": "Isotope",
-        "definition": "Atoms of the same element (same Z) with different numbers of neutrons (different A). For example, H-1 (protium), H-2 (deuterium), and H-3 (tritium) are isotopes of hydrogen."
+        "term": "ایزوتوپ",
+        "definition": "اتم‌های یک عنصر (Z یکسان) با تعداد نوترون‌های متفاوت (A متفاوت). برای نمونه، H-1 (پروتیم)، H-2 (دوتریم) و H-3 (تریتیم) ایزوتوپ‌های هیدروژن هستند."
       },
       "atomicNumber": {
-        "term": "Atomic Number (Z)",
-        "definition": "The number of protons in a nucleus. Determines which element the atom is. For example, Z=1 is hydrogen, Z=26 is iron."
+        "term": "عدد اتمی (Z)",
+        "definition": "تعداد پروتون‌های یک هسته، که تعیین می‌کند اتم به کدام عنصر تعلق دارد. برای نمونه، Z=1 هیدروژن و Z=26 آهن است."
       },
       "massNumber": {
-        "term": "Mass Number (A)",
-        "definition": "The total number of protons and neutrons (nucleons) in a nucleus. A = Z + N, where N is the neutron count."
+        "term": "عدد جرمی (A)",
+        "definition": "مجموع تعداد پروتون‌ها و نوترون‌ها (نوکلئون‌ها) در یک هسته. A = Z + N، که در آن N تعداد نوترون‌هاست."
       },
       "bindingEnergy": {
-        "term": "Binding Energy (BE)",
-        "definition": "The energy required to disassemble a nucleus into its constituent protons and neutrons. Higher binding energy per nucleon means a more stable nucleus. Measured in MeV."
+        "term": "انرژی بستگی (BE)",
+        "definition": "انرژی لازم برای جدا کردن یک هسته به پروتون‌ها و نوترون‌های سازنده‌اش. انرژی بستگی بیشتر به ازای هر نوکلئون به معنای هسته‌ای پایدارتر است. بر حسب MeV اندازه‌گیری می‌شود."
       },
       "bindingEnergyPerNucleon": {
-        "term": "Binding Energy per Nucleon (BEN)",
-        "definition": "Binding energy divided by mass number (BE/A). Iron-56 has the highest BEN (~8.8 MeV), making it the most tightly bound nucleus. Reactions moving toward Fe-56 release energy."
+        "term": "انرژی بستگی به ازای هر نوکلئون (BEN)",
+        "definition": "انرژی بستگی تقسیم بر عدد جرمی (BE/A). آهن-56 بیشترین BEN را دارد (~8.8 MeV) و از این رو محکم‌ترین هسته مقید است. واکنش‌هایی که به سوی Fe-56 پیش می‌روند انرژی آزاد می‌کنند."
       },
       "halfLife": {
-        "term": "Half-Life",
-        "definition": "The time required for half of a radioactive sample to decay. Ranges from fractions of a second to billions of years. In this database, a nuclide with log₁₀(half-life in years) > 9 is considered stable."
+        "term": "نیمه‌عمر",
+        "definition": "زمان لازم برای واپاشی نیمی از یک نمونه پرتوزا. از کسری از ثانیه تا میلیاردها سال متغیر است. در این پایگاه داده، نوکلیدی که log₁₀(نیمه‌عمر بر حسب سال) > 9 داشته باشد پایدار در نظر گرفته می‌شود."
       },
       "stableNuclide": {
-        "term": "Stable Nuclide",
-        "definition": "A nuclide that does not undergo radioactive decay (or has a half-life exceeding 1 billion years). In this database, stability is defined as LHL > 9."
+        "term": "نوکلید پایدار",
+        "definition": "نوکلیدی که دچار واپاشی پرتوزا نمی‌شود (یا نیمه‌عمری بیش از 1 میلیارد سال دارد). در این پایگاه داده، پایداری به صورت LHL > 9 تعریف می‌شود."
       },
       "boson": {
-        "term": "Boson",
-        "definition": "A particle with integer spin (0, 1, 2...). Nuclides with even mass number A are nuclear bosons. Bosons can occupy the same quantum state, enabling phenomena like Bose-Einstein condensation."
+        "term": "بوزون",
+        "definition": "ذره‌ای با اسپین صحیح (0، 1، 2...). نوکلیدهایی با عدد جرمی A زوج، بوزون‌های هسته‌ای هستند. بوزون‌ها می‌توانند در یک حالت کوانتومی مشترک قرار گیرند و پدیده‌هایی مانند چگالش بوز-اینشتین را ممکن می‌سازند."
       },
       "fermion": {
-        "term": "Fermion",
-        "definition": "A particle with half-integer spin (1/2, 3/2...). Nuclides with odd mass number A are nuclear fermions. Fermions obey the Pauli exclusion principle."
+        "term": "فرمیون",
+        "definition": "ذره‌ای با اسپین نیمه‌صحیح (1/2، 3/2...). نوکلیدهایی با عدد جرمی A فرد، فرمیون‌های هسته‌ای هستند. فرمیون‌ها از اصل طرد پائولی پیروی می‌کنند."
       },
       "neutrino": {
-        "term": "Neutrino",
-        "definition": "A nearly massless, weakly interacting subatomic particle produced in nuclear reactions involving the weak force (e.g., beta decay). Denoted ν (left-handed) or ν̄ (right-handed antineutrino)."
+        "term": "نوترینو",
+        "definition": "ذره‌ای زیراتمی تقریباً بی‌جرم با برهم‌کنش ضعیف که در واکنش‌های هسته‌ای شامل نیروی ضعیف (مانند واپاشی بتا) تولید می‌شود. با ν (چپ‌گرد) یا ν̄ (پادنوترینوی راست‌گرد) نشان داده می‌شود."
       },
       "radioactiveDecay": {
-        "term": "Radioactive Decay",
-        "definition": "The spontaneous transformation of an unstable nucleus into a more stable configuration. Common modes include alpha (A), beta-minus (B-), beta-plus (B+), electron capture (EC), and isomeric transition (IT)."
+        "term": "واپاشی پرتوزا",
+        "definition": "تبدیل خودبه‌خودی یک هسته ناپایدار به پیکربندی پایدارتر. حالت‌های رایج شامل آلفا (A)، بتای منفی (B-)، بتای مثبت (B+)، گیراندازی الکترون (EC) و گذار ایزومری (IT) است."
       },
       "alphaDecay": {
-        "term": "Alpha Decay",
-        "definition": "Emission of a helium-4 nucleus (2 protons + 2 neutrons). Reduces Z by 2 and A by 4. Common in heavy elements like uranium and radium."
+        "term": "واپاشی آلفا",
+        "definition": "گسیل یک هسته هلیم-4 (2 پروتون + 2 نوترون). Z را 2 واحد و A را 4 واحد کاهش می‌دهد. در عناصر سنگین مانند اورانیم و رادیم رایج است."
       },
       "betaDecay": {
-        "term": "Beta Decay",
-        "definition": "Transformation of a neutron into a proton (β⁻, Z+1) or proton into neutron (β⁺, Z-1). A stays the same. Involves emission of a neutrino or antineutrino."
+        "term": "واپاشی بتا",
+        "definition": "تبدیل یک نوترون به پروتون (β⁻، Z+1) یا یک پروتون به نوترون (β⁺، Z-1). A بدون تغییر می‌ماند. با گسیل یک نوترینو یا پادنوترینو همراه است."
       },
       "electronCapture": {
-        "term": "Electron Capture (EC)",
-        "definition": "An inner orbital electron is captured by the nucleus, converting a proton to a neutron. Z decreases by 1, A stays the same. Competes with β⁺ decay."
+        "term": "گیراندازی الکترون (EC)",
+        "definition": "یک الکترون از اوربیتال‌های درونی توسط هسته گیر انداخته می‌شود و یک پروتون را به نوترون تبدیل می‌کند. Z یک واحد کاهش می‌یابد و A بدون تغییر می‌ماند. با واپاشی β⁺ رقابت می‌کند."
       },
       "isomericTransition": {
-        "term": "Isomeric Transition (IT)",
-        "definition": "A metastable excited nuclear state decays to a lower energy state by emitting a gamma ray. Z and A remain unchanged. The nuclide symbol gets an \"m\" suffix (e.g., Tc-99m)."
+        "term": "گذار ایزومری (IT)",
+        "definition": "یک حالت برانگیخته فراپایدار هسته با گسیل پرتو گاما به حالتی با انرژی کمتر واپاشی می‌کند. Z و A بدون تغییر می‌مانند. نماد نوکلید پسوند «m» می‌گیرد (مانند Tc-99m)."
       },
       "lenr": {
         "term": "LENR",
-        "definition": "Low Energy Nuclear Reactions. A class of nuclear reactions that occur at or near room temperature, distinct from conventional \"hot\" fusion which requires millions of degrees. Also historically known as \"cold fusion.\""
+        "definition": "واکنش‌های هسته‌ای کم‌انرژی. دسته‌ای از واکنش‌های هسته‌ای که در دمای اتاق یا نزدیک به آن رخ می‌دهند و با همجوشی «داغ» متعارف که به دمای میلیون‌ها درجه نیاز دارد متفاوت‌اند. از نظر تاریخی با نام «همجوشی سرد» نیز شناخته می‌شوند."
       },
       "transmutation": {
-        "term": "Transmutation",
-        "definition": "The conversion of one chemical element or isotope into another. Can occur through fusion, fission, or two-to-two reactions. This database catalogs transmutation pathways computed by Dr. Alexander Parkhomov."
+        "term": "تبدیل هسته‌ای",
+        "definition": "تبدیل یک عنصر شیمیایی یا ایزوتوپ به عنصر یا ایزوتوپی دیگر. می‌تواند از طریق واکنش‌های همجوشی، شکافت یا دوبه‌دو رخ دهد. این پایگاه داده مسیرهای تبدیل هسته‌ای محاسبه‌شده توسط دکتر الکساندر پارخوموف را فهرست می‌کند."
       },
       "fusion": {
-        "term": "Fusion",
-        "definition": "A nuclear reaction where two lighter nuclei combine to form a heavier nucleus (A + B → C). Releases energy when the product has higher binding energy per nucleon than the reactants. This database contains 3,921 fusion reactions, of which 1,505 involve no neutrinos."
+        "term": "همجوشی",
+        "definition": "واکنشی هسته‌ای که در آن دو هسته سبک‌تر با هم ترکیب می‌شوند و هسته‌ای سنگین‌تر می‌سازند (A + B → C). هنگامی انرژی آزاد می‌کند که انرژی بستگی به ازای هر نوکلئون محصول بیشتر از واکنش‌دهنده‌ها باشد. این پایگاه داده شامل 3,921 واکنش همجوشی است که 1,505 مورد از آن‌ها بدون نوترینو هستند."
       },
       "fission": {
-        "term": "Fission",
-        "definition": "A nuclear reaction where a heavier nucleus splits into two lighter nuclei (A → B + C). Releases energy when the products have higher binding energy per nucleon. This database contains 1,733 fission reactions, of which 818 involve no neutrinos."
+        "term": "شکافت",
+        "definition": "واکنشی هسته‌ای که در آن یک هسته سنگین‌تر به دو هسته سبک‌تر شکافته می‌شود (A → B + C). هنگامی انرژی آزاد می‌کند که انرژی بستگی به ازای هر نوکلئون محصولات بیشتر باشد. این پایگاه داده شامل 1,733 واکنش شکافت است که 818 مورد از آن‌ها بدون نوترینو هستند."
       },
       "twoToTwo": {
-        "term": "Two-to-Two",
-        "definition": "A nuclear reaction where two nuclei interact and produce two different nuclei (A + B → C + D). The most common reaction type in the database, with 1,215,374 reactions (518,657 of which involve no neutrinos)."
+        "term": "دوبه‌دو",
+        "definition": "واکنشی هسته‌ای که در آن دو هسته با هم برهم‌کنش می‌کنند و دو هسته متفاوت تولید می‌کنند (A + B → C + D). رایج‌ترین نوع واکنش در پایگاه داده، با 1,215,374 واکنش (که 518,657 مورد از آن‌ها بدون نوترینو هستند)."
       },
       "cascade": {
-        "term": "Cascade",
-        "definition": "A chain of nuclear reactions where products of one reaction become inputs to subsequent reactions. The cascade engine simulates multi-generation reaction pathways from initial fuel nuclides."
+        "term": "آبشار",
+        "definition": "زنجیره‌ای از واکنش‌های هسته‌ای که در آن محصولات یک واکنش به ورودی‌های واکنش‌های بعدی تبدیل می‌شوند. موتور آبشار مسیرهای واکنش چندنسلی را از نوکلیدهای سوخت اولیه شبیه‌سازی می‌کند."
       },
       "feedbackLoop": {
-        "term": "Feedback Loop",
-        "definition": "When a product nuclide from a later reaction step reappears as an input in an earlier step, creating a self-sustaining cycle. Similar to the CNO cycle in stellar nucleosynthesis."
+        "term": "حلقه بازخورد",
+        "definition": "وضعیتی که در آن نوکلید محصولِ یک مرحله بعدی واکنش، دوباره به‌عنوان ورودی در مرحله‌ای پیشین ظاهر می‌شود و چرخه‌ای خودپایدار پدید می‌آورد. مشابه چرخه CNO در هسته‌زایی ستاره‌ای."
       },
       "mev": {
         "term": "MeV",
-        "definition": "Megaelectronvolt (10⁶ eV). A unit of energy commonly used in nuclear physics. 1 MeV = 1.602 × 10⁻¹³ joules. The energy released in a nuclear reaction is the Q-value, measured in MeV."
+        "definition": "مگاالکترون‌ولت (10⁶ eV). یکای انرژی رایج در فیزیک هسته‌ای. 1 MeV = 1.602 × 10⁻¹³ ژول. انرژی آزادشده در یک واکنش هسته‌ای، مقدار Q است که بر حسب MeV اندازه‌گیری می‌شود."
       },
       "kev": {
         "term": "keV",
-        "definition": "Kiloelectronvolt (10³ eV). 1 MeV = 1000 keV. Used for decay energies and radiation energies in the RadioNuclides table."
+        "definition": "کیلوالکترون‌ولت (10³ eV). 1 MeV = 1000 keV. برای انرژی‌های واپاشی و انرژی‌های تابش در جدول RadioNuclides به کار می‌رود."
       },
       "amu": {
         "term": "AMU",
-        "definition": "Atomic Mass Unit. Defined as 1/12 of the mass of a Carbon-12 atom. 1 AMU = 931.494 MeV/c². Used to express nuclear and atomic masses."
+        "definition": "یکای جرم اتمی. برابر با 1/12 جرم یک اتم کربن-12 تعریف می‌شود. 1 AMU = 931.494 MeV/c². برای بیان جرم‌های هسته‌ای و اتمی به کار می‌رود."
       },
       "nBorF": {
         "term": "nBorF",
-        "definition": "Nuclear Boson or Fermion classification. Based on mass number A: even A = boson (b), odd A = fermion (f). Relevant to quantum statistical behavior of the nucleus."
+        "definition": "رده‌بندی بوزون یا فرمیون هسته‌ای. بر پایه عدد جرمی A: A زوج = بوزون (b)، A فرد = فرمیون (f). به رفتار آماری کوانتومی هسته مربوط است."
       },
       "aBorF": {
         "term": "aBorF",
-        "definition": "Atomic Boson or Fermion classification. Based on neutron count (A - Z): even neutrons = boson (b), odd neutrons = fermion (f). Describes the quantum statistics of the whole atom."
+        "definition": "رده‌بندی بوزون یا فرمیون اتمی. بر پایه تعداد نوترون‌ها (A - Z): تعداد زوج نوترون = بوزون (b)، تعداد فرد نوترون = فرمیون (f). آمار کوانتومی کل اتم را توصیف می‌کند."
       },
       "lhl": {
         "term": "LHL",
-        "definition": "Log₁₀ of Half-Life in years. A compact representation of half-life. LHL = 0 means 1 year, LHL = 9 means 1 billion years (stable threshold). Negative values indicate sub-year half-lives."
+        "definition": "log₁₀ نیمه‌عمر بر حسب سال. نمایشی فشرده از نیمه‌عمر. LHL = 0 یعنی 1 سال و LHL = 9 یعنی 1 میلیارد سال (آستانه پایداری). مقادیر منفی نشان‌دهنده نیمه‌عمرهای کمتر از یک سال هستند."
       },
       "sus": {
         "term": "SUS",
-        "definition": "Status field indicating nuclide origin. SPN = Stable Primordial (exists naturally), UPN = Unstable Primordial (radioactive but natural), SYN = Synthetic (only man-made)."
+        "definition": "فیلد وضعیت که منشأ نوکلید را نشان می‌دهد. SPN = پایدار آغازین (به‌طور طبیعی وجود دارد)، UPN = ناپایدار آغازین (پرتوزا ولی طبیعی)، SYN = مصنوعی (فقط ساخت بشر)."
       },
       "rdm": {
         "term": "RDM",
-        "definition": "Primary Radioactive Decay Mode. The dominant decay pathway for unstable nuclides. Values include A (alpha), B- (beta minus), B+ (beta plus), EC (electron capture), IT (isomeric transition)."
+        "definition": "حالت اصلی واپاشی پرتوزا. مسیر واپاشی غالب برای نوکلیدهای ناپایدار. مقادیر شامل A (آلفا)، B- (بتای منفی)، B+ (بتای مثبت)، EC (گیراندازی الکترون) و IT (گذار ایزومری) است."
       },
       "deuterium": {
-        "term": "Deuterium (D)",
-        "definition": "Hydrogen-2 (one proton + one neutron). In the database, deuterium uses the symbol \"D\" rather than \"H\" with A=2. Important in LENR research as a common fuel choice."
+        "term": "دوتریم (D)",
+        "definition": "هیدروژن-2 (یک پروتون + یک نوترون). در پایگاه داده، دوتریم به‌جای «H» با A=2 از نماد «D» استفاده می‌کند. در پژوهش‌های LENR به‌عنوان یک سوخت رایج اهمیت دارد."
       },
       "tritium": {
-        "term": "Tritium (T)",
-        "definition": "Hydrogen-3 (one proton + two neutrons). Radioactive with a half-life of 12.3 years. In the database, tritium uses the symbol \"T\" rather than \"H\" with A=3."
+        "term": "تریتیم (T)",
+        "definition": "هیدروژن-3 (یک پروتون + دو نوترون). پرتوزا با نیمه‌عمر 12.3 سال. در پایگاه داده، تریتیم به‌جای «H» با A=3 از نماد «T» استفاده می‌کند."
       },
       "protium": {
-        "term": "Protium (H)",
-        "definition": "Hydrogen-1 (one proton, no neutrons). The most common hydrogen isotope (99.98% abundance). In the database, uses symbol \"H\"."
+        "term": "پروتیم (H)",
+        "definition": "هیدروژن-1 (یک پروتون، بدون نوترون). فراوان‌ترین ایزوتوپ هیدروژن (فراوانی 99.98%). در پایگاه داده از نماد «H» استفاده می‌کند."
       }
     }
   },
   "mullerResonance": {
-    "title": "کاوشگر تشدید Muller",
-    "description": "تشدیدهای طول موج الکترون-پروتون میان عناصر را با استفاده از معادله Frithjof Muller، L = Z × Cₑ × 2ᴺ، کاوش کنید؛ با ارجاع متقابل به پایگاه داده واکنش‌های هسته‌ای Parkhomov.",
+    "title": "کاوشگر تشدید مولر",
+    "description": "تشدیدهای طول موج الکترون-پروتون میان عناصر را با استفاده از معادله فریتیوف مولر، L = Z × Cₑ × 2ᴺ، کاوش کنید؛ با ارجاع متقابل به پایگاه داده واکنش‌های هسته‌ای پارخوموف.",
     "equationExplanation": "L = طول موج تشدید، Z = عدد اتمی، C = طول موج کامپتون الکترون (Cₑ) یا پروتون (Cₚ)، N = شماره اکتاو (عدد صحیح ≥ 0). تشدید میان‌ذره‌ای فاصله اکتاو ΔN میان نردبان‌های الکترون و پروتون را تعیین می‌کند؛ اکتاو مطلق N آزاد است.",
     "threshold": "آستانه عدم تطابق",
     "selectElement": "یک عنصر را برای یافتن شرکای تشدیدی آن انتخاب کنید",
     "resonantPartners": "شرکای تشدیدی",
     "exactMatches": "تطابق‌های دقیق (<0.01%)",
-    "withReactions": "دارای واکنش‌های Parkhomov",
+    "withReactions": "دارای واکنش‌های پارخوموف",
     "totalReactions": "کل واکنش‌ها",
     "resonancePairs": "جفت‌های تشدیدی",
     "topGlobalPairs": "برترین جفت‌های تشدیدی در میان همه عناصر",
@@ -1462,10 +1462,10 @@
       "protonN": "N پروتون {{element}}"
     },
     "aboutTitle": "درباره این ابزار",
-    "about1": "معادله Frithjof Muller، L = Z × C × 2ᴺ، به هر عنصر نردبانی از طول موج‌ها می‌دهد، یکی برای هر اکتاو N، هم برای طول موج کامپتون الکترون (Cₑ) و هم پروتون (Cₚ) آن. دو عنصر هنگامی تشدید می‌کنند که نردبان الکترون یک عنصر با نردبان پروتون عنصر دیگر هم‌راستا شود: Z₁ · Cₑ · 2^N = Z₂ · Cₚ · 2^(N+ΔN). N در این شرط حذف می‌شود، بنابراین تشدید فقط فاصله اکتاو ΔN (و میزان نزدیکی تطابق نسبت) را تعیین می‌کند، نه یک اکتاو مطلق را — اگر در یک اکتاو برقرار باشد، در همه اکتاوها برقرار است. یک باند طول موج در بالا انتخاب کنید تا ببینید کدام اکتاوهای هر جفت درون آن قرار می‌گیرند.",
+    "about1": "معادله فریتیوف مولر، L = Z × C × 2ᴺ، به هر عنصر نردبانی از طول موج‌ها می‌دهد، یکی برای هر اکتاو N، هم برای طول موج کامپتون الکترون (Cₑ) و هم پروتون (Cₚ) آن. دو عنصر هنگامی تشدید می‌کنند که نردبان الکترون یک عنصر با نردبان پروتون عنصر دیگر هم‌راستا شود: Z₁ · Cₑ · 2^N = Z₂ · Cₚ · 2^(N+ΔN). N در این شرط حذف می‌شود، بنابراین تشدید فقط فاصله اکتاو ΔN (و میزان نزدیکی تطابق نسبت) را تعیین می‌کند، نه یک اکتاو مطلق را — اگر در یک اکتاو برقرار باشد، در همه اکتاوها برقرار است. یک باند طول موج در بالا انتخاب کنید تا ببینید کدام اکتاوهای هر جفت درون آن قرار می‌گیرند.",
     "about2": "مثال: الکترون‌های مس (Z=29) و پروتون‌های آهن (Z=26) با فاصله اکتاو ΔN = 11 و با دقت 0.0008% تشدید می‌کنند، زیرا 29 × 1836.15 ≈ 26 × 2¹¹. این فاصله توسط نسبت جرم الکترون/پروتون تعیین می‌شود (log₂(1836.15) ≈ 10.84). همین تطابق در هر پله از نردبان ظاهر می‌شود: در N = 20 / 31 طول موج مشترک 73.78 µm است، در N = 31 / 42 برابر 151.10 mm است و هر اکتاو بعدی آن را دو برابر می‌کند. تنها 8 جفت از 4,186 جفت عنصر ممکن با دقت < 0.01% تطابق دارند.",
-    "about3": "تعداد واکنش‌های نشان‌داده‌شده از جداول واکنش‌های هسته‌ای گرماده دکتر Alexander Parkhomov است. این اعداد نشان می‌دهند چند واکنش از نظر انرژی ممکن میان هر جفت وجود دارد، نه آهنگ یا احتمال واکنش‌ها را. تحلیل آماری هیچ همبستگی معناداری میان تشدید Muller و چگالی واکنش‌های Parkhomov نشان نمی‌دهد — پایگاه داده تابع انرژی‌های بستگی هسته‌ای است، نه تشدید طول موج. این ابزار جنبه اکتشافی دارد.",
-    "disclaimer": "توجه: معادله Muller ریاضیات زیبایی پدید می‌آورد، اما سازوکار تشدید آن فاقد تأیید تجربی مستقل است. این ابزار برای کاوش و تولید فرضیه ارائه شده است، نه به‌عنوان یک مدل پیش‌بینی معتبر.",
+    "about3": "تعداد واکنش‌های نشان‌داده‌شده از جداول واکنش‌های هسته‌ای گرماده دکتر الکساندر پارخوموف است. این اعداد نشان می‌دهند چند واکنش از نظر انرژی ممکن میان هر جفت وجود دارد، نه آهنگ یا احتمال واکنش‌ها را. تحلیل آماری هیچ همبستگی معناداری میان تشدید مولر و چگالی واکنش‌های پارخوموف نشان نمی‌دهد — پایگاه داده تابع انرژی‌های بستگی هسته‌ای است، نه تشدید طول موج. این ابزار جنبه اکتشافی دارد.",
+    "disclaimer": "توجه: معادله مولر ریاضیات زیبایی پدید می‌آورد، اما سازوکار تشدید آن فاقد تأیید تجربی مستقل است. این ابزار برای کاوش و تولید فرضیه ارائه شده است، نه به‌عنوان یک مدل پیش‌بینی معتبر.",
     "legend": {
       "title": "مقیاس رنگ",
       "weaker": "تشدید ضعیف‌تر",
@@ -1476,15 +1476,15 @@
       "naeOutside": "تشدید خارج از محدوده NAE",
       "naeUncoloured": "عناصر بی‌رنگ هیچ طول موج تشدید الکترونی محاسبه‌شده‌ای ندارند."
     },
-    "noReactionsTitle": "هیچ واکنشی برای این جفت در جداول Parkhomov وجود ندارد",
-    "noReactionsFootnote": "خط تیره (-) یعنی جداول Parkhomov هیچ واکنشی از آن نوع برای این جفت ندارند. بسیاری از جفت‌های تشدیدی شامل عناصری هستند که در آن جداول وجود ندارند، بنابراین خط تیره رایج است.",
+    "noReactionsTitle": "هیچ واکنشی برای این جفت در جداول پارخوموف وجود ندارد",
+    "noReactionsFootnote": "خط تیره (-) یعنی جداول پارخوموف هیچ واکنشی از آن نوع برای این جفت ندارند. بسیاری از جفت‌های تشدیدی شامل عناصری هستند که در آن جداول وجود ندارند، بنابراین خط تیره رایج است.",
     "tabs": {
       "resonancePairs": "جفت‌های تشدیدی",
       "naePredictions": "پیش‌بینی‌های NAE"
     },
     "nae": {
       "title": "پیش‌بینی‌های شبکه NAE",
-      "description": "عناصر بر اساس نزدیکی طول موج تشدید الکترونی به شکاف ~1 nm محیط فعال هسته‌ای (NAE) که Edmund Storms شناسایی کرده است (JCMNS 41, 2026) رتبه‌بندی شده‌اند. عناصر برجسته‌شده در اکتاوهای پایین تشدیدی در محدوده 0.5–2.0 nm دارند.",
+      "description": "عناصر بر اساس نزدیکی طول موج تشدید الکترونی به شکاف ~1 nm محیط فعال هسته‌ای (NAE) که ادموند استورمز شناسایی کرده است (JCMNS 41, 2026) رتبه‌بندی شده‌اند. عناصر برجسته‌شده در اکتاوهای پایین تشدیدی در محدوده 0.5–2.0 nm دارند.",
       "element": "عنصر",
       "octave": "اکتاو (N)",
       "electronResonance": "تشدید e⁻",
@@ -1495,7 +1495,7 @@
       "deuteriumMismatch": "عدم تطابق D",
       "phononFrequency": "بسامد فونون",
       "knownLENR": "LENR شناخته‌شده",
-      "parkhomovReactions": "واکنش‌های Parkhomov",
+      "parkhomovReactions": "واکنش‌های پارخوموف",
       "showNAEOnly": "فقط عناصری با تشدید در محدوده NAE نمایش داده شوند",
       "searchPlaceholder": "فیلتر بر اساس عنصر (جداشده با ویرگول)...",
       "elementsInRange": "عناصر در محدوده NAE (0.5–2.0 nm)",
@@ -1523,23 +1523,23 @@
       "lenrRefs": "منابع LENR",
       "noNAEResonance": "در اکتاوهای پایین هیچ تشدیدی در محدوده NAE وجود ندارد.",
       "aboutNAETitle": "درباره پیش‌بینی‌های NAE",
-      "aboutNAE1": "Edmund Storms دریافت که همجوشی سرد (LENR) در محیط‌های فعال هسته‌ای (NAE) رخ می‌دهد — شکاف‌ها یا ترک‌های نانومقیاس در شبکه فلزی، معمولاً به پهنای ~1 nm (JCMNS 41, 2026). پرسش حل‌نشده این است: چرا شکاف شبکه باید ~1 nm باشد؟",
-      "aboutNAE2": "معادله Muller L = Z × Cₑ × 2ᴺ در شماره‌های اکتاو پایین (N=3، N=4) طول موج‌های تشدید الکترونی را برای هر عنصر پیش‌بینی می‌کند. پالادیم (Z=46) در N=3 مقدار 0.89 nm و در N=4 مقدار 1.79 nm می‌دهد — شکاف NAE دقیقاً میان این دو اکتاو قرار می‌گیرد.",
+      "aboutNAE1": "ادموند استورمز دریافت که همجوشی سرد (LENR) در محیط‌های فعال هسته‌ای (NAE) رخ می‌دهد — شکاف‌ها یا ترک‌های نانومقیاس در شبکه فلزی، معمولاً به پهنای ~1 nm (JCMNS 41, 2026). پرسش حل‌نشده این است: چرا شکاف شبکه باید ~1 nm باشد؟",
+      "aboutNAE2": "معادله مولر L = Z × Cₑ × 2ᴺ در شماره‌های اکتاو پایین (N=3، N=4) طول موج‌های تشدید الکترونی را برای هر عنصر پیش‌بینی می‌کند. پالادیم (Z=46) در N=3 مقدار 0.89 nm و در N=4 مقدار 1.79 nm می‌دهد — شکاف NAE دقیقاً میان این دو اکتاو قرار می‌گیرد.",
       "aboutNAE3": "هم‌پوشانی با دوتریم چشمگیر است: در اکتاو پروتون N=20، دوتریم طول موج تشدیدی برابر 1.39 nm دارد — درست در محدوده NAE. هنگامی که تشدید الکترونی فلز میزبان و تشدید پروتونی سوخت هر دو نزدیک 1 nm باشند، سامانه ممکن است به تشدید دوگانه برسد.",
       "aboutNAE4": "فلزات شناخته‌شده فعال در LENR (Pd، Ni، Pt، Ti) همگی طول‌های تشدید الکترونی دارند که در N=3 یا N=4 محدوده 0.9–1.8 nm را در بر می‌گیرند. عناصری که گزارشی از LENR ندارند (Al، بیشتر عناصر سبک) این محدوده را کاملاً از دست می‌دهند. اگر این همبستگی برقرار باشد، نخستین نظریه کمّی شبکه برای همجوشی سرد خواهد بود.",
-      "naeDisclaimer": "این تحلیل چارچوب تشدید Muller را با مدل NAE Storms ترکیب می‌کند. هر دو مدل‌های نظری‌اند. سازوکار تشدید معادله Muller فاقد تأیید تجربی مستقل است. اندازه شکاف NAE Storms از شرایط تجربی استنباط شده است، نه اینکه مستقیماً اندازه‌گیری شده باشد. نتایج برای کاوش و تولید فرضیه ارائه شده‌اند."
+      "naeDisclaimer": "این تحلیل چارچوب تشدید مولر را با مدل NAE استورمز ترکیب می‌کند. هر دو مدل‌های نظری‌اند. سازوکار تشدید معادله مولر فاقد تأیید تجربی مستقل است. اندازه شکاف NAE استورمز از شرایط تجربی استنباط شده است، نه اینکه مستقیماً اندازه‌گیری شده باشد. نتایج برای کاوش و تولید فرضیه ارائه شده‌اند."
     }
   },
   "transmutations": {
     "title": "کاوشگر مسیرهای تبدیل هسته‌ای",
-    "subtitle": "ادعاهای مستند تبدیل هسته‌ای LENR از منابع اصلی، همراه با مسیرهای دومرحله‌ای پیشنهادی از پایگاه داده واکنش‌های Parkhomov.",
+    "subtitle": "ادعاهای مستند تبدیل هسته‌ای LENR از منابع اصلی، همراه با مسیرهای دومرحله‌ای پیشنهادی از پایگاه داده واکنش‌های پارخوموف.",
     "disclaimerTitle": "ادعاهای مستند، نه سازوکارهای تأییدشده.",
-    "disclaimerText": "تبدیل‌های فهرست‌شده در زیر در منابع اصلی گزارش شده‌اند. پایگاه داده Parkhomov ممکن است مسیرهای A+B → C+D را نشان دهد که این تبدیل‌های خالص را ممکن می‌سازند؛ این امر ثابت <0>نمی‌کند</0> که سازوکار فرضیه‌شده اولیه درست است. مسیرها راه‌های پیشنهادی از طریق واکنش‌های بنیادی مجاز هستند، نه شواهد تجربی.",
+    "disclaimerText": "تبدیل‌های فهرست‌شده در زیر در منابع اصلی گزارش شده‌اند. پایگاه داده پارخوموف ممکن است مسیرهای A+B → C+D را نشان دهد که این تبدیل‌های خالص را ممکن می‌سازند؛ این امر ثابت <0>نمی‌کند</0> که سازوکار فرضیه‌شده اولیه درست است. مسیرها راه‌های پیشنهادی از طریق واکنش‌های بنیادی مجاز هستند، نه شواهد تجربی.",
     "filterAllCategories": "همه دسته‌ها",
     "filterAllSources": "همه منابع",
     "filterByLab": "فیلتر بر اساس آزمایشگاه منبع",
     "noResults": "هیچ تبدیلی با فیلترهای فعلی مطابقت ندارد.",
-    "pathwayResultsHint": "مسیرهای پیشنهادی از جداول Parkhomov در زیر این کارت نمایش داده می‌شوند.",
+    "pathwayResultsHint": "مسیرهای پیشنهادی از جداول پارخوموف در زیر این کارت نمایش داده می‌شوند.",
     "curatedFrom": "گردآوری‌شده از <1>مرور ادبیات LENR در HumanScholars</1>. {{count}} مدخل.",
     "stepCount_one": "1 مرحله",
     "stepCount_other": "{{count}} مرحله",
@@ -1557,14 +1557,14 @@
     },
     "buttons": {
       "searching": "در حال جستجو...",
-      "findPathways": "یافتن مسیرهای Parkhomov",
+      "findPathways": "یافتن مسیرهای پارخوموف",
       "dismiss": "بستن",
       "dismissPathways": "بستن نتایج مسیرها",
       "viewSource": "مشاهده منبع"
     },
     "pathwayResults": {
-      "notFound": "هیچ مسیر 1 یا 2 مرحله‌ای برای ایزوتوپ‌های فهرست‌شده در پایگاه داده Parkhomov یافت نشد.",
-      "explanation": "یک تبدیل گزارش‌شده همچنان می‌تواند از راه‌هایی خارج از جدول‌بندی Parkhomov معتبر باشد (چندمرحله‌ای فراتر از عمق 2، زنجیره‌های گیراندازی نوترون، شاخه‌های واپاشی بتا). برای مسیرهای چندمرحله‌ای با واسطه‌های چرخه‌ای، ابزار <1>کشف چرخه</1> را امتحان کنید.",
+      "notFound": "هیچ مسیر 1 یا 2 مرحله‌ای برای ایزوتوپ‌های فهرست‌شده در پایگاه داده پارخوموف یافت نشد.",
+      "explanation": "یک تبدیل گزارش‌شده همچنان می‌تواند از راه‌هایی خارج از جدول‌بندی پارخوموف معتبر باشد (چندمرحله‌ای فراتر از عمق 2، زنجیره‌های گیراندازی نوترون، شاخه‌های واپاشی بتا). برای مسیرهای چندمرحله‌ای با واسطه‌های چرخه‌ای، ابزار <1>کشف چرخه</1> را امتحان کنید.",
       "header": "مسیرهای پیشنهادی ({{count}})"
     },
     "errors": {
@@ -1578,7 +1578,7 @@
         "setup": "لایه نازک چندلایه Pd/CaO با نفوذ گاز دوتریم",
         "hypothesizedMechanism": "گیراندازی متوالی آلفا: $133Cs + 2 × 4He → 141Pr$",
         "sourceTag": "JJAP 2002",
-        "replicatedBy": "Toyota Central R&D (2013)، دانشگاه اوساکا (2003)"
+        "replicatedBy": "Toyota Central R&D (2013)، Osaka University (2003)"
       },
       "iwamura-sr-mo": {
         "source": "Iwamura و همکاران، Mitsubishi Heavy Industries (2002)",
@@ -1598,13 +1598,13 @@
         "hypothesizedMechanism": "گیراندازی متوالی آلفا: $184W + 2 × 4He → 192Pt$"
       },
       "vysotskii-cs-ba": {
-        "source": "Vysotskii و Kornilova (دانشگاه دولتی کی‌یف، 2003)",
+        "source": "Vysotskii و Kornilova (Kiev State University، 2003)",
         "setup": "کشت‌های باکتریایی (Deinococcus radiodurans، اجتماعات میکروبی هم‌پرورده) در معرض محیط کشت آلوده به Cs-137",
         "hypothesizedMechanism": "تبدیل شبه‌واپاشی بتا با کاتالیز میکروبی؛ حالت‌های همبسته همدوس زیستی پیشنهاد شده است",
         "notes": "کاهش فعالیت Cs-137 همبسته با پیدایش Ba-138 در محیط کشت گزارش شده است."
       },
       "vysotskii-mn-fe": {
-        "source": "Vysotskii و Kornilova (دانشگاه دولتی کی‌یف، 1996-2008)",
+        "source": "Vysotskii و Kornilova (Kiev State University، 1996-2008)",
         "setup": "کشت‌های میکروبی کمبود آهن با افزودن Mn-55 و D2O؛ طیف‌سنجی موسباوئر محصول Fe-57",
         "hypothesizedMechanism": "واکنش خالص به صورت $55Mn + d → 57Fe$ از طریق همجوشی کم‌انرژی با واسطه زیستی پیشنهاد شده است"
       },
@@ -1612,13 +1612,13 @@
         "source": "Miley و Patterson (UIUC / CETI، 1996)",
         "setup": "کاتدهای لایه نازک Ni الکترولیزشده در محلول‌های آب سبک؛ حدود 50 عنصر محصول با SIMS/NAA شناسایی شد",
         "hypothesizedMechanism": "طیف گسترده محصولات تبدیل؛ هیچ سازوکار واحدی پیشنهاد نشده است (شکافت هسته مرکب مطرح شده است)",
-        "notes": "مدخل جامع: Miley توزیع گسترده‌ای از محصولات گزارش کرد. Ni→Cu در اینجا به عنوان پرارجاع‌ترین زوج منفرد استفاده شده است؛ حدود 50 عنصر مشاهده شد."
+        "notes": "مدخل جامع: مایلی توزیع گسترده‌ای از محصولات گزارش کرد. Ni→Cu در اینجا به عنوان پرارجاع‌ترین زوج منفرد استفاده شده است؛ حدود 50 عنصر مشاهده شد."
       },
       "savvatimova-pd-ag": {
         "source": "Savvatimova و همکاران (Luch، روسیه، دهه 1990 تا 2000)",
         "setup": "بمباران کاتدهای Pd با تخلیه تابان در پلاسمای دوتریم",
         "hypothesizedMechanism": "مسیرهای متعددی پیشنهاد شده، از جمله فرایندهای شبه‌نوترونی و برهم‌کنش ضعیف با استتار الکترونی",
-        "notes": "Savvatimova تبدیل Pd → Rh, Ru, Ag, Cd را گزارش کرد؛ در اینجا Pd→Ag ثبت شده است."
+        "notes": "ساواتیمووا تبدیل Pd → Rh, Ru, Ag, Cd را گزارش کرد؛ در اینجا Pd→Ag ثبت شده است."
       },
       "savvatimova-pd-rh": {
         "source": "Savvatimova و همکاران (Luch، روسیه، دهه 1990 تا 2000)",
@@ -1668,22 +1668,22 @@
       },
       "mizuno-2000-plasma": {
         "authors": "Mizuno, T.",
-        "institution": "دانشگاه هوکایدو، ژاپن",
+        "institution": "Hokkaido University، ژاپن",
         "excerpt": "COP حدود 5 تا 10 در گونه‌های تخلیه گاز هیدروژن با توری Ni از سلول‌های الکترولیز پلاسمایی گزارش شد."
       },
       "cleanplanet-tohoku-2024": {
         "authors": "Iwamura, Y. et al. (Tohoku U. / Clean Planet)",
-        "institution": "دانشگاه توهوکو و Clean Planet Inc.",
+        "institution": "Tohoku University و Clean Planet Inc.",
         "excerpt": "اجراهای تکرارپذیر با انرژی خالص مثبت در لایه‌های نازک چندلایه نانو-Pd با سوخت H₂ (اجراهای نمایشی 2024)."
       },
       "barc-1989-tritium": {
-        "authors": "تیم‌های مرکز تحقیقات اتمی بابا",
+        "authors": "تیم‌های Bhabha Atomic Research Centre",
         "institution": "BARC، هند",
         "excerpt": "12 تیم پژوهشی BARC به‌طور مستقل تولید تریتیم را در سلول‌های دوتریمی بین سال‌های 1989 و 1994 شناسایی کردند."
       },
       "spawar-2002-triple-tracks": {
         "authors": "Mosier-Boss, P. A. et al. (SPAWAR)",
-        "institution": "SPAWAR Systems Center، سن دیگو",
+        "institution": "SPAWAR Systems Center، San Diego",
         "excerpt": "شواهد آشکارساز پلاستیکی CR-39 از «ردهای سه‌گانه» پس‌زنی تریتون در آزمایش‌های هم‌نشانی Pd/D (2002–2011)."
       },
       "iwamura-2002-cs-pr": {
@@ -1720,17 +1720,17 @@
       },
       "miley-1996-multi-element": {
         "authors": "Miley, G. H. & Patterson, J. A.",
-        "institution": "دانشگاه ایلینوی در اربانا-شمپین",
+        "institution": "University of Illinois Urbana-Champaign",
         "excerpt": "حدود 50 عنصر روی کاتدهای Ni پس از الکترولیز آب سبک شناسایی شد، از جمله محصولاتی که در مواد اولیه وجود نداشتند."
       },
       "savvatimova-pd-products": {
         "authors": "Savvatimova, I. B.",
-        "institution": "انجمن علمی-صنعتی LUCH",
+        "institution": "LUCH Scientific-Industrial Association",
         "excerpt": "محصولات تبدیل Pd → Rh, Ru, Ag, Cd با SIMS در آزمایش‌های تخلیه تابان شناسایی شدند (1994–2010)."
       },
       "takahashi-tsc-theory": {
         "authors": "Takahashi, A.",
-        "institution": "دانشگاه اوساکا",
+        "institution": "Osaka University",
         "excerpt": "مدل چگالیده متقارن چهاروجهی (TSC) مسیر واکنش بدون نوترون 4D → ⁸Be* → 2 ⁴He + 47.6 MeV را پیش‌بینی می‌کند."
       },
       "urutskoev-2002-strange-radiation": {
@@ -1740,7 +1740,7 @@
       },
       "arpa-e-2023-lenr": {
         "authors": "ARPA-E",
-        "institution": "ARPA-E وزارت انرژی ایالات متحده",
+        "institution": "U.S. Department of Energy ARPA-E",
         "excerpt": "ARPA-E در سال 2023 حدود 10 میلیون دلار بودجه پژوهشی اکتشافی LENR اعلام کرد که نشان‌دهنده علاقه نهادی دوباره است."
       }
     }
@@ -1835,7 +1835,7 @@
   "databaseLoading": {
     "downloadingTitle": "در حال دانلود پایگاه داده",
     "loadingTitle": "در حال بارگذاری پایگاه داده",
-    "downloadingMessage": "در حال دانلود پایگاه داده واکنش‌های هسته‌ای Parkhomov...",
+    "downloadingMessage": "در حال دانلود پایگاه داده واکنش‌های هسته‌ای پارخوموف...",
     "initializingMessage": "در حال راه‌اندازی موتور پایگاه داده...",
     "cachedNotice": "این پایگاه داده برای بارگذاری فوری در بازدیدهای بعدی در حافظه نهان ذخیره خواهد شد",
     "pleaseWait": "لطفاً لحظه‌ای صبر کنید..."
@@ -2186,7 +2186,7 @@
       "maxEnergy": "حداکثر انرژی",
       "limit": "محدودیت",
       "columnElement": "عنصر",
-      "footer": "{{brand}} · {{url}} | بر اساس کار دکتر Alexander Parkhomov",
+      "footer": "{{brand}} · {{url}} | بر اساس کار دکتر الکساندر پارخوموف",
       "pageNumber": "صفحهٔ {{page}} از {{total}}"
     }
   }

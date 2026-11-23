@@ -1270,139 +1270,139 @@
       },
       "nuclide": {
         "term": "Nuclide",
-        "definition": "A specific nuclear species characterized by its atomic number (Z) and mass number (A). For example, Carbon-12 and Carbon-14 are different nuclides of the same element."
+        "definition": "Một loại hạt nhân cụ thể được xác định bởi số nguyên tử (Z) và số khối (A). Ví dụ, cacbon-12 và cacbon-14 là hai nuclide khác nhau của cùng một nguyên tố."
       },
       "isotope": {
-        "term": "Isotope",
-        "definition": "Atoms of the same element (same Z) with different numbers of neutrons (different A). For example, H-1 (protium), H-2 (deuterium), and H-3 (tritium) are isotopes of hydrogen."
+        "term": "Đồng vị",
+        "definition": "Các nguyên tử của cùng một nguyên tố (cùng Z) nhưng có số neutron khác nhau (khác A). Ví dụ, H-1 (proti), H-2 (đơteri) và H-3 (triti) là các đồng vị của hiđro."
       },
       "atomicNumber": {
-        "term": "Atomic Number (Z)",
-        "definition": "The number of protons in a nucleus. Determines which element the atom is. For example, Z=1 is hydrogen, Z=26 is iron."
+        "term": "Số nguyên tử (Z)",
+        "definition": "Số proton trong hạt nhân, quyết định nguyên tử thuộc nguyên tố nào. Ví dụ, Z=1 là hiđro, Z=26 là sắt."
       },
       "massNumber": {
-        "term": "Mass Number (A)",
-        "definition": "The total number of protons and neutrons (nucleons) in a nucleus. A = Z + N, where N is the neutron count."
+        "term": "Số khối (A)",
+        "definition": "Tổng số proton và neutron (nucleon) trong hạt nhân. A = Z + N, trong đó N là số neutron."
       },
       "bindingEnergy": {
-        "term": "Binding Energy (BE)",
-        "definition": "The energy required to disassemble a nucleus into its constituent protons and neutrons. Higher binding energy per nucleon means a more stable nucleus. Measured in MeV."
+        "term": "Năng lượng liên kết (BE)",
+        "definition": "Năng lượng cần thiết để tách một hạt nhân thành các proton và neutron cấu thành. Năng lượng liên kết trên mỗi nucleon càng cao thì hạt nhân càng bền. Đo bằng MeV."
       },
       "bindingEnergyPerNucleon": {
-        "term": "Binding Energy per Nucleon (BEN)",
-        "definition": "Binding energy divided by mass number (BE/A). Iron-56 has the highest BEN (~8.8 MeV), making it the most tightly bound nucleus. Reactions moving toward Fe-56 release energy."
+        "term": "Năng lượng liên kết mỗi nucleon (BEN)",
+        "definition": "Năng lượng liên kết chia cho số khối (BE/A). Sắt-56 có BEN cao nhất (~8,8 MeV), là hạt nhân liên kết chặt chẽ nhất. Các phản ứng dịch chuyển về phía Fe-56 sẽ giải phóng năng lượng."
       },
       "halfLife": {
-        "term": "Half-Life",
-        "definition": "The time required for half of a radioactive sample to decay. Ranges from fractions of a second to billions of years. In this database, a nuclide with log₁₀(half-life in years) > 9 is considered stable."
+        "term": "Chu kỳ bán rã",
+        "definition": "Thời gian cần thiết để một nửa lượng mẫu phóng xạ bị phân rã, trải dài từ một phần nhỏ của giây đến hàng tỷ năm. Trong cơ sở dữ liệu này, nuclide có log₁₀(chu kỳ bán rã tính bằng năm) > 9 được coi là bền."
       },
       "stableNuclide": {
-        "term": "Stable Nuclide",
-        "definition": "A nuclide that does not undergo radioactive decay (or has a half-life exceeding 1 billion years). In this database, stability is defined as LHL > 9."
+        "term": "Nuclide bền",
+        "definition": "Nuclide không trải qua phân rã phóng xạ (hoặc có chu kỳ bán rã vượt quá 1 tỷ năm). Trong cơ sở dữ liệu này, tính bền được định nghĩa là LHL > 9."
       },
       "boson": {
         "term": "Boson",
-        "definition": "A particle with integer spin (0, 1, 2...). Nuclides with even mass number A are nuclear bosons. Bosons can occupy the same quantum state, enabling phenomena like Bose-Einstein condensation."
+        "definition": "Hạt có spin nguyên (0, 1, 2...). Các nuclide có số khối A chẵn là boson hạt nhân. Các boson có thể cùng chiếm một trạng thái lượng tử, dẫn đến những hiện tượng như ngưng tụ Bose-Einstein."
       },
       "fermion": {
         "term": "Fermion",
-        "definition": "A particle with half-integer spin (1/2, 3/2...). Nuclides with odd mass number A are nuclear fermions. Fermions obey the Pauli exclusion principle."
+        "definition": "Hạt có spin bán nguyên (1/2, 3/2...). Các nuclide có số khối A lẻ là fermion hạt nhân. Các fermion tuân theo nguyên lý loại trừ Pauli."
       },
       "neutrino": {
         "term": "Neutrino",
-        "definition": "A nearly massless, weakly interacting subatomic particle produced in nuclear reactions involving the weak force (e.g., beta decay). Denoted ν (left-handed) or ν̄ (right-handed antineutrino)."
+        "definition": "Hạt hạ nguyên tử gần như không có khối lượng, tương tác yếu, sinh ra trong các phản ứng hạt nhân liên quan đến tương tác yếu (ví dụ phân rã beta). Ký hiệu ν (thuận tay trái) hoặc ν̄ (phản neutrino thuận tay phải)."
       },
       "radioactiveDecay": {
-        "term": "Radioactive Decay",
-        "definition": "The spontaneous transformation of an unstable nucleus into a more stable configuration. Common modes include alpha (A), beta-minus (B-), beta-plus (B+), electron capture (EC), and isomeric transition (IT)."
+        "term": "Phân rã phóng xạ",
+        "definition": "Sự biến đổi tự phát của một hạt nhân không bền thành một cấu hình bền hơn. Các kiểu phân rã phổ biến gồm alpha (A), beta trừ (B-), beta cộng (B+), bắt electron (EC) và chuyển dời đồng phân (IT)."
       },
       "alphaDecay": {
-        "term": "Alpha Decay",
-        "definition": "Emission of a helium-4 nucleus (2 protons + 2 neutrons). Reduces Z by 2 and A by 4. Common in heavy elements like uranium and radium."
+        "term": "Phân rã alpha",
+        "definition": "Phát ra một hạt nhân heli-4 (2 proton + 2 neutron), làm Z giảm 2 và A giảm 4. Thường gặp ở các nguyên tố nặng như urani và rađi."
       },
       "betaDecay": {
-        "term": "Beta Decay",
-        "definition": "Transformation of a neutron into a proton (β⁻, Z+1) or proton into neutron (β⁺, Z-1). A stays the same. Involves emission of a neutrino or antineutrino."
+        "term": "Phân rã beta",
+        "definition": "Sự biến đổi một neutron thành proton (β⁻, Z+1) hoặc một proton thành neutron (β⁺, Z-1). A không đổi. Kèm theo sự phát ra neutrino hoặc phản neutrino."
       },
       "electronCapture": {
-        "term": "Electron Capture (EC)",
-        "definition": "An inner orbital electron is captured by the nucleus, converting a proton to a neutron. Z decreases by 1, A stays the same. Competes with β⁺ decay."
+        "term": "Bắt electron (EC)",
+        "definition": "Hạt nhân bắt một electron ở lớp quỹ đạo bên trong, biến một proton thành neutron. Z giảm 1, A không đổi. Cạnh tranh với phân rã β⁺."
       },
       "isomericTransition": {
-        "term": "Isomeric Transition (IT)",
-        "definition": "A metastable excited nuclear state decays to a lower energy state by emitting a gamma ray. Z and A remain unchanged. The nuclide symbol gets an \"m\" suffix (e.g., Tc-99m)."
+        "term": "Chuyển dời đồng phân (IT)",
+        "definition": "Một trạng thái hạt nhân kích thích giả bền chuyển xuống trạng thái năng lượng thấp hơn bằng cách phát ra tia gamma. Z và A không đổi. Ký hiệu nuclide được thêm hậu tố \"m\" (ví dụ Tc-99m)."
       },
       "lenr": {
         "term": "LENR",
-        "definition": "Low Energy Nuclear Reactions. A class of nuclear reactions that occur at or near room temperature, distinct from conventional \"hot\" fusion which requires millions of degrees. Also historically known as \"cold fusion.\""
+        "definition": "Phản ứng hạt nhân năng lượng thấp (Low Energy Nuclear Reactions). Một nhóm phản ứng hạt nhân xảy ra ở hoặc gần nhiệt độ phòng, khác với nhiệt hạch \"nóng\" thông thường vốn đòi hỏi nhiệt độ hàng triệu độ. Trong lịch sử còn được gọi là \"nhiệt hạch lạnh\"."
       },
       "transmutation": {
-        "term": "Transmutation",
-        "definition": "The conversion of one chemical element or isotope into another. Can occur through fusion, fission, or two-to-two reactions. This database catalogs transmutation pathways computed by Dr. Alexander Parkhomov."
+        "term": "Biến đổi hạt nhân",
+        "definition": "Sự chuyển đổi một nguyên tố hóa học hoặc đồng vị thành một nguyên tố hoặc đồng vị khác. Có thể xảy ra qua phản ứng nhiệt hạch, phân hạch hoặc hai-thành-hai. Cơ sở dữ liệu này liệt kê các con đường biến đổi hạt nhân do TS. Alexander Parkhomov tính toán."
       },
       "fusion": {
-        "term": "Fusion",
-        "definition": "A nuclear reaction where two lighter nuclei combine to form a heavier nucleus (A + B → C). Releases energy when the product has higher binding energy per nucleon than the reactants. This database contains 3,921 fusion reactions, of which 1,505 involve no neutrinos."
+        "term": "Nhiệt hạch",
+        "definition": "Phản ứng hạt nhân trong đó hai hạt nhân nhẹ hơn kết hợp thành một hạt nhân nặng hơn (A + B → C). Giải phóng năng lượng khi sản phẩm có năng lượng liên kết mỗi nucleon cao hơn các chất tham gia. Cơ sở dữ liệu này chứa 3.921 phản ứng nhiệt hạch, trong đó 1.505 phản ứng không có neutrino."
       },
       "fission": {
-        "term": "Fission",
-        "definition": "A nuclear reaction where a heavier nucleus splits into two lighter nuclei (A → B + C). Releases energy when the products have higher binding energy per nucleon. This database contains 1,733 fission reactions, of which 818 involve no neutrinos."
+        "term": "Phân hạch",
+        "definition": "Phản ứng hạt nhân trong đó một hạt nhân nặng hơn tách thành hai hạt nhân nhẹ hơn (A → B + C). Giải phóng năng lượng khi các sản phẩm có năng lượng liên kết mỗi nucleon cao hơn. Cơ sở dữ liệu này chứa 1.733 phản ứng phân hạch, trong đó 818 phản ứng không có neutrino."
       },
       "twoToTwo": {
-        "term": "Two-to-Two",
-        "definition": "A nuclear reaction where two nuclei interact and produce two different nuclei (A + B → C + D). The most common reaction type in the database, with 1,215,374 reactions (518,657 of which involve no neutrinos)."
+        "term": "Hai-thành-hai",
+        "definition": "Phản ứng hạt nhân trong đó hai hạt nhân tương tác và tạo ra hai hạt nhân khác (A + B → C + D). Đây là loại phản ứng phổ biến nhất trong cơ sở dữ liệu, với 1.215.374 phản ứng (trong đó 518.657 phản ứng không có neutrino)."
       },
       "cascade": {
-        "term": "Cascade",
-        "definition": "A chain of nuclear reactions where products of one reaction become inputs to subsequent reactions. The cascade engine simulates multi-generation reaction pathways from initial fuel nuclides."
+        "term": "Phản ứng dây chuyền",
+        "definition": "Chuỗi phản ứng hạt nhân trong đó sản phẩm của một phản ứng trở thành chất tham gia của các phản ứng tiếp theo. Bộ mô phỏng phản ứng dây chuyền tái hiện các con đường phản ứng nhiều thế hệ xuất phát từ các nuclide nhiên liệu ban đầu."
       },
       "feedbackLoop": {
-        "term": "Feedback Loop",
-        "definition": "When a product nuclide from a later reaction step reappears as an input in an earlier step, creating a self-sustaining cycle. Similar to the CNO cycle in stellar nucleosynthesis."
+        "term": "Vòng hồi tiếp",
+        "definition": "Khi một nuclide sản phẩm từ một bước phản ứng sau xuất hiện trở lại làm chất tham gia ở một bước trước đó, tạo thành một chu trình tự duy trì. Tương tự chu trình CNO trong quá trình tổng hợp hạt nhân ở các ngôi sao."
       },
       "mev": {
         "term": "MeV",
-        "definition": "Megaelectronvolt (10⁶ eV). A unit of energy commonly used in nuclear physics. 1 MeV = 1.602 × 10⁻¹³ joules. The energy released in a nuclear reaction is the Q-value, measured in MeV."
+        "definition": "Megaelectronvolt (10⁶ eV), đơn vị năng lượng thường dùng trong vật lý hạt nhân. 1 MeV = 1,602 × 10⁻¹³ jun. Năng lượng giải phóng trong một phản ứng hạt nhân là giá trị Q, đo bằng MeV."
       },
       "kev": {
         "term": "keV",
-        "definition": "Kiloelectronvolt (10³ eV). 1 MeV = 1000 keV. Used for decay energies and radiation energies in the RadioNuclides table."
+        "definition": "Kiloelectronvolt (10³ eV). 1 MeV = 1000 keV. Dùng cho năng lượng phân rã và năng lượng bức xạ trong bảng RadioNuclides."
       },
       "amu": {
         "term": "AMU",
-        "definition": "Atomic Mass Unit. Defined as 1/12 of the mass of a Carbon-12 atom. 1 AMU = 931.494 MeV/c². Used to express nuclear and atomic masses."
+        "definition": "Đơn vị khối lượng nguyên tử (Atomic Mass Unit), được định nghĩa bằng 1/12 khối lượng của một nguyên tử cacbon-12. 1 AMU = 931,494 MeV/c². Dùng để biểu thị khối lượng hạt nhân và nguyên tử."
       },
       "nBorF": {
         "term": "nBorF",
-        "definition": "Nuclear Boson or Fermion classification. Based on mass number A: even A = boson (b), odd A = fermion (f). Relevant to quantum statistical behavior of the nucleus."
+        "definition": "Phân loại boson hoặc fermion theo hạt nhân, dựa trên số khối A: A chẵn = boson (b), A lẻ = fermion (f). Liên quan đến hành vi thống kê lượng tử của hạt nhân."
       },
       "aBorF": {
         "term": "aBorF",
-        "definition": "Atomic Boson or Fermion classification. Based on neutron count (A - Z): even neutrons = boson (b), odd neutrons = fermion (f). Describes the quantum statistics of the whole atom."
+        "definition": "Phân loại boson hoặc fermion theo nguyên tử, dựa trên số neutron (A - Z): số neutron chẵn = boson (b), số neutron lẻ = fermion (f). Mô tả thống kê lượng tử của toàn bộ nguyên tử."
       },
       "lhl": {
         "term": "LHL",
-        "definition": "Log₁₀ of Half-Life in years. A compact representation of half-life. LHL = 0 means 1 year, LHL = 9 means 1 billion years (stable threshold). Negative values indicate sub-year half-lives."
+        "definition": "Log₁₀ của chu kỳ bán rã tính bằng năm, một cách biểu diễn gọn chu kỳ bán rã. LHL = 0 nghĩa là 1 năm, LHL = 9 nghĩa là 1 tỷ năm (ngưỡng bền). Giá trị âm biểu thị chu kỳ bán rã ngắn hơn một năm."
       },
       "sus": {
         "term": "SUS",
-        "definition": "Status field indicating nuclide origin. SPN = Stable Primordial (exists naturally), UPN = Unstable Primordial (radioactive but natural), SYN = Synthetic (only man-made)."
+        "definition": "Trường trạng thái cho biết nguồn gốc của nuclide. SPN = bền nguyên thủy (Stable Primordial, tồn tại tự nhiên), UPN = không bền nguyên thủy (Unstable Primordial, có tính phóng xạ nhưng tồn tại tự nhiên), SYN = tổng hợp (Synthetic, chỉ do con người tạo ra)."
       },
       "rdm": {
         "term": "RDM",
-        "definition": "Primary Radioactive Decay Mode. The dominant decay pathway for unstable nuclides. Values include A (alpha), B- (beta minus), B+ (beta plus), EC (electron capture), IT (isomeric transition)."
+        "definition": "Kiểu phân rã phóng xạ chính (Radioactive Decay Mode), tức con đường phân rã chiếm ưu thế của các nuclide không bền. Các giá trị gồm A (alpha), B- (beta trừ), B+ (beta cộng), EC (bắt electron), IT (chuyển dời đồng phân)."
       },
       "deuterium": {
-        "term": "Deuterium (D)",
-        "definition": "Hydrogen-2 (one proton + one neutron). In the database, deuterium uses the symbol \"D\" rather than \"H\" with A=2. Important in LENR research as a common fuel choice."
+        "term": "Đơteri (D)",
+        "definition": "Hiđro-2 (một proton + một neutron). Trong cơ sở dữ liệu, đơteri dùng ký hiệu \"D\" thay vì \"H\" với A=2. Đóng vai trò quan trọng trong nghiên cứu LENR như một lựa chọn nhiên liệu phổ biến."
       },
       "tritium": {
-        "term": "Tritium (T)",
-        "definition": "Hydrogen-3 (one proton + two neutrons). Radioactive with a half-life of 12.3 years. In the database, tritium uses the symbol \"T\" rather than \"H\" with A=3."
+        "term": "Triti (T)",
+        "definition": "Hiđro-3 (một proton + hai neutron). Có tính phóng xạ với chu kỳ bán rã 12,3 năm. Trong cơ sở dữ liệu, triti dùng ký hiệu \"T\" thay vì \"H\" với A=3."
       },
       "protium": {
-        "term": "Protium (H)",
-        "definition": "Hydrogen-1 (one proton, no neutrons). The most common hydrogen isotope (99.98% abundance). In the database, uses symbol \"H\"."
+        "term": "Proti (H)",
+        "definition": "Hiđro-1 (một proton, không có neutron). Đồng vị hiđro phổ biến nhất (độ phổ biến 99,98%). Trong cơ sở dữ liệu, dùng ký hiệu \"H\"."
       }
     }
   },

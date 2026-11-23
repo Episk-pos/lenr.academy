@@ -51,7 +51,7 @@
     "help": "도움말 및 용어집",
     "openMenu": "메뉴 열기",
     "closeMenu": "메뉴 닫기",
-    "mullerResonance": "Muller 공명",
+    "mullerResonance": "뮐러 공명",
     "transmutations": "핵변환"
   },
   "theme": {
@@ -64,8 +64,8 @@
     "collapse": "사이드바 접기"
   },
   "footer": {
-    "basedOnWork": "<parkhomovLink>Dr. Alexander Parkhomov</parkhomovLink>의 연구를 기반으로 함",
-    "project": "<mfmpLink>Martin Fleischmann Memorial Project</mfmpLink>"
+    "basedOnWork": "<parkhomovLink>알렉산드르 파르호모프 박사</parkhomovLink>의 연구를 기반으로 함",
+    "project": "<mfmpLink>마틴 플라이슈만 기념 프로젝트</mfmpLink>"
   },
   "language": {
     "selectLanguage": "언어 선택",
@@ -138,10 +138,10 @@
   "home": {
     "title": "LENR Academy",
     "subtitle": "저에너지 핵변환 반응을 탐색하고, 캐스케이드 과정을 모델링하고, 붕괴 사슬을 시각화하고, 공명 현상을 연구하세요 — 모두 브라우저에서 가능합니다",
-    "basedOn": "R.W. Greenyer & P.W. Power의 원본 <nanosoftLink>Nanosoft Package</nanosoftLink>를 현대적으로 재구현한 것으로, <parkhomovLink>Parkhomov 표</parkhomovLink>를 기반으로 합니다",
+    "basedOn": "R.W. Greenyer & P.W. Power의 원본 <nanosoftLink>Nanosoft Package</nanosoftLink>를 현대적으로 재구현한 것으로, <parkhomovLink>파르호모프 표</parkhomovLink>를 기반으로 합니다",
     "queryReactions": {
       "title": "핵반응 조회",
-      "description": "Parkhomov 표에서 수천 개의 발열 핵융합, 핵분열 및 2-대-2 핵변환 반응을 검색하세요",
+      "description": "파르호모프 표에서 수천 개의 발열 핵융합, 핵분열 및 2-대-2 핵변환 반응을 검색하세요",
       "fusionReactions": "핵융합 반응",
       "fissionReactions": "핵분열 반응",
       "twoToTwoReactions": "2-대-2 반응"
@@ -160,13 +160,13 @@
       "allTables": "사용자 지정 SQL 쿼리"
     },
     "mullerResonance": {
-      "title": "Muller 공명 탐색기",
+      "title": "뮐러 공명 탐색기",
       "description": "전자-양성자 파장 공명을 연구하고 핵 활성 환경(NAE)을 예측하세요",
       "explore": "공명 탐색"
     },
     "aboutData": {
       "title": "데이터 소개",
-      "description": "반응 데이터베이스는 <strong>Dr. Alexander Parkhomov</strong>가 2018년에 수행한 안정 핵종 간 발열 핵반응 분석에서 비롯되었습니다. 이는 저에너지에서 핵변환이 열역학적으로 유리한 경로들입니다. 중성미자가 관여하는 반응을 포함하여 <strong>3,921개의 핵융합</strong>, <strong>1,733개의 핵분열</strong>, <strong>1,215,374개의 2-대-2</strong> 반응이 수록되어 있으며, 이 중 1,505개의 핵융합, 818개의 핵분열, 518,657개의 2-대-2 반응은 중성미자가 관여하지 않습니다. 원래 R.W. Greenyer와 P.W. Power가 Martin Fleischmann Memorial Project를 위해 <nanosoftLink>Nanosoft Package</nanosoftLink>로 개발했습니다.",
+      "description": "반응 데이터베이스는 <strong>알렉산드르 파르호모프 박사</strong>가 2018년에 수행한 안정 핵종 간 발열 핵반응 분석에서 비롯되었습니다. 이는 저에너지에서 핵변환이 열역학적으로 유리한 경로들입니다. 중성미자가 관여하는 반응을 포함하여 <strong>3,921개의 핵융합</strong>, <strong>1,733개의 핵분열</strong>, <strong>1,215,374개의 2-대-2</strong> 반응이 수록되어 있으며, 이 중 1,505개의 핵융합, 818개의 핵분열, 518,657개의 2-대-2 반응은 중성미자가 관여하지 않습니다. 원래 R.W. Greenyer와 P.W. Power가 마틴 플라이슈만 기념 프로젝트를 위해 <nanosoftLink>Nanosoft Package</nanosoftLink>로 개발했습니다.",
       "visitNanosoft": "원본 Nanosoft Package 방문"
     },
     "openSource": {
@@ -262,7 +262,7 @@
     "selected": "{{count}}개 선택됨",
     "applySelection": "선택 적용",
     "integrated": "통합",
-    "russellChart": "Russell",
+    "russellChart": "러셀",
     "decays": "붕괴",
     "period": "주기",
     "group": "족",
@@ -531,8 +531,8 @@
     "expand": "히스토그램 펼치기"
   },
   "russellChart": {
-    "title": "Russell 도표 — 9옥타브 주기율표",
-    "description": "Walter Russell의 파동 기반 원소 배열로, 원소를 뱀 모양 패턴의 9개 옥타브로 배치하여 생성(충전) 측과 방사(방전) 측을 보여 주며 비활성 기체가 균형점에 위치합니다.",
+    "title": "러셀 도표 — 9옥타브 주기율표",
+    "description": "월터 러셀의 파동 기반 원소 배열로, 원소를 뱀 모양 패턴의 9개 옥타브로 배치하여 생성(충전) 측과 방사(방전) 측을 보여 주며 비활성 기체가 균형점에 위치합니다.",
     "generationSide": "생성 (충전)",
     "radiationSide": "방사 (방전)",
     "inertGasLabel": "비활성 기체 (균형점)",
@@ -542,7 +542,7 @@
     "legendRadiation": "방사 (방전 측)",
     "legendInertGas": "비활성 기체 (균형점)",
     "legendCarbon": "탄소 (최대 압축)",
-    "legendPredicted": "Russell의 예측",
+    "legendPredicted": "러셀의 예측",
     "legendHypothetical": "가상 원소",
     "legendSerpentine": "뱀 모양 흐름 경로",
     "clickToView": "알려진 원소를 클릭하면 데이터베이스에서 해당 원소의 특성과 동위원소를 볼 수 있습니다",
@@ -550,34 +550,34 @@
     "zoomControls": "스크롤하여 확대/축소, 드래그하여 이동, 더블클릭하여 확대",
     "gridView": "격자 보기",
     "waveView": "파동 보기",
-    "waveDescription": "원소를 Russell의 옥타브 파동 위의 점으로 표시합니다 — 진폭은 생성(압축)을 거쳐 정점의 탄소까지 상승한 후 방사(팽창)를 거쳐 하강합니다",
+    "waveDescription": "원소를 러셀의 옥타브 파동 위의 점으로 표시합니다 — 진폭은 생성(압축)을 거쳐 정점의 탄소까지 상승한 후 방사(팽창)를 거쳐 하강합니다",
     "amplitude": "진폭",
     "octaveAxis": "옥타브",
     "carbonPeak": "탄소 (정점)",
-    "predictionsTitle": "Russell의 예측",
-    "predictionsDescription": "Walter Russell은 여러 원소를 공식 발견 이전에 예측하여 파동 기반 주기 체계의 예측력을 보여 주었습니다.",
-    "aboutTitle": "Russell 주기율표에 관하여",
-    "aboutParagraph1": "Walter Russell(1871–1963)은 \"The Universal One\"(1926)에서 9옥타브 주기율표를 발표하여 모든 원소를 파동 기반의 옥타브 체계로 배열했습니다. 각 옥타브에는 생성(충전) 측과 방사(방전) 측이 있으며, 파동의 받침점인 균형점에 비활성 기체가 위치합니다.",
-    "aboutParagraph2": "Russell의 우주론에서 물질은 압축(생성)과 팽창(방사)이라는 서로 반대 방향으로 회전하는 나선 소용돌이에 의해 생성됩니다. 탄소는 최대 압축 지점인 진폭에 위치하여 가장 균형 잡히고 안정적인 원소가 됩니다. 뱀 모양의 S자 곡선 패턴은 각 옥타브가 방향을 바꾸며 가장 가벼운 가상 물질에서 가장 무거운 알려진 원소까지 연속적인 파동을 이루는 모습을 보여 줍니다.",
-    "aboutParagraph3": "특히 Russell은 중수소(그가 \"Ethlogen\"이라 부른 것), 삼중수소(\"Bebegen\"), 넵투늄, 플루토늄의 존재를 공식적인 실험실 발견보다 수년 앞서 예측하여 파동 기반 모델의 예측 능력을 입증했습니다.",
+    "predictionsTitle": "러셀의 예측",
+    "predictionsDescription": "월터 러셀은 여러 원소를 공식 발견 이전에 예측하여 파동 기반 주기 체계의 예측력을 보여 주었습니다.",
+    "aboutTitle": "러셀 주기율표에 관하여",
+    "aboutParagraph1": "월터 러셀(1871–1963)은 \"The Universal One\"(1926)에서 9옥타브 주기율표를 발표하여 모든 원소를 파동 기반의 옥타브 체계로 배열했습니다. 각 옥타브에는 생성(충전) 측과 방사(방전) 측이 있으며, 파동의 받침점인 균형점에 비활성 기체가 위치합니다.",
+    "aboutParagraph2": "러셀의 우주론에서 물질은 압축(생성)과 팽창(방사)이라는 서로 반대 방향으로 회전하는 나선 소용돌이에 의해 생성됩니다. 탄소는 최대 압축 지점인 진폭에 위치하여 가장 균형 잡히고 안정적인 원소가 됩니다. 뱀 모양의 S자 곡선 패턴은 각 옥타브가 방향을 바꾸며 가장 가벼운 가상 물질에서 가장 무거운 알려진 원소까지 연속적인 파동을 이루는 모습을 보여 줍니다.",
+    "aboutParagraph3": "특히 러셀은 중수소(그가 \"Ethlogen\"이라 부른 것), 삼중수소(\"Bebegen\"), 넵투늄, 플루토늄의 존재를 공식적인 실험실 발견보다 수년 앞서 예측하여 파동 기반 모델의 예측 능력을 입증했습니다.",
     "view3D": "3D 보기",
     "view3DControls": "드래그하여 회전, 스크롤하여 확대/축소",
-    "experimentalNote": "이 시각화는 Russell의 1926년 원본 도표를 기반으로 합니다. Russell의 체계는 현대 주기율표와 크게 다릅니다. 이는 현대 화학에서 사용하는 양자역학적 모델이 아니라 물질에 대한 그의 철학적·우주론적 모델을 나타냅니다.",
+    "experimentalNote": "이 시각화는 러셀의 1926년 원본 도표를 기반으로 합니다. 러셀의 체계는 현대 주기율표와 크게 다릅니다. 이는 현대 화학에서 사용하는 양자역학적 모델이 아니라 물질에 대한 그의 철학적·우주론적 모델을 나타냅니다.",
     "predictionFormat": "{{russellName}} → {{modernName}} ({{symbol}})",
     "notes": {
       "hypotheticalFirstInertGas": "가상의 첫 번째 비활성 기체 — 물질의 시작",
       "hypotheticalSecondInertGas": "가상의 두 번째 비활성 기체",
       "hypotheticalThirdInertGas": "가상의 세 번째 비활성 기체",
-      "hypotheticalElement": "Russell 체계의 가상 원소",
-      "hypotheticalTransUranicInSystem": "Russell 체계의 가상 초우라늄 원소",
+      "hypotheticalElement": "러셀 체계의 가상 원소",
+      "hypotheticalTransUranicInSystem": "러셀 체계의 가상 초우라늄 원소",
       "hypotheticalTransUranic": "가상 초우라늄 원소",
       "hypotheticalFinalInertGas": "가상의 마지막 비활성 기체 — 물질의 끝",
-      "ethlogenPrediction": "Russell이 예측한 \"Ethlogen\" — 중수소로 확인됨 (1931)",
-      "bebegenPrediction": "Russell이 예측한 \"Bebegen\" — 삼중수소로 확인됨 (1934)",
-      "heliumPlacement": "Russell은 헬륨을 4옥타브의 비활성 기체로 배치했습니다",
+      "ethlogenPrediction": "러셀이 예측한 \"Ethlogen\" — 중수소로 확인됨 (1931)",
+      "bebegenPrediction": "러셀이 예측한 \"Bebegen\" — 삼중수소로 확인됨 (1934)",
+      "heliumPlacement": "러셀은 헬륨을 4옥타브의 비활성 기체로 배치했습니다",
       "carbonAmplitude": "탄소 — 파동의 진폭; 최대 압축 지점",
-      "neptuniumPrediction": "Russell은 1926년에 93번 원소를 예측했습니다 — 1940년 넵투늄으로 발견됨",
-      "plutoniumPrediction": "Russell은 1926년에 94번 원소를 예측했습니다 — 1941년 플루토늄으로 발견됨"
+      "neptuniumPrediction": "러셀은 1926년에 93번 원소를 예측했습니다 — 1940년 넵투늄으로 발견됨",
+      "plutoniumPrediction": "러셀은 1926년에 94번 원소를 예측했습니다 — 1941년 플루토늄으로 발견됨"
     }
   },
   "networkGraph": {
@@ -918,7 +918,7 @@
     },
     "constantan": {
       "name": "콘스탄탄",
-      "description": "Celani 실험에 사용된 Cu-Ni 합금 (55% Cu, 45% Ni)"
+      "description": "첼라니 실험에 사용된 Cu-Ni 합금 (55% Cu, 45% Ni)"
     },
     "ti-6al-4v": {
       "name": "Ti-6Al-4V",
@@ -941,32 +941,32 @@
       "description": "PdD (중수소가 흡장된 팔라듐 전극)"
     },
     "parkhomov-2014": {
-      "name": "Parkhomov Ni-LiAlH4",
-      "description": "Alexander Parkhomov의 2014년 Rossi 반응로 재현 실험"
+      "name": "파르호모프 Ni-LiAlH4",
+      "description": "알렉산드르 파르호모프의 2014년 로시 반응로 재현 실험"
     },
     "piantelli-1990": {
-      "name": "Piantelli Ni-H 시스템",
-      "description": "Francesco Piantelli의 니켈-수소 실험 (1990년대)"
+      "name": "피안텔리 Ni-H 시스템",
+      "description": "프란체스코 피안텔리의 니켈-수소 실험 (1990년대)"
     },
     "celani-2012": {
-      "name": "Celani 콘스탄탄 와이어",
-      "description": "Francesco Celani의 수소 흡장 콘스탄탄 와이어 실험"
+      "name": "첼라니 콘스탄탄 와이어",
+      "description": "프란체스코 첼라니의 수소 흡장 콘스탄탄 와이어 실험"
     },
     "shoulders-evo": {
-      "name": "Shoulders EVO 타이타늄",
-      "description": "Ken Shoulders의 타이타늄을 이용한 Exotic Vacuum Objects(EVO) 실험"
+      "name": "숄더스 EVO 타이타늄",
+      "description": "켄 숄더스의 타이타늄을 이용한 Exotic Vacuum Objects(EVO) 실험"
     },
     "urutskoev-2000": {
-      "name": "Urutskoev Ti 박막 폭발",
-      "description": "L.I. Urutskoev의 타이타늄 박막 폭발 실험"
+      "name": "우루츠코예프 Ti 박막 폭발",
+      "description": "L.I. 우루츠코예프의 타이타늄 박막 폭발 실험"
     },
     "matsumoto-1992": {
-      "name": "Matsumoto 탄소 아크",
-      "description": "Takaaki Matsumoto의 탄소 아크 방전 실험"
+      "name": "마쓰모토 탄소 아크",
+      "description": "마쓰모토 다카아키의 탄소 아크 방전 실험"
     },
     "mizuno-pd-d": {
-      "name": "Mizuno Pd-D 전기분해",
-      "description": "Tadahiko Mizuno의 팔라듐-중수소 전기분해 실험"
+      "name": "미즈노 Pd-D 전기분해",
+      "description": "미즈노 다다히코의 팔라듐-중수소 전기분해 실험"
     }
   },
   "tables": {
@@ -1203,7 +1203,7 @@
       },
       "niHFusion": {
         "name": "니켈-수소 핵융합",
-        "description": "Rossi E-Cat 및 Parkhomov 재현 실험에서 연구되었습니다. Ni + H 반응은 구리 동위원소를 생성합니다."
+        "description": "로시 E-Cat 및 파르호모프 재현 실험에서 연구되었습니다. Ni + H 반응은 구리 동위원소를 생성합니다."
       },
       "uraniumFission": {
         "name": "우라늄 핵분열 경로",
@@ -1211,7 +1211,7 @@
       },
       "palladiumFission": {
         "name": "팔라듐 핵분열",
-        "description": "팔라듐 전극을 사용한 Fleischmann-Pons 상온 핵융합 실험과 관련된 Pd 핵분열 경로입니다."
+        "description": "팔라듐 전극을 사용한 플라이슈만-폰스 상온 핵융합 실험과 관련된 Pd 핵분열 경로입니다."
       },
       "protonBoron": {
         "name": "양성자-붕소 반응",
@@ -1231,11 +1231,11 @@
       },
       "palladiumNae": {
         "name": "팔라듐 NAE 분석",
-        "description": "팔라듐의 핵 활성 환경(NAE) 예측을 살펴보세요 — Fleischmann-Pons 중수소 장입 실험의 핵심입니다."
+        "description": "팔라듐의 핵 활성 환경(NAE) 예측을 살펴보세요 — 플라이슈만-폰스 중수소 장입 실험의 핵심입니다."
       },
       "parkhomovCascade": {
-        "name": "Parkhomov Ni-LiAlH₄ 캐스케이드",
-        "description": "천연 니켈과 수소화 알루미늄 리튬 연료를 사용한 2014년 Parkhomov의 Rossi 반응로 재현 실험을 시뮬레이션합니다."
+        "name": "파르호모프 Ni-LiAlH₄ 캐스케이드",
+        "description": "천연 니켈과 수소화 알루미늄 리튬 연료를 사용한 2014년 파르호모프의 로시 반응로 재현 실험을 시뮬레이션합니다."
       }
     },
     "exampleTypes": {
@@ -1269,152 +1269,152 @@
         "definition": "H₂, N₂, O₂와 이원자 할로젠 F₂, Cl₂, Br₂, I₂처럼 동일한 원자나 단위 두 개로 이루어진 분자입니다. 캐스케이드 시뮬레이터의 \"이합체 형성 허용\" 옵션은 이러한 자연적으로 이원자인 원소에 적용됩니다."
       },
       "nuclide": {
-        "term": "Nuclide",
-        "definition": "A specific nuclear species characterized by its atomic number (Z) and mass number (A). For example, Carbon-12 and Carbon-14 are different nuclides of the same element."
+        "term": "핵종",
+        "definition": "원자 번호(Z)와 질량수(A)로 규정되는 특정한 원자핵의 종류입니다. 예를 들어 탄소-12와 탄소-14는 같은 원소의 서로 다른 핵종입니다."
       },
       "isotope": {
-        "term": "Isotope",
-        "definition": "Atoms of the same element (same Z) with different numbers of neutrons (different A). For example, H-1 (protium), H-2 (deuterium), and H-3 (tritium) are isotopes of hydrogen."
+        "term": "동위원소",
+        "definition": "같은 원소(같은 Z)이면서 중성자 수가 다른(A가 다른) 원자입니다. 예를 들어 H-1(경수소), H-2(중수소), H-3(삼중수소)은 수소의 동위원소입니다."
       },
       "atomicNumber": {
-        "term": "Atomic Number (Z)",
-        "definition": "The number of protons in a nucleus. Determines which element the atom is. For example, Z=1 is hydrogen, Z=26 is iron."
+        "term": "원자 번호 (Z)",
+        "definition": "원자핵 속 양성자의 수로, 그 원자가 어떤 원소인지를 결정합니다. 예를 들어 Z=1은 수소, Z=26은 철입니다."
       },
       "massNumber": {
-        "term": "Mass Number (A)",
-        "definition": "The total number of protons and neutrons (nucleons) in a nucleus. A = Z + N, where N is the neutron count."
+        "term": "질량수 (A)",
+        "definition": "원자핵 속 양성자와 중성자(핵자)의 총수입니다. A = Z + N이며, 여기서 N은 중성자 수입니다."
       },
       "bindingEnergy": {
-        "term": "Binding Energy (BE)",
-        "definition": "The energy required to disassemble a nucleus into its constituent protons and neutrons. Higher binding energy per nucleon means a more stable nucleus. Measured in MeV."
+        "term": "결합 에너지 (BE)",
+        "definition": "원자핵을 구성하는 양성자와 중성자로 분리하는 데 필요한 에너지입니다. 핵자당 결합 에너지가 높을수록 원자핵이 더 안정합니다. 단위는 MeV입니다."
       },
       "bindingEnergyPerNucleon": {
-        "term": "Binding Energy per Nucleon (BEN)",
-        "definition": "Binding energy divided by mass number (BE/A). Iron-56 has the highest BEN (~8.8 MeV), making it the most tightly bound nucleus. Reactions moving toward Fe-56 release energy."
+        "term": "핵자당 결합 에너지 (BEN)",
+        "definition": "결합 에너지를 질량수로 나눈 값(BE/A)입니다. 철-56은 BEN이 가장 높아(~8.8 MeV) 가장 단단히 결합된 원자핵입니다. Fe-56 쪽으로 향하는 반응은 에너지를 방출합니다."
       },
       "halfLife": {
-        "term": "Half-Life",
-        "definition": "The time required for half of a radioactive sample to decay. Ranges from fractions of a second to billions of years. In this database, a nuclide with log₁₀(half-life in years) > 9 is considered stable."
+        "term": "반감기",
+        "definition": "방사성 시료의 절반이 붕괴하는 데 걸리는 시간입니다. 1초 미만에서 수십억 년까지 다양합니다. 이 데이터베이스에서는 log₁₀(연 단위 반감기) > 9인 핵종을 안정한 것으로 간주합니다."
       },
       "stableNuclide": {
-        "term": "Stable Nuclide",
-        "definition": "A nuclide that does not undergo radioactive decay (or has a half-life exceeding 1 billion years). In this database, stability is defined as LHL > 9."
+        "term": "안정 핵종",
+        "definition": "방사성 붕괴를 하지 않는(또는 반감기가 10억 년을 넘는) 핵종입니다. 이 데이터베이스에서 안정성은 LHL > 9로 정의됩니다."
       },
       "boson": {
-        "term": "Boson",
-        "definition": "A particle with integer spin (0, 1, 2...). Nuclides with even mass number A are nuclear bosons. Bosons can occupy the same quantum state, enabling phenomena like Bose-Einstein condensation."
+        "term": "보손",
+        "definition": "정수 스핀(0, 1, 2...)을 갖는 입자입니다. 질량수 A가 짝수인 핵종은 핵 보손입니다. 보손은 같은 양자 상태를 차지할 수 있어 보스-아인슈타인 응축 같은 현상이 가능합니다."
       },
       "fermion": {
-        "term": "Fermion",
-        "definition": "A particle with half-integer spin (1/2, 3/2...). Nuclides with odd mass number A are nuclear fermions. Fermions obey the Pauli exclusion principle."
+        "term": "페르미온",
+        "definition": "반정수 스핀(1/2, 3/2...)을 갖는 입자입니다. 질량수 A가 홀수인 핵종은 핵 페르미온입니다. 페르미온은 파울리 배타 원리를 따릅니다."
       },
       "neutrino": {
-        "term": "Neutrino",
-        "definition": "A nearly massless, weakly interacting subatomic particle produced in nuclear reactions involving the weak force (e.g., beta decay). Denoted ν (left-handed) or ν̄ (right-handed antineutrino)."
+        "term": "중성미자",
+        "definition": "약한 상호작용이 관여하는 핵반응(예: 베타 붕괴)에서 생성되는, 질량이 거의 없고 상호작용이 약한 아원자 입자입니다. ν(왼손잡이) 또는 ν̄(오른손잡이 반중성미자)로 표기합니다."
       },
       "radioactiveDecay": {
-        "term": "Radioactive Decay",
-        "definition": "The spontaneous transformation of an unstable nucleus into a more stable configuration. Common modes include alpha (A), beta-minus (B-), beta-plus (B+), electron capture (EC), and isomeric transition (IT)."
+        "term": "방사성 붕괴",
+        "definition": "불안정한 원자핵이 더 안정한 구성으로 자발적으로 변환되는 현상입니다. 주요 붕괴 방식으로는 알파(A), 베타 마이너스(B-), 베타 플러스(B+), 전자 포획(EC), 핵이성질체 전이(IT)가 있습니다."
       },
       "alphaDecay": {
-        "term": "Alpha Decay",
-        "definition": "Emission of a helium-4 nucleus (2 protons + 2 neutrons). Reduces Z by 2 and A by 4. Common in heavy elements like uranium and radium."
+        "term": "알파 붕괴",
+        "definition": "헬륨-4 원자핵(양성자 2개 + 중성자 2개)을 방출하는 붕괴입니다. Z는 2, A는 4 감소합니다. 우라늄, 라듐 같은 무거운 원소에서 흔히 일어납니다."
       },
       "betaDecay": {
-        "term": "Beta Decay",
-        "definition": "Transformation of a neutron into a proton (β⁻, Z+1) or proton into neutron (β⁺, Z-1). A stays the same. Involves emission of a neutrino or antineutrino."
+        "term": "베타 붕괴",
+        "definition": "중성자가 양성자로(β⁻, Z+1), 또는 양성자가 중성자로(β⁺, Z-1) 바뀌는 붕괴입니다. A는 변하지 않습니다. 중성미자 또는 반중성미자의 방출을 수반합니다."
       },
       "electronCapture": {
-        "term": "Electron Capture (EC)",
-        "definition": "An inner orbital electron is captured by the nucleus, converting a proton to a neutron. Z decreases by 1, A stays the same. Competes with β⁺ decay."
+        "term": "전자 포획 (EC)",
+        "definition": "원자핵이 안쪽 궤도의 전자를 포획하여 양성자가 중성자로 바뀌는 과정입니다. Z는 1 감소하고 A는 변하지 않습니다. β⁺ 붕괴와 경쟁합니다."
       },
       "isomericTransition": {
-        "term": "Isomeric Transition (IT)",
-        "definition": "A metastable excited nuclear state decays to a lower energy state by emitting a gamma ray. Z and A remain unchanged. The nuclide symbol gets an \"m\" suffix (e.g., Tc-99m)."
+        "term": "핵이성질체 전이 (IT)",
+        "definition": "준안정 들뜬 상태의 원자핵이 감마선을 방출하며 더 낮은 에너지 상태로 전이하는 과정입니다. Z와 A는 변하지 않습니다. 핵종 기호에 접미사 \"m\"이 붙습니다(예: Tc-99m)."
       },
       "lenr": {
         "term": "LENR",
-        "definition": "Low Energy Nuclear Reactions. A class of nuclear reactions that occur at or near room temperature, distinct from conventional \"hot\" fusion which requires millions of degrees. Also historically known as \"cold fusion.\""
+        "definition": "저에너지 핵반응(Low Energy Nuclear Reactions). 상온 또는 그에 가까운 온도에서 일어나는 핵반응의 한 부류로, 수백만 도가 필요한 기존의 \"뜨거운\" 핵융합과 구별됩니다. 역사적으로 \"상온 핵융합\"으로도 알려져 있습니다."
       },
       "transmutation": {
-        "term": "Transmutation",
-        "definition": "The conversion of one chemical element or isotope into another. Can occur through fusion, fission, or two-to-two reactions. This database catalogs transmutation pathways computed by Dr. Alexander Parkhomov."
+        "term": "핵변환",
+        "definition": "한 화학 원소나 동위원소가 다른 원소나 동위원소로 바뀌는 것입니다. 핵융합, 핵분열 또는 2-대-2 반응을 통해 일어날 수 있습니다. 이 데이터베이스에는 알렉산드르 파르호모프 박사가 계산한 핵변환 경로가 수록되어 있습니다."
       },
       "fusion": {
-        "term": "Fusion",
-        "definition": "A nuclear reaction where two lighter nuclei combine to form a heavier nucleus (A + B → C). Releases energy when the product has higher binding energy per nucleon than the reactants. This database contains 3,921 fusion reactions, of which 1,505 involve no neutrinos."
+        "term": "핵융합",
+        "definition": "두 개의 가벼운 원자핵이 결합하여 더 무거운 원자핵을 이루는 핵반응입니다(A + B → C). 생성물의 핵자당 결합 에너지가 반응물보다 높으면 에너지를 방출합니다. 이 데이터베이스에는 3,921개의 핵융합 반응이 있으며, 그중 1,505개는 중성미자가 관여하지 않습니다."
       },
       "fission": {
-        "term": "Fission",
-        "definition": "A nuclear reaction where a heavier nucleus splits into two lighter nuclei (A → B + C). Releases energy when the products have higher binding energy per nucleon. This database contains 1,733 fission reactions, of which 818 involve no neutrinos."
+        "term": "핵분열",
+        "definition": "무거운 원자핵이 두 개의 더 가벼운 원자핵으로 쪼개지는 핵반응입니다(A → B + C). 생성물의 핵자당 결합 에너지가 더 높으면 에너지를 방출합니다. 이 데이터베이스에는 1,733개의 핵분열 반응이 있으며, 그중 818개는 중성미자가 관여하지 않습니다."
       },
       "twoToTwo": {
-        "term": "Two-to-Two",
-        "definition": "A nuclear reaction where two nuclei interact and produce two different nuclei (A + B → C + D). The most common reaction type in the database, with 1,215,374 reactions (518,657 of which involve no neutrinos)."
+        "term": "2-대-2",
+        "definition": "두 원자핵이 상호작용하여 서로 다른 두 원자핵을 생성하는 핵반응입니다(A + B → C + D). 데이터베이스에서 가장 흔한 반응 유형으로, 1,215,374개의 반응(그중 518,657개는 중성미자가 관여하지 않음)이 있습니다."
       },
       "cascade": {
-        "term": "Cascade",
-        "definition": "A chain of nuclear reactions where products of one reaction become inputs to subsequent reactions. The cascade engine simulates multi-generation reaction pathways from initial fuel nuclides."
+        "term": "캐스케이드",
+        "definition": "한 반응의 생성물이 후속 반응의 입력이 되는 핵반응의 사슬입니다. 캐스케이드 엔진은 초기 연료 핵종에서 시작하는 다세대 반응 경로를 시뮬레이션합니다."
       },
       "feedbackLoop": {
-        "term": "Feedback Loop",
-        "definition": "When a product nuclide from a later reaction step reappears as an input in an earlier step, creating a self-sustaining cycle. Similar to the CNO cycle in stellar nucleosynthesis."
+        "term": "피드백 루프",
+        "definition": "나중 반응 단계의 생성 핵종이 앞선 단계의 입력으로 다시 나타나 자기 유지 순환을 이루는 경우입니다. 항성 핵합성의 CNO 순환과 비슷합니다."
       },
       "mev": {
         "term": "MeV",
-        "definition": "Megaelectronvolt (10⁶ eV). A unit of energy commonly used in nuclear physics. 1 MeV = 1.602 × 10⁻¹³ joules. The energy released in a nuclear reaction is the Q-value, measured in MeV."
+        "definition": "메가전자볼트(10⁶ eV). 핵물리학에서 흔히 쓰는 에너지 단위입니다. 1 MeV = 1.602 × 10⁻¹³ 줄. 핵반응에서 방출되는 에너지를 Q값이라 하며 MeV 단위로 나타냅니다."
       },
       "kev": {
         "term": "keV",
-        "definition": "Kiloelectronvolt (10³ eV). 1 MeV = 1000 keV. Used for decay energies and radiation energies in the RadioNuclides table."
+        "definition": "킬로전자볼트(10³ eV). 1 MeV = 1000 keV. RadioNuclides 표의 붕괴 에너지와 방사선 에너지에 사용됩니다."
       },
       "amu": {
         "term": "AMU",
-        "definition": "Atomic Mass Unit. Defined as 1/12 of the mass of a Carbon-12 atom. 1 AMU = 931.494 MeV/c². Used to express nuclear and atomic masses."
+        "definition": "원자 질량 단위. 탄소-12 원자 질량의 1/12로 정의됩니다. 1 AMU = 931.494 MeV/c². 원자핵과 원자의 질량을 나타내는 데 사용됩니다."
       },
       "nBorF": {
         "term": "nBorF",
-        "definition": "Nuclear Boson or Fermion classification. Based on mass number A: even A = boson (b), odd A = fermion (f). Relevant to quantum statistical behavior of the nucleus."
+        "definition": "원자핵의 보손/페르미온 분류입니다. 질량수 A를 기준으로, A가 짝수이면 보손(b), 홀수이면 페르미온(f)입니다. 원자핵의 양자 통계적 거동과 관련됩니다."
       },
       "aBorF": {
         "term": "aBorF",
-        "definition": "Atomic Boson or Fermion classification. Based on neutron count (A - Z): even neutrons = boson (b), odd neutrons = fermion (f). Describes the quantum statistics of the whole atom."
+        "definition": "원자의 보손/페르미온 분류입니다. 중성자 수(A - Z)를 기준으로, 중성자 수가 짝수이면 보손(b), 홀수이면 페르미온(f)입니다. 원자 전체의 양자 통계를 나타냅니다."
       },
       "lhl": {
         "term": "LHL",
-        "definition": "Log₁₀ of Half-Life in years. A compact representation of half-life. LHL = 0 means 1 year, LHL = 9 means 1 billion years (stable threshold). Negative values indicate sub-year half-lives."
+        "definition": "연 단위 반감기의 Log₁₀입니다. 반감기를 간결하게 표현한 값입니다. LHL = 0은 1년, LHL = 9는 10억 년(안정성 기준값)을 뜻합니다. 음수 값은 반감기가 1년 미만임을 나타냅니다."
       },
       "sus": {
         "term": "SUS",
-        "definition": "Status field indicating nuclide origin. SPN = Stable Primordial (exists naturally), UPN = Unstable Primordial (radioactive but natural), SYN = Synthetic (only man-made)."
+        "definition": "핵종의 기원을 나타내는 상태 필드입니다. SPN = 안정 원시 핵종(자연에 존재), UPN = 불안정 원시 핵종(방사성이지만 자연산), SYN = 합성(인공적으로만 생성)."
       },
       "rdm": {
         "term": "RDM",
-        "definition": "Primary Radioactive Decay Mode. The dominant decay pathway for unstable nuclides. Values include A (alpha), B- (beta minus), B+ (beta plus), EC (electron capture), IT (isomeric transition)."
+        "definition": "주 방사성 붕괴 방식입니다. 불안정 핵종의 지배적인 붕괴 경로를 나타냅니다. 값에는 A(알파), B-(베타 마이너스), B+(베타 플러스), EC(전자 포획), IT(핵이성질체 전이)가 있습니다."
       },
       "deuterium": {
-        "term": "Deuterium (D)",
-        "definition": "Hydrogen-2 (one proton + one neutron). In the database, deuterium uses the symbol \"D\" rather than \"H\" with A=2. Important in LENR research as a common fuel choice."
+        "term": "중수소 (D)",
+        "definition": "수소-2(양성자 1개 + 중성자 1개). 데이터베이스에서 중수소는 A=2인 \"H\"가 아니라 기호 \"D\"를 사용합니다. 흔히 쓰이는 연료로서 LENR 연구에서 중요합니다."
       },
       "tritium": {
-        "term": "Tritium (T)",
-        "definition": "Hydrogen-3 (one proton + two neutrons). Radioactive with a half-life of 12.3 years. In the database, tritium uses the symbol \"T\" rather than \"H\" with A=3."
+        "term": "삼중수소 (T)",
+        "definition": "수소-3(양성자 1개 + 중성자 2개). 방사성이며 반감기는 12.3년입니다. 데이터베이스에서 삼중수소는 A=3인 \"H\"가 아니라 기호 \"T\"를 사용합니다."
       },
       "protium": {
-        "term": "Protium (H)",
-        "definition": "Hydrogen-1 (one proton, no neutrons). The most common hydrogen isotope (99.98% abundance). In the database, uses symbol \"H\"."
+        "term": "경수소 (H)",
+        "definition": "수소-1(양성자 1개, 중성자 없음). 가장 흔한 수소 동위원소입니다(존재비 99.98%). 데이터베이스에서는 기호 \"H\"를 사용합니다."
       }
     }
   },
   "mullerResonance": {
-    "title": "Muller 공명 탐색기",
-    "description": "Frithjof Muller의 방정식 L = Z × Cₑ × 2ᴺ을 사용하여 원소 간 전자-양성자 파장 공명을 탐색하고, Parkhomov의 핵반응 데이터베이스와 교차 참조합니다.",
+    "title": "뮐러 공명 탐색기",
+    "description": "프리트요프 뮐러의 방정식 L = Z × Cₑ × 2ᴺ을 사용하여 원소 간 전자-양성자 파장 공명을 탐색하고, 파르호모프의 핵반응 데이터베이스와 교차 참조합니다.",
     "equationExplanation": "L = 공명 파장, Z = 원자 번호, C = 전자(Cₑ) 또는 양성자(Cₚ)의 콤프턴 파장, N = 옥타브 번호(0 이상의 정수). 입자 간 공명이 고정하는 것은 전자 사다리와 양성자 사다리 사이의 옥타브 간격 ΔN이며, 절대 옥타브 N은 자유롭습니다.",
     "threshold": "불일치 임계값",
     "selectElement": "공명 파트너를 찾을 원소를 선택하세요",
     "resonantPartners": "공명 파트너",
     "exactMatches": "정확 일치 (<0.01%)",
-    "withReactions": "Parkhomov 반응 있음",
+    "withReactions": "파르호모프 반응 있음",
     "totalReactions": "총 반응 수",
     "resonancePairs": "공명 쌍",
     "topGlobalPairs": "전체 원소의 상위 공명 쌍",
@@ -1462,10 +1462,10 @@
       "protonN": "{{element}} 양성자 N"
     },
     "aboutTitle": "이 도구에 관하여",
-    "about1": "Frithjof Muller의 방정식 L = Z × C × 2ᴺ은 각 원소에 전자 콤프턴 파장(Cₑ)과 양성자 콤프턴 파장(Cₚ) 각각에 대해 옥타브 N마다 한 단씩 파장의 사다리를 부여합니다. 한 원소의 전자 사다리가 다른 원소의 양성자 사다리와 맞물릴 때 두 원소는 공명합니다: Z₁ · Cₑ · 2^N = Z₂ · Cₚ · 2^(N+ΔN). 이 조건에서 N은 소거되므로, 공명은 절대 옥타브가 아니라 옥타브 간격 ΔN(과 일치 정도)만 결정합니다. 한 옥타브에서 성립하면 모든 옥타브에서 성립합니다. 위에서 파장 대역을 선택하면 각 쌍의 어떤 옥타브가 그 안에 들어가는지 볼 수 있습니다.",
+    "about1": "프리트요프 뮐러의 방정식 L = Z × C × 2ᴺ은 각 원소에 전자 콤프턴 파장(Cₑ)과 양성자 콤프턴 파장(Cₚ) 각각에 대해 옥타브 N마다 한 단씩 파장의 사다리를 부여합니다. 한 원소의 전자 사다리가 다른 원소의 양성자 사다리와 맞물릴 때 두 원소는 공명합니다: Z₁ · Cₑ · 2^N = Z₂ · Cₚ · 2^(N+ΔN). 이 조건에서 N은 소거되므로, 공명은 절대 옥타브가 아니라 옥타브 간격 ΔN(과 일치 정도)만 결정합니다. 한 옥타브에서 성립하면 모든 옥타브에서 성립합니다. 위에서 파장 대역을 선택하면 각 쌍의 어떤 옥타브가 그 안에 들어가는지 볼 수 있습니다.",
     "about2": "예: 구리(Z=29)의 전자와 철(Z=26)의 양성자는 29 × 1836.15 ≈ 26 × 2¹¹이므로 옥타브 간격 ΔN = 11로 0.0008% 이내에서 공명합니다. 이 간격은 전자/양성자 질량비(log₂(1836.15) ≈ 10.84)에 의해 정해집니다. 같은 일치가 사다리의 모든 단에서 나타납니다. N = 20 / 31에서 공통 파장은 73.78 µm, N = 31 / 42에서는 151.10 mm이며, 옥타브가 하나 올라갈 때마다 두 배가 됩니다. 가능한 4,186개 원소 쌍 중 < 0.01% 이내로 일치하는 쌍은 8개뿐입니다.",
-    "about3": "표시된 반응 수는 Dr. Alexander Parkhomov의 발열 핵반응 표에서 가져온 것입니다. 이 수치는 각 쌍 사이에 에너지적으로 가능한 반응이 몇 개 있는지를 나타내며, 반응 속도나 확률을 의미하지 않습니다. 통계 분석 결과 Muller 공명과 Parkhomov 반응 밀도 사이에는 유의미한 상관관계가 없습니다 — 이 데이터베이스는 파장 공명이 아니라 핵 결합 에너지에 의해 결정됩니다. 이 도구는 탐색용입니다.",
-    "disclaimer": "참고: Muller의 방정식은 수학적으로 우아하지만, 공명 메커니즘에 대한 독립적인 실험 검증이 부족합니다. 이 도구는 검증된 예측 모델이 아니라 탐색과 가설 생성을 위해 제공됩니다.",
+    "about3": "표시된 반응 수는 알렉산드르 파르호모프 박사의 발열 핵반응 표에서 가져온 것입니다. 이 수치는 각 쌍 사이에 에너지적으로 가능한 반응이 몇 개 있는지를 나타내며, 반응 속도나 확률을 의미하지 않습니다. 통계 분석 결과 뮐러 공명과 파르호모프 반응 밀도 사이에는 유의미한 상관관계가 없습니다 — 이 데이터베이스는 파장 공명이 아니라 핵 결합 에너지에 의해 결정됩니다. 이 도구는 탐색용입니다.",
+    "disclaimer": "참고: 뮐러의 방정식은 수학적으로 우아하지만, 공명 메커니즘에 대한 독립적인 실험 검증이 부족합니다. 이 도구는 검증된 예측 모델이 아니라 탐색과 가설 생성을 위해 제공됩니다.",
     "legend": {
       "title": "색상 척도",
       "weaker": "약한 공명",
@@ -1476,15 +1476,15 @@
       "naeOutside": "NAE 범위 밖의 공명",
       "naeUncoloured": "색이 없는 원소는 계산된 전자 공명 파장이 없습니다."
     },
-    "noReactionsTitle": "Parkhomov 표에 이 쌍의 반응이 없습니다",
-    "noReactionsFootnote": "대시(-)는 Parkhomov 표에 이 쌍에 대한 해당 유형의 반응이 없다는 뜻입니다. 많은 공명 쌍에 이 표에 없는 원소가 포함되어 있어 대시가 자주 나타납니다.",
+    "noReactionsTitle": "파르호모프 표에 이 쌍의 반응이 없습니다",
+    "noReactionsFootnote": "대시(-)는 파르호모프 표에 이 쌍에 대한 해당 유형의 반응이 없다는 뜻입니다. 많은 공명 쌍에 이 표에 없는 원소가 포함되어 있어 대시가 자주 나타납니다.",
     "tabs": {
       "resonancePairs": "공명 쌍",
       "naePredictions": "NAE 예측"
     },
     "nae": {
       "title": "NAE 격자 예측",
-      "description": "Edmund Storms(JCMNS 41, 2026)가 확인한 약 1 nm의 핵 활성 환경(NAE) 간극에 전자 공명 파장이 얼마나 가까운지에 따라 원소의 순위를 매깁니다. 강조 표시된 원소는 낮은 옥타브에서 0.5–2.0 nm 범위의 공명을 가집니다.",
+      "description": "에드먼드 스톰스(JCMNS 41, 2026)가 확인한 약 1 nm의 핵 활성 환경(NAE) 간극에 전자 공명 파장이 얼마나 가까운지에 따라 원소의 순위를 매깁니다. 강조 표시된 원소는 낮은 옥타브에서 0.5–2.0 nm 범위의 공명을 가집니다.",
       "element": "원소",
       "octave": "옥타브 (N)",
       "electronResonance": "e⁻ 공명",
@@ -1495,7 +1495,7 @@
       "deuteriumMismatch": "D 불일치",
       "phononFrequency": "포논 진동수",
       "knownLENR": "알려진 LENR",
-      "parkhomovReactions": "Parkhomov 반응",
+      "parkhomovReactions": "파르호모프 반응",
       "showNAEOnly": "NAE 범위에 공명이 있는 원소만 표시",
       "searchPlaceholder": "원소로 필터 (쉼표로 구분)...",
       "elementsInRange": "NAE 범위 (0.5–2.0 nm) 내 원소",
@@ -1523,23 +1523,23 @@
       "lenrRefs": "LENR 참고 문헌",
       "noNAEResonance": "낮은 옥타브에서 NAE 범위의 공명이 없습니다.",
       "aboutNAETitle": "NAE 예측에 관하여",
-      "aboutNAE1": "Edmund Storms는 상온 핵융합(LENR)이 핵 활성 환경(NAE), 즉 금속 격자 내 일반적으로 폭 약 1 nm의 나노 규모 간극이나 균열에서 일어난다는 것을 밝혔습니다(JCMNS 41, 2026). 풀리지 않은 질문은 다음과 같습니다: 격자 간극은 왜 약 1 nm여야 하는가?",
-      "aboutNAE2": "낮은 옥타브 수(N=3, N=4)에서 Muller의 방정식 L = Z × Cₑ × 2ᴺ은 각 원소의 전자 공명 파장을 예측합니다. 팔라듐(Z=46)은 N=3에서 0.89 nm, N=4에서 1.79 nm를 나타내며, NAE 간극은 정확히 이 두 옥타브 사이에 위치합니다.",
+      "aboutNAE1": "에드먼드 스톰스는 상온 핵융합(LENR)이 핵 활성 환경(NAE), 즉 금속 격자 내 일반적으로 폭 약 1 nm의 나노 규모 간극이나 균열에서 일어난다는 것을 밝혔습니다(JCMNS 41, 2026). 풀리지 않은 질문은 다음과 같습니다: 격자 간극은 왜 약 1 nm여야 하는가?",
+      "aboutNAE2": "낮은 옥타브 수(N=3, N=4)에서 뮐러의 방정식 L = Z × Cₑ × 2ᴺ은 각 원소의 전자 공명 파장을 예측합니다. 팔라듐(Z=46)은 N=3에서 0.89 nm, N=4에서 1.79 nm를 나타내며, NAE 간극은 정확히 이 두 옥타브 사이에 위치합니다.",
       "aboutNAE3": "중수소와의 중첩은 놀랍습니다: 양성자 옥타브 N=20에서 중수소의 공명 파장은 1.39 nm로, NAE 범위에 정확히 들어갑니다. 호스트 금속의 전자 공명과 연료의 양성자 공명이 모두 1 nm 부근에 있으면, 계는 이중 공명에 도달할 수 있습니다.",
       "aboutNAE4": "알려진 LENR 활성 금속(Pd, Ni, Pt, Ti)은 모두 N=3 또는 N=4에서 0.9–1.8 nm 범위를 감싸는 전자 공명 길이를 가집니다. LENR 보고가 없는 원소(Al, 대부분의 가벼운 원소)는 이 범위를 완전히 벗어납니다. 이 상관관계가 성립한다면, 이는 상온 핵융합에 대한 최초의 정량적 격자 이론이 될 것입니다.",
-      "naeDisclaimer": "이 분석은 Muller의 공명 체계와 Storms의 NAE 모델을 결합한 것입니다. 둘 다 이론적 모델입니다. Muller의 방정식은 공명 메커니즘에 대한 독립적인 실험 검증이 부족합니다. Storms의 NAE 간극 크기는 직접 측정된 것이 아니라 실험 조건으로부터 추론된 것입니다. 결과는 탐색과 가설 생성을 위해 제공됩니다."
+      "naeDisclaimer": "이 분석은 뮐러의 공명 체계와 스톰스의 NAE 모델을 결합한 것입니다. 둘 다 이론적 모델입니다. 뮐러의 방정식은 공명 메커니즘에 대한 독립적인 실험 검증이 부족합니다. 스톰스의 NAE 간극 크기는 직접 측정된 것이 아니라 실험 조건으로부터 추론된 것입니다. 결과는 탐색과 가설 생성을 위해 제공됩니다."
     }
   },
   "transmutations": {
     "title": "핵변환 경로 탐색기",
-    "subtitle": "1차 문헌에 기록된 LENR 핵변환 주장과 Parkhomov 반응 데이터베이스의 2단계 후보 경로를 함께 제시합니다.",
+    "subtitle": "1차 문헌에 기록된 LENR 핵변환 주장과 파르호모프 반응 데이터베이스의 2단계 후보 경로를 함께 제시합니다.",
     "disclaimerTitle": "검증된 메커니즘이 아닌, 문헌에 기록된 주장입니다.",
-    "disclaimerText": "아래에 나열된 핵변환은 1차 문헌에 보고된 것입니다. Parkhomov 데이터베이스는 이러한 순 변환을 허용하는 A+B → C+D 경로를 보여 줄 수 있지만, 이것이 원래 가설로 제시된 메커니즘이 옳다는 것을 증명하지는 <0>않습니다</0>. 경로는 허용된 기본 반응을 통한 후보 경로일 뿐, 실험적 증거가 아닙니다.",
+    "disclaimerText": "아래에 나열된 핵변환은 1차 문헌에 보고된 것입니다. 파르호모프 데이터베이스는 이러한 순 변환을 허용하는 A+B → C+D 경로를 보여 줄 수 있지만, 이것이 원래 가설로 제시된 메커니즘이 옳다는 것을 증명하지는 <0>않습니다</0>. 경로는 허용된 기본 반응을 통한 후보 경로일 뿐, 실험적 증거가 아닙니다.",
     "filterAllCategories": "모든 카테고리",
     "filterAllSources": "모든 출처",
     "filterByLab": "출처 연구실로 필터",
     "noResults": "현재 필터와 일치하는 핵변환이 없습니다.",
-    "pathwayResultsHint": "Parkhomov 표의 후보 경로는 이 카드 아래에 표시됩니다.",
+    "pathwayResultsHint": "파르호모프 표의 후보 경로는 이 카드 아래에 표시됩니다.",
     "curatedFrom": "<1>HumanScholars LENR 문헌 리뷰</1>에서 선별했습니다. 항목 {{count}}개.",
     "stepCount_one": "1단계",
     "stepCount_other": "{{count}}단계",
@@ -1557,14 +1557,14 @@
     },
     "buttons": {
       "searching": "검색 중...",
-      "findPathways": "Parkhomov 경로 찾기",
+      "findPathways": "파르호모프 경로 찾기",
       "dismiss": "닫기",
       "dismissPathways": "경로 결과 닫기",
       "viewSource": "출처 보기"
     },
     "pathwayResults": {
-      "notFound": "나열된 동위원소에 대해 Parkhomov 데이터베이스에서 1단계 또는 2단계 경로를 찾을 수 없습니다.",
-      "explanation": "보고된 핵변환은 Parkhomov 표 밖의 경로(깊이 2를 넘는 다단계 경로, 중성자 포획 사슬, 베타 붕괴 분기)를 통해서도 여전히 타당할 수 있습니다. 순환하는 중간체가 있는 다단계 경로는 <1>순환 탐색</1> 도구를 사용해 보세요.",
+      "notFound": "나열된 동위원소에 대해 파르호모프 데이터베이스에서 1단계 또는 2단계 경로를 찾을 수 없습니다.",
+      "explanation": "보고된 핵변환은 파르호모프 표 밖의 경로(깊이 2를 넘는 다단계 경로, 중성자 포획 사슬, 베타 붕괴 분기)를 통해서도 여전히 타당할 수 있습니다. 순환하는 중간체가 있는 다단계 경로는 <1>순환 탐색</1> 도구를 사용해 보세요.",
       "header": "후보 경로 ({{count}})"
     },
     "errors": {
@@ -1612,13 +1612,13 @@
         "source": "Miley & Patterson (UIUC / CETI, 1996)",
         "setup": "경수 용액에서 전기분해한 박막 Ni 음극; SIMS/NAA로 약 50종의 생성 원소 검출",
         "hypothesizedMechanism": "광범위한 핵변환 생성물 스펙트럼; 단일 메커니즘은 제안되지 않음 (복합핵의 분열이 시사됨)",
-        "notes": "포괄 항목: Miley는 넓은 생성물 분포를 보고했습니다. 여기서는 가장 많이 인용된 단일 쌍으로 Ni→Cu를 사용했으며, 약 50종의 원소가 관측되었습니다."
+        "notes": "포괄 항목: 마일리는 넓은 생성물 분포를 보고했습니다. 여기서는 가장 많이 인용된 단일 쌍으로 Ni→Cu를 사용했으며, 약 50종의 원소가 관측되었습니다."
       },
       "savvatimova-pd-ag": {
         "source": "Savvatimova et al. (Luch, 러시아, 1990~2000년대)",
         "setup": "중수소 플라스마에서 Pd 음극에 대한 글로 방전 충격",
         "hypothesizedMechanism": "중성자 유사 과정과 전자 차폐 약한 상호작용을 포함한 여러 경로가 제안됨",
-        "notes": "Savvatimova는 Pd → Rh, Ru, Ag, Cd를 보고했으며, 여기서는 Pd→Ag를 다룹니다."
+        "notes": "사바티모바는 Pd → Rh, Ru, Ag, Cd를 보고했으며, 여기서는 Pd→Ag를 다룹니다."
       },
       "savvatimova-pd-rh": {
         "source": "Savvatimova et al. (Luch, 러시아, 1990~2000년대)",
@@ -1835,7 +1835,7 @@
   "databaseLoading": {
     "downloadingTitle": "데이터베이스 다운로드 중",
     "loadingTitle": "데이터베이스 로드 중",
-    "downloadingMessage": "Parkhomov 핵반응 데이터베이스를 다운로드하는 중...",
+    "downloadingMessage": "파르호모프 핵반응 데이터베이스를 다운로드하는 중...",
     "initializingMessage": "데이터베이스 엔진을 초기화하는 중...",
     "cachedNotice": "이 데이터베이스는 캐시되어 다음 방문 시 즉시 로드됩니다",
     "pleaseWait": "잠시만 기다려 주세요..."

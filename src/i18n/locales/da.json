@@ -1269,140 +1269,140 @@
         "definition": "Et molekyle bestående af to identiske atomer eller enheder, såsom H₂, N₂, O₂ og de toatomige halogener F₂, Cl₂, Br₂ og I₂. Kaskadesimulatorens indstilling \"Tillad dimerdannelse\" gælder for disse naturligt toatomige grundstoffer."
       },
       "nuclide": {
-        "term": "Nuclide",
-        "definition": "A specific nuclear species characterized by its atomic number (Z) and mass number (A). For example, Carbon-12 and Carbon-14 are different nuclides of the same element."
+        "term": "Nuklid",
+        "definition": "En bestemt kerneart, karakteriseret ved sit atomnummer (Z) og massetal (A). For eksempel er kulstof-12 og kulstof-14 to forskellige nuklider af samme grundstof."
       },
       "isotope": {
-        "term": "Isotope",
-        "definition": "Atoms of the same element (same Z) with different numbers of neutrons (different A). For example, H-1 (protium), H-2 (deuterium), and H-3 (tritium) are isotopes of hydrogen."
+        "term": "Isotop",
+        "definition": "Atomer af samme grundstof (samme Z) med forskelligt antal neutroner (forskelligt A). For eksempel er H-1 (protium), H-2 (deuterium) og H-3 (tritium) isotoper af brint."
       },
       "atomicNumber": {
-        "term": "Atomic Number (Z)",
-        "definition": "The number of protons in a nucleus. Determines which element the atom is. For example, Z=1 is hydrogen, Z=26 is iron."
+        "term": "Atomnummer (Z)",
+        "definition": "Antallet af protoner i en kerne. Det bestemmer, hvilket grundstof atomet er. For eksempel er Z=1 brint og Z=26 jern."
       },
       "massNumber": {
-        "term": "Mass Number (A)",
-        "definition": "The total number of protons and neutrons (nucleons) in a nucleus. A = Z + N, where N is the neutron count."
+        "term": "Massetal (A)",
+        "definition": "Det samlede antal protoner og neutroner (nukleoner) i en kerne. A = Z + N, hvor N er antallet af neutroner."
       },
       "bindingEnergy": {
-        "term": "Binding Energy (BE)",
-        "definition": "The energy required to disassemble a nucleus into its constituent protons and neutrons. Higher binding energy per nucleon means a more stable nucleus. Measured in MeV."
+        "term": "Bindingsenergi (BE)",
+        "definition": "Den energi, der kræves for at skille en kerne ad i dens protoner og neutroner. Højere bindingsenergi pr. nukleon betyder en mere stabil kerne. Måles i MeV."
       },
       "bindingEnergyPerNucleon": {
-        "term": "Binding Energy per Nucleon (BEN)",
-        "definition": "Binding energy divided by mass number (BE/A). Iron-56 has the highest BEN (~8.8 MeV), making it the most tightly bound nucleus. Reactions moving toward Fe-56 release energy."
+        "term": "Bindingsenergi pr. nukleon (BEN)",
+        "definition": "Bindingsenergien divideret med massetallet (BE/A). Jern-56 har den højeste BEN (~8,8 MeV) og er dermed den mest fast bundne kerne. Reaktioner, der bevæger sig mod Fe-56, frigiver energi."
       },
       "halfLife": {
-        "term": "Half-Life",
-        "definition": "The time required for half of a radioactive sample to decay. Ranges from fractions of a second to billions of years. In this database, a nuclide with log₁₀(half-life in years) > 9 is considered stable."
+        "term": "Halveringstid",
+        "definition": "Den tid, det tager for halvdelen af en radioaktiv prøve at henfalde. Spænder fra brøkdele af et sekund til milliarder af år. I denne database regnes et nuklid med log₁₀(halveringstid i år) > 9 som stabilt."
       },
       "stableNuclide": {
-        "term": "Stable Nuclide",
-        "definition": "A nuclide that does not undergo radioactive decay (or has a half-life exceeding 1 billion years). In this database, stability is defined as LHL > 9."
+        "term": "Stabilt nuklid",
+        "definition": "Et nuklid, der ikke undergår radioaktivt henfald (eller har en halveringstid på over 1 milliard år). I denne database er stabilitet defineret som LHL > 9."
       },
       "boson": {
         "term": "Boson",
-        "definition": "A particle with integer spin (0, 1, 2...). Nuclides with even mass number A are nuclear bosons. Bosons can occupy the same quantum state, enabling phenomena like Bose-Einstein condensation."
+        "definition": "En partikel med heltalligt spin (0, 1, 2 …). Nuklider med lige massetal A er kernebosoner. Bosoner kan befinde sig i samme kvantetilstand, hvilket muliggør fænomener som Bose-Einstein-kondensation."
       },
       "fermion": {
         "term": "Fermion",
-        "definition": "A particle with half-integer spin (1/2, 3/2...). Nuclides with odd mass number A are nuclear fermions. Fermions obey the Pauli exclusion principle."
+        "definition": "En partikel med halvtalligt spin (1/2, 3/2 …). Nuklider med ulige massetal A er kernefermioner. Fermioner adlyder Paulis udelukkelsesprincip."
       },
       "neutrino": {
         "term": "Neutrino",
-        "definition": "A nearly massless, weakly interacting subatomic particle produced in nuclear reactions involving the weak force (e.g., beta decay). Denoted ν (left-handed) or ν̄ (right-handed antineutrino)."
+        "definition": "En næsten masseløs, svagt vekselvirkende subatomar partikel, der dannes i kernereaktioner, som involverer den svage kernekraft (f.eks. betahenfald). Betegnes ν (venstrehåndet) eller ν̄ (højrehåndet antineutrino)."
       },
       "radioactiveDecay": {
-        "term": "Radioactive Decay",
-        "definition": "The spontaneous transformation of an unstable nucleus into a more stable configuration. Common modes include alpha (A), beta-minus (B-), beta-plus (B+), electron capture (EC), and isomeric transition (IT)."
+        "term": "Radioaktivt henfald",
+        "definition": "Den spontane omdannelse af en ustabil kerne til en mere stabil konfiguration. Almindelige henfaldstyper er alfa (A), beta minus (B-), beta plus (B+), elektronindfangning (EC) og isomer overgang (IT)."
       },
       "alphaDecay": {
-        "term": "Alpha Decay",
-        "definition": "Emission of a helium-4 nucleus (2 protons + 2 neutrons). Reduces Z by 2 and A by 4. Common in heavy elements like uranium and radium."
+        "term": "Alfahenfald",
+        "definition": "Udsendelse af en helium-4-kerne (2 protoner + 2 neutroner). Mindsker Z med 2 og A med 4. Almindeligt i tunge grundstoffer som uran og radium."
       },
       "betaDecay": {
-        "term": "Beta Decay",
-        "definition": "Transformation of a neutron into a proton (β⁻, Z+1) or proton into neutron (β⁺, Z-1). A stays the same. Involves emission of a neutrino or antineutrino."
+        "term": "Betahenfald",
+        "definition": "Omdannelse af en neutron til en proton (β⁻, Z+1) eller af en proton til en neutron (β⁺, Z-1). A forbliver uændret. Indebærer udsendelse af en neutrino eller antineutrino."
       },
       "electronCapture": {
-        "term": "Electron Capture (EC)",
-        "definition": "An inner orbital electron is captured by the nucleus, converting a proton to a neutron. Z decreases by 1, A stays the same. Competes with β⁺ decay."
+        "term": "Elektronindfangning (EC)",
+        "definition": "En elektron fra en indre orbital indfanges af kernen, hvorved en proton omdannes til en neutron. Z falder med 1, mens A forbliver uændret. Konkurrerer med β⁺-henfald."
       },
       "isomericTransition": {
-        "term": "Isomeric Transition (IT)",
-        "definition": "A metastable excited nuclear state decays to a lower energy state by emitting a gamma ray. Z and A remain unchanged. The nuclide symbol gets an \"m\" suffix (e.g., Tc-99m)."
+        "term": "Isomer overgang (IT)",
+        "definition": "En metastabil exciteret kernetilstand henfalder til en lavere energitilstand ved at udsende et gammakvant. Z og A forbliver uændrede. Nuklidsymbolet får suffikset \"m\" (f.eks. Tc-99m)."
       },
       "lenr": {
         "term": "LENR",
-        "definition": "Low Energy Nuclear Reactions. A class of nuclear reactions that occur at or near room temperature, distinct from conventional \"hot\" fusion which requires millions of degrees. Also historically known as \"cold fusion.\""
+        "definition": "Lavenergi-kernereaktioner (Low Energy Nuclear Reactions). En klasse af kernereaktioner, der finder sted ved eller nær stuetemperatur, i modsætning til konventionel \"varm\" fusion, som kræver millioner af grader. Historisk også kendt som \"kold fusion\"."
       },
       "transmutation": {
         "term": "Transmutation",
-        "definition": "The conversion of one chemical element or isotope into another. Can occur through fusion, fission, or two-to-two reactions. This database catalogs transmutation pathways computed by Dr. Alexander Parkhomov."
+        "definition": "Omdannelsen af ét grundstof eller én isotop til et andet. Kan ske via fusion, fission eller to-til-to-reaktioner. Denne database katalogiserer transmutationsveje beregnet af Dr. Alexander Parkhomov."
       },
       "fusion": {
         "term": "Fusion",
-        "definition": "A nuclear reaction where two lighter nuclei combine to form a heavier nucleus (A + B → C). Releases energy when the product has higher binding energy per nucleon than the reactants. This database contains 3,921 fusion reactions, of which 1,505 involve no neutrinos."
+        "definition": "En kernereaktion, hvor to lettere kerner smelter sammen til en tungere kerne (A + B → C). Frigiver energi, når produktet har højere bindingsenergi pr. nukleon end reaktanterne. Databasen indeholder 3.921 fusionsreaktioner, hvoraf 1.505 ikke involverer neutrinoer."
       },
       "fission": {
         "term": "Fission",
-        "definition": "A nuclear reaction where a heavier nucleus splits into two lighter nuclei (A → B + C). Releases energy when the products have higher binding energy per nucleon. This database contains 1,733 fission reactions, of which 818 involve no neutrinos."
+        "definition": "En kernereaktion, hvor en tungere kerne spaltes i to lettere kerner (A → B + C). Frigiver energi, når produkterne har højere bindingsenergi pr. nukleon. Databasen indeholder 1.733 fissionsreaktioner, hvoraf 818 ikke involverer neutrinoer."
       },
       "twoToTwo": {
-        "term": "Two-to-Two",
-        "definition": "A nuclear reaction where two nuclei interact and produce two different nuclei (A + B → C + D). The most common reaction type in the database, with 1,215,374 reactions (518,657 of which involve no neutrinos)."
+        "term": "To-til-to",
+        "definition": "En kernereaktion, hvor to kerner vekselvirker og danner to andre kerner (A + B → C + D). Den mest almindelige reaktionstype i databasen med 1.215.374 reaktioner (heraf 518.657 uden neutrinoer)."
       },
       "cascade": {
-        "term": "Cascade",
-        "definition": "A chain of nuclear reactions where products of one reaction become inputs to subsequent reactions. The cascade engine simulates multi-generation reaction pathways from initial fuel nuclides."
+        "term": "Kaskade",
+        "definition": "En kæde af kernereaktioner, hvor produkterne fra én reaktion bliver input til efterfølgende reaktioner. Kaskademotoren simulerer reaktionsveje over flere generationer ud fra de oprindelige brændselsnuklider."
       },
       "feedbackLoop": {
-        "term": "Feedback Loop",
-        "definition": "When a product nuclide from a later reaction step reappears as an input in an earlier step, creating a self-sustaining cycle. Similar to the CNO cycle in stellar nucleosynthesis."
+        "term": "Tilbagekoblingsløkke",
+        "definition": "Når et produktnuklid fra et senere reaktionstrin igen optræder som input i et tidligere trin, så der opstår en selvopretholdende cyklus. Svarer til CNO-cyklussen i stjernernes nukleosyntese."
       },
       "mev": {
         "term": "MeV",
-        "definition": "Megaelectronvolt (10⁶ eV). A unit of energy commonly used in nuclear physics. 1 MeV = 1.602 × 10⁻¹³ joules. The energy released in a nuclear reaction is the Q-value, measured in MeV."
+        "definition": "Megaelektronvolt (10⁶ eV). En energienhed, der ofte bruges i kernefysik. 1 MeV = 1,602 × 10⁻¹³ joule. Den energi, der frigives i en kernereaktion, er Q-værdien, som måles i MeV."
       },
       "kev": {
         "term": "keV",
-        "definition": "Kiloelectronvolt (10³ eV). 1 MeV = 1000 keV. Used for decay energies and radiation energies in the RadioNuclides table."
+        "definition": "Kiloelektronvolt (10³ eV). 1 MeV = 1000 keV. Bruges til henfaldsenergier og strålingsenergier i tabellen RadioNuclides."
       },
       "amu": {
         "term": "AMU",
-        "definition": "Atomic Mass Unit. Defined as 1/12 of the mass of a Carbon-12 atom. 1 AMU = 931.494 MeV/c². Used to express nuclear and atomic masses."
+        "definition": "Atommasseenhed (Atomic Mass Unit). Defineret som 1/12 af massen af et kulstof-12-atom. 1 AMU = 931,494 MeV/c². Bruges til at angive kerne- og atommasser."
       },
       "nBorF": {
         "term": "nBorF",
-        "definition": "Nuclear Boson or Fermion classification. Based on mass number A: even A = boson (b), odd A = fermion (f). Relevant to quantum statistical behavior of the nucleus."
+        "definition": "Klassifikation af kernen som boson eller fermion (Nuclear Boson or Fermion). Baseret på massetallet A: lige A = boson (b), ulige A = fermion (f). Relevant for kernens kvantestatistiske egenskaber."
       },
       "aBorF": {
         "term": "aBorF",
-        "definition": "Atomic Boson or Fermion classification. Based on neutron count (A - Z): even neutrons = boson (b), odd neutrons = fermion (f). Describes the quantum statistics of the whole atom."
+        "definition": "Klassifikation af atomet som boson eller fermion (Atomic Boson or Fermion). Baseret på antallet af neutroner (A - Z): lige antal neutroner = boson (b), ulige antal = fermion (f). Beskriver hele atomets kvantestatistik."
       },
       "lhl": {
         "term": "LHL",
-        "definition": "Log₁₀ of Half-Life in years. A compact representation of half-life. LHL = 0 means 1 year, LHL = 9 means 1 billion years (stable threshold). Negative values indicate sub-year half-lives."
+        "definition": "Log₁₀ af halveringstiden i år. En kompakt måde at angive halveringstid på. LHL = 0 betyder 1 år, LHL = 9 betyder 1 milliard år (stabilitetsgrænsen). Negative værdier angiver halveringstider under et år."
       },
       "sus": {
         "term": "SUS",
-        "definition": "Status field indicating nuclide origin. SPN = Stable Primordial (exists naturally), UPN = Unstable Primordial (radioactive but natural), SYN = Synthetic (only man-made)."
+        "definition": "Statusfelt, der angiver nuklidets oprindelse. SPN = stabil primordial (Stable Primordial; forekommer naturligt), UPN = ustabil primordial (Unstable Primordial; radioaktiv, men naturlig), SYN = syntetisk (Synthetic; kun menneskeskabt)."
       },
       "rdm": {
         "term": "RDM",
-        "definition": "Primary Radioactive Decay Mode. The dominant decay pathway for unstable nuclides. Values include A (alpha), B- (beta minus), B+ (beta plus), EC (electron capture), IT (isomeric transition)."
+        "definition": "Primær radioaktiv henfaldstype (Radioactive Decay Mode). Den dominerende henfaldsvej for ustabile nuklider. Mulige værdier er A (alfa), B- (beta minus), B+ (beta plus), EC (elektronindfangning) og IT (isomer overgang)."
       },
       "deuterium": {
         "term": "Deuterium (D)",
-        "definition": "Hydrogen-2 (one proton + one neutron). In the database, deuterium uses the symbol \"D\" rather than \"H\" with A=2. Important in LENR research as a common fuel choice."
+        "definition": "Brint-2 (én proton + én neutron). I databasen har deuterium symbolet \"D\" i stedet for \"H\" med A=2. Vigtigt i LENR-forskning som et almindeligt valg af brændsel."
       },
       "tritium": {
         "term": "Tritium (T)",
-        "definition": "Hydrogen-3 (one proton + two neutrons). Radioactive with a half-life of 12.3 years. In the database, tritium uses the symbol \"T\" rather than \"H\" with A=3."
+        "definition": "Brint-3 (én proton + to neutroner). Radioaktivt med en halveringstid på 12,3 år. I databasen har tritium symbolet \"T\" i stedet for \"H\" med A=3."
       },
       "protium": {
         "term": "Protium (H)",
-        "definition": "Hydrogen-1 (one proton, no neutrons). The most common hydrogen isotope (99.98% abundance). In the database, uses symbol \"H\"."
+        "definition": "Brint-1 (én proton, ingen neutroner). Den mest almindelige brintisotop (99,98 % naturlig forekomst). Har symbolet \"H\" i databasen."
       }
     }
   },
