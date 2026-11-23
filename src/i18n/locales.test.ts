@@ -3,6 +3,14 @@ import { createInstance } from 'i18next';
 import { readdirSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { SUPPORTED_LANGUAGES } from './config';
+import {
+  flatten as flattenStrings,
+  globToRegExp,
+  identicalToEnglish,
+  matchesAny,
+  type IdenticalAllowlist,
+} from './tooling';
+import identicalAllowlistJson from './identical-allowlist.json';
 import en from './locales/en.json';
 import de from './locales/de.json';
 import es from './locales/es.json';
@@ -83,6 +91,16 @@ const locales = {
 };
 const enKeys = getAllKeys(en as Record<string, unknown>);
 const enFlat = flatten(en as Record<string, unknown>);
+const enStrings = flattenStrings(en as Record<string, unknown>);
+
+// Values allowed to stay identical to English (see identical-allowlist.json and
+// CLAUDE.md → "i18n guardrails"): `invariant` for every locale, per-locale `keep`
+// (reviewed cognates/names) and the shrink-only `baseline` of untranslated debt.
+const identicalAllowlist = identicalAllowlistJson as IdenticalAllowlist;
+const invariantRes = identicalAllowlist.invariant.map(globToRegExp);
+const allowlistHint = (locale: string) =>
+  'translate them, or (proper names, symbols, units, real cognates only) add them to ' +
+  `src/i18n/identical-allowlist.json → locales.${locale}.keep`;
 
 /** True if English defines `base` as a plural key (base_one / base_other) */
 function isEnPluralBase(base: string): boolean {
@@ -104,8 +122,44 @@ describe('i18n locale consistency', () => {
     expect(checked).toEqual(Object.keys(SUPPORTED_LANGUAGES).sort());
   });
 
+  it('identical-allowlist invariant entries all match English keys', () => {
+    const unmatched = identicalAllowlist.invariant.filter(
+      (glob) => !Object.keys(enStrings).some((k) => globToRegExp(glob).test(k)),
+    );
+    expect(unmatched, 'remove these from identical-allowlist.json invariant').toEqual([]);
+  });
+
+  it('identical-allowlist lists exactly the supported locales', () => {
+    expect(Object.keys(identicalAllowlist.locales).sort()).toEqual(Object.keys(locales).sort());
+  });
+
   for (const [locale, translations] of Object.entries(locales)) {
     describe(`${locale} locale`, () => {
+      const identical = new Set(
+        identicalToEnglish(flattenStrings(translations as Record<string, unknown>), enStrings),
+      );
+      const allow = identicalAllowlist.locales[locale] ?? { keep: [], baseline: [] };
+
+      it(`has no values left identical to English (except allowlisted)`, () => {
+        const listed = new Set([...allow.keep, ...allow.baseline]);
+        const offenders = [...identical].filter(
+          (k) => !matchesAny(k, invariantRes) && !listed.has(k),
+        );
+        expect(
+          offenders,
+          `${locale}: these values are identical to English — ${allowlistHint(locale)}`,
+        ).toEqual([]);
+      });
+
+      it(`identical-to-English allowlist only shrinks`, () => {
+        const gone = [...allow.keep, ...allow.baseline].filter((k) => !identical.has(k));
+        expect(
+          gone,
+          `${locale}: these are translated now (or removed) — delete them from ` +
+            `src/i18n/identical-allowlist.json → locales.${locale}`,
+        ).toEqual([]);
+      });
+
       const localeKeys = getAllKeys(translations as Record<string, unknown>);
 
       it(`has translation keys`, () => {

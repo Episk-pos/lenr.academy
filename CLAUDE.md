@@ -394,9 +394,26 @@ Every PR is automatically reviewed by the [greptile](https://greptile.com/) bot.
 
 1. **Theme-aware inline styles**: Any inline `style={{}}` with colors must use `theme === 'dark'` ternaries. Legend swatches, color indicators, and background colors are all caught. Use the `useTheme()` hook.
 2. **Dark mode in SVG/Canvas**: Charts, diagrams, and visualizations need full dark mode support — backgrounds, text, borders, and tooltips must all adapt.
-3. **i18n completeness**: All user-visible strings must use `t()` from `useTranslation()` via react-i18next. There are 29 locales (en, de, es, fr, ja, ru, zh, it, pt, uk, pl, ko, hi, ar, nl, sv, da, nb, fi, cs, hu, tr, id, vi, sw, bn, th, fa, ur) — add translation keys to all of them (`src/i18n/locales.test.ts` enforces key and placeholder parity). English is the fallback.
+3. **i18n completeness**: All user-visible strings must use `t()` from `useTranslation()` via react-i18next. There are 29 locales (en, de, es, fr, ja, ru, zh, it, pt, uk, pl, ko, hi, ar, nl, sv, da, nb, fi, cs, hu, tr, id, vi, sw, bn, th, fa, ur) — add translation keys to all of them (`src/i18n/locales.test.ts` enforces key and placeholder parity; see "i18n guardrails" below). English is the fallback.
 
 **Efficient workflow**: Read ALL greptile comments before starting fixes (they follow patterns). Fix all instances in one commit, then reply to each comment with: "Fixed in `abc1234`. All N instances now use theme-aware colors."
+
+### i18n guardrails (the `i18n` CI job)
+
+`.github/workflows/i18n.yml` runs on every PR and push to main (no browsers, no database, ~1–2 min). Run it all locally with `npm run i18n:check`. It fails on:
+
+1. **Hard-coded copy** (`npm run lint:i18n:ci`): eslint-plugin-i18next (`.eslintrc.i18n.cjs`, `jsx-only`) over all of `src/**/*.{ts,tsx}`. Any string not in `src/i18n/hardcoded-baseline.json` fails — wrap it in `t()`. The baseline is **shrink-only**: CI also fails when a baselined string is gone, so after fixing one run `npm run lint:i18n:baseline` (it refuses to add or grow entries unless you pass `--allow-grow`, which reviewers will see). `npm run lint:i18n` shows the raw report.
+2. **Untranslated data tables** (`src/i18n/dataTables.test.ts`): every glossary entry needs an `i18nKey`, and every row of example queries, documented transmutations, citations, materials and radiation types must have its copy in en.json, **identical to the English in the data file** (edit both together). A new table rendered via `` t(`prefix.${id}.field`, { defaultValue }) `` must be registered in `TABLES`. Decay-series presets are not rendered yet; the test fails once a component imports them, as a reminder to key them.
+3. **Values identical to English** (`locales.test.ts`): any non-en value equal to the en value (with real words) fails unless listed in `src/i18n/identical-allowlist.json` — `invariant` (globs, every locale: brand, symbols, units, bibliographic authors/journals), per-locale `keep` (reviewed cognates and names that are correct as-is in that language, e.g. es "Total"; empty at adoption) or per-locale `baseline` (known untranslated debt, **shrink-only**: delete entries once translated; the test tells you which). Only add to `keep`/`invariant` for genuine names, symbols, units and cognates — never to silence real English.
+4. **Undefined keys** (`src/i18n/keys.test.ts`): every static `t('…')` key, `<Trans i18nKey>` and `*Key`/`*Keys`/`i18nKey` data value must exist in en.json. `RussellHistoricalContext.tsx` (unmounted) is skipped explicitly pending bead beads-h7m.
+5. **Stale translations** (`src/i18n/source-hashes.json`, `src/i18n/sourceHashes.test.ts`, `scripts/i18n/stale.ts`). Every en value's hash is recorded. **Blocking on PRs**: changing an en value without re-translating every locale fails the PR — there is no "defer" label. Your only options:
+   - **Translate** the affected locales in the same PR, then run `npm run i18n:stamp` (it detects which locale values changed vs `origin/main`, refreshes the hashes and prints what it treated as re-translated). Fork contributors: `npm run i18n:stamp -- --base upstream/main`.
+   - **Ack** an English-only edit (typo, punctuation, casing — meaning unchanged): `npm run i18n:ack -- <key-or-glob> --reason "fix typo"` (optionally `--locale de,fr`). The reason is stored in the append-only `acks` log.
+   - Any en edit also needs `npm run i18n:stamp` (or an ack) or `sourceHashes.test.ts` fails.
+
+   `npm run i18n:stale` lists unstamped en keys and the **stale ledger** (`--locale de` / `--all` to list entries). The ledger holds pre-existing debt (seeded from git history) and is shrink-only: CI fails if a PR adds entries; translating an entry and running `i18n:stamp` removes it. Renaming a key counts as a new key (fresh) and is not checked, so when a rename also changes meaning, rename in one PR and edit the English in a follow-up PR. Setting the repo variable `I18N_STALE_STRICT=1` makes a non-empty ledger fail on main. The same PR ratchet (`npm run i18n:stale -- --ci --base origin/main`) also fails if a PR drops ledger entries without translating/acking them, edits existing acks, or hand-grows `hardcoded-baseline.json` or an `identical-allowlist.json` `baseline`.
+
+`scripts/i18n/seed-identical.ts` (re)seeds the identical-allowlist; `npx tsx scripts/i18n/stale.ts init --replay` re-seeds the hashes. Both are for maintainers only.
 
 ### CI / Playwright E2E Known Issues
 
