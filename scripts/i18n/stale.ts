@@ -415,14 +415,14 @@ function report() {
     const problems = ratchet();
     if (problems.length) {
       exit = 1;
-      console.error('✗ Stale translations introduced by this branch:');
+      console.error('✗ i18n ratchet (this branch vs base):');
       for (const p of problems) console.error(`  ${p}`);
       console.error(
         '  → translate the listed locales in this PR and run `npm run i18n:stamp`, or, if the English ' +
           'edit does not change meaning (typo, punctuation, casing), run ' +
           '`npm run i18n:ack -- <key> --reason "..."`.',
       );
-      summary.push(`**✗ ${problems.length} stale-translation problem(s) introduced by this PR:**`, '');
+      summary.push(`**✗ ${problems.length} i18n ratchet problem(s) introduced by this PR:**`, '');
       for (const p of problems) summary.push(`- ${p}`);
       summary.push('');
     } else {
