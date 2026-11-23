@@ -146,10 +146,11 @@
       "fissionReactions": "Štěpné reakce",
       "twoToTwoReactions": "Reakce dva na dva"
     },
-    "cascadeSimulations": {
-      "title": "Kaskádové simulace",
-      "description": "Modelujte řetězové reakce s katalogem materiálů, váženým větvením a vizualizací toků pomocí Sankeyova diagramu",
-      "runSimulations": "Spustit kaskádové simulace"
+    "simulations": {
+      "title": "Simulace reakcí",
+      "description": "Objevujte samoregenerující se katalytické cykly nebo modelujte větvené řetězové reakce s katalogem materiálů a vizualizací toků pomocí Sankeyova diagramu",
+      "cycleDiscovery": "Hledání katalytických cyklů",
+      "cascades": "Kaskádové simulace"
     },
     "elementData": {
       "title": "Prvky, nuklidy a rozpad",

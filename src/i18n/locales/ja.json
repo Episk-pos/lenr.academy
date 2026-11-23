@@ -146,10 +146,11 @@
       "fissionReactions": "核分裂反応",
       "twoToTwoReactions": "2対2反応"
     },
-    "cascadeSimulations": {
-      "title": "カスケードシミュレーション",
-      "description": "材料カタログ、重み付き分岐、サンキーフロー可視化を使用して連鎖反応をモデル化",
-      "runSimulations": "カスケードシミュレーションを実行"
+    "simulations": {
+      "title": "反応シミュレーション",
+      "description": "自己再生する触媒サイクルを発見したり、材料カタログとサンキーフロー可視化を使用して分岐する連鎖反応をモデル化したりできます",
+      "cycleDiscovery": "触媒サイクルの発見",
+      "cascades": "カスケードシミュレーション"
     },
     "elementData": {
       "title": "元素・核種・崩壊",

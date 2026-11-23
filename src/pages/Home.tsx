@@ -64,14 +64,17 @@ export default function Home() {
             </div>
             <div className="flex-1">
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-                {t('home.cascadeSimulations.title')}
+                {t('home.simulations.title')}
               </h3>
               <p className="text-gray-600 dark:text-gray-400 text-sm mb-4">
-                {t('home.cascadeSimulations.description')}
+                {t('home.simulations.description')}
               </p>
               <div className="space-y-2">
+                <Link to="/cycles" className="block text-primary-600 hover:text-primary-700 text-sm font-medium">
+                  → {t('home.simulations.cycleDiscovery')}
+                </Link>
                 <Link to="/cascades" className="block text-primary-600 hover:text-primary-700 text-sm font-medium">
-                  → {t('home.cascadeSimulations.runSimulations')}
+                  → {t('home.simulations.cascades')}
                 </Link>
               </div>
             </div>

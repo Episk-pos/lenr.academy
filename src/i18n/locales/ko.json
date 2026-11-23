@@ -146,10 +146,11 @@
       "fissionReactions": "핵분열 반응",
       "twoToTwoReactions": "2-대-2 반응"
     },
-    "cascadeSimulations": {
-      "title": "캐스케이드 시뮬레이션",
-      "description": "물질 카탈로그, 가중 분기 및 Sankey 흐름 시각화로 연쇄 반응을 모델링하세요",
-      "runSimulations": "캐스케이드 시뮬레이션 실행"
+    "simulations": {
+      "title": "반응 시뮬레이션",
+      "description": "스스로 재생되는 촉매 순환을 탐색하거나, 물질 카탈로그와 Sankey 흐름 시각화로 분기 연쇄 반응을 모델링하세요",
+      "cycleDiscovery": "촉매 순환 탐색",
+      "cascades": "캐스케이드 시뮬레이션"
     },
     "elementData": {
       "title": "원소, 핵종 및 붕괴",

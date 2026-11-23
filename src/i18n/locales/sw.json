@@ -146,10 +146,11 @@
       "fissionReactions": "Miitikio ya Mgawanyiko",
       "twoToTwoReactions": "Miitikio ya Mbili-kwa-Mbili"
     },
-    "cascadeSimulations": {
-      "title": "Uigaji wa Mfululizo",
-      "description": "Igiza miitikio ya mnyororo kwa katalogi ya nyenzo, matawi yenye uzani, na taswira ya mtiririko wa Sankey",
-      "runSimulations": "Endesha Uigaji wa Mfululizo"
+    "simulations": {
+      "title": "Uigaji wa Miitikio",
+      "description": "Gundua mizunguko ya kichocheo inayojizalisha upya, au igiza miitikio ya mnyororo yenye matawi kwa katalogi ya nyenzo na taswira ya mtiririko wa Sankey",
+      "cycleDiscovery": "Ugunduzi wa Mizunguko ya Kichocheo",
+      "cascades": "Uigaji wa Mfululizo"
     },
     "elementData": {
       "title": "Vipengele, Nyuklidi na Kuoza",

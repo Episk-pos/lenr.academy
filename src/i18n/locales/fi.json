@@ -146,10 +146,11 @@
       "fissionReactions": "Fissioreaktiot",
       "twoToTwoReactions": "Kaksi-kahteen-reaktiot"
     },
-    "cascadeSimulations": {
-      "title": "Kaskadisimuloinnit",
-      "description": "Mallinna ketjureaktioita materiaaliluettelon, painotetun haarautumisen ja Sankey-virtausvisualisoinnin avulla",
-      "runSimulations": "Suorita kaskadisimulointeja"
+    "simulations": {
+      "title": "Reaktiosimuloinnit",
+      "description": "Löydä itseään uudistavia katalyyttisiä syklejä tai mallinna haarautuvia ketjureaktioita materiaaliluettelon ja Sankey-virtausvisualisoinnin avulla",
+      "cycleDiscovery": "Katalyyttisten syklien etsintä",
+      "cascades": "Kaskadisimuloinnit"
     },
     "elementData": {
       "title": "Alkuaineet, nuklidit ja hajoaminen",

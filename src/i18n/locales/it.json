@@ -146,10 +146,11 @@
       "fissionReactions": "Reazioni di fissione",
       "twoToTwoReactions": "Reazioni due-a-due"
     },
-    "cascadeSimulations": {
-      "title": "Simulazioni a cascata",
-      "description": "Modella reazioni a catena con un catalogo di materiali, ramificazioni ponderate e visualizzazione dei flussi con diagramma di Sankey",
-      "runSimulations": "Esegui simulazioni a cascata"
+    "simulations": {
+      "title": "Simulazioni di reazioni",
+      "description": "Scopri cicli catalitici autorigeneranti o modella reazioni a catena ramificate con un catalogo di materiali e la visualizzazione dei flussi con diagramma di Sankey",
+      "cycleDiscovery": "Scoperta dei cicli catalitici",
+      "cascades": "Simulazioni a cascata"
     },
     "elementData": {
       "title": "Elementi, nuclidi e decadimento",

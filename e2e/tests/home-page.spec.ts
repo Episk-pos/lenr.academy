@@ -16,7 +16,7 @@ test.describe('Home Page', () => {
   test('should display four feature cards', async ({ page }) => {
     const featureHeadings = [
       /Query Nuclear Reactions/i,
-      /Cascade Simulations/i,
+      /Reaction Simulations/i,
       /Elements.*Nuclides.*Decay/i,
       /Muller Resonance/i,
     ];
@@ -49,6 +49,11 @@ test.describe('Home Page', () => {
     const mainContent = page.getByRole('main');
     await mainContent.getByRole('link', { name: /Two-To-Two Reactions/i }).click();
     await page.waitForURL(/\/twotwo/);
+  });
+
+  test('should have catalytic cycle discovery link', async ({ page }) => {
+    const mainContent = page.getByRole('main');
+    await expect(mainContent.getByRole('link', { name: /Catalytic Cycle Discovery/i })).toBeVisible();
   });
 
   test('should have cascade simulations link', async ({ page }) => {

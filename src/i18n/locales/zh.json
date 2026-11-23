@@ -146,10 +146,11 @@
       "fissionReactions": "裂变反应",
       "twoToTwoReactions": "二对二反应"
     },
-    "cascadeSimulations": {
-      "title": "级联模拟",
-      "description": "使用材料目录、加权分支和桑基流程可视化模拟链式反应",
-      "runSimulations": "运行级联模拟"
+    "simulations": {
+      "title": "反应模拟",
+      "description": "发现自我再生的催化循环，或使用材料目录和桑基流程可视化模拟分支链式反应",
+      "cycleDiscovery": "催化循环发现",
+      "cascades": "级联模拟"
     },
     "elementData": {
       "title": "元素、核素与衰变",
