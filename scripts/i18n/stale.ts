@@ -335,10 +335,14 @@ function ratchet(): string[] {
 
   // No source-hashes.json at base: this branch introduces the ledger (seeded debt).
   const baseStale = baseData?.stale;
+  const grew: Record<string, string[]> = {};
   for (const [l, entries] of Object.entries(baseStale ? head.stale : {})) {
     for (const lk of Object.keys(entries)) {
-      if (!baseStale![l]?.[lk]) problems.push(`stale ledger grew: ${l}:${lk} (deferring a translation is not allowed)`);
+      if (!baseStale![l]?.[lk] && !missing[sourceKeyOf(lk, en) ?? lk]) (grew[lk] ??= []).push(l);
     }
+  }
+  for (const [lk, ls] of Object.entries(grew).sort()) {
+    problems.push(`stale ledger grew for "${lk}" in ${ls.join(', ')} (deferring a translation is not allowed)`);
   }
   return problems;
 }

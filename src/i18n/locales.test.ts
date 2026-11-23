@@ -98,9 +98,9 @@ const enStrings = flattenStrings(en as Record<string, unknown>);
 // (reviewed cognates/names) and the shrink-only `baseline` of untranslated debt.
 const identicalAllowlist = identicalAllowlistJson as IdenticalAllowlist;
 const invariantRes = identicalAllowlist.invariant.map(globToRegExp);
-const ALLOWLIST_HINT =
+const allowlistHint = (locale: string) =>
   'translate them, or (proper names, symbols, units, real cognates only) add them to ' +
-  'src/i18n/identical-allowlist.json → locales.<locale>.keep';
+  `src/i18n/identical-allowlist.json → locales.${locale}.keep`;
 
 /** True if English defines `base` as a plural key (base_one / base_other) */
 function isEnPluralBase(base: string): boolean {
@@ -147,7 +147,7 @@ describe('i18n locale consistency', () => {
         );
         expect(
           offenders,
-          `${locale}: these values are identical to English — ${ALLOWLIST_HINT}`,
+          `${locale}: these values are identical to English — ${allowlistHint(locale)}`,
         ).toEqual([]);
       });
 
