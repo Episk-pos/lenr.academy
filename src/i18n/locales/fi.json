@@ -159,10 +159,13 @@
       "tablesInDetail": "Taulut yksityiskohtaisesti",
       "allTables": "Mukautetut SQL-kyselyt"
     },
-    "mullerResonance": {
-      "title": "Muller-resonanssin tutkija",
-      "description": "Tutki elektroni-protoni-aallonpituusresonansseja ja ennusta ydinaktiivisia ympäristöjä (NAE)",
-      "explore": "Tutki resonansseja"
+    "patterns": {
+      "title": "Kuviot ja reitit",
+      "description": "Dokumentoidut transmutaatiot, resonanssikuviot ja nuklidikartat",
+      "transmutations": "Transmutaatioreittien tutkija",
+      "mullerResonance": "Muller-resonanssin tutkija",
+      "russellChart": "Russellin kaavio",
+      "segreChart": "Segrèn kartta"
     },
     "aboutData": {
       "title": "Tietoa aineistosta",

@@ -159,10 +159,13 @@
       "tablesInDetail": "Detail Tabel",
       "allTables": "Kueri SQL Kustom"
     },
-    "mullerResonance": {
-      "title": "Penjelajah Resonansi Muller",
-      "description": "Selidiki resonansi panjang gelombang elektron-proton dan prediksi lingkungan aktif nuklir (NAE)",
-      "explore": "Jelajahi Resonansi"
+    "patterns": {
+      "title": "Pola & Jalur",
+      "description": "Transmutasi terdokumentasi, pola resonansi, dan diagram nuklida",
+      "transmutations": "Penjelajah Jalur Transmutasi",
+      "mullerResonance": "Penjelajah Resonansi Muller",
+      "russellChart": "Diagram Russell",
+      "segreChart": "Diagram Segrè"
     },
     "aboutData": {
       "title": "Tentang Data",

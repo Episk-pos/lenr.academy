@@ -159,10 +159,13 @@
       "tablesInDetail": "Tabellen in detail",
       "allTables": "Aangepaste SQL-query's"
     },
-    "mullerResonance": {
-      "title": "Muller-resonantieverkenner",
-      "description": "Onderzoek elektron-proton-golflengteresonanties en voorspel nucleair actieve omgevingen (NAE)",
-      "explore": "Resonanties verkennen"
+    "patterns": {
+      "title": "Patronen & routes",
+      "description": "Gedocumenteerde transmutaties, resonantiepatronen en nuclidekaarten",
+      "transmutations": "Verkenner van transmutatieroutes",
+      "mullerResonance": "Muller-resonantieverkenner",
+      "russellChart": "Russell-diagram",
+      "segreChart": "Segrè-diagram"
     },
     "aboutData": {
       "title": "Over de gegevens",

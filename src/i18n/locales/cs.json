@@ -159,10 +159,13 @@
       "tablesInDetail": "Tabulky podrobně",
       "allTables": "Vlastní SQL dotazy"
     },
-    "mullerResonance": {
-      "title": "Průzkumník Mullerovy rezonance",
-      "description": "Zkoumejte rezonance vlnových délek elektronu a protonu a předpovídejte jaderně aktivní prostředí (NAE)",
-      "explore": "Prozkoumat rezonance"
+    "patterns": {
+      "title": "Vzorce a cesty",
+      "description": "Zdokumentované transmutace, rezonanční vzorce a diagramy nuklidů",
+      "transmutations": "Průzkumník transmutačních cest",
+      "mullerResonance": "Průzkumník Mullerovy rezonance",
+      "russellChart": "Russellův diagram",
+      "segreChart": "Segrèho diagram"
     },
     "aboutData": {
       "title": "O datech",

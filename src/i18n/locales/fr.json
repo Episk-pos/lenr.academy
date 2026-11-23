@@ -159,10 +159,13 @@
       "tablesInDetail": "Tables détaillées",
       "allTables": "Requêtes SQL personnalisées"
     },
-    "mullerResonance": {
-      "title": "Explorateur de résonance Muller",
-      "description": "Étudiez les résonances de longueur d'onde électron-proton et prédisez les environnements nucléaires actifs (NAE)",
-      "explore": "Explorer les résonances"
+    "patterns": {
+      "title": "Motifs et voies",
+      "description": "Transmutations documentées, motifs de résonance et cartes des nucléides",
+      "transmutations": "Explorateur de voies de transmutation",
+      "mullerResonance": "Explorateur de Résonance Muller",
+      "russellChart": "Tableau de Russell",
+      "segreChart": "Diagramme de Segrè"
     },
     "aboutData": {
       "title": "À propos des données",

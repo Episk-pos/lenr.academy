@@ -159,10 +159,13 @@
       "tablesInDetail": "详细表格",
       "allTables": "自定义SQL查询"
     },
-    "mullerResonance": {
-      "title": "穆勒共振探索器",
-      "description": "研究电子-质子波长共振并预测核活性环境（NAE）",
-      "explore": "探索共振"
+    "patterns": {
+      "title": "模式与路径",
+      "description": "有记录的嬗变、共振模式与核素图",
+      "transmutations": "嬗变路径浏览器",
+      "mullerResonance": "穆勒共振探索器",
+      "russellChart": "拉塞尔图表",
+      "segreChart": "塞格雷图"
     },
     "aboutData": {
       "title": "关于数据",

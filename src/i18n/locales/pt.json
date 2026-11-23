@@ -159,10 +159,13 @@
       "tablesInDetail": "Tabelas em Detalhe",
       "allTables": "Consultas SQL Personalizadas"
     },
-    "mullerResonance": {
-      "title": "Explorador de Ressonância de Muller",
-      "description": "Investigue ressonâncias de comprimento de onda elétron-próton e preveja ambientes nucleares ativos (NAE)",
-      "explore": "Explorar Ressonâncias"
+    "patterns": {
+      "title": "Padrões e Caminhos",
+      "description": "Transmutações documentadas, padrões de ressonância e cartas de nuclídeos",
+      "transmutations": "Explorador de Caminhos de Transmutação",
+      "mullerResonance": "Explorador de Ressonância de Muller",
+      "russellChart": "Carta de Russell",
+      "segreChart": "Carta de Segrè"
     },
     "aboutData": {
       "title": "Sobre os Dados",

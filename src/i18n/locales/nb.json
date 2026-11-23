@@ -159,10 +159,13 @@
       "tablesInDetail": "Tabeller i detalj",
       "allTables": "Egendefinerte SQL-spørringer"
     },
-    "mullerResonance": {
-      "title": "Muller-resonansutforsker",
-      "description": "Undersøk resonanser mellom elektron- og protonbølgelengder og forutsi kjerneaktive miljøer (NAE)",
-      "explore": "Utforsk resonanser"
+    "patterns": {
+      "title": "Mønstre og veier",
+      "description": "Dokumenterte transmutasjoner, resonansmønstre og nuklidekart",
+      "transmutations": "Utforsker for transmutasjonsveier",
+      "mullerResonance": "Muller-resonansutforsker",
+      "russellChart": "Russell-diagram",
+      "segreChart": "Segrè-diagram"
     },
     "aboutData": {
       "title": "Om dataene",

@@ -159,10 +159,13 @@
       "tablesInDetail": "Majedwali kwa Undani",
       "allTables": "Hoja Maalum za SQL"
     },
-    "mullerResonance": {
-      "title": "Kichunguzi cha Mwangwi wa Muller",
-      "description": "Chunguza mwangwi wa urefu wa wimbi wa elektroni-protoni na tabiri mazingira amilifu ya kinyuklia (NAE)",
-      "explore": "Chunguza Mwangwi"
+    "patterns": {
+      "title": "Mifumo na Njia",
+      "description": "Ubadilishaji uliorekodiwa, mifumo ya mwangwi na chati za nyuklidi",
+      "transmutations": "Kichunguzi cha Njia za Ubadilishaji",
+      "mullerResonance": "Kichunguzi cha Mwangwi wa Muller",
+      "russellChart": "Chati ya Russell",
+      "segreChart": "Chati ya Segre"
     },
     "aboutData": {
       "title": "Kuhusu Data",

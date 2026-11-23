@@ -159,10 +159,13 @@
       "tablesInDetail": "Tables in Detail",
       "allTables": "Custom SQL Queries"
     },
-    "mullerResonance": {
-      "title": "Muller Resonance Explorer",
-      "description": "Investigate electron-proton wavelength resonances and predict nuclear active environments (NAE)",
-      "explore": "Explore Resonances"
+    "patterns": {
+      "title": "Patterns & Pathways",
+      "description": "Documented transmutations, resonance patterns and nuclide charts",
+      "transmutations": "Transmutation Pathway Explorer",
+      "mullerResonance": "Muller Resonance Explorer",
+      "russellChart": "Russell Chart",
+      "segreChart": "Segrè Chart"
     },
     "aboutData": {
       "title": "About the Data",
