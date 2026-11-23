@@ -18,16 +18,18 @@
 //                                            (re)seed from scratch; --replay imports likely-stale
 //                                            entries from git history into the ledger
 import { execFileSync } from 'node:child_process';
-import { appendFileSync, writeFileSync } from 'node:fs';
+import { appendFileSync, readFileSync, writeFileSync } from 'node:fs';
 import {
   LOCALES_REL_DIR,
   SOURCE_HASHES_PATH,
   type Flat,
+  type IdenticalAllowlist,
   type SourceHashes,
   flatten,
   globToRegExp,
   hashValue,
   localeCodes,
+  readIdenticalAllowlist,
   readLocale,
   readSourceHashes,
   serializeSourceHashes,
@@ -300,30 +302,41 @@ function ack() {
 }
 
 // ── report / CI ratchet ──────────────────────────────────────────────────────
+function jsonAt<T>(rev: string, path: string): T | undefined {
+  try {
+    return JSON.parse(git('show', `${rev}:${path}`)) as T;
+  } catch {
+    return undefined;
+  }
+}
+
+/**
+ * Compare the working tree with the merge base of `--base` and fail on: en edits
+ * neither re-translated nor acked; stale-ledger growth, or entries dropped without
+ * a translation; acks edited/removed; and hand-grown shrink-only baselines.
+ */
 function ratchet(): string[] {
   const base = mergeBase(flag('base') ?? 'origin/main');
   const problems: string[] = [];
   const enBase = localeAt(base, 'en');
   const head = readSourceHashes();
   const baseData = sourceHashesAt(base);
+  const cur = Object.fromEntries(locales.map((l) => [l, readLocale(l)]));
+  const before = Object.fromEntries(locales.map((l) => [l, localeAt(base, l)]));
 
   const baseAcks = baseData?.acks ?? [];
   const prefixOk =
     baseAcks.length <= head.acks.length &&
     baseAcks.every((a, i) => JSON.stringify(a) === JSON.stringify(head.acks[i]));
   if (!prefixOk) problems.push('source-hashes.json "acks" is append-only: existing entries were edited or removed.');
-  const newAcks = prefixOk ? head.acks.slice(baseAcks.length) : head.acks;
 
-  const changed = Object.keys(en).filter((k) => k in enBase && enBase[k] !== en[k]);
-  const changedSet = new Set(changed);
+  const changedSet = new Set(Object.keys(en).filter((k) => k in enBase && enBase[k] !== en[k]));
   const missing: Record<string, string[]> = {};
   for (const l of locales) {
-    const cur = readLocale(l);
-    const before = localeAt(base, l);
-    for (const lk of Object.keys(cur)) {
+    for (const lk of Object.keys(cur[l])) {
       const src = sourceKeyOf(lk, en);
-      if (!src || !changedSet.has(src) || before[lk] !== cur[lk]) continue;
-      if (!isAcked(head, src, l, newAcks)) (missing[src] ??= []).push(lk === src ? l : `${l}:${lk}`);
+      if (!src || !changedSet.has(src) || before[l][lk] !== cur[l][lk]) continue;
+      if (!isAcked(head, src, l)) (missing[src] ??= []).push(lk === src ? l : `${l}:${lk}`);
     }
   }
   for (const [k, ls] of Object.entries(missing).sort()) {
@@ -335,14 +348,48 @@ function ratchet(): string[] {
 
   // No source-hashes.json at base: this branch introduces the ledger (seeded debt).
   const baseStale = baseData?.stale;
-  const grew: Record<string, string[]> = {};
-  for (const [l, entries] of Object.entries(baseStale ? head.stale : {})) {
-    for (const lk of Object.keys(entries)) {
-      if (!baseStale![l]?.[lk] && !missing[sourceKeyOf(lk, en) ?? lk]) (grew[lk] ??= []).push(l);
+  if (baseStale) {
+    const grew: Record<string, string[]> = {};
+    for (const [l, entries] of Object.entries(head.stale)) {
+      for (const lk of Object.keys(entries)) {
+        if (!baseStale[l]?.[lk] && !missing[sourceKeyOf(lk, en) ?? lk]) (grew[lk] ??= []).push(l);
+      }
+    }
+    for (const [lk, ls] of Object.entries(grew).sort()) {
+      problems.push(`stale ledger grew for "${lk}" in ${ls.join(', ')} (deferring a translation is not allowed)`);
+    }
+    for (const [l, entries] of Object.entries(baseStale)) {
+      for (const lk of Object.keys(entries)) {
+        if (head.stale[l]?.[lk] || !cur[l] || !(lk in cur[l])) continue;
+        const src = sourceKeyOf(lk, en);
+        if (before[l][lk] === cur[l][lk] && !(src && isAcked(head, src, l))) {
+          problems.push(`${l}:${lk} was dropped from the stale ledger but not re-translated or acked`);
+        }
+      }
     }
   }
-  for (const [lk, ls] of Object.entries(grew).sort()) {
-    problems.push(`stale ledger grew for "${lk}" in ${ls.join(', ')} (deferring a translation is not allowed)`);
+
+  // Shrink-only baselines must not grow by hand.
+  const allowBase = jsonAt<IdenticalAllowlist>(base, 'src/i18n/identical-allowlist.json');
+  if (allowBase) {
+    const allowHead = readIdenticalAllowlist();
+    for (const [l, lists] of Object.entries(allowHead.locales)) {
+      const was = new Set(allowBase.locales[l]?.baseline ?? []);
+      const added = lists.baseline.filter((k) => !was.has(k));
+      if (added.length) {
+        problems.push(
+          `identical-allowlist.json locales.${l}.baseline grew (${added.join(', ')}) — translate them ` +
+            '(or, for names/symbols/cognates, list them under "keep")',
+        );
+      }
+    }
+  }
+  const hcPath = 'src/i18n/hardcoded-baseline.json';
+  const hcBase = jsonAt<{ entries: Record<string, number> }>(base, hcPath);
+  if (hcBase) {
+    const hcHead = JSON.parse(readFileSync(hcPath, 'utf8')) as { entries: Record<string, number> };
+    const grown = Object.entries(hcHead.entries).filter(([fp, n]) => n > (hcBase.entries[fp] ?? 0));
+    for (const [fp] of grown) problems.push(`hardcoded-baseline.json grew: ${fp} — wrap it in t() instead`);
   }
   return problems;
 }
